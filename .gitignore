@@ -1,0 +1,48 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+packages/*/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc.local
+*~
+*#
+.idea
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.cache
+.next
+.idea
+.vscode
+*.log
+build
+coverage
+dist
+logs
+npm-debug.log
+*.cid
+
+.env
+!.env/test
+*.tsbuildinfo
+deployment-artifacts

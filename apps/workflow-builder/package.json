@@ -1,0 +1,29 @@
+{
+  "name": "@fmp/workflow-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fmp/ui": "workspace:^1.0.0",
+    "@heroicons/react": "^1.0.6",
+    "classnames": "^2.3.1",
+    "final-form": "^4.20.7",
+    "framer-motion": "^6.3.3",
+    "next": "^12.1.5",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-final-form": "^6.5.9"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.6",
+    "postcss": "^8.4.13",
+    "tailwindcss": "^3.0.24"
+  }
+}
