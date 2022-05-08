@@ -7,35 +7,49 @@ import {
   useAnimation
 } from 'framer-motion'
 import { PlusIcon, XIcon, ChevronDownIcon } from '@heroicons/react/outline'
-import {  PencilIcon} from '@heroicons/react/solid'
+import { PencilIcon } from '@heroicons/react/solid'
 import produce from 'immer'
 import { Form, Field } from 'react-final-form'
 
-const StageIndicator = ({stage/*: 'forecast' | 'deposit' | 'harvest' */}) => {
+const StageIndicator = ({
+  stage /*: 'forecast' | 'deposit' | 'harvest' */
+}) => {
   const line = (
-    <motion.div className="absolute left-0 right-0 bottom-0 -bottom-1 mx-auto w-5 rounded border-t-2 border-stone-700" layout layoutId="stage-indicator" />
+    <motion.div
+      className='absolute left-0 right-0 bottom-0 -bottom-1 mx-auto w-5 rounded border-t-2 border-stone-700'
+      layout
+      layoutId='stage-indicator'
+    />
   )
   return (
     <div className='text-center w-full text-stone-500'>
-      <span className={cx('inline-block relative transition-all transition-1000', {'text-stone-700': stage === 'forecast'})}>
-    {stage === 'forecast' && line}
-    Forecast
-
-    </span>
-    {' '}&rarr;{' '}
-      <span className={cx('inline-block relative transition-all transition-1000', {'text-stone-700': stage === 'deposit'})}>
-    Deposit
-    {stage === 'deposit' && line}
-    </span>
-      <span>
-    </span>
-    {' '}&rarr;{' '}
-      <span className={cx('inline-block relative transition-all transition-1000', {'text-stone-700': stage === 'harvest'})}>
-    Harvest
-    {stage === 'harvest' && line}
-    </span>
-      <span>
-    </span>
+      <span
+        className={cx('inline-block relative transition-all transition-1000', {
+          'text-stone-700': stage === 'forecast'
+        })}
+      >
+        {stage === 'forecast' && line}
+        Forecast
+      </span>{' '}
+      &rarr;{' '}
+      <span
+        className={cx('inline-block relative transition-all transition-1000', {
+          'text-stone-700': stage === 'deposit'
+        })}
+      >
+        Deposit
+        {stage === 'deposit' && line}
+      </span>
+      <span /> &rarr;{' '}
+      <span
+        className={cx('inline-block relative transition-all transition-1000', {
+          'text-stone-700': stage === 'harvest'
+        })}
+      >
+        Harvest
+        {stage === 'harvest' && line}
+      </span>
+      <span />
     </div>
   )
 }
@@ -270,7 +284,7 @@ const pillTable = {
   '3CRV': curveAssetPill,
   'PW-USDC': portalAssetPill,
   'PW-3CRV': pw3crvAssetPill,
-  'CVXCRV': convexAssetPill,
+  CVXCRV: convexAssetPill,
   'PW-CVXCRV': pwcvxcrvAssetPill
 }
 
@@ -371,7 +385,7 @@ const routesByName = {
     action: 'Bridge with Wormhole Portal',
     children: ['pw3crvToSolend', 'pw3crvTo3crv']
   },
-  'cvxcrvToPortal': {
+  cvxcrvToPortal: {
     name: 'cvxcrvToPortal',
     before: 'CVXCRV',
     after: 'PW-CVXCRV',
@@ -399,7 +413,7 @@ const routesByName = {
     action: 'Bridge with Wormhole Portal',
     children: []
   },
-  'pwcvxcrvToCvxcrv': {
+  pwcvxcrvToCvxcrv: {
     name: 'pwcvxcrvToCvxcrv',
     before: 'PW-CVXCRV',
     after: 'CVXCRV',
@@ -729,7 +743,13 @@ const stepsReducer = produce((steps, action) => {
   }
 })
 
-export const WorkflowForm = ({ generated, onSubmit, amount, steps, onUndoForecast }) => {
+export const WorkflowForm = ({
+  generated,
+  onSubmit,
+  amount,
+  steps,
+  onUndoForecast
+}) => {
   return (
     <Form
       onSubmit={onSubmit}
@@ -754,16 +774,23 @@ export const WorkflowForm = ({ generated, onSubmit, amount, steps, onUndoForecas
             onSubmit={handleSubmit}
             className={cx(
               'lg:max-w-lg mx-auto self-start flex flex-col gap-3 p-2 md:p-4 rounded-2xl bg-stone-600 shadow transition-opacity transition-200 group',
-              { 'opacity-75': submitting, 'hover:bg-stone-500 cursor-pointer': generated }
+              {
+                'opacity-75': submitting,
+                'hover:bg-stone-500 cursor-pointer': generated
+              }
             )}
           >
             <div className='flex flex-col gap-2 md:gap-4'>
               <div className='rounded-2xl flex flex-col gap-4'>
                 <div className='flex items-center justify-between gap-2'>
                   <div className='flex items-center'>{usdcAssetPill}</div>
-          <div>
-          <PencilIcon className={cx("h-8 w-8 invisible text-stone-400/50", {" group-hover:visible": generated})}/>
-          </div>
+                  <div>
+                    <PencilIcon
+                      className={cx('h-8 w-8 invisible text-stone-400/50', {
+                        ' group-hover:visible': generated
+                      })}
+                    />
+                  </div>
                 </div>
                 <Field
                   name='amount'
@@ -784,7 +811,10 @@ export const WorkflowForm = ({ generated, onSubmit, amount, steps, onUndoForecas
                           minLength='1'
                           maxLength='79'
                           spellCheck={false}
-                          className={cx('w-48 relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 pr-14', {'cursor-pointer': generated})}
+                          className={cx(
+                            'w-48 relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 pr-14',
+                            { 'cursor-pointer': generated }
+                          )}
                           {...input}
                           onBlur={(event) => {
                             const value = parseFloat(event.target.value)
@@ -818,7 +848,11 @@ export const WorkflowForm = ({ generated, onSubmit, amount, steps, onUndoForecas
                     <motion.button
                       layout
                       initial={{ marginTop: -50, scale: 1 }}
-                      animate={{ marginTop: 0, scale: 1, transition: { duration: 0.1 } }}
+                      animate={{
+                        marginTop: 0,
+                        scale: 1,
+                        transition: { duration: 0.1 }
+                      }}
                       exit={{ marginTop: -50, scale: 0 }}
                       transition={{ stiffness: 100 }}
                       disabled={submitting || empty}
@@ -899,19 +933,19 @@ export const WorkflowForm = ({ generated, onSubmit, amount, steps, onUndoForecas
 
         return (
           <>
-          <div className="space-y-12">
-          <StageIndicator stage={generated ? 'deposit' : 'forecast'}/>
-          <div className='grid grid-cols-10'>
-            <div className='mb-5 lg:mb-0 col-span-10 lg:col-span-3'>
-              {amountForm}
+            <div className='space-y-12'>
+              <StageIndicator stage={generated ? 'deposit' : 'forecast'} />
+              <div className='grid grid-cols-10'>
+                <div className='mb-5 lg:mb-0 col-span-10 lg:col-span-3'>
+                  {amountForm}
+                </div>
+                <div className='col-span-10 lg:col-end-11 lg:col-span-6'>
+                  <AnimatePresence exitBeforeEnter initial={false}>
+                    {generated ? stepsEl : startingPoint}
+                  </AnimatePresence>
+                </div>
+              </div>
             </div>
-            <div className='col-span-10 lg:col-end-11 lg:col-span-6'>
-              <AnimatePresence exitBeforeEnter initial={false}>
-                {generated ? stepsEl : startingPoint}
-              </AnimatePresence>
-            </div>
-          </div>
-          </div>
           </>
         )
       }}
@@ -952,10 +986,10 @@ export const Workflow = () => {
         await new Promise((resolve) => setTimeout(resolve, 750))
         setGenerated(true)
       }}
-    onUndoForecast={() => {
-      setGenerated(false)
-      setSteps([])
-    }}
+      onUndoForecast={() => {
+        setGenerated(false)
+        setSteps([])
+      }}
     />
   )
 }
