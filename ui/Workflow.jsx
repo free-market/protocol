@@ -795,7 +795,7 @@ export const WorkflowForm = ({
                 <Field
                   name='amount'
                   render={({ input }) => (
-                    <div className='flex gap-1 justify-between items-baseline px-1.5'>
+                    <div className='flex gap-1 justify-between items-baseline'>
                       <div className='text-2xl leading-7 tracking-[-0.01em] font-bold relative flex items-baseline flex-grow gap-3 overflow-hidden'>
                         <input
                           disabled={submitting || generated}
@@ -812,8 +812,8 @@ export const WorkflowForm = ({
                           maxLength='79'
                           spellCheck={false}
                           className={cx(
-                            'w-48 relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 pr-14',
-                            { 'cursor-pointer': generated }
+                            'max-w-md relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-2xl px-2 py-3 mr-10',
+                            generated ? 'cursor-pointer' : 'hover:bg-stone-500/50'
                           )}
                           {...input}
                           onBlur={(event) => {
@@ -824,7 +824,7 @@ export const WorkflowForm = ({
                             input.onBlur(event)
                           }}
                         />
-                        <span className='text-xs leading-4 font-medium text-stone-400 absolute bottom-1.5 pointer-events-none text-right w-full'>
+                        <span className='text-xs leading-4 font-medium text-stone-400 absolute bottom-4 pointer-events-none text-right w-full'>
                           ~${usdEstimate}{' '}
                         </span>
                         <div className='text-2xl leading-7 tracking-[-0.01em] font-bold relative flex flex-row items-baseline'>
@@ -837,6 +837,7 @@ export const WorkflowForm = ({
                   )}
                 />
               </div>
+          {generated && <div className="-mb-8"/>}
 
               <div
                 className={cx('overflow-hidden w-full', {
@@ -983,7 +984,7 @@ export const Workflow = () => {
             fresh: false
           }
         ])
-        await new Promise((resolve) => setTimeout(resolve, 750))
+        await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1500))
         setGenerated(true)
       }}
       onUndoForecast={() => {
