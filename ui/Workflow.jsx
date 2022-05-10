@@ -22,7 +22,7 @@ const StageIndicator = ({
     />
   )
   return (
-    <div className='text-center w-full text-stone-500'>
+    <div className='w-full text-stone-500'>
       <span
         className={cx('inline-block relative transition-all transition-1000', {
           'text-stone-700': stage === 'forecast'
@@ -77,7 +77,8 @@ const Card = (props) => {
     'rounded-2xl lg:max-w-lg border border-stone-400 text-stone-200 overflow-hidden relative',
     {
       'hover:border-stone-500 hover:text-stone-500 hover:bg-stone-100/75':
-        props.clickable ?? false
+        props.clickable ?? false,
+      'mt-5': props.stepCount > 0
     }
   )
   return (
@@ -97,18 +98,19 @@ const Card = (props) => {
 }
 
 const NewStepButton = (props) => {
+  const {stepCount = 0, stage} = props
   return (
-    <Card key='final-step' clickable onClick={props.onClick}>
+    <Card key={`${stage}-final-step`} clickable onClick={props.onClick} stepCount={stepCount}>
       <motion.div
-        layout
-        key='plus-button'
-        layoutId='plus-button'
+        key={`${stage}-plus-button`}
+    layout
+        layoutId={`${stage}-plus-button`}
         exit={{ opacity: 0 }}
         transition={{ delay: 0.1, duration: 0.1 }}
         className='flex flex-col justify-center items-center text-stone-400 hover:text-stone-500 cursor-pointer py-4 gap-2 lg:max-w-lg mx-auto active:border-stone-600 active:text-stone-600 active:bg-stone-50 min-h-[6rem]'
       >
         <motion.div
-          layout
+    layout
           variants={item}
           initial='arriving'
           exit='departed'
@@ -288,7 +290,7 @@ const pillTable = {
   'PW-CVXCRV': pwcvxcrvAssetPill
 }
 
-const RouteChoice = ({ route, index, steps, onNewStep }) => {
+const RouteChoice = ({ route, index, steps, harvestSteps, onNewStep, stage }) => {
   const controls = useAnimation()
   return (
     <>
@@ -322,7 +324,7 @@ const RouteChoice = ({ route, index, steps, onNewStep }) => {
       <div className='flex justify-center'>
         <motion.div
           layout
-          layoutId={`step-${steps.length}-${route.name}`}
+          layoutId={`${stage}-step-${{stake: steps, harvest: harvestSteps}[stage].length}-${route.name}`}
           onClick={async () => {
             await controls.start({
               opacity: 0,
@@ -361,7 +363,10 @@ const RouteChoice = ({ route, index, steps, onNewStep }) => {
   )
 }
 
-const usdcChildren = ['usdcTo3crv', 'usdcToPortal']
+const usdcOfferings = {
+  possibleStakingRoutes:  ['usdcTo3crv', 'usdcToPortal'],
+  rewards: []
+}
 
 const routesByName = {
   usdcTo3crv: {
@@ -369,204 +374,145 @@ const routesByName = {
     before: 'USDC',
     after: '3CRV',
     action: 'Acquire Curve LP',
-    children: ['3crvToPortal', '3crvToCvxcrv']
+    possibleStakingRoutes: ['3crvToPortal', '3crvToCvxcrv'],
+    rewards: ['3crvToUsdc'],
   },
   '3crvToCvxcrv': {
     name: '3crvToCvxcrv',
     before: '3CRV',
     after: 'CVXCRV',
     action: 'Acquire Convex LP',
-    children: ['cvxcrvToPortal']
+    possibleStakingRoutes: ['cvxcrvToPortal'],
+    rewards: ['3crvToUsdc', 'cvxcrvToUsdc'],
   },
   '3crvToPortal': {
     name: '3crvToPortal',
     before: '3CRV',
     after: 'PW-3CRV',
     action: 'Bridge with Wormhole Portal',
-    children: ['pw3crvToSolend', 'pw3crvTo3crv']
+    possibleStakingRoutes: ['pw3crvToSolend', 'pw3crvTo3crv'],
+    rewards: [],
   },
   cvxcrvToPortal: {
     name: 'cvxcrvToPortal',
     before: 'CVXCRV',
     after: 'PW-CVXCRV',
     action: 'Bridge with Wormhole Portal',
-    children: ['pwcvxcrvToSolend', 'pwcvxcrvToCvxcrv']
+    possibleStakingRoutes: ['pwcvxcrvToSolend'],
+    rewards: [],
   },
   pw3crvToSolend: {
     name: 'pw3crvToSolend',
     before: 'PW-3CRV',
     after: 'PW-3CRV',
     action: 'Lend with Solend',
-    children: ['pw3crvTo3crv']
+    possibleStakingRoutes: [],
+    rewards: ['pw3crvTo3crv']
   },
   pwcvxcrvToSolend: {
     name: 'pwcvxcrvToSolend',
     before: 'PW-CVXCRV',
     after: 'PW-CVXCRV',
     action: 'Lend with Solend',
-    children: ['pwcvxcrvToCvxcrv']
+    possibleStakingRoutes: [],
+    rewards: ['pwcvxcrvToCvxcrv'],
   },
   pw3crvTo3crv: {
     name: 'pw3crvTo3crv',
     before: 'PW-3CRV',
     after: '3CRV',
     action: 'Bridge with Wormhole Portal',
-    children: []
+    possibleStakingRoutes: [],
+    rewards: ['3crvToUsdc'],
   },
   pwcvxcrvToCvxcrv: {
     name: 'pwcvxcrvToCvxcrv',
     before: 'PW-CVXCRV',
     after: 'CVXCRV',
     action: 'Bridge with Wormhole Portal',
-    children: []
+    possibleStakingRoutes: [],
+    rewards: ['cvxcrvToUsdc'],
+  },
+  cvxcrvToUsdc: {
+    name: 'cvxcrvToUsdc',
+    before: 'CVXCRV',
+    after: 'USDC',
+    action: 'Swap with Uniswap',
+    possibleStakingRoutes: [],
+    rewards: [],
   },
   usdcToPortal: {
     name: 'usdcToPortal',
     before: 'USDC',
     after: 'PW-USDC',
     action: 'Bridge with Wormhole Portal',
-    children: ['pwusdcToSnusdc']
+    possibleStakingRoutes: ['pwusdcToSnusdc'],
+    rewards: [],
   },
   pwusdcToSnusdc: {
     name: 'pwusdcToSnusdc',
     before: 'PW-USDC',
     after: 'SN-USDC',
     action: 'Swap with Saber',
-    children: ['snusdcToSolend']
+    possibleStakingRoutes: ['snusdcToSolend'],
+    rewards: [],
   },
   snusdcToSolend: {
     name: 'snusdcToSolend',
     before: 'SN-USDC',
     after: 'SN-USDC',
     action: 'Lend with Solend',
-    children: []
+    possibleStakingRoutes: [],
+    rewards: [],
+  },
+  '3crvToUsdc': {
+    name: '3crvToUsdc',
+    before: '3CRV',
+    after: 'USDC',
+    action: 'Withdraw with Curve',
+    rewards: []
   }
 }
 
-const getCurrentRoutes = (steps) =>
-  steps.reduce(
-    (possibleRoutes, step) => routesByName[step.id].children,
-    usdcChildren
-  )
+const getCurrentRoutes = ({steps, harvestSteps}) => ({
+  stake: steps.reduce(
+    (possibleRoutes, step) => routesByName[step.id].possibleStakingRoutes,
+      usdcOfferings.possibleStakingRoutes,
+  ),
+  harvest: [...steps, ...harvestSteps].reduce(
+    (possibleRoutes, step) => [...new Set([...possibleRoutes, ...routesByName[step.id].rewards]).values()],
+      usdcOfferings.rewards,
+  ),
+})
 
 const StepCreator = (props) => {
-  const { steps } = props
+  const { steps, harvestSteps, stage } = props
 
-  /*
-  const onSelectCurveLP = async () => {
-    await curveControls.start({
-      opacity: 0,
-      transition: { duration: 0.1 }
-    })
-
-    props.onNewStep('curve')
-  }
-
-  const onSelectPortal = async () => {
-    await portalControls.start({
-      opacity: 0,
-      transition: { duration: 0.1 }
-    })
-
-    props.onNewStep('portal')
-  }
-  */
-
-  const currentRouteNames = getCurrentRoutes(steps)
+  const currentRouteNames = getCurrentRoutes({ steps, harvestSteps })[stage].filter(
+    (step) => !harvestSteps.some(({id}) => id === step)
+  )
   const choices = currentRouteNames.map((routeName, index) => {
     const route = routesByName[routeName]
 
+    if (route == null) {
+      throw new Error(`${routeName} not defined`)
+    }
+
     return (
       <RouteChoice
+      stage={stage}
         route={route}
         index={index}
         key={index}
         steps={steps}
+      harvestSteps={harvestSteps}
         onNewStep={props.onNewStep}
       />
     )
   })
 
-  /*
-    const choices = (
-      <>
-          <div className='flex justify-center'>
-            <motion.div
-              layout
-              layoutId='curve'
-              onClick={onSelectCurveLP}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.45 } }}
-              exit={{
-                opacity: 0,
-                y: -10,
-                transition: { delay: 0.2, stiffness: 0 }
-              }}
-              className='rounded-2xl bg-stone-600 shadow cursor-pointer hover:bg-stone-500 active:bg-stone-600/75'
-            >
-              <motion.div animate={curveControls} className='px-4 py-3'>
-                <motion.div className='pb-3 font-medium'>
-                  Acquire Curve LP
-                </motion.div>
-                <motion.div className='flex items-center'>
-                  {usdcAssetPill} &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
-                  {curveAssetPill}
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </div>
-
-          <div className='py-6'>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.65 } }}
-              exit={{
-                opacity: 0,
-                y: -10,
-                transition: { delay: 0.4 },
-                stiffness: 0
-              }}
-              className='w-full relative px-4'
-            >
-              <div className='border-t border-stone-400 w-full' />
-              <div className='absolute top-0 left-0 right-0 z-10'>
-                <div className='mx-auto w-10 flex justify-center -mt-3 bg-stone-100 top-0 z-10 text-stone-400'>
-                  or
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className='flex justify-center'>
-            <motion.div
-              layoutId='portal'
-              onClick={onSelectPortal}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.85 } }}
-              exit={{
-                opacity: 0,
-                y: -10,
-                transition: { delay: 0.6 },
-                stiffness: 0
-              }}
-              className='rounded-2xl bg-stone-600 shadow cursor-pointer hover:bg-stone-500 active:bg-stone-500/75'
-            >
-              <motion.div animate={portalControls} className='px-4 py-3'>
-                <div className='pb-3 font-medium'>
-                  Swap with Wormhole Portal
-                </div>
-                <div className='flex items-center'>
-                  {usdcAssetPill} &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;
-                  {portalAssetPill}
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-    )
-  */
-
   return (
-    <Card key='final-step'>
+    <Card key={`${stage}-final-step`} stepCount={steps.length}>
       <motion.div
         className='min-h-[6rem]'
         layout
@@ -580,7 +526,7 @@ const StepCreator = (props) => {
           animate={{ opacity: 1, transition: { delay: 0.1 }, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           key='step-close-button'
-          layoutId='step-close-button'
+          layoutId={`${stage}-step-close-button`}
           className='absolute top-0 left-0 rounded-br-2xl border-b border-r border-stone-400 text-stone-400 cursor-pointer hover:bg-stone-300/25 active:bg-stone-400/25'
           onClick={props.onClose}
         >
@@ -592,11 +538,13 @@ const StepCreator = (props) => {
   )
 }
 
-export const Steps = ({ steps, dispatch }) => {
+export const Steps = ({ steps, harvestSteps, dispatch, stage }) => {
   const [creatingNewStep, setCreatingNewStep] = React.useState(false)
 
   const stepCreator = StepCreator({
+    stage,
     steps,
+    harvestSteps,
     onClose: () => {
       setCreatingNewStep(false)
     },
@@ -611,6 +559,8 @@ export const Steps = ({ steps, dispatch }) => {
   })
 
   const startCreatingNewStepButton = NewStepButton({
+    stage,
+    stepCount: ({stake: steps, harvest: harvestSteps})[stage].length,
     onClick: () => {
       if (steps.every((step) => !step.fresh)) {
         setCreatingNewStep(true)
@@ -618,28 +568,43 @@ export const Steps = ({ steps, dispatch }) => {
     }
   })
 
-  const stepCards = steps.map((step, index) => (
+  const stepCards = ({stake: steps, harvest: harvestSteps})[stage].map((step, index) => (
     <StepCard
       key={index}
       index={index}
       step={step}
       steps={steps}
+    harvestSteps={harvestSteps}
       dispatch={dispatch}
+    stage={stage}
     />
   ))
 
-  const lastStep = steps[steps.length - 1]
+  const lastStep = ({
+    stake: steps[steps.length - 1],
+    harvest: harvestSteps[harvestSteps.length - 1],
+  }[stage])
+
+  const possibleRoutes = ({
+    stake: lastStep && routesByName[lastStep.id].possibleStakingRoutes,
+    harvest:
+    [
+      ...getCurrentRoutes({steps, harvestSteps}).harvest,
+    ...(lastStep ? routesByName[lastStep.id].rewards : []),
+    ].filter(
+    (step) => !harvestSteps.some(({id}) => id === step)
+    )
+  }[stage])
 
   return (
     <LayoutGroup>
-      {stepCards.length > 0 && <div className='mb-5'>{stepCards}</div>}
+      {stepCards.length > 0 && <div>{stepCards}</div>}
 
       <AnimatePresence initial={false} exitBeforeEnter>
         {creatingNewStep
           ? stepCreator
           : lastStep
-            ? routesByName[lastStep.id].children.length > 0 &&
-            startCreatingNewStepButton
+            ? possibleRoutes.length > 0 && startCreatingNewStepButton
             : startCreatingNewStepButton}
       </AnimatePresence>
     </LayoutGroup>
@@ -648,7 +613,7 @@ export const Steps = ({ steps, dispatch }) => {
 
 const StepCard = (props) => {
   const [showDescription, setShowDescription] = React.useState(false)
-  const { index, step, dispatch } = props
+  const { index, step, dispatch, stage } = props
 
   return (
     <AnimatePresence>
@@ -665,14 +630,14 @@ const StepCard = (props) => {
             }
           }}
           layout
-          layoutId={`step-${index}-${step.id}`}
+          layoutId={`${stage}-step-${index}-${step.id}`}
           className={cx(
             'relative mr-16 inline-block lg:max-w-lg w-full bg-stone-600 shadow cursor-pointer hover:bg-stone-500 active:bg-stone-600/75 text-stone-200',
             {
               '!transform-none': !step.fresh,
               'border-t border-stone-500': index > 0,
               'rounded-t-2xl': index === 0,
-              'rounded-b-2xl': index === props.steps.length - 1
+              'rounded-b-2xl': index === ({stake: props.steps, harvest: props.harvestSteps})[stage].length - 1
             }
           )}
         >
@@ -687,6 +652,12 @@ const StepCard = (props) => {
               {routesByName[step.id].action}
             </motion.div>
             <motion.div className='flex items-center text-stone-400 font-medium font-monospace'>
+    {stage === 'harvest' && (
+      <>
+              {pillTable[routesByName[step.id].before]}
+              &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
+      </>
+    )}
               {pillTable[routesByName[step.id].after]}
               <ChevronDownIcon className='ml-4 text-stone-300 h-6 w-6' />
             </motion.div>
@@ -723,7 +694,6 @@ const StepCard = (props) => {
 }
 
 const stepsReducer = produce((steps, action) => {
-  console.log(JSON.stringify(steps), action)
   switch (action.name) {
     case 'StepCreated':
       steps.push({ ...action.step, fresh: true })
@@ -748,12 +718,13 @@ export const WorkflowForm = ({
   onSubmit,
   amount,
   steps,
+  harvestSteps,
   onUndoForecast
 }) => {
   return (
     <Form
       onSubmit={onSubmit}
-      initialValues={{ amount, steps }} // {id: 'usdcTo3crv', fresh: false}] }}
+      initialValues={{ amount, steps, harvestSteps }} // {id: 'usdcTo3crv', fresh: false}] }}
       render={({ handleSubmit, submitting, form }) => {
         const amount = form.getFieldState('amount')?.value
         const empty = amount == null || Number(amount) === 0
@@ -837,7 +808,7 @@ export const WorkflowForm = ({
                   )}
                 />
               </div>
-          {generated && <div className="-mb-8"/>}
+          {generated && <div className="-mb-5 lg:-mb-8"/>}
 
               <div
                 className={cx('overflow-hidden w-full', {
@@ -902,13 +873,38 @@ export const WorkflowForm = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
+          <div className="mb-1 font-medium text-stone-600/75">Stake Workflow</div>
             <Steps
+          key="stake"
+          stage="stake"
               steps={form.getState().values.steps}
+              harvestSteps={form.getState().values.harvestSteps}
               dispatch={(action) => {
                 const { steps } = form.getState().values
                 form.change('steps', stepsReducer(steps, action))
               }}
             />
+
+          {
+
+            getCurrentRoutes({
+              steps: form.getState().values.steps,
+              harvestSteps: form.getState().values.harvestSteps,
+            }).harvest.length > 0 &&
+            <>
+          <motion.div layout className="mb-1 mt-5 font-medium text-stone-600/75">Harvest Workflow</motion.div>
+            <Steps
+            key="harvest"
+          stage="harvest"
+              steps={form.getState().values.steps}
+              harvestSteps={form.getState().values.harvestSteps}
+              dispatch={(action) => {
+                const { harvestSteps } = form.getState().values
+                form.change('harvestSteps', stepsReducer(harvestSteps, action))
+              }}
+            />
+            </>
+          }
           </motion.div>
         )
 
@@ -938,6 +934,7 @@ export const WorkflowForm = ({
               <StageIndicator stage={generated ? 'deposit' : 'forecast'} />
               <div className='grid grid-cols-10'>
                 <div className='mb-5 lg:mb-0 col-span-10 lg:col-span-3'>
+          <div className="mb-1 font-medium text-stone-600/75">Amount</div>
                   {amountForm}
                 </div>
                 <div className='col-span-10 lg:col-end-11 lg:col-span-6'>
@@ -958,12 +955,14 @@ export const Workflow = () => {
   const [amount, setAmount] = React.useState(null)
   const [generated, setGenerated] = React.useState(false)
   const [steps, setSteps] = React.useState([])
+  const [harvestSteps, setHarvestSteps] = React.useState([])
 
   return (
     <WorkflowForm
       generated={generated}
       amount={amount}
       steps={steps}
+    harvestSteps={harvestSteps}
       onSubmit={async (values) => {
         setAmount(values.amount)
         setSteps([
@@ -971,18 +970,6 @@ export const Workflow = () => {
             id: 'usdcTo3crv',
             fresh: false
           },
-          {
-            id: '3crvToPortal',
-            fresh: false
-          },
-          {
-            id: 'pw3crvToSolend',
-            fresh: false
-          },
-          {
-            id: 'pw3crvTo3crv',
-            fresh: false
-          }
         ])
         await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1500))
         setGenerated(true)
