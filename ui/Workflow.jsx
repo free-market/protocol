@@ -98,19 +98,24 @@ const Card = (props) => {
 }
 
 const NewStepButton = (props) => {
-  const {stepCount = 0, stage} = props
+  const { stepCount = 0, stage } = props
   return (
-    <Card key={`${stage}-final-step`} clickable onClick={props.onClick} stepCount={stepCount}>
+    <Card
+      key={`${stage}-final-step`}
+      clickable
+      onClick={props.onClick}
+      stepCount={stepCount}
+    >
       <motion.div
         key={`${stage}-plus-button`}
-    layout
+        layout
         layoutId={`${stage}-plus-button`}
         exit={{ opacity: 0 }}
         transition={{ delay: 0.1, duration: 0.1 }}
         className='flex flex-col justify-center items-center text-stone-400 hover:text-stone-500 cursor-pointer py-4 gap-2 lg:max-w-lg mx-auto active:border-stone-600 active:text-stone-600 active:bg-stone-50 min-h-[6rem]'
       >
         <motion.div
-    layout
+          layout
           variants={item}
           initial='arriving'
           exit='departed'
@@ -141,9 +146,7 @@ const usdcAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      USDC
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>USDC</div>
   </div>
 )
 
@@ -164,9 +167,7 @@ const snusdcAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      SN-USDC
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>SN-USDC</div>
   </div>
 )
 
@@ -186,9 +187,7 @@ const curveAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      3CRV
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>3CRV</div>
   </div>
 )
 
@@ -208,9 +207,7 @@ const portalAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      PW-USDC
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>PW-USDC</div>
   </div>
 )
 
@@ -230,9 +227,7 @@ const pw3crvAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      PW-3CRV
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>PW-3CRV</div>
   </div>
 )
 
@@ -252,9 +247,7 @@ const convexAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      CVXCRV
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>CVXCRV</div>
   </div>
 )
 
@@ -274,9 +267,7 @@ const pwcvxcrvAssetPill = (
         />
       </div>
     </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold !text-xl'>
-      PW-CVXCRV
-    </div>
+    <div className='text-stone-200 text-sm leading-5 font-bold'>PW-CVXCRV</div>
   </div>
 )
 
@@ -290,7 +281,14 @@ const pillTable = {
   'PW-CVXCRV': pwcvxcrvAssetPill
 }
 
-const RouteChoice = ({ route, index, steps, harvestSteps, onNewStep, stage }) => {
+const RouteChoice = ({
+  route,
+  index,
+  steps,
+  harvestSteps,
+  onNewStep,
+  stage
+}) => {
   const controls = useAnimation()
   return (
     <>
@@ -324,7 +322,9 @@ const RouteChoice = ({ route, index, steps, harvestSteps, onNewStep, stage }) =>
       <div className='flex justify-center'>
         <motion.div
           layout
-          layoutId={`${stage}-step-${{stake: steps, harvest: harvestSteps}[stage].length}-${route.name}`}
+          layoutId={`${stage}-step-${
+            { stake: steps, harvest: harvestSteps }[stage].length
+          }-${route.name}`}
           onClick={async () => {
             await controls.start({
               opacity: 0,
@@ -350,7 +350,9 @@ const RouteChoice = ({ route, index, steps, harvestSteps, onNewStep, stage }) =>
           className='rounded-2xl bg-stone-600 shadow cursor-pointer hover:bg-stone-500 active:bg-stone-600/75'
         >
           <motion.div animate={controls} className='px-4 py-3'>
-            <motion.div className='pb-3 font-medium'>{route.action}</motion.div>
+            <motion.div className='pb-3 font-medium text-sm'>
+              {route.action}
+            </motion.div>
             <motion.div className='flex items-center'>
               {pillTable[route.before]}
               &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
@@ -364,7 +366,7 @@ const RouteChoice = ({ route, index, steps, harvestSteps, onNewStep, stage }) =>
 }
 
 const usdcOfferings = {
-  possibleStakingRoutes:  ['usdcTo3crv', 'usdcToPortal'],
+  possibleStakingRoutes: ['usdcTo3crv', 'usdcToPortal'],
   rewards: []
 }
 
@@ -375,7 +377,7 @@ const routesByName = {
     after: '3CRV',
     action: 'Acquire Curve LP',
     possibleStakingRoutes: ['3crvToPortal', '3crvToCvxcrv'],
-    rewards: ['3crvToUsdc'],
+    rewards: ['3crvToUsdc']
   },
   '3crvToCvxcrv': {
     name: '3crvToCvxcrv',
@@ -383,7 +385,7 @@ const routesByName = {
     after: 'CVXCRV',
     action: 'Acquire Convex LP',
     possibleStakingRoutes: ['cvxcrvToPortal'],
-    rewards: ['3crvToUsdc', 'cvxcrvToUsdc'],
+    rewards: ['3crvToUsdc', 'cvxcrvToUsdc']
   },
   '3crvToPortal': {
     name: '3crvToPortal',
@@ -391,7 +393,7 @@ const routesByName = {
     after: 'PW-3CRV',
     action: 'Bridge with Wormhole Portal',
     possibleStakingRoutes: ['pw3crvToSolend', 'pw3crvTo3crv'],
-    rewards: [],
+    rewards: []
   },
   cvxcrvToPortal: {
     name: 'cvxcrvToPortal',
@@ -399,7 +401,7 @@ const routesByName = {
     after: 'PW-CVXCRV',
     action: 'Bridge with Wormhole Portal',
     possibleStakingRoutes: ['pwcvxcrvToSolend'],
-    rewards: [],
+    rewards: []
   },
   pw3crvToSolend: {
     name: 'pw3crvToSolend',
@@ -415,7 +417,7 @@ const routesByName = {
     after: 'PW-CVXCRV',
     action: 'Lend with Solend',
     possibleStakingRoutes: [],
-    rewards: ['pwcvxcrvToCvxcrv'],
+    rewards: ['pwcvxcrvToCvxcrv']
   },
   pw3crvTo3crv: {
     name: 'pw3crvTo3crv',
@@ -423,7 +425,7 @@ const routesByName = {
     after: '3CRV',
     action: 'Bridge with Wormhole Portal',
     possibleStakingRoutes: [],
-    rewards: ['3crvToUsdc'],
+    rewards: ['3crvToUsdc']
   },
   pwcvxcrvToCvxcrv: {
     name: 'pwcvxcrvToCvxcrv',
@@ -431,7 +433,7 @@ const routesByName = {
     after: 'CVXCRV',
     action: 'Bridge with Wormhole Portal',
     possibleStakingRoutes: [],
-    rewards: ['cvxcrvToUsdc'],
+    rewards: ['cvxcrvToUsdc']
   },
   cvxcrvToUsdc: {
     name: 'cvxcrvToUsdc',
@@ -439,7 +441,7 @@ const routesByName = {
     after: 'USDC',
     action: 'Swap with Uniswap',
     possibleStakingRoutes: [],
-    rewards: [],
+    rewards: []
   },
   usdcToPortal: {
     name: 'usdcToPortal',
@@ -447,7 +449,15 @@ const routesByName = {
     after: 'PW-USDC',
     action: 'Bridge with Wormhole Portal',
     possibleStakingRoutes: ['pwusdcToSnusdc'],
-    rewards: [],
+    rewards: []
+  },
+  portalToUsdc: {
+    name: 'portalToUsdc',
+    before: 'PW-USDC',
+    after: 'USDC',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: [],
+    rewards: []
   },
   pwusdcToSnusdc: {
     name: 'pwusdcToSnusdc',
@@ -455,7 +465,15 @@ const routesByName = {
     after: 'SN-USDC',
     action: 'Swap with Saber',
     possibleStakingRoutes: ['snusdcToSolend'],
-    rewards: [],
+    rewards: []
+  },
+  snusdcToPwusdc: {
+    name: 'snusdcToPwusdc',
+    before: 'SN-USDC',
+    after: 'PW-USDC',
+    action: 'Swap with Saber',
+    possibleStakingRoutes: [],
+    rewards: ['portalToUsdc']
   },
   snusdcToSolend: {
     name: 'snusdcToSolend',
@@ -463,7 +481,7 @@ const routesByName = {
     after: 'SN-USDC',
     action: 'Lend with Solend',
     possibleStakingRoutes: [],
-    rewards: [],
+    rewards: ['snusdcToPwusdc']
   },
   '3crvToUsdc': {
     name: '3crvToUsdc',
@@ -474,23 +492,28 @@ const routesByName = {
   }
 }
 
-const getCurrentRoutes = ({steps, harvestSteps}) => ({
+const getCurrentRoutes = ({ steps, harvestSteps }) => ({
   stake: steps.reduce(
     (possibleRoutes, step) => routesByName[step.id].possibleStakingRoutes,
-      usdcOfferings.possibleStakingRoutes,
+    usdcOfferings.possibleStakingRoutes
   ),
-  harvest: [...steps, ...harvestSteps].reduce(
-    (possibleRoutes, step) => [...new Set([...possibleRoutes, ...routesByName[step.id].rewards]).values()],
-      usdcOfferings.rewards,
-  ),
+  harvest: [...harvestSteps, ...steps].reduce(
+    (possibleRoutes, step) => [
+      ...new Set([
+        ...routesByName[step.id].rewards,
+        ...possibleRoutes
+      ]).values()
+    ],
+    usdcOfferings.rewards
+  )
 })
 
 const StepCreator = (props) => {
   const { steps, harvestSteps, stage } = props
 
-  const currentRouteNames = getCurrentRoutes({ steps, harvestSteps })[stage].filter(
-    (step) => !harvestSteps.some(({id}) => id === step)
-  )
+  const currentRouteNames = getCurrentRoutes({ steps, harvestSteps })[
+    stage
+  ].filter((step) => !harvestSteps.some(({ id }) => id === step))
   const choices = currentRouteNames.map((routeName, index) => {
     const route = routesByName[routeName]
 
@@ -500,12 +523,12 @@ const StepCreator = (props) => {
 
     return (
       <RouteChoice
-      stage={stage}
+        stage={stage}
         route={route}
         index={index}
         key={index}
         steps={steps}
-      harvestSteps={harvestSteps}
+        harvestSteps={harvestSteps}
         onNewStep={props.onNewStep}
       />
     )
@@ -538,7 +561,7 @@ const StepCreator = (props) => {
   )
 }
 
-export const Steps = ({ steps, harvestSteps, dispatch, stage }) => {
+export const Steps = ({ steps, harvestSteps, dispatch, stage, amount }) => {
   const [creatingNewStep, setCreatingNewStep] = React.useState(false)
 
   const stepCreator = StepCreator({
@@ -560,7 +583,7 @@ export const Steps = ({ steps, harvestSteps, dispatch, stage }) => {
 
   const startCreatingNewStepButton = NewStepButton({
     stage,
-    stepCount: ({stake: steps, harvest: harvestSteps})[stage].length,
+    stepCount: { stake: steps, harvest: harvestSteps }[stage].length,
     onClick: () => {
       if (steps.every((step) => !step.fresh)) {
         setCreatingNewStep(true)
@@ -568,33 +591,33 @@ export const Steps = ({ steps, harvestSteps, dispatch, stage }) => {
     }
   })
 
-  const stepCards = ({stake: steps, harvest: harvestSteps})[stage].map((step, index) => (
-    <StepCard
-      key={index}
-      index={index}
-      step={step}
-      steps={steps}
-    harvestSteps={harvestSteps}
-      dispatch={dispatch}
-    stage={stage}
-    />
-  ))
-
-  const lastStep = ({
-    stake: steps[steps.length - 1],
-    harvest: harvestSteps[harvestSteps.length - 1],
-  }[stage])
-
-  const possibleRoutes = ({
-    stake: lastStep && routesByName[lastStep.id].possibleStakingRoutes,
-    harvest:
-    [
-      ...getCurrentRoutes({steps, harvestSteps}).harvest,
-    ...(lastStep ? routesByName[lastStep.id].rewards : []),
-    ].filter(
-    (step) => !harvestSteps.some(({id}) => id === step)
+  const stepCards = { stake: steps, harvest: harvestSteps }[stage].map(
+    (step, index) => (
+      <StepCard
+        amount={amount}
+        key={index}
+        index={index}
+        step={step}
+        steps={steps}
+        harvestSteps={harvestSteps}
+        dispatch={dispatch}
+        stage={stage}
+      />
     )
-  }[stage])
+  )
+
+  const lastStep = {
+    stake: steps[steps.length - 1],
+    harvest: harvestSteps[harvestSteps.length - 1]
+  }[stage]
+
+  const possibleRoutes = {
+    stake: lastStep && routesByName[lastStep.id].possibleStakingRoutes,
+    harvest: [
+      ...(lastStep ? routesByName[lastStep.id].rewards : []),
+      ...getCurrentRoutes({ steps, harvestSteps }).harvest
+    ].filter((step) => !harvestSteps.some(({ id }) => id === step))
+  }[stage]
 
   return (
     <LayoutGroup>
@@ -613,14 +636,19 @@ export const Steps = ({ steps, harvestSteps, dispatch, stage }) => {
 
 const StepCard = (props) => {
   const [showDescription, setShowDescription] = React.useState(false)
-  const { index, step, dispatch, stage } = props
+  const { index, step, dispatch, stage, amount } = props
+
+  const baseDelay = {
+    stake: 0,
+    harvest: 0.25
+  }[stage]
 
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
+        transition={{ delay: baseDelay + index * 0.1 }}
         className='flex items-start group'
       >
         <motion.div
@@ -637,27 +665,32 @@ const StepCard = (props) => {
               '!transform-none': !step.fresh,
               'border-t border-stone-500': index > 0,
               'rounded-t-2xl': index === 0,
-              'rounded-b-2xl': index === ({stake: props.steps, harvest: props.harvestSteps})[stage].length - 1
+              'rounded-b-2xl':
+                index ===
+                { stake: props.steps, harvest: props.harvestSteps }[stage]
+                  .length -
+                  1
             }
           )}
         >
           <motion.div
             layout={false}
             className={cx(
-              'transition-opacity px-4 py-2 flex justify-between items-center opacity-0',
+              'transition-opacity px-4 py-2 flex flex-col md:flex-row justify-between items-center opacity-0 space-y-2 md:space-y-0',
               step.fresh ? 'opacity-0' : 'opacity-100'
             )}
           >
-            <motion.div className='text-xl font-medium'>
+            <motion.div className='text-sm font-medium self-start md:self-center'>
               {routesByName[step.id].action}
             </motion.div>
-            <motion.div className='flex items-center text-stone-400 font-medium font-monospace'>
-    {stage === 'harvest' && (
-      <>
-              {pillTable[routesByName[step.id].before]}
-              &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
-      </>
-    )}
+            <motion.div className='flex items-center text-stone-400 font-medium font-monospace self-end md:self-center'>
+              {stage === 'stake' && <span className='mr-3'>{amount}</span>}
+              {stage === 'harvest' && (
+                <>
+                  {pillTable[routesByName[step.id].before]}
+                  &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
+                </>
+              )}
               {pillTable[routesByName[step.id].after]}
               <ChevronDownIcon className='ml-4 text-stone-300 h-6 w-6' />
             </motion.div>
@@ -739,6 +772,59 @@ export const WorkflowForm = ({
           }
         }
 
+        const feeBreakdown = generated && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
+            exit={{ opacity: 0, y: -20 }}
+            className='text-stone-500/75 py-3 space-y-1'
+          >
+            <div className='px-4 md:px-2 flex justify-between'>
+              <span>Subtotal</span>
+              <span>{amount}</span>
+            </div>
+            <div className='px-4 md:px-2 flex justify-between'>
+              <span>Fee (2%)</span>
+              <span>{amount * 0.02}</span>
+            </div>
+            <div className='px-4 md:px-2 flex justify-between !mt-3 text-stone-700/75'>
+              <span className='text-lg'>Total</span>
+              <span>{Number(amount) + amount * 0.02}</span>
+            </div>
+
+            <div className='px-4 md:px-2'>
+              <motion.button
+                disabled
+                className={cx(
+                  'w-full text-stone-200 font-bold bg-sky-600 rounded-2xl p-3 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden !mt-5',
+                  {
+                    'cursor-not-allowed': submitting || empty,
+                    'opacity-50': true
+                  }
+                )}
+              >
+                <div className='h-8'>
+                  <div
+                    className='transition-all h-8'
+                    style={{
+                      marginTop: 2,
+                      height: 'max-content'
+                    }}
+                  >
+                    <div className='flex items-center'>Deposit</div>
+                  </div>
+                  <div className='transition-all h-8 mt-12'>
+                    <span
+                      className='border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full'
+                      style={{ borderLeftColor: 'rgb(231 229 228)' }}
+                    />
+                  </div>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+        )
+
         const amountForm = (
           <form
             onClick={handleFormClick}
@@ -784,7 +870,9 @@ export const WorkflowForm = ({
                           spellCheck={false}
                           className={cx(
                             'max-w-md relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-2xl px-2 py-3 mr-10',
-                            generated ? 'cursor-pointer' : 'hover:bg-stone-500/50'
+                            generated
+                              ? 'cursor-pointer'
+                              : 'hover:bg-stone-500/50'
                           )}
                           {...input}
                           onBlur={(event) => {
@@ -808,7 +896,7 @@ export const WorkflowForm = ({
                   )}
                 />
               </div>
-          {generated && <div className="-mb-5 lg:-mb-8"/>}
+              {generated && <div className='-mb-5 lg:-mb-8' />}
 
               <div
                 className={cx('overflow-hidden w-full', {
@@ -873,10 +961,13 @@ export const WorkflowForm = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-          <div className="mb-1 font-medium text-stone-600/75">Stake Workflow</div>
+            <div className='mb-1 font-medium text-stone-600/75'>
+              Stake Workflow
+            </div>
             <Steps
-          key="stake"
-          stage="stake"
+              amount={amount}
+              key='stake'
+              stage='stake'
               steps={form.getState().values.steps}
               harvestSteps={form.getState().values.harvestSteps}
               dispatch={(action) => {
@@ -885,26 +976,33 @@ export const WorkflowForm = ({
               }}
             />
 
-          {
-
-            getCurrentRoutes({
+            {getCurrentRoutes({
               steps: form.getState().values.steps,
-              harvestSteps: form.getState().values.harvestSteps,
-            }).harvest.length > 0 &&
-            <>
-          <motion.div layout className="mb-1 mt-5 font-medium text-stone-600/75">Harvest Workflow</motion.div>
-            <Steps
-            key="harvest"
-          stage="harvest"
-              steps={form.getState().values.steps}
-              harvestSteps={form.getState().values.harvestSteps}
-              dispatch={(action) => {
-                const { harvestSteps } = form.getState().values
-                form.change('harvestSteps', stepsReducer(harvestSteps, action))
-              }}
-            />
-            </>
-          }
+              harvestSteps: form.getState().values.harvestSteps
+            }).harvest.length > 0 && (
+              <>
+                <motion.div
+                  layout
+                  className='mb-1 mt-5 font-medium text-stone-600/75'
+                >
+                  Harvest Workflow
+                </motion.div>
+                <Steps
+                  amount={amount}
+                  key='harvest'
+                  stage='harvest'
+                  steps={form.getState().values.steps}
+                  harvestSteps={form.getState().values.harvestSteps}
+                  dispatch={(action) => {
+                    const { harvestSteps } = form.getState().values
+                    form.change(
+                      'harvestSteps',
+                      stepsReducer(harvestSteps, action)
+                    )
+                  }}
+                />
+              </>
+            )}
           </motion.div>
         )
 
@@ -914,6 +1012,8 @@ export const WorkflowForm = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+          >
+          <div
             className='h-full p-2 md:p-4 border-l-2 border-stone-600 space-y-5 text-stone-600 font-medium'
           >
             <p className='max-w-lg'>
@@ -925,17 +1025,70 @@ export const WorkflowForm = ({
               tenetur non illum eveniet odit rerum ad. Tenetur laborum cum
               voluptatibus qui molestias. Sit debitis est et magni in.
             </p>
+          </div>
           </motion.div>
         )
 
         return (
           <>
             <div className='space-y-12'>
-              <StageIndicator stage={generated ? 'deposit' : 'forecast'} />
+              <div className='flex space-x-10 items-center'>
+                <svg
+                  className='w-10 h-10 text-stone-600'
+                  viewBox='0 0 750 1200'
+                >
+                  <g id='layer1' transform='translate(0,147.63784)'>
+                    <path
+                      style={{
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: 220,
+                        strokeLinecap: 'butt',
+                        strokeLinejoin: 'miter',
+                        strokeMiterlimit: 4
+                      }}
+                      d='M 118.93994,944.93135 C 408.3018,941.88962 361.81792,708.72632 359.17669,454.84232'
+                      id='path4467'
+                    />
+                    <path
+                      id='path4469'
+                      d='m 112.56614,415.69241 527.59454,4e-5'
+                      style={{
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: 220,
+                        strokeLinecap: 'butt',
+                        strokeLinejoin: 'miter',
+                        strokeMiterlimit: 4
+                      }}
+                    />
+                    <path
+                      id='path4471'
+                      d='m 638.86492,-33.109346 c -258.86492,0 -277.82254,152.733086 -277.82254,259.020506 0,1.46169 -0.048,22.72491 -0.0478,24.20899'
+                      style={{
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: 220,
+                        strokeLinecap: 'butt',
+                        strokeLinejoin: 'miter',
+                        strokeMiterlimit: 4
+                      }}
+                    />
+                  </g>
+                </svg>
+
+                <StageIndicator stage={generated ? 'deposit' : 'forecast'} />
+              </div>
+
               <div className='grid grid-cols-10'>
                 <div className='mb-5 lg:mb-0 col-span-10 lg:col-span-3'>
-          <div className="mb-1 font-medium text-stone-600/75">Amount</div>
+                  <div className='mb-1 font-medium text-stone-600/75'>
+                    Amount
+                  </div>
                   {amountForm}
+                  <AnimatePresence initial={false}>
+                    {feeBreakdown}
+                  </AnimatePresence>
                 </div>
                 <div className='col-span-10 lg:col-end-11 lg:col-span-6'>
                   <AnimatePresence exitBeforeEnter initial={false}>
@@ -962,16 +1115,36 @@ export const Workflow = () => {
       generated={generated}
       amount={amount}
       steps={steps}
-    harvestSteps={harvestSteps}
+      harvestSteps={harvestSteps}
       onSubmit={async (values) => {
         setAmount(values.amount)
         setSteps([
           {
-            id: 'usdcTo3crv',
+            id: 'usdcToPortal',
             fresh: false
           },
+          {
+            id: 'pwusdcToSnusdc',
+            fresh: false
+          },
+          {
+            id: 'snusdcToSolend',
+            fresh: false
+          }
         ])
-        await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1500))
+        setHarvestSteps([
+          {
+            id: 'snusdcToPwusdc',
+            fresh: false
+          },
+          {
+            id: 'portalToUsdc',
+            fresh: false
+          }
+        ])
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1500 + Math.random() * 1500)
+        )
         setGenerated(true)
       }}
       onUndoForecast={() => {
