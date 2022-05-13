@@ -1,5 +1,6 @@
 packages:
   - 'ui'
   - 'apps/**'
+  - 'types/**'
   - 'contracts'
   - 'contracts-spec'
