@@ -2,3 +2,4 @@ packages:
   - 'ui'
   - 'apps/**'
   - 'contracts'
+  - 'contracts-spec'

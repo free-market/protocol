@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "truffle test",
-    "ganache": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v"
+    "ganache": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v --mnemonic \"$FMP_GANACHE_MNEMONIC\""
   },
   "keywords": [],
   "author": "",
@@ -27,6 +27,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
     "abort-controller": "*",
+    "ganache": "^7.1.0",
     "google-protobuf": "^3.2.0",
     "node-fetch": "^3.2.4",
     "web3": "^1",
