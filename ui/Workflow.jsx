@@ -792,14 +792,13 @@ export const WorkflowForm = ({
               <span>{Number(amount) + amount * 0.02}</span>
             </div>
 
-            <div className='px-4 md:px-2'>
+            <div className='flex justify-end'>
               <motion.button
                 disabled
                 className={cx(
-                  'w-full text-stone-200 font-bold bg-sky-600 rounded-2xl p-3 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden !mt-5',
+                  'text-stone-200 font-bold bg-sky-600 rounded-2xl p-3 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden !mt-5',
                   {
-                    'cursor-not-allowed': submitting || empty,
-                    'opacity-50': true
+                    'cursor-not-allowed opacity-75': true // TODO: if workflow not ready
                   }
                 )}
               >
@@ -964,6 +963,41 @@ export const WorkflowForm = ({
             <div className='mb-1 font-medium text-stone-600/75'>
               Stake Workflow
             </div>
+            <div className='mb-1 flex justify-between mx-auto max-w-md items-center py-5'>
+              <div
+                className='rounded-full mx-10'
+                style={{ width: 20, height: 20 }}
+              >
+                <div
+                  className='overflow-hidden rounded'
+                  style={{ width: 20, height: 20 }}
+                >
+                  <img
+                    alt='USDC'
+                    srcSet='https://res.cloudinary.com/sushi-cdn/image/fetch/w_32,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg 1x, https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg 2x'
+                    src='https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg'
+                    decoding='async'
+                    data-nimg='fixed'
+                    className='rounded-full !rounded-full overflow-hidden'
+                  />
+                </div>
+              </div>
+              <div className='flex-grow border-t-4 border-stone-400 border-dashed w-full' />
+              <div
+                className='rounded-full mx-10'
+                style={{ width: 20, height: 20 }}
+              >
+                <div
+                  className='overflow-hidden rounded-full bg-stone-600'
+                  style={{ width: 20, height: 20 }}
+                >
+                  <img
+                    src='https://avatars.githubusercontent.com/u/83670346?s=200&v=4'
+                    className='rounded-full !rounded-full overflow-hidden'
+                  />
+                </div>
+              </div>
+            </div>
             <Steps
               amount={amount}
               key='stake'
@@ -1013,19 +1047,17 @@ export const WorkflowForm = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-          <div
-            className='h-full p-2 md:p-4 border-l-2 border-stone-600 space-y-5 text-stone-600 font-medium'
-          >
-            <p className='max-w-lg'>
-              Welcome to the app! Please enter an amount to get started.
-            </p>
-            <p className='max-w-lg'>
-              Aliquid consequatur libero ut aspernatur cumque rem vero. Et et
-              nihil sunt dolore sapiente aut corporis voluptatem. Inventore ut
-              tenetur non illum eveniet odit rerum ad. Tenetur laborum cum
-              voluptatibus qui molestias. Sit debitis est et magni in.
-            </p>
-          </div>
+            <div className='h-full p-2 md:p-4 border-l-2 border-stone-600 space-y-5 text-stone-600 font-medium'>
+              <p className='max-w-lg'>
+                Welcome to the app! Please enter an amount to get started.
+              </p>
+              <p className='max-w-lg'>
+                Aliquid consequatur libero ut aspernatur cumque rem vero. Et et
+                nihil sunt dolore sapiente aut corporis voluptatem. Inventore ut
+                tenetur non illum eveniet odit rerum ad. Tenetur laborum cum
+                voluptatibus qui molestias. Sit debitis est et magni in.
+              </p>
+            </div>
           </motion.div>
         )
 
