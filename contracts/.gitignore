@@ -2,3 +2,4 @@ build
 types
 .env
 **/eraseme*
+node_modules
