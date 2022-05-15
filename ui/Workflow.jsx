@@ -963,9 +963,9 @@ export const WorkflowForm = ({
             <div className='mb-1 font-medium text-stone-600/75'>
               Stake Workflow
             </div>
-            <div className='mb-1 flex justify-between mx-auto max-w-md items-center py-5'>
+            <div className='mb-1 flex justify-center mx-auto max-w-md lg:max-w-lg lg:ml-0 items-center py-5'>
               <div
-                className='rounded-full mx-10'
+                className='rounded-full mx-5'
                 style={{ width: 20, height: 20 }}
               >
                 <div
@@ -982,9 +982,9 @@ export const WorkflowForm = ({
                   />
                 </div>
               </div>
-              <div className='flex-grow border-t-4 border-stone-400 border-dashed w-full' />
+              <div className='border-t-4 border-stone-400/50 border-dashed max-w-sm w-1/3' />
               <div
-                className='rounded-full mx-10'
+                className='rounded-full mx-5'
                 style={{ width: 20, height: 20 }}
               >
                 <div
