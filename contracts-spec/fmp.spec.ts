@@ -25,6 +25,11 @@ const account = new ethers.Wallet(
   provider
 )
 
+const busStop = new ethers.Wallet(
+  hdNode.derivePath("m/44'/60'/0'/0/2").privateKey,
+  provider
+)
+
 const contractFactory = new ethers.ContractFactory(
   FreeMarket.abi,
   FreeMarket.bytecode,
@@ -51,7 +56,9 @@ const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
 const usdt = new ethers.Contract(USDT_ADDRESS, WrappedEther, account)
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const usdc = new ethers.Contract(USDC_ADDRESS, WrappedEther.filter(({name}) => name === 'balanceOf'), account)
+const usdc = new ethers.Contract(USDC_ADDRESS, WrappedEther, account)
+
+const erc20 = new ethers.utils.Interface(WrappedEther)
 
 const astBuilder = new AstBuilder(IdGenerator.incrementing())
 
@@ -64,8 +71,12 @@ const { feature } = parser.parse(
 describe('FreeMarket contract', () => {
   for (const { scenario } of feature.children) {
     it(scenario.name, async () => {
+      let depositLogs: unknown = []
+
       const contract = await contractFactory.deploy()
       await contract.deployed()
+      await (await contract.addSupportedERC20Token(usdc.address)).wait()
+      await (await contract.setBusStop(busStop.address)).wait()
 
       for (const step of scenario.steps) {
         if (step.text === 'I exchange some WETH for USDT') {
@@ -89,7 +100,6 @@ describe('FreeMarket contract', () => {
         } else if (step.text === 'I exchange some USDT for USDC') {
           const usdtBalance = await usdt.balanceOf(account.address)
             const [expected] = await threePool.functions.get_dy(2, 1, usdtBalance, {gasLimit: 100000})
-            console.log('expected usdc', expected.toString())
           const approvalTx = await usdt.approve(
             threePool.address,
             expected,
@@ -108,12 +118,34 @@ describe('FreeMarket contract', () => {
           const wethBalance = (await weth.balanceOf(account.address)).toString()
           expect(wethBalance).not.toBe('0')
           // expect(wethBalance).toBe('10000000000000000')
+        } else if (step.text === 'I deposit some USDC into the protocol') {
+          const balance = await usdc.balanceOf(account.address)
+          const approvalTx = await usdc.approve(contract.address, balance)
+          await approvalTx.wait()
+          const tx = await contract.deposit(usdc.address, 50000000)
+          const receipt = await tx.wait()
+          const logs: unknown = receipt.events
+            .map((event: unknown) => (
+              (event as unknown as {address: string}).address === usdc.address ? (
+                erc20.parseLog(event as unknown as { topics: string[]; data: string; })
+              ) : (
+                event
+              )
+            ))
+            .map((event: unknown) => ({
+              name: (event as unknown as {event: string}).event ?? '',
+              args: (event as unknown as {args: string}).args
+            }))
+
+          depositLogs = logs
         } else if (step.text === 'I should have some USDT') {
           const balance = await usdt.balanceOf(account.address)
           expect(balance.toString()).not.toBe('0')
         } else if (step.text === 'I should have some USDC') {
           const balance = await usdc.balanceOf(account.address)
           expect(balance.toString()).not.toBe('0')
+        } else if (step.text === 'my deposit logs should match the snapshot') {
+          expect(depositLogs).toMatchSnapshot()
         }
       }
     })
