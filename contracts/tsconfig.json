@@ -6,7 +6,10 @@
     "strict": true,
     "esModuleInterop": true,
     "types": ["@types/node", "@types/chai", "@types/mocha"],
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "rootDir": ".",
+    "outDir": "dist",
+    "resolveJsonModule": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "build", "cache", "artifacts"]

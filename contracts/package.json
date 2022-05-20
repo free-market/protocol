@@ -5,34 +5,48 @@
   "main": "index.js",
   "scripts": {
     "test": "truffle test",
-    "ganache": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v --mnemonic \"$FMP_GANACHE_MNEMONIC\""
+    "ganache": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v --mnemonic \"$FMP_GANACHE_MNEMONIC\"",
+    "clean": "rimraf build types",
+    "build": "truffle compile",
+    "generate-clients": "ts-node utils/ensure-abis.ts && typechain --target=ethers-v5  --glob=\"build/+(contracts|3rdparty)/*.json\" && typechain --target=truffle-v5  --glob=\"build/+(contracts|3rdparty)/*.json\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@ethersproject/abi": "^5.6.2",
+    "@ethersproject/providers": "^5.6.6",
+    "@openzeppelin/contracts": "^4.6.0",
+    "@typechain/ethers-v5": "^8.0.0",
     "@typechain/truffle-v5": "^8.0.0",
+    "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.1",
+    "@types/glob": "^7.2.0",
+    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^9.1.1",
     "@types/node": "^17.0.32",
-    "axios": "^0.27.2",
-    "cross-var": "^1.1.0",
-    "dotenv-cli": "^5.1.0",
-    "truffle": "^5.5.13",
-    "ts-node": "^10.7.0",
-    "typechain": "^8.0.0",
-    "typescript": "^4.6.4",
-    "web3": "^1.7.3"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.6.0",
     "abort-controller": "*",
+    "axios": "^0.27.2",
+    "bn.js": "^5.2.0",
+    "concurrently": "^7.2.0",
+    "cross-var": "^1.1.0",
+    "dotenv": "^16.0.1",
+    "dotenv-cli": "^5.1.0",
+    "ethers": "^5.6.6",
     "ganache": "^7.1.0",
     "google-protobuf": "^3.2.0",
     "node-fetch": "^3.2.4",
-    "web3": "^1",
+    "rimraf": "^3.0.2",
+    "truffle": "^5.5.14",
+    "ts-node": "^10.7.0",
+    "typechain": "^8.0.0",
+    "typescript": "^4.6.4",
+    "web3": "^1.7.3",
     "web3-core": "^1",
     "web3-eth-contract": "^1",
     "web3-utils": "^1"
+  },
+  "dependencies": {
+    "glob": "^8.0.3"
   }
 }
