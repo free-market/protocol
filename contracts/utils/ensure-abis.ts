@@ -8,16 +8,20 @@ const sleep = promisify(setTimeout)
 const CONTRACTS = [
   {
     name: 'Weth',
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   },
   {
     name: 'CurveTriCrypto',
-    address: '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5'
+    address: '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
   },
   {
     name: 'Curve3Pool',
-    address: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7'
-  }
+    address: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
+  },
+  {
+    name: 'CurveTokenV2',
+    address: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
+  },
 ]
 
 const ABI_DIR = 'abis'
@@ -25,9 +29,8 @@ const TRUFFLE_CONTRACTS_DIR = 'build/contracts'
 
 function mkdir(path: string) {
   if (!fs.existsSync(path)) {
-    fs.mkdirSync(path, { recursive: true });
+    fs.mkdirSync(path, { recursive: true })
   }
-
 }
 
 async function downloadAbi(name: string, address: string) {
@@ -43,7 +46,7 @@ async function downloadAbi(name: string, address: string) {
   }
   const obj = {
     contractName: name,
-    abi
+    abi,
   }
   const jsonStr = JSON.stringify(obj, null, 2)
   fs.writeFileSync(getAbiPathName(name), jsonStr)
