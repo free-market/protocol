@@ -27,4 +27,7 @@ uwr.executeWorkflow([
   1,                    //   to index: USDC
 ])
 
-uwr.executeWorkflow(['10000000000000000',0,1,2,0])
+
+uwr.executeWorkflow(['10000000000000000', 0, ])
+uwr.executeWorkflow(['10000000000000000', 0, 1, 2, 0, ])
+uwr.executeWorkflow(['10000000000000000', 0, 1, 2, 0, 2, 2, 1])
