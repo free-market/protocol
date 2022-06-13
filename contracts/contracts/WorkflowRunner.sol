@@ -77,8 +77,8 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
       // invoke the step, passing in the next amount and a slice of args
       // uint256 nextStepIndex = args[argsIndex++];
       // (uint256 argsConsumed, uint256 outcomeAmount) = stepFuncs[nextStepIndex](nextAmount, args[argsIndex:]);
-      (uint256 argsConsumed, uint256 outcomeAmount) = getStepFunc(args[argsIndex++])(nextAmount, args[argsIndex:]);
-      argsIndex += uint16(argsConsumed);
+      (uint256 argsConsumed, uint256 outcomeAmount) = getStepFunc(args[argsIndex])(nextAmount, args[argsIndex + 1:]);
+      argsIndex += 1 + uint16(argsConsumed);
       nextAmount = outcomeAmount;
     }
   }
@@ -96,7 +96,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     uint256 beforeAmount = toToken.balanceOf(address(this));
     CurveCryptoSwap(curveTriCryptoAddress).exchange(args[0], args[1], amount, 1);
     uint256 afterAmount = toToken.balanceOf(address(this));
-    return (2, afterAmount - beforeAmount);
+    return (2, beforeAmount - afterAmount);
   }
 
   // function getTriCryptoTokenAddress(uint256 coinIndex) internal view returns (address) {
@@ -117,7 +117,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     uint256 beforeAmount = toToken.balanceOf(address(this));
     CurveStableSwap(curveTriCryptoAddress).exchange(int128(int256(args[0])), int128(int256(args[1])), amount, 1);
     uint256 afterAmount = toToken.balanceOf(address(this));
-    return (2, amount);
+    return (2, beforeAmount - afterAmount);
   }
 
   function approveCurveToken(
@@ -126,12 +126,16 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     uint256 amount
   ) internal {
     CurveStableSwap pool = CurveStableSwap(curveContractAddress);
-    IERC20(pool.coins(index)).approve(curveContractAddress, amount);
+    address tokenAddress = pool.coins(index);
+    IERC20 token = IERC20(tokenAddress);
+    token.approve(curveContractAddress, amount);
+    // IERC20(pool.coins(index)).approve(curveContractAddress, amount);
   }
 
   function getCurveErc20(address curveContractAddress, uint256 index) internal returns (IERC20) {
     CurveStableSwap pool = CurveStableSwap(curveContractAddress);
-    return IERC20(pool.coins(index));
+    address tokenAddress = pool.coins(index);
+    return IERC20(tokenAddress);
   }
 
   // function get3PoolTokenAddress(uint256 coinIndex) internal view returns (address) {

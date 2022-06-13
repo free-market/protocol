@@ -1,9 +1,9 @@
 migrate --reset
 FreeMarket.gasMultiplier = 10
 fmp = await FreeMarket.deployed()
-fmp.createProxy()
-pa = await fmp.getProxy()
-p = await FMPUserProxy.at(pa)
+fmp.createUserProxy()
+upa = await fmp.getProxy()
+p = await WorkflowRunner.at(upa)
 
 
 p.send(web3.utils.toWei('1', 'ether'))

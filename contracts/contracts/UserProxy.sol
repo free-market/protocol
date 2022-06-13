@@ -16,7 +16,10 @@ contract UserProxy is Proxy {
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
     require(owner == msg.sender);
-    _delegate(IHasUpstream(upstream).getUpstream());
+    address myUpsteam = upstream;
+    address myUpstreamsUpstream = IHasUpstream(myUpsteam).getUpstream();
+    // _delegate(IHasUpstream(upstream).getUpstream());
+    _delegate(myUpstreamsUpstream);
   }
 
   /// @dev this allows this contract to receive ETH
