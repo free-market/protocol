@@ -1,8 +1,16 @@
 import { ethers, BigNumberish, BigNumber, Signer } from 'ethers'
-import type { Provider } from "@ethersproject/providers";
+import type { Provider } from '@ethersproject/providers'
 import BN from 'bn.js'
 import dotenv from 'dotenv'
-import { Curve3Pool__factory, CurveTriCrypto, CurveTriCrypto__factory, FreeMarket__factory, ERC20__factory, Weth__factory } from '../types/ethers-contracts'
+import {
+  Curve3Pool__factory,
+  CurveTriCrypto,
+  CurveTriCrypto__factory,
+  FrontDoor__factory,
+  IERC20__factory,
+  Weth__factory,
+} from '../types/ethers-contracts'
+import fs from 'fs'
 
 dotenv.config()
 
@@ -17,13 +25,20 @@ export function getMainNetContracts(signerOrProvider: Signer | Provider) {
     weth: Weth__factory.connect(WETH_ADDRESS, signerOrProvider),
     curveTriCrypto: CurveTriCrypto__factory.connect(CURVE_TRICRYPTO_ADDRESS, signerOrProvider),
     curve3Pool: Curve3Pool__factory.connect(CURVE_THREEPOOL_ADDRESS, signerOrProvider),
-    usdt: ERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
-    usdc: ERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
+    usdt: IERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
+    usdc: IERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
   }
 }
 
-export function getFreeMarketContract(signerOrProvider: Signer | Provider, address: string) {
-  return FreeMarket__factory.connect(address, signerOrProvider)
+export function getDeployedContractAddress(contractName: string): string {
+  const content = fs.readFileSync(`./build/contracts/${contractName}.json`).toString()
+  const json = JSON.parse(content)
+  return json.networks['1'].address
+}
+
+export function getFrontDoor(signerOrProvider: Signer | Provider, address?: string) {
+  const addr = address || getDeployedContractAddress('FrontDoor')
+  return FrontDoor__factory.connect(addr, signerOrProvider)
 }
 
 export function getTestWallet(testAccountIndex: number, provider: ethers.providers.Provider): ethers.Wallet {
@@ -47,7 +62,6 @@ const PADDING = 50
 const WAITS = 1
 
 export async function transferEthToUsdc(wallet: ethers.Wallet, amountInWei: BigNumberish, verbose?: boolean) {
-
   const { weth, curveTriCrypto, curve3Pool, usdt, usdc } = getMainNetContracts(wallet)
 
   verbose && console.log(`${'depositing eth into weth, amount='.padEnd(PADDING)}${amountInWei.toString()}`)
@@ -58,7 +72,9 @@ export async function transferEthToUsdc(wallet: ethers.Wallet, amountInWei: BigN
 
   const wethAllowance = await weth.allowance(wallet.address, curveTriCrypto.address, { gasLimit })
   verbose && console.log('tricrypto.exchange weth->usdt allowance='.padEnd(PADDING) + wethAllowance.toString())
-  const _triCrytpoResult = (await (await curveTriCrypto['exchange(uint256,uint256,uint256,uint256)'](2, 0, wethAllowance, 1, { gasLimit })).wait(WAITS))
+  const _triCrytpoResult = await (
+    await curveTriCrypto['exchange(uint256,uint256,uint256,uint256)'](2, 0, wethAllowance, 1, { gasLimit })
+  ).wait(WAITS)
 
   const usdtAmount = await usdt.balanceOf(wallet.address)
   verbose && console.log('usdt amount after tricrytpo.exchange'.padEnd(PADDING) + usdtAmount.toString())
@@ -73,11 +89,11 @@ export async function transferEthToUsdc(wallet: ethers.Wallet, amountInWei: BigN
 }
 
 export function toBN(value: BigNumberish): BN {
-  const hex = BigNumber.from(value).toHexString();
-  if (hex[0] === "-") {
-    return (new BN("-" + hex.substring(3), 16));
+  const hex = BigNumber.from(value).toHexString()
+  if (hex[0] === '-') {
+    return new BN('-' + hex.substring(3), 16)
   }
-  return new BN(hex.substring(2), 16);
+  return new BN(hex.substring(2), 16)
 }
 
 export function formatBN(bn: BN, decimals: number) {
@@ -89,7 +105,6 @@ export function formatBN(bn: BN, decimals: number) {
 export function formatBigNumber(value: BigNumber, decimals: number) {
   return formatBN(toBN(value), decimals)
 }
-
 
 // async function go() {
 //   const provider = new ethers.providers.JsonRpcProvider()
@@ -124,4 +139,3 @@ export function formatBigNumber(value: BigNumber, decimals: number) {
 // }
 
 // void go()
-

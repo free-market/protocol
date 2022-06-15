@@ -3,11 +3,10 @@ FreeMarket.gasMultiplier = 10
 fmp = await FreeMarket.deployed()
 fmp.createUserProxy()
 upa = await fmp.getProxy()
-p = await WorkflowRunner.at(upa)
+uwr = await WorkflowRunner.at(upa)
 
 
-p.send(web3.utils.toWei('1', 'ether'))
-p.executeWorkflow()
+uwr.send(web3.utils.toWei('1', 'ether'))
 
 weth = await Weth.at(WETH_ADDRESS)
 usdt = await IERC20.at(USDT_ADDRESS)

@@ -24,7 +24,8 @@ contract OwnableImmutableProxy is Proxy, IHasUpstream {
 
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
-    require(owner == msg.sender);
+    // enforce owner authz in upstream
+    // require(owner == msg.sender);
     _delegate(upstream);
   }
 

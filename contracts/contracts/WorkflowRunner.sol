@@ -4,20 +4,18 @@ pragma solidity >=0.4.22 <0.9.0;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import './FrontDoor.sol';
+
 import './thirdParty/Weth.sol';
-// import './AddressSet.sol';
-// import './Ownable.sol';
-// import './ImmutableProxy.sol';
-// import './MutableProxy.sol';
+import './thirdParty/CurveCryptoSwap.sol';
+import './thirdParty/CurveStableSwap.sol';
+
+import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
-import './CurveCryptoSwap.sol';
-import './CurveStableSwap.sol';
-import './OwnableImmutableProxy.sol';
+import './IUserProxyManager.sol';
 import './UserProxy.sol';
 
 /// @dev inheriting from FrontDoor so storage slots align
-contract WorkflowRunner is FrontDoor, IWorkflowRunner {
+contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
   address constant curveTriCryptoAddress = address(0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5);
   address constant curve3PoolAddress = address(0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5);
 
@@ -33,15 +31,11 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
   Weth constant weth = Weth(wethAddress);
   IERC20 constant usdt = IERC20(usdtAddress);
 
-  // constructor(address fmProxy) {
-  //   owner = msg.sender;
-  //   freeMarketProxy = fmProxy;
-  // }
-
-  function createUserProxy() public {
+  function createUserProxy() external {
     address a = eternalStorageAddress;
     EternalStorage es = EternalStorage(a);
-    bytes32 key = keccak256(abi.encodePacked('userProxies', msg.sender));
+    // bytes32 key = keccak256(abi.encodePacked('userProxies', msg.sender));
+    bytes32 key = getAddressKey('userProxies', msg.sender);
     address currentAddress = es.getAddress(key);
     require(currentAddress == address(0x0000000000000000), 'user proxy already exists');
     UserProxy newUserProxy = new UserProxy(msg.sender, frontDoorAddress);
@@ -49,15 +43,14 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     es.setAddress(key, userProxyAddress);
   }
 
-  function getKey() public view returns (bytes32) {
-    return keccak256(abi.encodePacked('userProxies', msg.sender));
+  function getAddressKey(string memory category, address addr) internal pure returns (bytes32) {
+    return keccak256(abi.encodePacked(category, addr));
   }
 
-  function getUserProxy() public view returns (address) {
+  function getUserProxy() external view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    bytes32 key = keccak256(abi.encodePacked('userProxies', msg.sender));
+    bytes32 key = getAddressKey('userProxies', msg.sender);
     return eternalStorage.getAddress(key);
-    // return eternalStorageAddress;
   }
 
   function executeWorkflow(uint256[] calldata args) external payable {
@@ -96,7 +89,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     uint256 beforeAmount = toToken.balanceOf(address(this));
     CurveCryptoSwap(curveTriCryptoAddress).exchange(args[0], args[1], amount, 1);
     uint256 afterAmount = toToken.balanceOf(address(this));
-    return (2, beforeAmount - afterAmount);
+    return (2, afterAmount - beforeAmount);
   }
 
   // function getTriCryptoTokenAddress(uint256 coinIndex) internal view returns (address) {
@@ -117,7 +110,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner {
     uint256 beforeAmount = toToken.balanceOf(address(this));
     CurveStableSwap(curveTriCryptoAddress).exchange(int128(int256(args[0])), int128(int256(args[1])), amount, 1);
     uint256 afterAmount = toToken.balanceOf(address(this));
-    return (2, beforeAmount - afterAmount);
+    return (2, afterAmount - beforeAmount);
   }
 
   function approveCurveToken(
