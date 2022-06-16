@@ -28,12 +28,15 @@ contract('FreeMarket', function (accounts: string[]) {
     const userProxyAddress = await getUserProxyAddress(frontDoorAddress, userWallet)
     // ensure that the user proxy has at least 1 eth
     await ensureEthBalance('1.0', userWallet, userProxyAddress)
+
     // get balances before
-    const { weth, usdt } = getMainNetContracts(userWallet)
+    const { weth, usdt, usdc } = getMainNetContracts(userWallet)
     const wethBefore = await weth.balanceOf(userProxyAddress)
     const usdtBefore = await usdt.balanceOf(userProxyAddress)
+    const usdcBefore = await usdc.balanceOf(userProxyAddress)
     console.log(`weth before: ${wethBefore}`)
     console.log(`usdt before: ${usdtBefore}`)
+    console.log(`usdc before: ${usdcBefore}`)
 
     const userWorkflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, userWallet)
     let tx = await userWorkflowRunner.executeWorkflow(
@@ -48,21 +51,29 @@ contract('FreeMarket', function (accounts: string[]) {
         2, //   from index:  USDT
         1, //   to index: USDC
       ],
-      { gasLimit: 20_000_000 }
+      { gasLimit: 30_000_000 }
     )
     let txReceipt = await provider.getTransactionReceipt(tx.hash)
+    assert.equal(txReceipt.status, 1, 'execute workflow tx status successful')
     console.log('executeWorkflow completed, gas: ' + txReceipt.gasUsed.toString())
+    // console.log(txReceipt)
 
     const wethAfter = await weth.balanceOf(userProxyAddress)
     const usdtAfter = await usdt.balanceOf(userProxyAddress)
+    const usdcAfter = await usdc.balanceOf(userProxyAddress)
     console.log(`weth after: ${wethAfter}`)
     console.log(`usdt after: ${usdtAfter}`)
+    console.log(`usdc after: ${usdcAfter}`)
+
     const wethDelta = wethAfter.sub(wethBefore)
     const usdtDelta = usdtAfter.sub(usdtBefore)
+    const usdcDelta = usdcAfter.sub(usdcBefore)
     console.log(`weth delta: ${wethDelta}`)
     console.log(`usdt delta: ${usdtDelta}`)
+    console.log(`usdc delta: ${usdcDelta}`)
     assert.equal(wethDelta.toString(), '0')
-    assert.isAbove(usdtDelta.toNumber(), 0)
+    assert.equal(usdtDelta.toString(), '0')
+    assert.isAbove(usdcDelta.toNumber(), 0)
   })
 
   async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
@@ -94,74 +105,6 @@ contract('FreeMarket', function (accounts: string[]) {
       console.log(`ETH sent to user proxy, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
     }
   }
-
-  // it('manages supported ERC20 tokens', async () => {
-  //   const fmp = await FreeMarket.deployed()
-  //   removeAllSupportedTokens(fmp)
-  //   assert.deepEqual(await fmp.getSupportedERC20Tokens(), [])
-  //   await Promise.all([fmp.addSupportedERC20Token(DAI_ADDRESS), fmp.addSupportedERC20Token(USDC_ADDRESS)])
-  //   let supportedTokens = [...(await fmp.getSupportedERC20Tokens())].sort()
-  //   assert.deepEqual(supportedTokens, [DAI_ADDRESS, USDC_ADDRESS])
-  //   await fmp.removeSupportedERC20Token(DAI_ADDRESS)
-  //   supportedTokens = await fmp.getSupportedERC20Tokens()
-  //   assert.deepEqual(supportedTokens, [USDC_ADDRESS])
-  // })
-
-  // it.only('executes a deposit', async () => {
-  //   // at this point (because of above tests) the bus stop is account 9 and USDC is supported for depsit
-
-  //   const fmpOwner = await FreeMarket.deployed()
-  //   console.log('setting bus stop')
-  //   await fmpOwner.setBusStop(accounts[9])
-  //   console.log('setting usdc as only accepted token')
-  //   removeAllSupportedTokens(fmpOwner)
-  //   await fmpOwner.addSupportedERC20Token(USDC_ADDRESS)
-
-  //   let st = await fmpOwner.getSupportedERC20Tokens()
-  //   console.log(st)
-
-  //   const provider = new ethers.providers.JsonRpcProvider()
-  //   await provider.ready
-  //   const wallet1 = getTestWallet(1, provider)
-  //   const wallet9 = getTestWallet(9, provider)
-  //   const usdcUser1 = getMainNetContracts(wallet1).usdc
-  //   const wallet1Fmp = getFreeMarketContract(wallet1, fmpOwner.address)
-  //   // // 1/10th of an eth
-  //   const weiAmount = BigNumber.from(10).pow(17)
-  //   console.log('transferEthToUsdc')
-  //   await transferEthToUsdc(wallet1, weiAmount, false)
-  //   const wallet1UsdcBalanceBefore = await usdcUser1.balanceOf(accounts[1])
-  //   const decimals = await usdcUser1.decimals()
-  //   console.log('user balance before', wallet1UsdcBalanceBefore.toString() + ` ($${formatBigNumber(wallet1UsdcBalanceBefore, decimals)})`)
-  //   assert.isFalse(wallet1UsdcBalanceBefore.isZero())
-  //   const wallet9UsddBalanceBefore = await usdcUser1.balanceOf(accounts[9])
-  //   console.log(
-  //     'bus stop balance before',
-  //     wallet9UsddBalanceBefore.toString() + ` ($${formatBigNumber(wallet9UsddBalanceBefore, decimals)})`
-  //   )
-  //   await usdcUser1.approve(fmpOwner.address, wallet1UsdcBalanceBefore)
-  //   // await usdcUser1.approve(accounts[9], wallet1UsdcBalanceBefore)
-
-  //   const bs = await fmpOwner.busStop()
-  //   console.log('bs: ' + bs)
-
-  //   console.log('owner fmp addr ' + fmpOwner.address)
-  //   console.log('user fmp addr ' + wallet1Fmp.address)
-
-  //   await wallet1Fmp.deposit(USDC_ADDRESS, wallet1UsdcBalanceBefore, { gasLimit: 2_000_000 })
-
-  //   const wallet1UsdcBalanceAfter = await usdcUser1.balanceOf(accounts[1])
-  //   console.log('user balance after', wallet1UsdcBalanceAfter.toString() + ` ($${formatBigNumber(wallet1UsdcBalanceAfter, decimals)})`)
-  //   const wallet9UsddBalanceAfter = await usdcUser1.balanceOf(accounts[9])
-  //   console.log('bs   balance after', wallet9UsddBalanceAfter.toString() + ` ($${formatBigNumber(wallet9UsddBalanceAfter, decimals)})`)
-  //   assert.isTrue(wallet1UsdcBalanceAfter.isZero())
-  //   const diff = wallet9UsddBalanceAfter.sub(wallet9UsddBalanceBefore)
-  //   console.log('diff', diff.toString() + ` ($${formatBigNumber(diff, decimals)})`)
-  //   st = await fmpOwner.getSupportedERC20Tokens()
-  //   console.log(st)
-
-  //   assert.deepEqual(wallet1UsdcBalanceBefore.toString(), diff.toString())
-  // })
 })
 
 async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
