@@ -2,7 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+// import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import './thirdParty/Weth.sol';
@@ -22,7 +22,8 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
   address constant daiAddress = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
 
   Weth constant weth = Weth(wethAddress);
-  IERC20 constant usdt = IERC20(usdtAddress);
+
+  // IERC20 constant usdt = IERC20(usdtAddress);
 
   function createUserProxy() external {
     address a = eternalStorageAddress;
@@ -31,7 +32,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
     bytes32 key = getAddressKey('userProxies', msg.sender);
     address currentAddress = es.getAddress(key);
     require(currentAddress == address(0x0000000000000000), 'user proxy already exists');
-    UserProxy newUserProxy = new UserProxy(msg.sender, frontDoorAddress);
+    UserProxy newUserProxy = new UserProxy(payable(msg.sender), frontDoorAddress);
     address userProxyAddress = address(newUserProxy);
     es.setAddress(key, userProxyAddress);
   }
@@ -66,18 +67,54 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
     return (0, 0);
   }
 
+  // args[0] is the token address, or 0x0 if its supposed to be eth
+  function withdrawal(uint256 amount, uint256[] calldata args) public payable returns (uint16, uint256) {
+    address payable user = owner;
+    if (args[0] == 0x0) {
+      (bool success, ) = user.call{value: amount}('');
+      require(success, 'withdraw eth failed');
+    } else {
+      address tokenAddress = address(uint160(args[0]));
+      IERC20 token = IERC20(tokenAddress);
+      SafeERC20.safeTransfer(token, user, amount);
+    }
+    // this has to be a terminal step, so returning 0 for amount
+    return (1, 0);
+  }
+
   function getStepFunc(uint256 index) private returns (function(uint256, uint256[] calldata) returns (uint16, uint256)) {
-    if (index < 2) {
-      if (index == 0) {
-        return ethToWeth;
+    if (index < 4) {
+      // 0..3
+      if (index < 2) {
+        if (index == 0) {
+          return ethToWeth;
+        } else {
+          return Curve.curveTriCryptoPoolSwap;
+        }
       } else {
-        return Curve.curveTriCryptoPoolSwap;
+        if (index == 2) {
+          return Curve.curve3PoolSwap;
+        } else {
+          return wormhole;
+        }
       }
     } else {
-      if (index == 2) {
-        return Curve.curve3PoolSwap;
+      // 4..7
+      if (index < 6) {
+        if (index == 4) {
+          return withdrawal;
+        } else {
+          // TODO return something
+          return withdrawal;
+        }
       } else {
-        return wormhole;
+        if (index == 6) {
+          // TODO return something
+          return withdrawal;
+        } else {
+          // TODO return something
+          return withdrawal;
+        }
       }
     }
   }

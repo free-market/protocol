@@ -71,9 +71,33 @@ contract('FreeMarket', function (accounts: string[]) {
     console.log(`weth delta: ${wethDelta}`)
     console.log(`usdt delta: ${usdtDelta}`)
     console.log(`usdc delta: ${usdcDelta}`)
+
+    // should be no change in intermediate tokens, but some increase in the last token
     assert.equal(wethDelta.toString(), '0')
     assert.equal(usdtDelta.toString(), '0')
     assert.isAbove(usdcDelta.toNumber(), 0)
+
+    console.log('withdrawaling all usdc')
+    // withdrawal all usdc
+    const userUsdcBeforeWithdrawal = await usdc.balanceOf(userWallet.address)
+    tx = await userWorkflowRunner.executeWorkflow(
+      [
+        usdcAfter, // workflow starting amount
+        4, // stepId: withdraw
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC address
+      ],
+      { gasLimit: 30_000_000 }
+    )
+    txReceipt = await provider.getTransactionReceipt(tx.hash)
+    assert.equal(txReceipt.status, 1, 'execute workflow (withdrawal) tx status successful')
+    console.log('executeWorkflow (withdrawal) completed, gas: ' + txReceipt.gasUsed.toString())
+
+    const userUsdcAfterWithdrawal = await usdc.balanceOf(userWallet.address)
+    const userUsdcWithdrawalDelta = userUsdcAfterWithdrawal.sub(userUsdcBeforeWithdrawal)
+    assert.equal(userUsdcWithdrawalDelta.toString(), usdcAfter.toString(), 'transfers the correct amount from proxy to user')
+    const proxyUsdcAfterWithdrawal = await usdc.balanceOf(userProxyAddress)
+    assert.equal(proxyUsdcAfterWithdrawal.toString(), '0', '0 left in proxy')
+    console.log(`user USDC balance after withdrawal: ${userUsdcWithdrawalDelta}`)
   })
 
   async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {

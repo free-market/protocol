@@ -12,7 +12,7 @@ contract OwnableMutableProxy is OwnableImmutableProxy {
   event LogNewOwner(address sender, address newOwner);
   event LogNewUpstream(address sender, address oldUpstream, address newUpstream);
 
-  constructor() OwnableImmutableProxy(msg.sender, address(0)) {}
+  constructor() OwnableImmutableProxy(payable(msg.sender), address(0)) {}
 
   modifier onlyOwner() {
     require(msg.sender == owner);

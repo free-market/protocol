@@ -4,10 +4,10 @@ import './Proxy.sol';
 import './IHasUpstream.sol';
 
 contract UserProxy is Proxy {
-  address public owner;
+  address payable public owner;
   address public upstream;
 
-  constructor(address theOwner, address initialUpstream) {
+  constructor(address payable theOwner, address initialUpstream) {
     // constructor() {
     upstream = initialUpstream;
     owner = theOwner;

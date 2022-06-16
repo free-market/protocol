@@ -14,10 +14,10 @@ import './IHasUpstream.sol';
  * gas costs for the end user.
  */
 contract OwnableImmutableProxy is Proxy, IHasUpstream {
-  address public owner;
+  address payable public owner;
   address public upstream;
 
-  constructor(address theOwner, address initialUpstream) {
+  constructor(address payable theOwner, address initialUpstream) {
     upstream = initialUpstream;
     owner = theOwner;
   }
