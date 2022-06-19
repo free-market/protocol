@@ -150,68 +150,6 @@ const usdcAssetPill = (
   </div>
 )
 
-const usdtAssetPill = (
-  <div className='inline-block bg-stone-400/25 flex items-center gap-2 px-2 py-1 rounded-full text-high-emphesis'>
-    <div className='rounded-full' style={{ width: 20, height: 20 }}>
-      <div
-        className='overflow-hidden rounded'
-        style={{ width: 20, height: 20 }}
-      >
-        <img
-          alt='USDT'
-          src='https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png'
-          decoding='async'
-          data-nimg='fixed'
-          className='rounded-full !rounded-full overflow-hidden'
-        />
-      </div>
-    </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold'>USDT</div>
-  </div>
-)
-
-const ethAssetPill = (
-  <div className='inline-block bg-stone-400/25 flex items-center gap-2 px-2 py-1 rounded-full text-high-emphesis'>
-    <div className='rounded-full' style={{ width: 20, height: 20 }}>
-      <div
-        className='overflow-hidden rounded'
-        style={{ width: 20, height: 20 }}
-      >
-        <img
-          alt='ETH'
-          srcset='https://res.cloudinary.com/sushi-cdn/image/fetch/w_32,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 1x, https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 2x'
-          src='https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg'
-          decoding='async'
-          data-nimg='fixed'
-          className='rounded-full !rounded-full overflow-hidden'
-        />
-      </div>
-    </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold'>ETH</div>
-  </div>
-)
-
-const wethAssetPill = (
-  <div className='inline-block bg-stone-400/25 flex items-center gap-2 px-2 py-1 rounded-full text-high-emphesis'>
-    <div className='rounded-full' style={{ width: 20, height: 20 }}>
-      <div
-        className='overflow-hidden rounded'
-        style={{ width: 20, height: 20 }}
-      >
-        <img
-          alt='WETH'
-          srcset='https://res.cloudinary.com/sushi-cdn/image/fetch/w_32,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 1x, https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 2x'
-          src='https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg'
-          decoding='async'
-          data-nimg='fixed'
-          className='rounded-full !rounded-full overflow-hidden'
-        />
-      </div>
-    </div>
-    <div className='text-stone-200 text-sm leading-5 font-bold'>WETH</div>
-  </div>
-)
-
 const snusdcAssetPill = (
   <div className='inline-block bg-stone-400/25 flex items-center gap-2 px-2 py-1 rounded-full text-high-emphesis'>
     <div className='rounded-full' style={{ width: 20, height: 20 }}>
@@ -335,13 +273,22 @@ const pwcvxcrvAssetPill = (
 
 const pillTable = {
   USDC: usdcAssetPill,
-  USDT: usdtAssetPill,
-  ETH: ethAssetPill,
-  WETH: wethAssetPill,
-  '3CRV': curveAssetPill
+  'SN-USDC': snusdcAssetPill,
+  '3CRV': curveAssetPill,
+  'PW-USDC': portalAssetPill,
+  'PW-3CRV': pw3crvAssetPill,
+  CVXCRV: convexAssetPill,
+  'PW-CVXCRV': pwcvxcrvAssetPill
 }
 
-const RouteChoice = ({ route, index, steps, onNewStep, stage }) => {
+const RouteChoice = ({
+  route,
+  index,
+  steps,
+  harvestSteps,
+  onNewStep,
+  stage
+}) => {
   const controls = useAnimation()
   return (
     <>
@@ -375,7 +322,9 @@ const RouteChoice = ({ route, index, steps, onNewStep, stage }) => {
       <div className='flex justify-center'>
         <motion.div
           layout
-          layoutId={`${stage}-step-${steps.length}-${route.name}`}
+          layoutId={`${stage}-step-${
+            { stake: steps, harvest: harvestSteps }[stage].length
+          }-${route.name}`}
           onClick={async () => {
             await controls.start({
               opacity: 0,
@@ -417,44 +366,154 @@ const RouteChoice = ({ route, index, steps, onNewStep, stage }) => {
 }
 
 const usdcOfferings = {
-  possibleStakingRoutes: ['ethToWeth']
+  possibleStakingRoutes: ['usdcTo3crv', 'usdcToPortal'],
+  rewards: []
 }
 
 const routesByName = {
-  ethToWeth: {
-    name: 'ethToWeth',
-    before: 'ETH',
-    after: 'WETH',
-    action: 'Wrap Ether',
-    possibleStakingRoutes: ['wethToUsdt']
-  },
-  wethToUsdt: {
-    name: 'wethToUsdt',
-    before: 'WETH',
-    after: 'USDT',
-    action: 'Swap with Curve tricrypto2',
-    possibleStakingRoutes: ['usdtTo3crv']
-  },
-  usdtTo3crv: {
-    name: 'usdtTo3crv',
-    before: 'USDT',
+  usdcTo3crv: {
+    name: 'usdcTo3crv',
+    before: 'USDC',
     after: '3CRV',
-    action: 'Stake With Curve 3pool',
-    possibleStakingRoutes: []
+    action: 'Acquire Curve LP',
+    possibleStakingRoutes: ['3crvToPortal', '3crvToCvxcrv'],
+    rewards: ['3crvToUsdc']
+  },
+  '3crvToCvxcrv': {
+    name: '3crvToCvxcrv',
+    before: '3CRV',
+    after: 'CVXCRV',
+    action: 'Acquire Convex LP',
+    possibleStakingRoutes: ['cvxcrvToPortal'],
+    rewards: ['3crvToUsdc', 'cvxcrvToUsdc']
+  },
+  '3crvToPortal': {
+    name: '3crvToPortal',
+    before: '3CRV',
+    after: 'PW-3CRV',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: ['pw3crvToSolend', 'pw3crvTo3crv'],
+    rewards: []
+  },
+  cvxcrvToPortal: {
+    name: 'cvxcrvToPortal',
+    before: 'CVXCRV',
+    after: 'PW-CVXCRV',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: ['pwcvxcrvToSolend'],
+    rewards: []
+  },
+  pw3crvToSolend: {
+    name: 'pw3crvToSolend',
+    before: 'PW-3CRV',
+    after: 'PW-3CRV',
+    action: 'Lend with Solend',
+    possibleStakingRoutes: [],
+    rewards: ['pw3crvTo3crv']
+  },
+  pwcvxcrvToSolend: {
+    name: 'pwcvxcrvToSolend',
+    before: 'PW-CVXCRV',
+    after: 'PW-CVXCRV',
+    action: 'Lend with Solend',
+    possibleStakingRoutes: [],
+    rewards: ['pwcvxcrvToCvxcrv']
+  },
+  pw3crvTo3crv: {
+    name: 'pw3crvTo3crv',
+    before: 'PW-3CRV',
+    after: '3CRV',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: [],
+    rewards: ['3crvToUsdc']
+  },
+  pwcvxcrvToCvxcrv: {
+    name: 'pwcvxcrvToCvxcrv',
+    before: 'PW-CVXCRV',
+    after: 'CVXCRV',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: [],
+    rewards: ['cvxcrvToUsdc']
+  },
+  cvxcrvToUsdc: {
+    name: 'cvxcrvToUsdc',
+    before: 'CVXCRV',
+    after: 'USDC',
+    action: 'Swap with Uniswap',
+    possibleStakingRoutes: [],
+    rewards: []
+  },
+  usdcToPortal: {
+    name: 'usdcToPortal',
+    before: 'USDC',
+    after: 'PW-USDC',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: ['pwusdcToSnusdc'],
+    rewards: []
+  },
+  portalToUsdc: {
+    name: 'portalToUsdc',
+    before: 'PW-USDC',
+    after: 'USDC',
+    action: 'Bridge with Wormhole Portal',
+    possibleStakingRoutes: [],
+    rewards: []
+  },
+  pwusdcToSnusdc: {
+    name: 'pwusdcToSnusdc',
+    before: 'PW-USDC',
+    after: 'SN-USDC',
+    action: 'Swap with Saber',
+    possibleStakingRoutes: ['snusdcToSolend'],
+    rewards: []
+  },
+  snusdcToPwusdc: {
+    name: 'snusdcToPwusdc',
+    before: 'SN-USDC',
+    after: 'PW-USDC',
+    action: 'Swap with Saber',
+    possibleStakingRoutes: [],
+    rewards: ['portalToUsdc']
+  },
+  snusdcToSolend: {
+    name: 'snusdcToSolend',
+    before: 'SN-USDC',
+    after: 'SN-USDC',
+    action: 'Lend with Solend',
+    possibleStakingRoutes: [],
+    rewards: ['snusdcToPwusdc']
+  },
+  '3crvToUsdc': {
+    name: '3crvToUsdc',
+    before: '3CRV',
+    after: 'USDC',
+    action: 'Withdraw with Curve',
+    rewards: []
   }
 }
 
-const getCurrentRoutes = ({ steps }) => ({
+const getCurrentRoutes = ({ steps, harvestSteps }) => ({
   stake: steps.reduce(
     (possibleRoutes, step) => routesByName[step.id].possibleStakingRoutes,
     usdcOfferings.possibleStakingRoutes
+  ),
+  harvest: [...harvestSteps, ...steps].reduce(
+    (possibleRoutes, step) => [
+      ...new Set([
+        ...routesByName[step.id].rewards,
+        ...possibleRoutes
+      ]).values()
+    ],
+    usdcOfferings.rewards
   )
 })
 
 const StepCreator = (props) => {
-  const { steps, stage } = props
+  const { steps, harvestSteps, stage } = props
 
-  const currentRouteNames = getCurrentRoutes({ steps })[stage]
+  const currentRouteNames = getCurrentRoutes({ steps, harvestSteps })[
+    stage
+  ].filter((step) => !harvestSteps.some(({ id }) => id === step))
   const choices = currentRouteNames.map((routeName, index) => {
     const route = routesByName[routeName]
 
@@ -469,6 +528,7 @@ const StepCreator = (props) => {
         index={index}
         key={index}
         steps={steps}
+        harvestSteps={harvestSteps}
         onNewStep={props.onNewStep}
       />
     )
@@ -501,12 +561,13 @@ const StepCreator = (props) => {
   )
 }
 
-export const Steps = ({ steps, dispatch, stage, amount }) => {
+export const Steps = ({ steps, harvestSteps, dispatch, stage, amount }) => {
   const [creatingNewStep, setCreatingNewStep] = React.useState(false)
 
   const stepCreator = StepCreator({
     stage,
     steps,
+    harvestSteps,
     onClose: () => {
       setCreatingNewStep(false)
     },
@@ -522,7 +583,7 @@ export const Steps = ({ steps, dispatch, stage, amount }) => {
 
   const startCreatingNewStepButton = NewStepButton({
     stage,
-    stepCount: { stake: steps }[stage].length,
+    stepCount: { stake: steps, harvest: harvestSteps }[stage].length,
     onClick: () => {
       if (steps.every((step) => !step.fresh)) {
         setCreatingNewStep(true)
@@ -530,24 +591,32 @@ export const Steps = ({ steps, dispatch, stage, amount }) => {
     }
   })
 
-  const stepCards = { stake: steps }[stage].map((step, index) => (
-    <StepCard
-      amount={amount}
-      key={index}
-      index={index}
-      step={step}
-      steps={steps}
-      dispatch={dispatch}
-      stage={stage}
-    />
-  ))
+  const stepCards = { stake: steps, harvest: harvestSteps }[stage].map(
+    (step, index) => (
+      <StepCard
+        amount={amount}
+        key={index}
+        index={index}
+        step={step}
+        steps={steps}
+        harvestSteps={harvestSteps}
+        dispatch={dispatch}
+        stage={stage}
+      />
+    )
+  )
 
   const lastStep = {
-    stake: steps[steps.length - 1]
+    stake: steps[steps.length - 1],
+    harvest: harvestSteps[harvestSteps.length - 1]
   }[stage]
 
   const possibleRoutes = {
-    stake: lastStep && routesByName[lastStep.id].possibleStakingRoutes
+    stake: lastStep && routesByName[lastStep.id].possibleStakingRoutes,
+    harvest: [
+      ...(lastStep ? routesByName[lastStep.id].rewards : []),
+      ...getCurrentRoutes({ steps, harvestSteps }).harvest
+    ].filter((step) => !harvestSteps.some(({ id }) => id === step))
   }[stage]
 
   return (
@@ -570,7 +639,8 @@ const StepCard = (props) => {
   const { index, step, dispatch, stage, amount } = props
 
   const baseDelay = {
-    stake: 0
+    stake: 0,
+    harvest: 0.25
   }[stage]
 
   return (
@@ -596,7 +666,10 @@ const StepCard = (props) => {
               'border-t border-stone-500': index > 0,
               'rounded-t-2xl': index === 0,
               'rounded-b-2xl':
-                index === { stake: props.steps }[stage].length - 1
+                index ===
+                { stake: props.steps, harvest: props.harvestSteps }[stage]
+                  .length -
+                  1
             }
           )}
         >
@@ -612,12 +685,12 @@ const StepCard = (props) => {
             </motion.div>
             <motion.div className='flex items-center text-stone-400 font-medium font-monospace self-end md:self-center'>
               {stage === 'stake' && <span className='mr-3'>{amount}</span>}
-              <span className='opacity-50'>
-                {pillTable[routesByName[step.id].before]}
-              </span>
-              <span className='opacity-50'>
-                &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
-              </span>
+              {stage === 'harvest' && (
+                <>
+                  {pillTable[routesByName[step.id].before]}
+                  &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
+                </>
+              )}
               {pillTable[routesByName[step.id].after]}
               <ChevronDownIcon className='ml-4 text-stone-300 h-6 w-6' />
             </motion.div>
@@ -678,12 +751,13 @@ export const WorkflowForm = ({
   onSubmit,
   amount,
   steps,
+  harvestSteps,
   onUndoForecast
 }) => {
   return (
     <Form
       onSubmit={onSubmit}
-      initialValues={{ amount, steps }} // {id: 'usdcTo3crv', fresh: false}] }}
+      initialValues={{ amount, steps, harvestSteps }} // {id: 'usdcTo3crv', fresh: false}] }}
       render={({ handleSubmit, submitting, form }) => {
         const amount = form.getFieldState('amount')?.value
         const empty = amount == null || Number(amount) === 0
@@ -765,7 +839,7 @@ export const WorkflowForm = ({
             <div className='flex flex-col gap-2 md:gap-4'>
               <div className='rounded-2xl flex flex-col gap-4'>
                 <div className='flex items-center justify-between gap-2'>
-                  <div className='flex items-center'>{ethAssetPill}</div>
+                  <div className='flex items-center'>{usdcAssetPill}</div>
                   <div>
                     <PencilIcon
                       className={cx('h-8 w-8 invisible text-stone-400/50', {
@@ -899,9 +973,9 @@ export const WorkflowForm = ({
                   style={{ width: 20, height: 20 }}
                 >
                   <img
-                    alt='ETH'
-                    srcset='https://res.cloudinary.com/sushi-cdn/image/fetch/w_32,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 1x, https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg 2x'
-                    src='https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/logos/main/token/eth.jpg'
+                    alt='USDC'
+                    srcSet='https://res.cloudinary.com/sushi-cdn/image/fetch/w_32,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg 1x, https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg 2x'
+                    src='https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg'
                     decoding='async'
                     data-nimg='fixed'
                     className='rounded-full !rounded-full overflow-hidden'
@@ -918,7 +992,7 @@ export const WorkflowForm = ({
                   style={{ width: 20, height: 20 }}
                 >
                   <img
-                    src='https://curve.fi/logo.png'
+                    src='https://avatars.githubusercontent.com/u/83670346?s=200&v=4'
                     className='rounded-full !rounded-full overflow-hidden'
                   />
                 </div>
@@ -929,11 +1003,40 @@ export const WorkflowForm = ({
               key='stake'
               stage='stake'
               steps={form.getState().values.steps}
+              harvestSteps={form.getState().values.harvestSteps}
               dispatch={(action) => {
                 const { steps } = form.getState().values
                 form.change('steps', stepsReducer(steps, action))
               }}
             />
+
+            {getCurrentRoutes({
+              steps: form.getState().values.steps,
+              harvestSteps: form.getState().values.harvestSteps
+            }).harvest.length > 0 && (
+              <>
+                <motion.div
+                  layout
+                  className='mb-1 mt-5 font-medium text-stone-600/75'
+                >
+                  Harvest Workflow
+                </motion.div>
+                <Steps
+                  amount={amount}
+                  key='harvest'
+                  stage='harvest'
+                  steps={form.getState().values.steps}
+                  harvestSteps={form.getState().values.harvestSteps}
+                  dispatch={(action) => {
+                    const { harvestSteps } = form.getState().values
+                    form.change(
+                      'harvestSteps',
+                      stepsReducer(harvestSteps, action)
+                    )
+                  }}
+                />
+              </>
+            )}
           </motion.div>
         )
 
@@ -1049,15 +1152,25 @@ export const Workflow = () => {
         setAmount(values.amount)
         setSteps([
           {
-            id: 'ethToWeth',
+            id: 'usdcToPortal',
             fresh: false
           },
           {
-            id: 'wethToUsdt',
+            id: 'pwusdcToSnusdc',
             fresh: false
           },
           {
-            id: 'usdtTo3crv',
+            id: 'snusdcToSolend',
+            fresh: false
+          }
+        ])
+        setHarvestSteps([
+          {
+            id: 'snusdcToPwusdc',
+            fresh: false
+          },
+          {
+            id: 'portalToUsdc',
             fresh: false
           }
         ])
