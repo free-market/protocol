@@ -30,3 +30,5 @@ uwr.executeWorkflow([
 uwr.executeWorkflow(['10000000000000000', 0, ])
 uwr.executeWorkflow(['10000000000000000', 0, 1, 2, 0, ])
 uwr.executeWorkflow(['10000000000000000', 0, 1, 2, 0, 2, 2, 1])
+
+    const tx = await uwr.executeWorkflow(['10000000000000000', 0, 1, 2, 0, 5, 0, ],  { gasLimit: 30_000_000 })

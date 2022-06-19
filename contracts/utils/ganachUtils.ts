@@ -18,6 +18,7 @@ const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
 const CURVE_THREEPOOL_ADDRESS = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7'
+const CURVE_THREEPOOL_LPTOKEN_ADDRESS = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 const CURVE_TRICRYPTO_ADDRESS = '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5'
 
 export function getMainNetContracts(signerOrProvider: Signer | Provider) {
@@ -25,6 +26,7 @@ export function getMainNetContracts(signerOrProvider: Signer | Provider) {
     weth: Weth__factory.connect(WETH_ADDRESS, signerOrProvider),
     curveTriCrypto: CurveTriCrypto__factory.connect(CURVE_TRICRYPTO_ADDRESS, signerOrProvider),
     curve3Pool: Curve3Pool__factory.connect(CURVE_THREEPOOL_ADDRESS, signerOrProvider),
+    curve3PoolLp: IERC20__factory.connect(CURVE_THREEPOOL_LPTOKEN_ADDRESS, signerOrProvider),
     usdt: IERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
     usdc: IERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
   }

@@ -104,8 +104,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
         if (index == 4) {
           return withdrawal;
         } else {
-          // TODO return something
-          return withdrawal;
+          return Curve.curve3PoolAddLiquidity;
         }
       } else {
         if (index == 6) {

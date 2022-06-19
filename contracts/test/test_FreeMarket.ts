@@ -7,7 +7,7 @@ import { IUserProxyManager__factory, IWorkflowRunner__factory, IERC20__factory }
 // import { getTestWallet, transferEthToUsdc } from '../utils/ganachUtils'
 
 const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-const TEST_WALLET_INDEX = 1
+const TEST_WALLET_INDEX = 0
 
 contract('FreeMarket', function (accounts: string[]) {
   const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
@@ -98,6 +98,36 @@ contract('FreeMarket', function (accounts: string[]) {
     const proxyUsdcAfterWithdrawal = await usdc.balanceOf(userProxyAddress)
     assert.equal(proxyUsdcAfterWithdrawal.toString(), '0', '0 left in proxy')
     console.log(`user USDC balance after withdrawal: ${userUsdcWithdrawalDelta}`)
+  })
+
+  it('adds liquidity to 3pool', async () => {
+    const userProxyAddress = await getUserProxyAddress(frontDoorAddress, userWallet)
+    const { curve3PoolLp } = getMainNetContracts(userWallet)
+    const lpBalanceBefore = await curve3PoolLp.balanceOf(userProxyAddress)
+    console.log(`lpBalanceBefore: ${lpBalanceBefore}`)
+
+    await ensureEthBalance('1.0', userWallet, userProxyAddress)
+    const userWorkflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, userWallet)
+    const tx = await userWorkflowRunner.executeWorkflow(
+      [
+        ethers.utils.parseEther('0.01'), // starting amount of whatever input currency to first step is, wei in this case
+        0, // stepId: ethToWeth
+        1, // stepId: curve triCrypto
+        2, //   from index:  WETH
+        0, //   to index:  USDT
+        5, // stepId: curve 3pool add_liquidity
+        2, //   3pool index for USDT
+      ],
+      { gasLimit: 30_000_000 }
+    )
+    const txReceipt = await provider.getTransactionReceipt(tx.hash)
+    assert.equal(txReceipt.status, 1, 'execute workflow (withdrawal) tx status successful')
+    console.log('executeWorkflow (withdrawal) completed, gas: ' + txReceipt.gasUsed.toString())
+    const lpBalanceAfter = await curve3PoolLp.balanceOf(userProxyAddress)
+    console.log(`lpBalanceAfter: ${lpBalanceAfter}`)
+    const lpDelta = lpBalanceAfter.sub(lpBalanceBefore)
+    console.log(`lpDelta: ${lpDelta}`)
+    assert(lpDelta.gt(0))
   })
 
   async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
