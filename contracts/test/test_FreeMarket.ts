@@ -1,13 +1,23 @@
 import { ethers, Wallet, BigNumber } from 'ethers'
 
-import { getDeployedContractAddress, getMainNetContracts, getTestWallet } from '../utils/ganachUtils'
+import { getDeployedContractAddress, getTestWallet } from '../utils/ganachUtils'
 import { IUserProxyManager__factory, IWorkflowRunner__factory, IERC20__factory } from '../types/ethers-contracts'
+import { WorkflowStepStruct } from '../types/ethers-contracts/IWorkflowRunner'
+import { ADDRESS_ZERO, ensureEthBalance, getMainNetContracts, getUserProxyAddress } from '../utils/ethers-utils'
 
 // import { getMainnetSdk } from '../generated'
 // import { getTestWallet, transferEthToUsdc } from '../utils/ganachUtils'
 
-const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-const TEST_WALLET_INDEX = 0
+const TEST_WALLET_INDEX = 1
+
+const STEPID = {
+  ETH_WETH: 0,
+  CURVE_TRICRYPTO_SWAP: 1,
+  CURVE_3POOL_SWAP: 2,
+  WORMHOLE: 3,
+  WITHDRAWAL: 4,
+  CURVE_3POOL_FUND: 5,
+}
 
 contract('FreeMarket', function (accounts: string[]) {
   const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
@@ -18,10 +28,12 @@ contract('FreeMarket', function (accounts: string[]) {
   it('creates a user proxy', async () => {
     let userProxyAddr = await userProxyManager.getUserProxy()
     if (userProxyAddr === ADDRESS_ZERO) {
+      console.log('creating user proxy')
       await userProxyManager.createUserProxy()
       userProxyAddr = await userProxyManager.getUserProxy()
     }
     assert.notDeepEqual(userProxyAddr, ADDRESS_ZERO)
+    console.log('user proxy: ' + userProxyAddr)
   })
 
   it('executes workflows', async () => {
@@ -39,20 +51,31 @@ contract('FreeMarket', function (accounts: string[]) {
     console.log(`usdc before: ${usdcBefore}`)
 
     const userWorkflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, userWallet)
-    let tx = await userWorkflowRunner.executeWorkflow(
-      [
-        // '10000000000000000', // starting amount (of whatever input currency to first step is)
-        ethers.utils.parseEther('0.01'),
-        0, // stepId: ethToWeth
-        1, // stepId: curve triCrypto
-        2, //   from index:  WETH
-        0, //   to index:  USDT
-        2, // stepId: curve 3pool
-        2, //   from index:  USDT
-        1, //   to index: USDC
-      ],
-      { gasLimit: 30_000_000 }
-    )
+    const steps: WorkflowStepStruct[] = [
+      {
+        stepId: STEPID.ETH_WETH,
+        fromToken: '0',
+        amount: ethers.utils.parseEther('0.01'),
+        amountIsPercent: false,
+        args: [],
+      },
+      {
+        stepId: STEPID.CURVE_TRICRYPTO_SWAP,
+        fromToken: weth.address,
+        amount: 100,
+        amountIsPercent: true,
+        args: ['2', '0'], // from weth to usdt
+      },
+      {
+        stepId: STEPID.CURVE_3POOL_SWAP,
+        fromToken: usdt.address,
+        amount: 100,
+        amountIsPercent: true,
+        args: ['2', '1'], // from usdt to usdc
+      },
+    ]
+
+    let tx = await userWorkflowRunner.executeWorkflow(steps, { gasLimit: 30_000_000 })
     let txReceipt = await provider.getTransactionReceipt(tx.hash)
     assert.equal(txReceipt.status, 1, 'execute workflow tx status successful')
     console.log('executeWorkflow completed, gas: ' + txReceipt.gasUsed.toString())
@@ -82,9 +105,13 @@ contract('FreeMarket', function (accounts: string[]) {
     const userUsdcBeforeWithdrawal = await usdc.balanceOf(userWallet.address)
     tx = await userWorkflowRunner.executeWorkflow(
       [
-        usdcAfter, // workflow starting amount
-        4, // stepId: withdraw
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC address
+        {
+          stepId: STEPID.WITHDRAWAL,
+          amount: usdcAfter,
+          amountIsPercent: false,
+          fromToken: usdc.address,
+          args: [],
+        },
       ],
       { gasLimit: 30_000_000 }
     )
@@ -102,21 +129,39 @@ contract('FreeMarket', function (accounts: string[]) {
 
   it('adds liquidity to 3pool', async () => {
     const userProxyAddress = await getUserProxyAddress(frontDoorAddress, userWallet)
-    const { curve3PoolLp } = getMainNetContracts(userWallet)
+    const { weth, usdt, curve3PoolLp } = getMainNetContracts(userWallet)
     const lpBalanceBefore = await curve3PoolLp.balanceOf(userProxyAddress)
     console.log(`lpBalanceBefore: ${lpBalanceBefore}`)
-
     await ensureEthBalance('1.0', userWallet, userProxyAddress)
     const userWorkflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, userWallet)
     const tx = await userWorkflowRunner.executeWorkflow(
       [
-        ethers.utils.parseEther('0.01'), // starting amount of whatever input currency to first step is, wei in this case
-        0, // stepId: ethToWeth
-        1, // stepId: curve triCrypto
-        2, //   from index:  WETH
-        0, //   to index:  USDT
-        5, // stepId: curve 3pool add_liquidity
-        2, //   3pool index for USDT
+        {
+          stepId: STEPID.ETH_WETH,
+          amount: ethers.utils.parseEther('0.01'),
+          amountIsPercent: false,
+          fromToken: '0',
+          args: [],
+        },
+        {
+          stepId: STEPID.CURVE_TRICRYPTO_SWAP,
+          amount: 100,
+          amountIsPercent: true,
+          fromToken: weth.address,
+          args: [
+            2, // from index: WETH
+            0, // to index: USDT
+          ],
+        },
+        {
+          stepId: STEPID.CURVE_3POOL_FUND,
+          amount: 100,
+          amountIsPercent: true,
+          fromToken: usdt.address,
+          args: [
+            2, // 3pool index for USDT
+          ],
+        },
       ],
       { gasLimit: 30_000_000 }
     )
@@ -129,64 +174,4 @@ contract('FreeMarket', function (accounts: string[]) {
     console.log(`lpDelta: ${lpDelta}`)
     assert(lpDelta.gt(0))
   })
-
-  async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
-    // obtain the user's proxy address via UserProxyManager
-    const userProxyManager = IUserProxyManager__factory.connect(frontDoorAddress, userWallet)
-    let userProxyAddress = await userProxyManager.getUserProxy()
-    if (userProxyAddress === ADDRESS_ZERO) {
-      console.log('creating user proxy')
-      const txResult = await userProxyManager.createUserProxy()
-      const txReceipt = await userWallet.provider.getTransactionReceipt(txResult.hash)
-      console.log('user proxy created, gas: ' + txReceipt.gasUsed.toString())
-      userProxyAddress = await userProxyManager.getUserProxy()
-    }
-    console.log('user proxy address', userProxyAddress)
-    return userProxyAddress
-  }
-
-  async function ensureEthBalance(eth: string, fromWallet: Wallet, toAddress: string) {
-    const userProxyBalanceEth = await fromWallet.provider.getBalance(toAddress)
-    const targetBalance = ethers.utils.parseEther('1.0')
-    const weiToSend = targetBalance.sub(userProxyBalanceEth)
-    if (!weiToSend.isNegative() && !weiToSend.isZero()) {
-      console.log(`sending ${ethers.utils.formatEther(weiToSend)} ETH to user's proxy`)
-      await fromWallet.sendTransaction({
-        to: toAddress,
-        value: weiToSend,
-      })
-      const userProxyBalanceEthAfter = await fromWallet.provider.getBalance(toAddress)
-      console.log(`ETH sent to user proxy, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
-    }
-  }
 })
-
-async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
-  // obtain the user's proxy address via UserProxyManager
-  const userProxyManager = IUserProxyManager__factory.connect(frontDoorAddress, userWallet)
-  let userProxyAddress = await userProxyManager.getUserProxy()
-  if (userProxyAddress === ADDRESS_ZERO) {
-    console.log('creating user proxy')
-    const txResult = await userProxyManager.createUserProxy()
-    const txReceipt = await userWallet.provider.getTransactionReceipt(txResult.hash)
-    console.log('user proxy created, gas: ' + txReceipt.gasUsed.toString())
-    userProxyAddress = await userProxyManager.getUserProxy()
-  }
-  console.log('user proxy address', userProxyAddress)
-  return userProxyAddress
-}
-
-async function ensureEthBalance(eth: string, fromWallet: Wallet, toAddress: string) {
-  const userProxyBalanceEth = await fromWallet.provider.getBalance(toAddress)
-  const targetBalance = ethers.utils.parseEther('1.0')
-  const weiToSend = targetBalance.sub(userProxyBalanceEth)
-  if (!weiToSend.isNegative() && !weiToSend.isZero()) {
-    console.log(`sending ${ethers.utils.formatEther(weiToSend)} ETH to user's proxy`)
-    await fromWallet.sendTransaction({
-      to: toAddress,
-      value: weiToSend,
-    })
-    const userProxyBalanceEthAfter = await fromWallet.provider.getBalance(toAddress)
-    console.log(`ETH sent to user proxy, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
-  }
-}

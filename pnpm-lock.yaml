@@ -42,6 +42,7 @@ importers:
       '@openzeppelin/contracts': ^4.6.0
       '@typechain/ethers-v5': ^8.0.0
       '@typechain/truffle-v5': ^8.0.0
+      '@typechain/web3-v1': ^6.0.1
       '@types/bn.js': ^5.1.0
       '@types/chai': ^4.3.1
       '@types/glob': ^7.2.0
@@ -81,6 +82,7 @@ importers:
       '@openzeppelin/contracts': 4.6.0
       '@typechain/ethers-v5': 8.0.5_64g6wuhxoq2flndnasn7wtz6yq
       '@typechain/truffle-v5': 8.0.0_x264hwgtxbsmr3zpgaf4dmqrti
+      '@typechain/web3-v1': 6.0.1_djdq7bc7pr642rsnx2diarzdfu
       '@types/bn.js': 5.1.0
       '@types/chai': 4.3.1
       '@types/glob': 7.2.0
@@ -2320,6 +2322,24 @@ packages:
       web3-core: 1.7.3
       web3-eth-contract: 1.7.3
       web3-utils: 1.7.3
+    dev: true
+
+  /@typechain/web3-v1/6.0.1_djdq7bc7pr642rsnx2diarzdfu:
+    resolution: {integrity: sha512-w3xehVgsKV74fGBx1d6xuySWZJ/DbLaYWJDqaDy93qojOicDPESESfOL0XIWZfEmhxk+1JEDC9Roqb/eBmldaA==}
+    peerDependencies:
+      typechain: ^8.1.0
+      web3: ^1
+      web3-core: ^1
+      web3-eth-contract: ^1
+    dependencies:
+      lodash: 4.17.21
+      ts-essentials: 7.0.3_typescript@4.6.4
+      typechain: 8.0.0_typescript@4.6.4
+      web3: 1.7.3
+      web3-core: 1.7.3
+      web3-eth-contract: 1.7.3
+    transitivePeerDependencies:
+      - typescript
     dev: true
 
   /@types/accepts/1.3.5:

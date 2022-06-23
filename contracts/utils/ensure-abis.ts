@@ -58,7 +58,7 @@ function getAbiPathName(name: string) {
 
 async function main() {
   mkdir(ABI_DIR)
-  mkdir('build/3rdparty')
+  mkdir('build/thirdparty')
   let needSleep = false
   for (const contract of CONTRACTS) {
     const abiPathName = getAbiPathName(contract.name)
@@ -69,7 +69,7 @@ async function main() {
       await downloadAbi(contract.name, contract.address)
       needSleep = true
     }
-    fs.copyFileSync(abiPathName, `build/3rdparty/${contract.name}.json`)
+    fs.copyFileSync(abiPathName, `build/thirdparty/${contract.name}.json`)
   }
 }
 
