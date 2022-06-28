@@ -8,9 +8,10 @@
     "types": ["@types/node", "@types/chai", "@types/mocha"],
     "typeRoots": ["./node_modules/@types", "./types"],
     "rootDir": ".",
-    "outDir": "dist",
-    "resolveJsonModule": true
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "declaration": true
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "build", "cache", "artifacts"]
+  "exclude": ["node_modules", "build", "cache", "artifacts", "dist"]
 }

@@ -12,8 +12,10 @@ import './IWorkflowRunner.sol';
 import './WorkflowStep.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
-import './integrations/Curve.sol';
 import './TokenAmounts.sol';
+
+import './integrations/Curve.sol';
+import './integrations/Wormhole.sol';
 
 /// @dev inheriting from FrontDoor so storage slots align
 contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
@@ -90,14 +92,6 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
     return (wethAddress, amount);
   }
 
-  function wormhole(
-    address,
-    uint256,
-    uint256[] calldata
-  ) internal pure returns (address, uint256) {
-    return (address(0), 0);
-  }
-
   function withdrawal(
     address tokenAddress,
     uint256 amount,
@@ -132,7 +126,7 @@ contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
         if (index == 2) {
           return Curve.curve3PoolSwap;
         } else {
-          return wormhole;
+          return Wormhole.wormholeTransferTokens;
         }
       }
     } else {
