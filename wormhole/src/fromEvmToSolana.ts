@@ -232,7 +232,7 @@ async function transferWethToSol() {
         args: [chainIdBn, tokenTransferRecipientBn, nonceBn],
       },
     ],
-    { value: wethTargetAmount, gasLimit: 1_000_000 }
+    { gasLimit: 1_000_000 }
   )
   // const tx2= await tx.wait(1)
   // let receipt = await provider.getTransactionReceipt(tx.hash)
