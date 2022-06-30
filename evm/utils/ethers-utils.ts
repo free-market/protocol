@@ -33,17 +33,34 @@ export async function getUserProxyAddress(frontDoorAddress: string, userWallet: 
   return userProxyAddress
 }
 
-export async function ensureEthBalance(eth: string, fromWallet: Wallet, toAddress: string) {
-  const userProxyBalanceEth = await fromWallet.provider.getBalance(toAddress)
-  const targetBalance = ethers.utils.parseEther(eth)
-  const weiToSend = targetBalance.sub(userProxyBalanceEth)
+export async function ensureEthBalance(targetBalanceWei: BigNumber, fromWallet: Wallet, toAddress: string) {
+  const targetAddressBalanceWei = await fromWallet.provider.getBalance(toAddress)
+  const weiToSend = targetBalanceWei.sub(targetAddressBalanceWei)
   if (!weiToSend.isNegative() && !weiToSend.isZero()) {
-    console.log(`sending ${ethers.utils.formatEther(weiToSend)} ETH to user's proxy`)
+    console.log(`sending ${ethers.utils.formatEther(weiToSend)} ETH to ${toAddress}`)
     await fromWallet.sendTransaction({
       to: toAddress,
       value: weiToSend,
     })
     const userProxyBalanceEthAfter = await fromWallet.provider.getBalance(toAddress)
-    console.log(`ETH sent to user proxy, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
+    console.log(`ETH sent, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
   }
+}
+
+export async function getEthBalanceShortfall(targetBalanceWei: BigNumber, provider: Provider, toAddress: string): Promise<BigNumber> {
+  const userProxyBalanceEth = await provider.getBalance(toAddress)
+  const weiToSend = targetBalanceWei.sub(userProxyBalanceEth)
+  if (!weiToSend.isNegative() && !weiToSend.isZero()) {
+    return weiToSend
+  }
+  return BigNumber.from('0')
+}
+
+export const STEPID = {
+  ETH_WETH: 0,
+  CURVE_TRICRYPTO_SWAP: 1,
+  CURVE_3POOL_SWAP: 2,
+  WORMHOLE: 3,
+  WITHDRAWAL: 4,
+  CURVE_3POOL_FUND: 5,
 }

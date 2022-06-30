@@ -40,6 +40,14 @@ const etheriumMainnetConfig: EtheriumConfig = {
   wormholeTokenBridgeAddress: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
 }
 
+const etheriumGanacheConfig: EtheriumConfig = {
+  jsonRpcUrl: `http://127.0.0.1:8545`,
+  wethAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  wormholeChainId: CHAIN_ID_ETH,
+  wormholeCoreBridgeAddress: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
+  wormholeTokenBridgeAddress: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
+}
+
 const solanaDevnetConfig: SolanaConfig = {
   jsonRpcUrl: 'https://api.devnet.solana.com',
   wormholeChainId: CHAIN_ID_SOLANA,

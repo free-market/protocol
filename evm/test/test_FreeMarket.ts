@@ -3,21 +3,19 @@ import { ethers, Wallet, BigNumber } from 'ethers'
 import { getDeployedContractAddress, getTestWallet } from '../utils/ganachUtils'
 import { IUserProxyManager__factory, IWorkflowRunner__factory, IERC20__factory } from '../types/ethers-contracts'
 import { WorkflowStepStruct } from '../types/ethers-contracts/IWorkflowRunner'
-import { ADDRESS_ZERO, ensureEthBalance, getMainNetContracts, getUserProxyAddress } from '../utils/ethers-utils'
+import {
+  ADDRESS_ZERO,
+  ensureEthBalance,
+  getEthBalanceShortfall,
+  getMainNetContracts,
+  getUserProxyAddress,
+  STEPID,
+} from '../utils/ethers-utils'
 
 // import { getMainnetSdk } from '../generated'
 // import { getTestWallet, transferEthToUsdc } from '../utils/ganachUtils'
 
 const TEST_WALLET_INDEX = 1
-
-const STEPID = {
-  ETH_WETH: 0,
-  CURVE_TRICRYPTO_SWAP: 1,
-  CURVE_3POOL_SWAP: 2,
-  WORMHOLE: 3,
-  WITHDRAWAL: 4,
-  CURVE_3POOL_FUND: 5,
-}
 
 contract('FreeMarket', function (accounts: string[]) {
   const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
@@ -39,7 +37,9 @@ contract('FreeMarket', function (accounts: string[]) {
   it('executes workflows', async () => {
     const userProxyAddress = await getUserProxyAddress(frontDoorAddress, userWallet)
     // ensure that the user proxy has at least 1 eth
-    await ensureEthBalance('1.0', userWallet, userProxyAddress)
+    // await ensureEthBalance('1.0', userWallet, userProxyAddress)
+    const targetAmountWei = ethers.utils.parseEther('0.01')
+    const weiToSend = await getEthBalanceShortfall(targetAmountWei, userWallet.provider, userProxyAddress)
 
     // get balances before
     const { weth, usdt, usdc } = getMainNetContracts(userWallet)
@@ -75,7 +75,7 @@ contract('FreeMarket', function (accounts: string[]) {
       },
     ]
 
-    let tx = await userWorkflowRunner.executeWorkflow(steps, { gasLimit: 30_000_000 })
+    let tx = await userWorkflowRunner.executeWorkflow(steps, { gasLimit: 30_000_000, value: weiToSend })
     let txReceipt = await provider.getTransactionReceipt(tx.hash)
     assert.equal(txReceipt.status, 1, 'execute workflow tx status successful')
     console.log('executeWorkflow completed, gas: ' + txReceipt.gasUsed.toString())
@@ -132,7 +132,8 @@ contract('FreeMarket', function (accounts: string[]) {
     const { weth, usdt, curve3PoolLp } = getMainNetContracts(userWallet)
     const lpBalanceBefore = await curve3PoolLp.balanceOf(userProxyAddress)
     console.log(`lpBalanceBefore: ${lpBalanceBefore}`)
-    await ensureEthBalance('1.0', userWallet, userProxyAddress)
+    const wethTargetAmount = ethers.BigNumber.from(10).pow(16)
+    await ensureEthBalance(wethTargetAmount, userWallet, userProxyAddress)
     const userWorkflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, userWallet)
     const tx = await userWorkflowRunner.executeWorkflow(
       [

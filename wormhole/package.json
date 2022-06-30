@@ -11,8 +11,10 @@
   "license": "ISC",
   "devDependencies": {
     "@fmp/evm": "workspace:*",
+    "@types/chai": "^4.3.1",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
+    "chai": "^4.3.6",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.1.0",

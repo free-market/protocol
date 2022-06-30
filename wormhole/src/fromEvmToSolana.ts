@@ -23,13 +23,24 @@ import {
   redeemOnSolana,
   transferFromEth,
   tryNativeToUint8Array,
+  tryNativeToHexString,
+  createNonce,
 } from '@certusone/wormhole-sdk'
 import { Weth__factory } from './ethers-contracts/abi'
 import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport'
 import bs58 from 'bs58'
 import { Provider, TransactionReceipt } from '@ethersproject/providers'
 
-import { IUserProxyManager__factory, ensureEthBalance, ADDRESS_ZERO, IWorkflowRunner__factory } from '@fmp/evm'
+import {
+  IUserProxyManager__factory,
+  ADDRESS_ZERO,
+  IWorkflowRunner__factory,
+  getEthBalanceShortfall,
+  STEPID,
+  getTestWallet,
+} from '@fmp/evm'
+import { ethConfig, solConfig } from './config'
+import { assert } from 'chai'
 
 dotenv.config()
 
@@ -41,62 +52,6 @@ const SOLANA_PRIVATE_KEY = 'GR4HndXZHhi1sV77G7yupFgvNbxjXzgQ6R18diuXmYkDciuKZ9Xv
 const WORMHOLE_RPC_HOSTS = ['https://wormhole-v2-testnet-api.certus.one']
 export const TEST_ERC20 = '0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A'
 
-interface WormholeBaseConfig {
-  jsonRpcUrl: string
-  wormholeChainId: ChainId
-  wormholeCoreBridgeAddress: string
-  wormholeTokenBridgeAddress: string
-}
-
-interface EtheriumConfig extends WormholeBaseConfig {
-  wethAddress: string
-}
-
-interface SolanaConfig extends WormholeBaseConfig {}
-
-const etheriumGoerliConfig: EtheriumConfig = {
-  jsonRpcUrl: `wss://eth-goerli.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_TEST']}`,
-  wethAddress: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-  wormholeChainId: CHAIN_ID_ETH,
-  wormholeCoreBridgeAddress: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
-  wormholeTokenBridgeAddress: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
-}
-
-const etheriumRopstenConfig: EtheriumConfig = {
-  jsonRpcUrl: `wss://eth-ropsten.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_TEST']}`,
-  wethAddress: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
-  wormholeChainId: CHAIN_ID_ETHEREUM_ROPSTEN,
-  wormholeCoreBridgeAddress: '0x210c5F5e2AF958B4defFe715Dc621b7a3BA888c5',
-  wormholeTokenBridgeAddress: '0xF174F9A837536C449321df1Ca093Bb96948D5386',
-}
-
-const etheriumMainnetConfig: EtheriumConfig = {
-  jsonRpcUrl: `wss://eth-mainnet.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_MAIN']}`,
-  wethAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  wormholeChainId: CHAIN_ID_ETH,
-  wormholeCoreBridgeAddress: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
-  wormholeTokenBridgeAddress: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
-}
-
-const solanaDevnetConfig: SolanaConfig = {
-  jsonRpcUrl: 'https://api.devnet.solana.com',
-  wormholeChainId: CHAIN_ID_SOLANA,
-  wormholeCoreBridgeAddress: '3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5',
-  wormholeTokenBridgeAddress: 'DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe',
-}
-
-// https://api.mainnet-beta.solana.com - Solana-hosted api node cluster, backed by a load balancer; rate-limited
-// https://solana-api.projectserum.com - Project Serum-hosted api node
-const solanaMainnetConfig: SolanaConfig = {
-  jsonRpcUrl: 'https://api.mainnet-beta.solana.com',
-  wormholeChainId: CHAIN_ID_SOLANA,
-  wormholeCoreBridgeAddress: 'worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth',
-  wormholeTokenBridgeAddress: 'wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb',
-}
-
-const ethConfig = etheriumGoerliConfig
-const solConfig = solanaDevnetConfig
-
 async function printGasFromTransaction(provider: Provider, tx: ethers.ContractTransaction, message: string) {
   const txReceipt = await provider.getTransactionReceipt(tx.hash)
   printGasFromReceipt(txReceipt, message)
@@ -105,7 +60,61 @@ function printGasFromReceipt(txReceipt: ethers.ContractReceipt, message: string)
   console.log(`${message}: ${txReceipt.gasUsed}`)
 }
 
+async function getUserProxyAddress(signer: ethers.Signer) {
+  const userProxyManager = IUserProxyManager__factory.connect(FRONT_DOOR_ADDRESS, signer)
+  let userProxyAddress = await userProxyManager.getUserProxy()
+  if (userProxyAddress === ADDRESS_ZERO) {
+    console.log('creating user proxy')
+    const txResult = await userProxyManager.createUserProxy()
+    // const txReceipt = await signer.provider!.getTransactionReceipt(txResult.hash)
+    const txReceipt = await txResult.wait(1)
+    console.log('user proxy created, gas: ' + txReceipt.gasUsed.toString())
+    userProxyAddress = await userProxyManager.getUserProxy()
+  }
+  console.log('user proxy address', userProxyAddress)
+  return userProxyAddress
+}
+
+async function ensureWeth(fromWallet: ethers.Wallet, toAddress: string, wethTargetAmount: ethers.BigNumber) {
+  console.log(`ensuring weth balance, target amount is ${ethers.utils.formatEther(wethTargetAmount)}`)
+  const workflowRunner = IWorkflowRunner__factory.connect(toAddress, fromWallet)
+  const weth = Weth__factory.connect(ethConfig.wethAddress, fromWallet)
+
+  // get current weth balance
+  let tokenBalance = await weth.balanceOf(toAddress)
+  const wethShortfall = wethTargetAmount.sub(tokenBalance)
+  if (!wethShortfall.isNegative() && !wethShortfall.isZero()) {
+    // get amount of eth required to send
+    const ethToTransfer = await getEthBalanceShortfall(wethTargetAmount, fromWallet.provider, toAddress)
+    const args = [
+      {
+        stepId: STEPID.ETH_WETH,
+        amount: wethShortfall,
+        amountIsPercent: false,
+        fromToken: '0',
+        args: [],
+      },
+    ]
+    const asdf = await workflowRunner.estimateGas.executeWorkflow(args, { value: ethToTransfer, gasLimit: 1_000_000 })
+    const tx = await workflowRunner.executeWorkflow(args, { value: ethToTransfer, gasLimit: 1_000_000 })
+    let receipt = await tx.wait(1)
+    printGasFromReceipt(receipt, 'ethToWeth')
+    tokenBalance = await weth.balanceOf(toAddress)
+    assert.equal(tokenBalance.toString(), wethTargetAmount.toString())
+  }
+}
+
 async function transferWethToSol() {
+  // create a signer for Eth
+  const provider = new ethers.providers.WebSocketProvider(ethConfig.jsonRpcUrl)
+  const wallet = new ethers.Wallet(ETH_TEST_WALLET_PRIVATE_KEY, provider)
+  // const provider = new ethers.providers.JsonRpcProvider(ethConfig.jsonRpcUrl)
+  // const signer = getTestWallet(1, provider)
+  const userProxyAddress = await getUserProxyAddress(wallet)
+  const wethTargetAmount = ethers.utils.parseEther('0.01')
+
+  await ensureWeth(wallet, userProxyAddress, wethTargetAmount)
+
   const connection = new Connection(solConfig.jsonRpcUrl, 'confirmed')
   // const eraseme = base64ToUint8Array(SOLANA_PRIVATE_KEY)
   // const keypair = Keypair.fromSecretKey(base64ToUint8Array(SOLANA_PRIVATE_KEY))
@@ -154,28 +163,25 @@ async function transferWethToSol() {
     // TODO what are the correct set of args here?
     await connection.confirmTransaction(txid)
   }
-  // create a signer for Eth
-  const provider = new ethers.providers.WebSocketProvider(ethConfig.jsonRpcUrl)
-  const signer = new ethers.Wallet(ETH_TEST_WALLET_PRIVATE_KEY, provider)
+
   const DECIMALS = 18
-  // const amount = parseUnits("1", DECIMALS);
+  // // const amount = parseUnits("1", DECIMALS);
 
-  const amountToTransfer = ethers.BigNumber.from(10).pow(16)
+  // const amountToTransfer = ethers.BigNumber.from(10).pow(16)
 
-  const token = Weth__factory.connect(ethConfig.wethAddress, signer)
-  const initialErc20BalOnEth = await token.balanceOf(ETH_TEST_WALLET_ADDRESS)
+  // const initialErc20BalOnEth = await token.balanceOf(ETH_TEST_WALLET_ADDRESS)
 
-  let x: TransactionReceipt
-  // weth specific here - deposit required amount
-  const amountToDeposit = amountToTransfer.sub(initialErc20BalOnEth)
-  if (!amountToDeposit.isZero() && !amountToDeposit.isNegative()) {
-    const wethDepositResult = await token.deposit({ from: signer.address, value: amountToDeposit })
-    await printGasFromTransaction(provider, wethDepositResult, 'weith.deposit')
-    const balanceAfterDeposit = await token.balanceOf(signer.address)
-    if (!balanceAfterDeposit.sub(amountToDeposit).isZero()) {
-      throw new Error('problem setting up token balance')
-    }
-  }
+  // let x: TransactionReceipt
+  // // weth specific here - deposit required amount
+  // const amountToDeposit = amountToTransfer.sub(initialErc20BalOnEth)
+  // if (!amountToDeposit.isZero() && !amountToDeposit.isNegative()) {
+  //   const wethDepositResult = await token.deposit({ from: signer.address, value: amountToDeposit })
+  //   await printGasFromTransaction(provider, wethDepositResult, 'weith.deposit')
+  //   const balanceAfterDeposit = await token.balanceOf(signer.address)
+  //   if (!balanceAfterDeposit.sub(amountToDeposit).isZero()) {
+  //     throw new Error('problem setting up token balance')
+  //   }
+  // }
 
   // Get the initial balance on Solana
   const tokenFilter: TokenAccountsFilter = {
@@ -207,19 +213,30 @@ async function transferWethToSol() {
   //   undefined,
   //   { gasLimit: 2_000_000 }
   // )
-  const userProxyManager = IUserProxyManager__factory.connect(FRONT_DOOR_ADDRESS, signer)
-  let userProxyAddress = await userProxyManager.getUserProxy()
-  if (userProxyAddress === ADDRESS_ZERO) {
-    console.log('creating user proxy')
-    const txResult = await userProxyManager.createUserProxy()
-    const txReceipt = await provider.getTransactionReceipt(txResult.hash)
-    console.log('user proxy created, gas: ' + txReceipt.gasUsed.toString())
-    userProxyAddress = await userProxyManager.getUserProxy()
-  }
-  console.log('user proxy address', userProxyAddress)
 
-  const workflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, signer)
+  const tokenTransferRecipientHex = '0x' + tryNativeToHexString(recipient.toString(), CHAIN_ID_SOLANA)
+  // const tokenTransferRecipient = BigNumber.from(tokenTransferRecipientHex)
 
+  const chainIdBn = ethers.BigNumber.from(CHAIN_ID_SOLANA)
+  const tokenTransferRecipientBn = ethers.BigNumber.from(tokenTransferRecipientHex)
+  const nonceBn = ethers.BigNumber.from(Math.floor(Math.random() * 1_000_000))
+
+  const workflowRunner = IWorkflowRunner__factory.connect(userProxyAddress, wallet)
+  const tx = await workflowRunner.executeWorkflow(
+    [
+      {
+        stepId: STEPID.WORMHOLE,
+        amount: wethTargetAmount,
+        amountIsPercent: false,
+        fromToken: ethConfig.wethAddress,
+        args: [chainIdBn, tokenTransferRecipientBn, nonceBn],
+      },
+    ],
+    { value: wethTargetAmount, gasLimit: 1_000_000 }
+  )
+  // const tx2= await tx.wait(1)
+  // let receipt = await provider.getTransactionReceipt(tx.hash)
+  let receipt = await tx.wait(1)
   printGasFromReceipt(receipt, 'wh.transferFromEth')
   // get the sequence from the logs (needed to fetch the vaa)
   const sequence = parseSequenceFromLogEth(receipt, ethConfig.wormholeCoreBridgeAddress)
@@ -285,7 +302,8 @@ async function transferWethToSol() {
   // ).toBe(true);
 
   // Get the final wallet balance of ERC20 on Eth
-  const finalErc20BalOnEth = await token.balanceOf(ETH_TEST_WALLET_ADDRESS)
+  const weth = Weth__factory.connect(ethConfig.wethAddress, wallet)
+  const finalErc20BalOnEth = await weth.balanceOf(ETH_TEST_WALLET_ADDRESS)
   const finalErc20BalOnEthFormatted = formatUnits(finalErc20BalOnEth._hex, DECIMALS)
   // expect(
   //   parseInt(initialErc20BalOnEthFormatted) -
@@ -305,7 +323,7 @@ async function transferWethToSol() {
     }
   }
   // expect(finalSolanaBalance - initialSolanaBalance === 1).toBe(true);
-  provider.destroy()
+  // provider.destroy()
 }
 
 async function go() {

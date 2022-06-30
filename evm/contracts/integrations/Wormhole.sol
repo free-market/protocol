@@ -30,12 +30,15 @@ library Wormhole {
   // address constant coreBridgeAddress = 0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B;
   // address constant tokenBridgeAddress = 0x3ee18B2214AFF97000D974cf647E7C347E8fa585;
 
+  // args[0] is recipientChain
+  // args[1] is recipient
+  // args[2] is nonce
   function wormholeTransferTokens(
     address fromToken,
     uint256 amount,
     uint256[] calldata args
   ) internal returns (address, uint256) {
-    IERC20(fromToken).approve(tokenBridgeAddress, amount);
+    require(IERC20(fromToken).approve(tokenBridgeAddress, amount), 'approval for wormhole token bridge failed');
     TokenBridge(tokenBridgeAddress).transferTokens(fromToken, amount, uint16(args[0]), bytes32(args[1]), 0, uint32(args[2]));
     return (address(0), 0);
   }

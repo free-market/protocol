@@ -1,3 +1,7 @@
+require("ts-node").register({
+  files: true,
+});
+
 require('dotenv').config()
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
@@ -16,8 +20,8 @@ module.exports = {
         return new HDWalletProvider(process.env.GOERLI_MNEMONIC, process.env.GOERLI_URL)
       },
       network_id: '5',
-      gas: 4465030,
-      gasPrice: 10000000000,
+      // gas: 4465030,
+      // gasPrice: 10000000000,
     },
   },
   mocha: {},

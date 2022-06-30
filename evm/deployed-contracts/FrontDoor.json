@@ -52,7 +52,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "fallback"
+      "type": "fallback",
+      "payable": true
     },
     {
       "inputs": [
@@ -78,7 +79,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -91,7 +93,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -104,7 +107,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -117,7 +121,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -143,11 +148,13 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"LogNewOwner\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldUpstream\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newUpstream\",\"type\":\"address\"}],\"name\":\"LogNewUpstream\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"eternalStorageAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"frontDoorAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getUpstream\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address payable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newUpstream\",\"type\":\"address\"}],\"name\":\"setUpstream\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"upstream\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FrontDoor.sol\":\"FrontDoor\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/EternalStorage.sol\":{\"keccak256\":\"0x7f18c60de0d6ebff079dfa7e268a3bac4be618be45b1c64b748d58467b745b66\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://680629c83f92d6a3751cde5432661bfdbc7a5e3cc8ee60723a8ae4ee797ca27d\",\"dweb:/ipfs/QmQKyxvQBiv4aWeZAt9Xwp2LRSNQbR7LMV4es6MEFdtdLS\"]},\"project:/contracts/FrontDoor.sol\":{\"keccak256\":\"0x15a7330f90c0c9554d2bd98ae894da6e1d39a875c346753256f53c74431de70a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d4ef5f7a39c5e39935579510aad54a5d3791bc22d125d63eeabba480d2115af4\",\"dweb:/ipfs/QmQSBuQQ5VPQjBZdirXrFxkf8DseBLuDJdrno164HAP5ho\"]},\"project:/contracts/IHasUpstream.sol\":{\"keccak256\":\"0xef83d78a64e9c3cbd2b9238523af2a9a03abc8c42890e57a1ffeefddd7999be3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://31368d28b871375b9e72897e1b7910e9bcbca8929f60ff2160e792cde0317e8b\",\"dweb:/ipfs/QmWYv2UWPeRtgGcCvXezrhneFJofi1j1GHXqqPgCNGzD8w\"]},\"project:/contracts/OwnableImmutableProxy.sol\":{\"keccak256\":\"0x6f329e847516302661666af7e7f2068f654f43585109b7170d2e53b90cd02370\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d1fa328b206c1ded9dcbee5ce699aac884bd634690464aa115c89caec023a1b4\",\"dweb:/ipfs/QmbURint32NNEQ4Djo6S6cgb4LHScxvYxHFHzeruW9nxQy\"]},\"project:/contracts/OwnableMutableProxy.sol\":{\"keccak256\":\"0x4c5b916fab17af6c6baf3243b810fdf7e64581d3503ed9e8f9494daf722a6048\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6936bc1289a67c51b526934e2cf2f894125661bd5c613db7475b7e3df9a644d8\",\"dweb:/ipfs/Qmf1FFkiCfLuwLTro28T57PMsEnP8DuLv9vc5Ee1nunAha\"]},\"project:/contracts/Proxy.sol\":{\"keccak256\":\"0x42fa4784c2849078b2f405d255b2964350bece844e5640305907888d1f66be50\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://28fd0ac568ea0087f6c3c75aa34a13c75903a5f60525ced3ee3c90a38fe3183c\",\"dweb:/ipfs/QmThPbZ7y3u99YiCLJwywqGVSGJ7YwjEnaqQbfiTxgK2BQ\"]}},\"version\":1}",
@@ -1990,11 +1997,63 @@
       },
       "links": {},
       "address": "0xc7700A198313693c9614dDB176347C61b8417Af1",
-      "transactionHash": "0x7d2d9ad6312682bc229c8b0d914e14ab43589754753eefd266760f118a904db3"
+      "transactionHash": "0xed3f10bf2ff21eafd3eb3d7573741686c9d5e5494af39d3d09f94048278f27a9"
+    },
+    "5": {
+      "events": {
+        "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "LogNewOwner",
+          "type": "event"
+        },
+        "0xb3d51b4e19bdb93dfcf43f1951a29eb5eb26e251c1af1550ed9a7b13f8022da7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "oldUpstream",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newUpstream",
+              "type": "address"
+            }
+          ],
+          "name": "LogNewUpstream",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x9f429fDc7020d58Da9ACcED763AF2260792321Ab",
+      "transactionHash": "0xdebeac831a1e3c0585464966ffd207b14eae15b92ef22cda709e58a51465a536"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-06-28T12:39:11.650Z",
+  "updatedAt": "2022-06-29T17:40:52.548Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

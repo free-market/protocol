@@ -78,6 +78,7 @@ async function attestEtheriumTokenOnSolana(tokenAddress: string) {
 async function go() {
   try {
     await attestEtheriumTokenOnSolana(ethConfig.wethAddress)
+    console.log('success!')
   } catch (e) {
     console.log(e)
   }
