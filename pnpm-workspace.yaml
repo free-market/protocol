@@ -5,3 +5,4 @@ packages:
   - 'evm'
   - 'contracts-spec'
   - 'wormhole'
+  - 'solana'
