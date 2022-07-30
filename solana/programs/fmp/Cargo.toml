@@ -13,10 +13,16 @@ no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 cpi = ["no-entrypoint"]
-default = []
+devnet = []
+mainnet = []
+default = ["devnet"]
 
 [profile.release]
 overflow-checks = true
 
 [dependencies]
 anchor-lang = "0.24.2"
+wormhole-bridge-solana = { git = "https://github.com/free-market/wormhole.git", branch="fmp", features = ["no-entrypoint", "wasm"] }
+spl-token = { version = "^3.3", features = ["no-entrypoint"] }
+spl-associated-token-account = {version = "1.0.5", features = ["no-entrypoint"] }
+bs58 = "0.4.0"

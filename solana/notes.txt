@@ -1,0 +1,160 @@
+
+javascript call to wormohole js sdk :
+
+args from sdk are:
+  connection: Connection, 
+  bridgeAddress: string, 
+  tokenBridgeAddress: string, 
+  payerAddress: string, 
+  fromAddress: string, 
+  mintAddress: string, 
+  amount: BigInt, 
+  targetAddress: Uint8Array, 
+  targetChain: ChainId | ChainName, 
+  originAddress?: Uint8Array, 
+  originChain?: ChainId | ChainName, 
+  fromOwnerAddress?: string, 
+  relayerFee?: BigInt, 
+  payload?: Uint8Array | null
+
+We call it like this (excludes final 3 args fromOwnerAddress, relayerFee and payload)
+from wormhole/sdksrc/token_bridge/transfer.ts 
+
+  const transaction = await transferFromSolana(
+    connection, 
+    solConfig.wormholeCoreBridgeAddress,  // bridgeAddress
+    solConfig.wormholeTokenBridgeAddress, // tokenBridgeAddress
+    payerAddress,                         // payerAddress
+    fromAddress,                          // fromAddress
+    SolanaForeignAsset,                   // mintAdress
+    amount,                               // amount
+    tryNativeToUint8Array(targetAddress, CHAIN_ID_ETH), // targetAddress, this helper func is so it gets encoded the target chain way
+    CHAIN_ID_ETH,                         // targetChain
+    // the next 2 args are required when transfering an asset that is 'non-native' on the from chain
+    tryNativeToUint8Array(ethConfig.wethAddress, ethConfig.wormholeChainId), // originAddress
+    CHAIN_ID_ETH                          // originChain
+  )
+
+payerAddress:  public key of main solana acccount of user
+  const keypair = Keypair.fromSecretKey(bs58.decode(SOLANA_PRIVATE_KEY))
+  const payerAddress = keypair.publicKey.toString()
+
+fromAddress: the spl token account associated (owned) by the user's main account:
+  const fromAddress = (
+    await Token.getAssociatedTokenAddress(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      new PublicKey(SolanaForeignAsset),
+      keypair.publicKey
+    )
+  ).toString()
+
+SolanaForeignAsset: pretty sure this is the addr of the wormhole wrapped token (which is an spl-token)
+  const SolanaForeignAsset = await getForeignAssetSolana(
+    connection,
+    solConfig.wormholeTokenBridgeAddress,
+    ethConfig.wormholeChainId,
+    tryNativeToUint8Array(ethConfig.wethAddress, ethConfig.wormholeChainId)
+  )
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// WORMHOLE SDK
+
+transfer sol to core bridge
+
+  export async function getBridgeFeeIx(
+    connection: Connection,
+    bridgeAddress: string,
+    payerAddress: string
+  ) {
+    const bridge = await importCoreWasm();
+    const feeAccount = await bridge.fee_collector_address(bridgeAddress);
+    const bridgeStatePK = new PublicKey(bridge.state_address(bridgeAddress));
+    const bridgeStateAccountInfo = await connection.getAccountInfo(bridgeStatePK);
+    if (bridgeStateAccountInfo?.data === undefined) {
+      throw new Error("bridge state not found");
+    }
+    const bridgeState = bridge.parse_state(
+      new Uint8Array(bridgeStateAccountInfo?.data)
+    );
+    const transferIx = SystemProgram.transfer({
+      fromPubkey: new PublicKey(payerAddress),
+      toPubkey: new PublicKey(feeAccount),
+      lamports: bridgeState.config.fee,
+    });
+    return transferIx;
+  }
+^ uses importCoreWasm to obtain 'bridge'   
+
+
+approval token-brodge to move the wrapped (spl) token from the user 
+
+  const {
+    transfer_native_ix,
+    transfer_wrapped_ix,
+    transfer_native_with_payload_ix,
+    transfer_wrapped_with_payload_ix,
+    approval_authority_address,                     // <-- this one is used here
+  } = await importTokenWasm();
+
+  import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+  const approvalIx = Token.createApproveInstruction(
+    TOKEN_PROGRAM_ID,
+    new PublicKey(fromAddress),
+    new PublicKey(approval_authority_address(tokenBridgeAddress)),
+    new PublicKey(fromOwnerAddress || payerAddress),                /// oohh, payer may not be owner 
+    [],
+    new u64(amount.toString(16), 16)
+  );
+
+wormhole transfer: 
+
+        : transfer_native_ix(
+            tokenBridgeAddress,
+            bridgeAddress,
+            payerAddress,
+            messageKey.publicKey.toString(),
+            fromAddress,
+            mintAddress,
+            nonce,
+            amount,
+            relayerFee,
+            targetAddress,
+            coalesceChainId(targetChain)
+          )
+
+      : transfer_wrapped_ix(
+          tokenBridgeAddress,
+          bridgeAddress,
+          payerAddress,
+          messageKey.publicKey.toString(),
+          fromAddress,
+          fromOwnerAddress || payerAddress,
+          originChainId as number, // checked by isSolanaNative
+          originAddress as Uint8Array, // checked by throw
+          nonce,
+          amount,
+          relayerFee,
+          targetAddress,
+          coalesceChainId(targetChain)
+        )
+
+messageKey:
+    let messageKey = Keypair.generate();
+
+
+nonce is just a random 32 bit value, should come in as a parameter to the workflow step
+  export function createNonce() {
+    const nonceConst = Math.random() * 100000;
+    const nonceBuffer = Buffer.alloc(4);
+    nonceBuffer.writeUInt32LE(nonceConst, 0);
+    return nonceBuffer;
+  }
+
+(not sure where the payload param went....)
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// wormhole rust wasm
+
+can be ported to our on-chain program, it's a shit ton of code though
+
