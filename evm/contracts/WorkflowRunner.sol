@@ -20,14 +20,14 @@ import './integrations/Wormhole.sol';
 /// @dev inheriting from FrontDoor so storage slots align
 contract WorkflowRunner is FrontDoor, IWorkflowRunner, IUserProxyManager {
   // mainnet
-  // address constant wethAddress = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+  address constant wethAddress = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
   address constant wbtcAddress = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
   address constant usdtAddress = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
   address constant usdcAddress = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
   address constant daiAddress = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
 
   // goerli
-  address constant wethAddress = address(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);
+  // address constant wethAddress = address(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);
 
   Weth constant weth = Weth(wethAddress);
 
