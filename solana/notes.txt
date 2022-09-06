@@ -158,3 +158,10 @@ nonce is just a random 32 bit value, should come in as a parameter to the workfl
 
 can be ported to our on-chain program, it's a shit ton of code though
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+https://spl.solana.com/token
+spl-token create-token
+spl-token supply <addr>
+spl-token create-account <addr> // associated addr aka "token account"
