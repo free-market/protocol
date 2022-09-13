@@ -4,12 +4,18 @@ import { m } from 'framer-motion'
 export type WorfklowStage =
   | 'collecting-evm-signature'
   | 'collecting-solana-signature'
-  | 'committing-solana'
+  | 'prepared'
   | 'committing-evm'
+  | 'evm-locked'
+  | 'waiting-for-validator'
+  | 'waiting-for-relayer'
+  | 'relayed'
+  | 'committing-solana'
 
 const stagesInOrder = [
   'collecting-evm-signature',
   'collecting-solana-signature',
+  'prepared',
   'committing-evm',
   'committing-solana',
 ]
@@ -18,9 +24,17 @@ export const ExampleWorkflow = (props: {
   stageNumber: number
   children: React.ReactNode
 }): JSX.Element => {
-const withdrawingFromMangoMarkets = false
+  const connected = true
+  const withdrawingFromMangoMarkets = false
   const stage = stagesInOrder[props.stageNumber]
-const vaaCommitted = stage === 'committing-solana'
+  const vaaCommitted = stage === 'committing-solana'
+
+  const signEVM = () => {}
+
+  const enable = async () => {
+    // const accounts = await provider.request({ method: 'eth_requestAccounts', })
+  }
+
   const committingEvmArrow = (
     <>
       <path
@@ -88,6 +102,7 @@ const vaaCommitted = stage === 'committing-solana'
       ></path>
     </>
   )
+
   const committingSolanaArrow = (
     <>
       <path
@@ -154,6 +169,129 @@ const vaaCommitted = stage === 'committing-solana'
       </switch>
     </>
   )
+        const solTx = (
+        <switch transform="translate(-.5 -.5)">
+          <foreignObject
+            width="100%"
+            height="100%"
+            overflow="visible"
+            pointerEvents="none"
+            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+            style={{ textAlign: 'left' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+
+                alignItems: 'unsafe center',
+
+                justifyContent: 'unsafe center',
+                width: 38,
+                ...(stage === 'committing-solana'
+                  ? {
+                      paddingTop: 420,
+                      marginLeft: 290,
+                    }
+                  : {
+                      paddingTop: 315,
+                      marginLeft: 201,
+                    }),
+                height: 1,
+              }}
+            >
+              <g
+                data-drawio-colors="color: rgb(0, 0, 0);"
+                style={{
+                  boxSizing: 'border-box',
+
+                  textAlign: 'center',
+                }}
+                fontSize="0"
+              >
+                <g
+                  style={{
+                    lineHeight: '1.2',
+                    whiteSpace: 'normal',
+                    overflowWrap: 'normal',
+                  }}
+                  color="#000"
+                  display="inline-block"
+                  fontFamily="Helvetica"
+                  fontSize="12"
+                  pointerEvents="all"
+                >
+                  sol-tx
+                </g>
+              </g>
+            </div>
+          </foreignObject>
+        </switch>
+)
+
+const ethTx = (
+        <switch transform="translate(-.5 -.5)">
+          <foreignObject
+            width="100%"
+            height="100%"
+            overflow="visible"
+            pointerEvents="none"
+            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+            style={{ textAlign: 'left' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+
+                alignItems: 'unsafe center',
+
+                justifyContent: 'unsafe center',
+                width: 38,
+                height: 1,
+                ...(stage === 'committing-solana'
+                  ? {
+                      paddingTop: 125,
+                      marginLeft: 341,
+                    }
+                  : stage === 'committing-evm'
+                  ? {
+                      paddingTop: 211,
+                      marginLeft: 241,
+                    }
+                  : {
+                      paddingTop: 265,
+                      marginLeft: 201,
+                    }),
+              }}
+            >
+              <g
+                data-drawio-colors="color: rgb(0, 0, 0);"
+                style={{
+                  boxSizing: 'border-box',
+
+                  textAlign: 'center',
+                }}
+                fontSize="0"
+              >
+                <g
+                  style={{
+                    lineHeight: '1.2',
+                    whiteSpace: 'normal',
+                    overflowWrap: 'normal',
+                  }}
+                  color="#000"
+                  display="inline-block"
+                  fontFamily="Helvetica"
+                  fontSize="12"
+                  pointerEvents="all"
+                >
+                  eth-tx
+                </g>
+              </g>
+            </div>
+          </foreignObject>
+        </switch>
+)
+
   return (
     <>
       <svg
@@ -1231,63 +1369,63 @@ const vaaCommitted = stage === 'committing-solana'
           </foreignObject>
         </switch>
         {vaaCommitted && (
-        <>
-        <path
-          fill="#1ba1e2"
-          stroke="#006eaf"
-          d="M740 200H820V210H740z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 78,
-                height: 1,
-                paddingTop: 205,
-                marginLeft: 741,
-              }}
-            >
-              <g
-                data-drawio-colors="color: #ffffff;"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="#1ba1e2"
+              stroke="#006eaf"
+              d="M740 200H820V210H740z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 78,
+                    height: 1,
+                    paddingTop: 205,
+                    marginLeft: 741,
                   }}
-                  color="#FFF"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
                 >
-                  USDC: 1000
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: #ffffff;"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'normal',
+                      }}
+                      color="#FFF"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      USDC: 1000
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {stage === 'committing-solana' && (
           <>
@@ -1350,351 +1488,351 @@ const vaaCommitted = stage === 'committing-solana'
           </>
         )}
         {vaaCommitted && (
-        <>
-        <path
-          fill="#f8cecc"
-          stroke="#b85450"
-          d="M530 410H570V420H530z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                height: 1,
-                paddingTop: 415,
-                marginLeft: 531,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="#f8cecc"
+              stroke="#b85450"
+              d="M530 410H570V420H530z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 38,
+                    height: 1,
+                    paddingTop: 415,
+                    marginLeft: 531,
                   }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
                 >
-                  vaa-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0);"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'normal',
+                      }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      vaa-tx
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {vaaCommitted && (
-        <>
-        <path
-          fill="#f8cecc"
-          stroke="#b85450"
-          d="M530 490H570V500H530z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                height: 1,
-                paddingTop: 495,
-                marginLeft: 531,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="#f8cecc"
+              stroke="#b85450"
+              d="M530 490H570V500H530z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 38,
+                    height: 1,
+                    paddingTop: 495,
+                    marginLeft: 531,
                   }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
                 >
-                  vaa-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0);"
+                    style={{
+                      boxSizing: 'border-box',
 
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 1,
-                height: 1,
-                paddingTop: 495,
-                marginLeft: 605,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'normal',
+                      }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      vaa-tx
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
-                  style={{ lineHeight: '1.2', whiteSpace: 'nowrap' }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
+                <div
+                  style={{
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 1,
+                    height: 1,
+                    paddingTop: 495,
+                    marginLeft: 605,
+                  }}
                 >
-                  (commited)
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0);"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{ lineHeight: '1.2', whiteSpace: 'nowrap' }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      (commited)
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {withdrawingFromMangoMarkets && (
-        <>
-        <path
-          fill="#1ba1e2"
-          stroke="#006eaf"
-          d="M640 770H740V780H640z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 98,
-                height: 1,
-                paddingTop: 775,
-                marginLeft: 641,
-              }}
-            >
-              <g
-                data-drawio-colors="color: #ffffff;"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="#1ba1e2"
+              stroke="#006eaf"
+              d="M640 770H740V780H640z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 98,
+                    height: 1,
+                    paddingTop: 775,
+                    marginLeft: 641,
                   }}
-                  color="#FFF"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
                 >
-                  SOL: 28
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: #ffffff;"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'normal',
+                      }}
+                      color="#FFF"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      SOL: 28
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {withdrawingFromMangoMarkets && (
-        <>
-        <path
-          fill="none"
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M451.25 580l213.17 116.94"
-          pointerEvents="stroke"
-        ></path>
-        <path
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M669.02 699.46l-7.82-.3 3.22-2.22.15-3.91z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 1,
-                height: 1,
-                paddingTop: 651,
-                marginLeft: 572,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="none"
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M451.25 580l213.17 116.94"
+              pointerEvents="stroke"
+            ></path>
+            <path
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M669.02 699.46l-7.82-.3 3.22-2.22.15-3.91z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    whiteSpace: 'nowrap',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 1,
+                    height: 1,
+                    paddingTop: 651,
+                    marginLeft: 572,
                   }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="11"
-                  pointerEvents="all"
                 >
-                  WITHDRAW
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        whiteSpace: 'nowrap',
+                      }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="11"
+                      pointerEvents="all"
+                    >
+                      WITHDRAW
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {withdrawingFromMangoMarkets && (
-        <>
-        <path
-          fill="#1ba1e2"
-          stroke="#006eaf"
-          d="M340 770H440V780H340z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 98,
-                height: 1,
-                paddingTop: 775,
-                marginLeft: 341,
-              }}
-            >
-              <g
-                data-drawio-colors="color: #ffffff;"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+          <>
+            <path
+              fill="#1ba1e2"
+              stroke="#006eaf"
+              d="M340 770H440V780H340z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 98,
+                    height: 1,
+                    paddingTop: 775,
+                    marginLeft: 341,
                   }}
-                  color="#FFF"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
                 >
-                  mSOL: 28
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: #ffffff;"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'normal',
+                      }}
+                      color="#FFF"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="12"
+                      pointerEvents="all"
+                    >
+                      mSOL: 28
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
         {stage === 'committing-evm' && committingEvmArrow}
         {stage === 'committing-solana' && committingSolanaArrow}
@@ -1705,7 +1843,7 @@ const vaaCommitted = stage === 'committing-solana'
             d="M289 415H329V425H289z"
             pointerEvents="all"
           ></path>
-        ) : (
+        ) : !['collecting-evm-signature', 'collecting-solana-signature'].includes(stage) && (
           <path
             fill="#d5e8d4"
             stroke="#82b366"
@@ -1713,7 +1851,7 @@ const vaaCommitted = stage === 'committing-solana'
             pointerEvents="all"
           ></path>
         )}
-        {stage !== 'committing-solana' && stage !== 'committing-evm' && (
+        {!['committing-solana', 'committing-evm', 'collecting-evm-signature'].includes(stage) && (
           <path
             xmlns="http://www.w3.org/2000/svg"
             fill="#d5e8d4"
@@ -1722,124 +1860,11 @@ const vaaCommitted = stage === 'committing-solana'
             pointerEvents="all"
           ></path>
         )}
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                ...(stage === 'committing-solana'
-                  ? {
-                      paddingTop: 420,
-                      marginLeft: 290,
-                    }
-                  : {
-                      paddingTop: 315,
-                      marginLeft: 201,
-                    }),
-                height: 1,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
-              >
-                <g
-                  style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
-                  }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
-                >
-                  sol-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                height: 1,
-                ...(stage === 'committing-solana'
-                  ? {
-                      paddingTop: 125,
-                      marginLeft: 341,
-                    }
-                  : stage === 'committing-evm'
-                  ? {
-                      paddingTop: 211,
-                      marginLeft: 241,
-                    }
-                  : {
-                      paddingTop: 265,
-                      marginLeft: 201,
-                    }),
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
-              >
-                <g
-                  style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
-                  }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
-                >
-                  eth-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
+        {!['collecting-evm-signature', 'collecting-solana-signature'].includes(stage) && solTx}
+        {stage !== 'collecting-evm-signature' && ethTx}
       </svg>
+      {stage === 'collecting-evm-signature' && <button onClick={signEVM}>Sign</button>}
+      {!connected && <button onClick={enable}>Connect to wallet</button>}
       {props.children}
     </>
   )
