@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { m } from 'framer-motion'
+import { Mainnet, DAppProvider, useEthers, Config, Goerli } from '@usedapp/core'
+import { getDefaultProvider } from 'ethers'
+import { Connection, PublicKey } from '@solana/web3.js';
+import {
+  Program, Provider, web3
+} from '@project-serum/anchor';
+import { useWallet, WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 export type WorfklowStage =
   | 'collecting-evm-signature'
+  | 'collected-evm-signature'
   | 'collecting-solana-signature'
+  | 'collected-solana-signature'
   | 'prepared'
   | 'committing-evm'
   | 'evm-locked'
@@ -14,26 +25,40 @@ export type WorfklowStage =
 
 const stagesInOrder = [
   'collecting-evm-signature',
+  'collected-evm-signature',
   'collecting-solana-signature',
+  'collected-solana-signature',
   'prepared',
   'committing-evm',
+  'evm-locked',
+  'waiting-for-validator',
+  'waiting-for-relayer',
+  'relayed',
   'committing-solana',
 ]
 
 export const ExampleWorkflow = (props: {
-  stageNumber: number
+  initialStageNumber: number
   children: React.ReactNode
 }): JSX.Element => {
-  const connected = true
+  const { activateBrowserWallet, account, library } = useEthers();
+  const [ stageNumber, setStageNumber ] = useState(props.initialStageNumber)
+  const metaMaskConnected = Boolean(account)
   const withdrawingFromMangoMarkets = false
-  const stage = stagesInOrder[props.stageNumber]
+  const stage = stagesInOrder[stageNumber]
   const vaaCommitted = stage === 'committing-solana'
+  const wallet = useWallet()
+  const phantomConnected = wallet.connected
 
-  const signEVM = () => {}
-
-  const enable = async () => {
-    // const accounts = await provider.request({ method: 'eth_requestAccounts', })
+  const signEVM = async () => {
+    const signer = library!.getSigner()
+    const signature = await signer.signMessage('some stuff')
+    setStageNumber(stageNumber + 1)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setStageNumber(stageNumber + 2)
   }
+
+  const enableMetaMask = activateBrowserWallet
 
   const committingEvmArrow = (
     <>
@@ -169,128 +194,128 @@ export const ExampleWorkflow = (props: {
       </switch>
     </>
   )
-        const solTx = (
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
+  const solTx = (
+    <switch transform="translate(-.5 -.5)">
+      <foreignObject
+        width="100%"
+        height="100%"
+        overflow="visible"
+        pointerEvents="none"
+        requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+        style={{ textAlign: 'left' }}
+      >
+        <div
+          style={{
+            display: 'flex',
+
+            alignItems: 'unsafe center',
+
+            justifyContent: 'unsafe center',
+            width: 38,
+            ...(stage === 'committing-solana'
+              ? {
+                  paddingTop: 420,
+                  marginLeft: 290,
+                }
+              : {
+                  paddingTop: 315,
+                  marginLeft: 201,
+                }),
+            height: 1,
+          }}
+        >
+          <g
+            data-drawio-colors="color: rgb(0, 0, 0);"
+            style={{
+              boxSizing: 'border-box',
+
+              textAlign: 'center',
+            }}
+            fontSize="0"
           >
-            <div
+            <g
               style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                ...(stage === 'committing-solana'
-                  ? {
-                      paddingTop: 420,
-                      marginLeft: 290,
-                    }
-                  : {
-                      paddingTop: 315,
-                      marginLeft: 201,
-                    }),
-                height: 1,
+                lineHeight: '1.2',
+                whiteSpace: 'normal',
+                overflowWrap: 'normal',
               }}
+              color="#000"
+              display="inline-block"
+              fontFamily="Helvetica"
+              fontSize="12"
+              pointerEvents="all"
             >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
+              sol-tx
+            </g>
+          </g>
+        </div>
+      </foreignObject>
+    </switch>
+  )
 
-                  textAlign: 'center',
-                }}
-                fontSize="0"
-              >
-                <g
-                  style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
-                  }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
-                >
-                  sol-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-)
+  const ethTx = (
+    <switch transform="translate(-.5 -.5)">
+      <foreignObject
+        width="100%"
+        height="100%"
+        overflow="visible"
+        pointerEvents="none"
+        requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+        style={{ textAlign: 'left' }}
+      >
+        <div
+          style={{
+            display: 'flex',
 
-const ethTx = (
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
+            alignItems: 'unsafe center',
+
+            justifyContent: 'unsafe center',
+            width: 38,
+            height: 1,
+            ...(stage === 'committing-solana'
+              ? {
+                  paddingTop: 125,
+                  marginLeft: 341,
+                }
+              : stage === 'committing-evm'
+              ? {
+                  paddingTop: 211,
+                  marginLeft: 241,
+                }
+              : {
+                  paddingTop: 265,
+                  marginLeft: 201,
+                }),
+          }}
+        >
+          <g
+            data-drawio-colors="color: rgb(0, 0, 0);"
+            style={{
+              boxSizing: 'border-box',
+
+              textAlign: 'center',
+            }}
+            fontSize="0"
           >
-            <div
+            <g
               style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 38,
-                height: 1,
-                ...(stage === 'committing-solana'
-                  ? {
-                      paddingTop: 125,
-                      marginLeft: 341,
-                    }
-                  : stage === 'committing-evm'
-                  ? {
-                      paddingTop: 211,
-                      marginLeft: 241,
-                    }
-                  : {
-                      paddingTop: 265,
-                      marginLeft: 201,
-                    }),
+                lineHeight: '1.2',
+                whiteSpace: 'normal',
+                overflowWrap: 'normal',
               }}
+              color="#000"
+              display="inline-block"
+              fontFamily="Helvetica"
+              fontSize="12"
+              pointerEvents="all"
             >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
-              >
-                <g
-                  style={{
-                    lineHeight: '1.2',
-                    whiteSpace: 'normal',
-                    overflowWrap: 'normal',
-                  }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="12"
-                  pointerEvents="all"
-                >
-                  eth-tx
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-)
+              eth-tx
+            </g>
+          </g>
+        </div>
+      </foreignObject>
+    </switch>
+  )
 
   return (
     <>
@@ -1244,6 +1269,8 @@ const ethTx = (
             </div>
           </foreignObject>
         </switch>
+        {['collecting-evm-signature', 'collected-evm-signature'].includes(stage) && (
+        <>
         <path
           fill="none"
           stroke="#000"
@@ -1306,6 +1333,10 @@ const ethTx = (
             </div>
           </foreignObject>
         </switch>
+        </>
+        )}
+        {['collecting-solana-signature', 'collected-solana-signature'].includes(stage) && (
+        <>
         <path
           fill="none"
           stroke="#000"
@@ -1368,6 +1399,8 @@ const ethTx = (
             </div>
           </foreignObject>
         </switch>
+        </>
+        )}
         {vaaCommitted && (
           <>
             <path
@@ -1843,15 +1876,23 @@ const ethTx = (
             d="M289 415H329V425H289z"
             pointerEvents="all"
           ></path>
-        ) : !['collecting-evm-signature', 'collecting-solana-signature'].includes(stage) && (
-          <path
-            fill="#d5e8d4"
-            stroke="#82b366"
-            d="M200 310H240V320H200z"
-            pointerEvents="all"
-          ></path>
+        ) : (
+          !['collecting-evm-signature', 'collecting-solana-signature', 'collected-evm-signature', ].includes(
+            stage,
+          ) && (
+            <path
+              fill="#d5e8d4"
+              stroke="#82b366"
+              d="M200 310H240V320H200z"
+              pointerEvents="all"
+            ></path>
+          )
         )}
-        {!['committing-solana', 'committing-evm', 'collecting-evm-signature'].includes(stage) && (
+        {![
+          'committing-solana',
+          'committing-evm',
+          'collecting-evm-signature',
+        ].includes(stage) && (
           <path
             xmlns="http://www.w3.org/2000/svg"
             fill="#d5e8d4"
@@ -1860,11 +1901,16 @@ const ethTx = (
             pointerEvents="all"
           ></path>
         )}
-        {!['collecting-evm-signature', 'collecting-solana-signature'].includes(stage) && solTx}
+        {!['collecting-evm-signature', 'collected-evm-signature', 'collecting-solana-signature'].includes(
+          stage,
+        ) && solTx}
         {stage !== 'collecting-evm-signature' && ethTx}
       </svg>
-      {stage === 'collecting-evm-signature' && <button onClick={signEVM}>Sign</button>}
-      {!connected && <button onClick={enable}>Connect to wallet</button>}
+      {stage === 'collecting-evm-signature' && metaMaskConnected && (
+        <button onClick={signEVM}>Sign</button>
+      )}
+      {!metaMaskConnected && <button onClick={enableMetaMask}>Connect to MetaMask</button>}
+      {!phantomConnected && <WalletMultiButton/>}
       {props.children}
     </>
   )
