@@ -13,5 +13,5 @@ export const ExampleWorkflow: ComponentStory<typeof Component> = (args) => (
   <Component {...args} />
 )
 ExampleWorkflow.args = {
-  stageNumber: 0
+  stageNumber: 0,
 }
