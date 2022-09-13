@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index b3bcad7fde3ddb52593c9b96c961719ec38564a1..026b468f339895b361453d7af3108bc02ae9cd2d 100644
+--- a/package.json
++++ b/package.json
+@@ -54,7 +54,7 @@
+     "jest-resolve": "^27.4.2",
+     "jest-watch-typeahead": "^1.0.0",
+     "mini-css-extract-plugin": "^2.4.5",
+-    "postcss": "^8.4.4",
++    "postcss": "^8.4.6",
+     "postcss-flexbugs-fixes": "^5.0.2",
+     "postcss-loader": "^6.2.1",
+     "postcss-normalize": "^10.0.1",

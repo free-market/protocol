@@ -1,0 +1,13 @@
+diff --git a/dist/helpers/getReactScriptsPath.js b/dist/helpers/getReactScriptsPath.js
+index 62787215e0b916180586e0e8dde11ed7f53d6992..01036d53e2226deda7b163c5c0f9652cdc95a224 100644
+--- a/dist/helpers/getReactScriptsPath.js
++++ b/dist/helpers/getReactScriptsPath.js
+@@ -31,7 +31,7 @@ var getReactScriptsPath = function () {
+          */
+         try {
+             var resolvedBinPath = fs_1.realpathSync(scriptsBinPath);
+-            var scriptsPath = path_1.join(resolvedBinPath, '..', '..');
++            var scriptsPath = path_1.join(resolvedBinPath, '..', '..', 'react-scripts');
+             return scriptsPath;
+         }
+         catch (e) {

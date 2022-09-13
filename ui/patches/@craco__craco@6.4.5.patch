@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 6220306f27d09426317cfbcbdd11013ad7a8894e..dd8ab1ad9bc5ac50076f73a07987f63aca8eeeb1 100644
+--- a/package.json
++++ b/package.json
+@@ -34,7 +34,7 @@
+         "craco": "./bin/craco.js"
+     },
+     "peerDependencies": {
+-        "react-scripts": "^4.0.0"
++        "react-scripts": "^5.0.0"
+     },
+     "devDependencies": {
+         "react-scripts": "4.*"
