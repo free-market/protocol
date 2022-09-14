@@ -2,13 +2,6 @@ import React, { useState } from 'react'
 import { m } from 'framer-motion'
 import { Mainnet, DAppProvider, useEthers, Config, Goerli } from '@usedapp/core'
 import { getDefaultProvider } from 'ethers'
-import { Connection, PublicKey } from '@solana/web3.js';
-import {
-  Program, Provider, web3
-} from '@project-serum/anchor';
-import { useWallet, WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-require('@solana/wallet-adapter-react-ui/styles.css');
 
 export type WorfklowStage =
   | 'collecting-evm-signature'
@@ -47,8 +40,6 @@ export const ExampleWorkflow = (props: {
   const withdrawingFromMangoMarkets = false
   const stage = stagesInOrder[stageNumber]
   const vaaCommitted = stage === 'committing-solana'
-  const wallet = useWallet()
-  const phantomConnected = wallet.connected
 
   const signEVM = async () => {
     const signer = library!.getSigner()
@@ -1910,7 +1901,6 @@ export const ExampleWorkflow = (props: {
         <button onClick={signEVM}>Sign</button>
       )}
       {!metaMaskConnected && <button onClick={enableMetaMask}>Connect to MetaMask</button>}
-      {!phantomConnected && <WalletMultiButton/>}
       {props.children}
     </>
   )
