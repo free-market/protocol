@@ -1,21 +1,30 @@
-import { WorkflowBuilder } from './WorkflowBuilder'
+import treeify from 'treeify'
+import { StepFactories, WorkflowBuilder } from './builder/WorkflowBuilder'
+import { MockWorkflowEngine, MockWorkflowEngineMode } from './engine/MockWorkflowEngine'
+import { WorkflowEvent } from './engine/WorkflowEngine'
+import { Workflow } from './types'
 
-export function buildWorkflow(builder: WorkflowBuilder): void {
-  builder.addSteps(
-    builder.curve.triCrypto.swap('WBTC', 'USDT', 10),
-    builder.curve.threePool.swap('USDT', 'USDC', '100%')
-    // builder.curve.threeCurve.swap('USDT', 'USDC', '100%'),
-    // builder.wormhole('ETHEREUM','USDT', ETH_PUBLIC_KEY, '100%', 'SOLANA', SOL_PUBLIC_KEY),
-    // builder.serum.swap('whUSDC', 'USDC', '100%'),
-    // builder.mango.deposit('USDC', '100%'),
-    // builder.mango.withdrawal('SOL', '100%'),
-    // builder.doWhile(
-    //     [
-    //         builder.marinade.loan('SOL', '100%'),
-    //         builder.marinade.loan('mSOL', '100%'),
-    //         builder.marinade.borrow('SOL', '100%')
-    //     ],
-    //     stepResult => stepResult.outputAmount < 1_000
-    // )
-  )
+const { weth, curve, wormhole, saber, mango } = StepFactories
+
+function buildWorkflow(): Workflow {
+  return new WorkflowBuilder()
+    .addSteps(
+      weth.wrap({ amount: '1000000000000000000' }),
+      curve.triCrypto.swap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+      wormhole.transfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
+      saber.swap({ from: 'USDTet', to: 'USDC', amount: '100%' })
+    )
+    .build()
 }
+
+function workflowEventHandler(event: WorkflowEvent) {
+  console.log(treeify.asTree(event as any, true, true))
+}
+
+async function demo() {
+  const workflow = buildWorkflow()
+  const engine = new MockWorkflowEngine({ mode: MockWorkflowEngineMode.SignEveryStep, eventHandler: workflowEventHandler })
+  await engine.execute(workflow)
+}
+
+demo()

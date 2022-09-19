@@ -1,3 +1,0 @@
-class MockWorkflowEngine implements WorkflowEngine {
-    
-}
