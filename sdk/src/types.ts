@@ -40,7 +40,7 @@ export interface AssetInfo {
 /** An asset along with an associated balance. */
 export interface AssetBalance {
   asset: Asset
-  balance: bigint
+  balance: string
 }
 
 /**
@@ -65,8 +65,8 @@ export interface WorkflowStepInfo {
   stepId: string
   name: string
   blockchains: ChainName[]
-  gasEstimate: bigint
-  exchangeFee: number
+  gasEstimate: string
+  exchangeFee: string
   description: string
 }
 
@@ -77,11 +77,10 @@ export interface WorkflowStepInfo {
  * This fits sign-every but not a good fit for 1-click.
  */
 export interface WorkflowStepResult {
-  outputAmount: bigint
-  gasUnits: bigint
-  gasCostGwei: bigint
-  exchangeFee: bigint
-  // slippage: bigint
+  outputAmount: string
+  gasCost: string
+  exchangeFee: string
+  // slippage: string
 }
 
 /**

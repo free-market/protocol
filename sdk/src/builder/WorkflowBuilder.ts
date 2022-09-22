@@ -3,7 +3,7 @@ import { curveThreePoolSwap, curveTriCryptoSwap } from '../steps/curve'
 import { wormholeTokenTransfer } from '../steps/wormhole'
 import { saberSwap } from '../steps/saber'
 import { mangoDeposit, mangoWithdrawal } from '../steps/mango'
-import { wethUnwrap, wethWrap } from '../steps/weth'
+import { wethWrap, wethUnwrap } from '../steps/weth'
 
 // TODO not sure exactly what transactions look like for these chains
 export type EtheriumTransaction = any

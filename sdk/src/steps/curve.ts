@@ -23,16 +23,16 @@ const THREE_CURVE_SWAP: WorkflowStepInfo = {
   stepId: 'curve.3pool.swap',
   name: 'Curve 3 Pool',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '20',
+  exchangeFee: '1',
   description: 'Three Pool at Curve Finance allows swapping between stable coins with very low fees.',
 }
 const TRICRYPTO_SWAP: WorkflowStepInfo = {
   stepId: 'curve.tricrypto.swap',
   name: 'Curve TriCrypto',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '40',
+  exchangeFee: '1',
   description: 'TriCrypto does swapping between the 3 most popular tokens on Etherium: WBTC, WETH and USDT',
 }
 

@@ -5,8 +5,8 @@ const WRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.wrap',
   name: 'Wrap Etherium',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(200_000),
-  exchangeFee: 0.0,
+  gasEstimate: '1',
+  exchangeFee: '0',
   description: 'Convert native ETH to WETH tokens.',
 }
 
@@ -14,8 +14,8 @@ const UNWRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.unwrap',
   name: 'Unwrap Etherium',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(200_000),
-  exchangeFee: 0.0,
+  gasEstimate: '1',
+  exchangeFee: '0',
   description: 'Convert WETH tokens to native ETH.',
 }
 

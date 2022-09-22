@@ -18,8 +18,8 @@ const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
   stepId: 'mango.deposit',
   name: 'Mango Decentralized Exchange',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '4',
+  exchangeFee: '1',
   description: 'Automated market maker for swapping SPL Tokens.',
 }
 
@@ -27,8 +27,8 @@ const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
   stepId: 'mango.withdrawal',
   name: 'Mango Decentralized Exchange',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '4',
+  exchangeFee: '1',
   description: 'Automated market maker for swapping SPL Tokens.',
 }
 

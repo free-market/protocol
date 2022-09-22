@@ -99,35 +99,31 @@ export class MockWorkflowEngine implements WorkflowEngine {
 
 export function mockExecuteWethWrapUnWrap(step: WorkflowStep, amount: bigint): WorkflowStepResult {
   return {
-    outputAmount: amount,
-    gasUnits: BigInt(100),
-    gasCostGwei: BigInt(3),
-    exchangeFee: BigInt(0),
+    outputAmount: amount.toString(),
+    gasCost: '10',
+    exchangeFee: '0',
   }
 }
 export function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: bigint): WorkflowStepResult {
   return {
-    outputAmount: BigInt('1347000000000000000000'),
-    gasUnits: BigInt(350),
-    gasCostGwei: BigInt(3),
-    exchangeFee: BigInt(0),
+    outputAmount: '1347000000000000000000',
+    gasCost: '20',
+    exchangeFee: '0',
   }
 }
 
 export function mockExecuteWormholeTransfer(step: WorkflowStep, amount: bigint): WorkflowStepResult {
   return {
-    outputAmount: amount,
-    gasUnits: BigInt(400),
-    gasCostGwei: BigInt(3),
-    exchangeFee: BigInt(0),
+    outputAmount: amount.toString(),
+    gasCost: '20',
+    exchangeFee: '0',
   }
 }
 
 export function mockExecuteSaberSwap(step: WorkflowStep, amount: bigint): WorkflowStepResult {
   return {
-    outputAmount: amount,
-    gasUnits: BigInt(100),
-    gasCostGwei: BigInt(3),
-    exchangeFee: BigInt(0),
+    outputAmount: amount.toString(),
+    gasCost: '1',
+    exchangeFee: '0',
   }
 }

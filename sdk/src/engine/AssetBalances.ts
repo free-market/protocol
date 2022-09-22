@@ -26,11 +26,10 @@ export class AssetBalances {
 
   toArray(): AssetBalance[] {
     const rv = [] as AssetBalance[]
-
     this.balances.forEach((balance, key) => {
       rv.push({
         asset: this.assets.get(key)!,
-        balance,
+        balance: balance.toString(),
       })
     })
     return rv

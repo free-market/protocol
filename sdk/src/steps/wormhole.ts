@@ -36,8 +36,8 @@ const WORMHOLE_INFO: WorkflowStepInfo = {
   stepId: 'wormhole.transfer',
   name: 'Wormhole Token Portal',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '400000',
+  exchangeFee: '1',
   description: 'Enables transfering tokens to different blockchains.',
 }
 

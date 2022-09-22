@@ -16,8 +16,8 @@ const SABER_INFO: WorkflowStepInfo = {
   stepId: 'saber.swap',
   name: 'Saber AMM',
   blockchains: ['Ethereum'],
-  gasEstimate: BigInt(400_000),
-  exchangeFee: 0.01,
+  gasEstimate: '1',
+  exchangeFee: '1',
   description: 'Automated market maker for swapping SPL Tokens.',
 }
 
