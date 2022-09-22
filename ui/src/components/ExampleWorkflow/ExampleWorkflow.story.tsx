@@ -18,12 +18,12 @@ export const story = {
   title: 'Example/ExampleWorkflow',
   component: Component,
   decorators: [
-    (Story: Function) => (
-          <DAppProvider config={config}>
-            <SiweProvider>
-              <Story />
-            </SiweProvider>
-          </DAppProvider>
+    (Story: React.ComponentType) => (
+      <DAppProvider config={config}>
+        <SiweProvider>
+          <Story />
+        </SiweProvider>
+      </DAppProvider>
     ),
   ],
 }
@@ -35,5 +35,7 @@ export const ExampleWorkflow: ComponentStory<typeof Component> = (args) => (
 )
 
 ExampleWorkflow.args = {
+  showButtons: true,
+  showStageName: true,
   initialStageNumber: 0,
 }

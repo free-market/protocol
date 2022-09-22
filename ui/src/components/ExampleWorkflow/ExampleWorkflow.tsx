@@ -12,7 +12,10 @@ export type WorfklowStage =
   | 'committing-evm'
   | 'evm-locked'
   | 'waiting-for-validator'
+  | 'validator-ready'
   | 'waiting-for-relayer'
+  | 'relayer-ready'
+  | 'relaying'
   | 'relayed'
   | 'committing-solana'
 
@@ -25,21 +28,30 @@ const stagesInOrder = [
   'committing-evm',
   'evm-locked',
   'waiting-for-validator',
+  'validator-ready',
   'waiting-for-relayer',
+  'relayer-ready',
   'relayed',
   'committing-solana',
 ]
 
 export const ExampleWorkflow = (props: {
+  showButtons: boolean
+  showStageName: boolean
   initialStageNumber: number
   children: React.ReactNode
 }): JSX.Element => {
-  const { activateBrowserWallet, account, library } = useEthers();
-  const [ stageNumber, setStageNumber ] = useState(props.initialStageNumber)
+  const { activateBrowserWallet, account, library } = useEthers()
+  const [stageNumber, setStageNumber] = useState(props.initialStageNumber)
   const metaMaskConnected = Boolean(account)
   const withdrawingFromMangoMarkets = false
   const stage = stagesInOrder[stageNumber]
-  const vaaCommitted = stage === 'committing-solana'
+  const vaaCommitted = stageNumber >= stagesInOrder.indexOf('relayed')
+  const validatorReady =
+    stageNumber > stagesInOrder.indexOf('waiting-for-validator')
+  const relayerReady =
+    stageNumber > stagesInOrder.indexOf('waiting-for-relayer')
+  const evmLocked = stageNumber >= stagesInOrder.indexOf('evm-locked')
 
   const signEVM = async () => {
     const signer = library!.getSigner()
@@ -48,6 +60,21 @@ export const ExampleWorkflow = (props: {
     await new Promise((resolve) => setTimeout(resolve, 1500))
     setStageNumber(stageNumber + 2)
   }
+
+  const signSolana = async () => {
+    alert(
+      'imagine you are using phantom wallet and signing a transaction. thank you',
+    )
+    setStageNumber(stageNumber + 1)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setStageNumber(stageNumber + 2)
+  }
+
+  const next = async () => {
+    setStageNumber(stageNumber + 1)
+  }
+
+  const runWorkflow = next
 
   const enableMetaMask = activateBrowserWallet
 
@@ -263,7 +290,7 @@ export const ExampleWorkflow = (props: {
             justifyContent: 'unsafe center',
             width: 38,
             height: 1,
-            ...(stage === 'committing-solana'
+            ...(evmLocked
               ? {
                   paddingTop: 125,
                   marginLeft: 341,
@@ -308,8 +335,29 @@ export const ExampleWorkflow = (props: {
     </switch>
   )
 
+  const buttons = props.showButtons && (
+    <>
+      {stage === 'collecting-evm-signature' && metaMaskConnected && (
+        <button onClick={signEVM}>(sign evm transaction)</button>
+      )}
+      {stage === 'collecting-solana-signature' && (
+        <button onClick={signSolana}>(sign solana transaction)</button>
+      )}
+      {stage === 'prepared' && (
+        <button onClick={runWorkflow}>(run workflow)</button>
+      )}
+      {['committing-evm'].includes(stage) && (
+        <button onClick={next}>(next)</button>
+      )}
+      {!metaMaskConnected && (
+        <button onClick={enableMetaMask}>(Connect to MetaMask)</button>
+      )}
+    </>
+  )
+
   return (
     <>
+      <p>Stage: {stage}</p>
       <svg
         width="851"
         height="801"
@@ -1260,139 +1308,143 @@ export const ExampleWorkflow = (props: {
             </div>
           </foreignObject>
         </switch>
-        {['collecting-evm-signature', 'collected-evm-signature'].includes(stage) && (
-        <>
-        <path
-          fill="none"
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M97 260l-9.21-73.68"
-          pointerEvents="stroke"
-        ></path>
-        <path
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M87.14 181.11l4.34 6.51-3.69-1.3-3.26 2.17z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 1,
-                height: 1,
-                paddingTop: 220,
-                marginLeft: 92,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+        {['collecting-evm-signature', 'collected-evm-signature'].includes(
+          stage,
+        ) && (
+          <>
+            <path
+              fill="none"
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M97 260l-9.21-73.68"
+              pointerEvents="stroke"
+            ></path>
+            <path
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M87.14 181.11l4.34 6.51-3.69-1.3-3.26 2.17z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    whiteSpace: 'nowrap',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 1,
+                    height: 1,
+                    paddingTop: 220,
+                    marginLeft: 92,
                   }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="11"
-                  pointerEvents="all"
                 >
-                  SIGN
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        whiteSpace: 'nowrap',
+                      }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="11"
+                      pointerEvents="all"
+                    >
+                      SIGN
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
-        {['collecting-solana-signature', 'collected-solana-signature'].includes(stage) && (
-        <>
-        <path
-          fill="none"
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M97 320l-18.25 63.88"
-          pointerEvents="stroke"
-        ></path>
-        <path
-          stroke="#000"
-          strokeMiterlimit="10"
-          d="M77.31 388.93l-1.45-7.7 2.89 2.65 3.85-.72z"
-          pointerEvents="all"
-        ></path>
-        <switch transform="translate(-.5 -.5)">
-          <foreignObject
-            width="100%"
-            height="100%"
-            overflow="visible"
-            pointerEvents="none"
-            requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-            style={{ textAlign: 'left' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-
-                alignItems: 'unsafe center',
-
-                justifyContent: 'unsafe center',
-                width: 1,
-                height: 1,
-                paddingTop: 354,
-                marginLeft: 89,
-              }}
-            >
-              <g
-                data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
-                style={{
-                  boxSizing: 'border-box',
-
-                  textAlign: 'center',
-                }}
-                fontSize="0"
+        {['collecting-solana-signature', 'collected-solana-signature'].includes(
+          stage,
+        ) && (
+          <>
+            <path
+              fill="none"
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M97 320l-18.25 63.88"
+              pointerEvents="stroke"
+            ></path>
+            <path
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M77.31 388.93l-1.45-7.7 2.89 2.65 3.85-.72z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
               >
-                <g
+                <div
                   style={{
-                    lineHeight: '1.2',
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    whiteSpace: 'nowrap',
+                    display: 'flex',
+
+                    alignItems: 'unsafe center',
+
+                    justifyContent: 'unsafe center',
+                    width: 1,
+                    height: 1,
+                    paddingTop: 354,
+                    marginLeft: 89,
                   }}
-                  color="#000"
-                  display="inline-block"
-                  fontFamily="Helvetica"
-                  fontSize="11"
-                  pointerEvents="all"
                 >
-                  SIGN
-                </g>
-              </g>
-            </div>
-          </foreignObject>
-        </switch>
-        </>
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+                    style={{
+                      boxSizing: 'border-box',
+
+                      textAlign: 'center',
+                    }}
+                    fontSize="0"
+                  >
+                    <g
+                      style={{
+                        lineHeight: '1.2',
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        whiteSpace: 'nowrap',
+                      }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="11"
+                      pointerEvents="all"
+                    >
+                      SIGN
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+            </switch>
+          </>
         )}
-        {vaaCommitted && (
+        {evmLocked && (
           <>
             <path
               fill="#1ba1e2"
@@ -1436,8 +1488,8 @@ export const ExampleWorkflow = (props: {
                         lineHeight: '1.2',
                         whiteSpace: 'normal',
                         overflowWrap: 'normal',
+                        color: 'white',
                       }}
-                      color="#FFF"
                       display="inline-block"
                       fontFamily="Helvetica"
                       fontSize="12"
@@ -1451,7 +1503,7 @@ export const ExampleWorkflow = (props: {
             </switch>
           </>
         )}
-        {stage === 'committing-solana' && (
+        {evmLocked && (
           <>
             <path
               fill="#d5e8d4"
@@ -1503,7 +1555,7 @@ export const ExampleWorkflow = (props: {
                       fontSize="12"
                       pointerEvents="all"
                     >
-                      (commited)
+                      (committed)
                     </g>
                   </g>
                 </div>
@@ -1511,7 +1563,7 @@ export const ExampleWorkflow = (props: {
             </switch>
           </>
         )}
-        {vaaCommitted && (
+        {validatorReady && (
           <>
             <path
               fill="#f8cecc"
@@ -1666,7 +1718,7 @@ export const ExampleWorkflow = (props: {
                       fontSize="12"
                       pointerEvents="all"
                     >
-                      (commited)
+                      (committed)
                     </g>
                   </g>
                 </div>
@@ -1718,8 +1770,8 @@ export const ExampleWorkflow = (props: {
                         lineHeight: '1.2',
                         whiteSpace: 'normal',
                         overflowWrap: 'normal',
+                        color: 'white',
                       }}
-                      color="#FFF"
                       display="inline-block"
                       fontFamily="Helvetica"
                       fontSize="12"
@@ -1843,8 +1895,8 @@ export const ExampleWorkflow = (props: {
                         lineHeight: '1.2',
                         whiteSpace: 'normal',
                         overflowWrap: 'normal',
+                        color: 'white',
                       }}
-                      color="#FFF"
                       display="inline-block"
                       fontFamily="Helvetica"
                       fontSize="12"
@@ -1858,6 +1910,73 @@ export const ExampleWorkflow = (props: {
             </switch>
           </>
         )}
+        {stage === 'waiting-for-validator' && (
+          <>
+            <path
+              fill="none"
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M590 340v-40h85v-33.63"
+              pointerEvents="stroke"
+            ></path>
+            <path
+              stroke="#000"
+              strokeMiterlimit="10"
+              d="M675 261.12l3.5 7-3.5-1.75-3.5 1.75z"
+              pointerEvents="all"
+            ></path>
+            <switch transform="translate(-.5 -.5)">
+              <foreignObject
+                width="100%"
+                height="100%"
+                overflow="visible"
+                pointerEvents="none"
+                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+                style={{ textAlign: 'left' }}
+              >
+                <div
+                  style={{
+                    alignItems: 'unsafe center',
+                    justifyContent: 'unsafe center',
+                    width: 1,
+                    height: 1,
+                    paddingTop: 300,
+                    marginLeft: 633,
+                    display: 'flex',
+                  }}
+                >
+                  <g
+                    data-drawio-colors="color: rgb(0, 0, 0);"
+                    style={{
+                      boxSizing: 'border-box',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <g
+                      style={{ lineHeight: '1.2', whiteSpace: 'nowrap' }}
+                      color="#000"
+                      display="inline-block"
+                      fontFamily="Helvetica"
+                      fontSize="11"
+                      pointerEvents="all"
+                    >
+                      <span style={{ backgroundColor: 'white' }}>WATCH</span>
+                    </g>
+                  </g>
+                </div>
+              </foreignObject>
+              <text
+                x="633"
+                y="303"
+                fontFamily="Helvetica"
+                fontSize="11"
+                textAnchor="middle"
+              >
+                WATCH
+              </text>
+            </switch>
+          </>
+        )}
         {stage === 'committing-evm' && committingEvmArrow}
         {stage === 'committing-solana' && committingSolanaArrow}
         {stage === 'committing-solana' ? (
@@ -1868,9 +1987,11 @@ export const ExampleWorkflow = (props: {
             pointerEvents="all"
           ></path>
         ) : (
-          !['collecting-evm-signature', 'collecting-solana-signature', 'collected-evm-signature', ].includes(
-            stage,
-          ) && (
+          ![
+            'collecting-evm-signature',
+            'collecting-solana-signature',
+            'collected-evm-signature',
+          ].includes(stage) && (
             <path
               fill="#d5e8d4"
               stroke="#82b366"
@@ -1879,28 +2000,23 @@ export const ExampleWorkflow = (props: {
             ></path>
           )
         )}
+        {!['committing-evm', 'collecting-evm-signature'].includes(stage) &&
+          !evmLocked && (
+            <path
+              fill="#d5e8d4"
+              stroke="#82b366"
+              d="M200 260H240V270H200z"
+              pointerEvents="all"
+            ></path>
+          )}
         {![
-          'committing-solana',
-          'committing-evm',
           'collecting-evm-signature',
-        ].includes(stage) && (
-          <path
-            xmlns="http://www.w3.org/2000/svg"
-            fill="#d5e8d4"
-            stroke="#82b366"
-            d="M200 260H240V270H200z"
-            pointerEvents="all"
-          ></path>
-        )}
-        {!['collecting-evm-signature', 'collected-evm-signature', 'collecting-solana-signature'].includes(
-          stage,
-        ) && solTx}
+          'collected-evm-signature',
+          'collecting-solana-signature',
+        ].includes(stage) && solTx}
         {stage !== 'collecting-evm-signature' && ethTx}
       </svg>
-      {stage === 'collecting-evm-signature' && metaMaskConnected && (
-        <button onClick={signEVM}>Sign</button>
-      )}
-      {!metaMaskConnected && <button onClick={enableMetaMask}>Connect to MetaMask</button>}
+      {buttons}
       {props.children}
     </>
   )

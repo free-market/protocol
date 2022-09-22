@@ -4,7 +4,9 @@ import ExampleWorkflow from './'
 
 describe('Component: ExampleWorkflow', () => {
   it('should render children', () => {
-    render(<ExampleWorkflow initialStageNumber={0}>sentinel value</ExampleWorkflow>)
+    render(
+      <ExampleWorkflow initialStageNumber={0}>sentinel value</ExampleWorkflow>,
+    )
 
     expect(screen.getByText('sentinel value')).toBeInTheDocument()
   })
