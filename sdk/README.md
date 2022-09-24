@@ -22,7 +22,6 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -109,14 +108,13 @@ _For more examples, please refer to the [Documentation](https://github.com/free-
 
 ## Roadmap
 
-- [x] WorflowBuilder:  define workflows with a high level API
-- [x] SignEveryStepWorkflowEngine:  execute each step of the workflow as a separate blockchain transaction
-- [ ] OneClickWorkflowEngine:  execute workflows with only 1 signature required to execute the entire workflow
+- [x] WorflowBuilder: define workflows with a high level API
+- [x] SignEveryStepWorkflowEngine: execute each step of the workflow as a separate blockchain transaction
+- [ ] OneClickWorkflowEngine: execute workflows with only 1 signature required to execute the entire workflow
 
 See the [open issues](https://github.com/free-market/platform/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## License
 
@@ -131,4 +129,3 @@ Marty Saxton - marty@fmprotocol.com
 Project Link: [https://github.com/free-market/platform/](https://github.com/free-market/platform/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
