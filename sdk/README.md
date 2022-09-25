@@ -50,19 +50,12 @@ FMP-SDK is a Typescript library for programattic integrate with Free Market Prot
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- GETTING STARTED -->
 
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
 
-FMP-SDK currently works only in NodeJS, with browser support planned for the near future. To use this package you'll need a recent version of NodeJS, and NPM or an equivalent package manager.
-
-FMP-SDK executes workflows for your blockchain asserts by subitting transactions signed by your private keys. To do this, your blockchain credentials are required to be defined as environment variables. For details, please refer to the [Documentation](https://github.com/free-market/platform/blob/main/sdk/docs/README.md)
-
+To use this package you'll need a recent version of NodeJS, and NPM or an equivalent package manager.  Examples shown here assume you're using NPM.
 ### Installation
 
 FMP-SDK is currently in an early pre-release state and is not generally available. It can be installed using npm from our private registry. First, authenticate your npm client with our private registry by following [these instructions](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
@@ -70,7 +63,7 @@ FMP-SDK is currently in an early pre-release state and is not generally availabl
 Then:
 
 ```
-npm install @fmp/sdk
+npm install --save @fmp/sdk
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

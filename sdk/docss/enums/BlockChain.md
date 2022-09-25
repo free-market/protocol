@@ -19,7 +19,7 @@ Enum containing all supported blockchains.
 
 #### Defined in
 
-sdk/src/types.ts:9
+[sdk/src/types.ts:9](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L9)
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 #### Defined in
 
-sdk/src/types.ts:10
+[sdk/src/types.ts:10](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L10)

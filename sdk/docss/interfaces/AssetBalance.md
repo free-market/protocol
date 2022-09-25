@@ -19,7 +19,7 @@ An asset along with an associated balance.
 
 #### Defined in
 
-sdk/src/types.ts:42
+[sdk/src/types.ts:42](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L42)
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 #### Defined in
 
-sdk/src/types.ts:43
+[sdk/src/types.ts:43](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L43)

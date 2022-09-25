@@ -28,10 +28,15 @@ export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Prom
 export class WorkflowBuilder {
   private steps = [] as WorkflowStep[]
 
+  // eslint-disable-next-line tsdoc/syntax
+  /** @hidden */
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
+
   /**
    * Add a sequence of steps to the workflow.
    *
-   * @param args one or more {@link WorkflowStep} instances. Use factory functions such as {@link wethWrap} to create WorkflowStep instances.
+   * @param steps - one or more {@link WorkflowStep} instances. Use factory functions such as {@link wethWrap} to create WorkflowStep instances.
    * @returns `this` instance to allow chaining of method calls
    *
    */
@@ -51,8 +56,8 @@ export class WorkflowBuilder {
 
   /**
    * Loops over  a sequence of {@link WorkflowStep} until a condition is met as determined the callback function.
-   * @param steps the sequence of steps to loop over.  Use factory functions such as {@link wethWrap} to create WorkflowStep instances.
-   * @param callback A function matching the {@link DoWhileCallback} signature that decides if `steps` should be executed again based on the output of the final step.
+   * @param steps - the sequence of steps to loop over.  Use factory functions such as {@link wethWrap} to create WorkflowStep instances.
+   * @param callback - A function matching the {@link DoWhileCallback} signature that decides if `steps` should be executed again based on the output of the final step.
    * @returns `this` instance to allow chaining of method calls
    */
   doWhile(steps: WorkflowStep[], callback: DoWhileCallback): WorkflowBuilder {

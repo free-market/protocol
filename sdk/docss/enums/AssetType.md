@@ -19,7 +19,7 @@ Enum containing all supported types of assets.
 
 #### Defined in
 
-sdk/src/types.ts:19
+[sdk/src/types.ts:19](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L19)
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 #### Defined in
 
-sdk/src/types.ts:18
+[sdk/src/types.ts:18](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L18)

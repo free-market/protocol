@@ -54,7 +54,7 @@ Address of a wallet/account/contract.  Usually is a base58 encoding of a byte ar
 
 #### Defined in
 
-sdk/src/types.ts:5
+[sdk/src/types.ts:5](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L5)
 
 ___
 
@@ -66,7 +66,7 @@ The names of blockchains as a string union.
 
 #### Defined in
 
-sdk/src/types.ts:14
+[sdk/src/types.ts:14](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L14)
 
 ___
 
@@ -92,7 +92,7 @@ A callback implelemented by the integrator to determine when to exit a workflow 
 
 #### Defined in
 
-sdk/src/builder/WorkflowBuilder.ts:9
+[sdk/src/builder/WorkflowBuilder.ts:9](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L9)
 
 ___
 
@@ -104,7 +104,7 @@ Represents an integer or a percentage such as "100%"
 
 #### Defined in
 
-sdk/src/types.ts:2
+[sdk/src/types.ts:2](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L2)
 
 ## Functions
 
@@ -124,7 +124,7 @@ sdk/src/types.ts:2
 
 #### Defined in
 
-sdk/src/steps/curve.ts:35
+[sdk/src/steps/curve.ts:35](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/curve.ts#L35)
 
 ___
 
@@ -144,7 +144,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/curve.ts:47
+[sdk/src/steps/curve.ts:47](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/curve.ts#L47)
 
 ___
 
@@ -165,7 +165,7 @@ ___
 
 #### Defined in
 
-evm/utils/ganachUtils.ts:22
+[evm/utils/ganachUtils.ts:22](https://github.com/free-market/platform/blob/c18767c/evm/utils/ganachUtils.ts#L22)
 
 ___
 
@@ -185,7 +185,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/mango.ts:35
+[sdk/src/steps/mango.ts:35](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/mango.ts#L35)
 
 ___
 
@@ -205,7 +205,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/mango.ts:46
+[sdk/src/steps/mango.ts:46](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/mango.ts#L46)
 
 ___
 
@@ -225,7 +225,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/saber.ts:25
+[sdk/src/steps/saber.ts:25](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/saber.ts#L25)
 
 ___
 
@@ -245,7 +245,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/weth.ts:41
+[sdk/src/steps/weth.ts:41](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/weth.ts#L41)
 
 ___
 
@@ -265,7 +265,7 @@ ___
 
 #### Defined in
 
-sdk/src/steps/weth.ts:30
+[sdk/src/steps/weth.ts:30](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/weth.ts#L30)
 
 ___
 
@@ -285,4 +285,4 @@ ___
 
 #### Defined in
 
-sdk/src/steps/wormhole.ts:47
+[sdk/src/steps/wormhole.ts:47](https://github.com/free-market/platform/blob/c18767c/sdk/src/steps/wormhole.ts#L47)

@@ -18,4 +18,4 @@ A workflow.
 
 #### Defined in
 
-sdk/src/types.ts:87
+[sdk/src/types.ts:87](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L87)

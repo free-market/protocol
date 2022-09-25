@@ -19,21 +19,11 @@ A high level interface to concisely define workflows.
 
 ## Table of contents
 
-### Constructors
-
-- [constructor](WorkflowBuilder.md#constructor)
-
 ### Methods
 
 - [addSteps](WorkflowBuilder.md#addsteps)
 - [build](WorkflowBuilder.md#build)
 - [doWhile](WorkflowBuilder.md#dowhile)
-
-## Constructors
-
-### constructor
-
-• **new WorkflowBuilder**()
 
 ## Methods
 
@@ -45,9 +35,9 @@ Add a sequence of steps to the workflow.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `...steps` | [`WorkflowStep`](../interfaces/WorkflowStep.md)[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...steps` | [`WorkflowStep`](../interfaces/WorkflowStep.md)[] | one or more [WorkflowStep](../interfaces/WorkflowStep.md) instances. Use factory functions such as [wethWrap](../modules.md#wethwrap) to create WorkflowStep instances. |
 
 #### Returns
 
@@ -57,7 +47,7 @@ Add a sequence of steps to the workflow.
 
 #### Defined in
 
-sdk/src/builder/WorkflowBuilder.ts:38
+[sdk/src/builder/WorkflowBuilder.ts:43](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L43)
 
 ___
 
@@ -75,7 +65,7 @@ a [Workflow](../interfaces/Workflow.md) instance.
 
 #### Defined in
 
-sdk/src/builder/WorkflowBuilder.ts:48
+[sdk/src/builder/WorkflowBuilder.ts:53](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L53)
 
 ___
 
@@ -100,4 +90,4 @@ Loops over  a sequence of [WorkflowStep](../interfaces/WorkflowStep.md) until a 
 
 #### Defined in
 
-sdk/src/builder/WorkflowBuilder.ts:58
+[sdk/src/builder/WorkflowBuilder.ts:63](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L63)
