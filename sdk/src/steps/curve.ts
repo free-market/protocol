@@ -4,11 +4,7 @@ import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
 export type ThreePoolTokenSymbol = 'DAI' | 'USDT' | 'USDC'
 export type TriCryptoTokenSymbol = 'WETH' | 'WBTC' | 'USDT'
 
-export class CurveStep extends WorkflowStep {
-  constructor(init: CurveStep) {
-    super(init)
-    Object.assign(this, init)
-  }
+export interface CurveStep extends WorkflowStep {
   inputIndex: number
   outputIndex: number
 }
@@ -37,7 +33,7 @@ const TRICRYPTO_SWAP: WorkflowStepInfo = {
 }
 
 export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymbol>): WorkflowStep {
-  return new CurveStep({
+  const rv: CurveStep = {
     stepId: 'curve.3pool.swap',
     inputAmount: args.amount,
     inputAsset: getTokenAsset('Ethereum', args.from),
@@ -45,10 +41,11 @@ export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymb
     inputIndex: 0, // TODO unhardcode
     outputIndex: 0,
     info: THREE_CURVE_SWAP,
-  })
+  }
+  return rv
 }
 export function curveTriCryptoSwap(args: CurveStepBuilderArgs<TriCryptoTokenSymbol>): WorkflowStep {
-  return new CurveStep({
+  const rv: CurveStep = {
     stepId: 'curve.tricrypto.swap',
     inputAmount: args.amount,
     inputAsset: getTokenAsset('Ethereum', args.from),
@@ -56,5 +53,6 @@ export function curveTriCryptoSwap(args: CurveStepBuilderArgs<TriCryptoTokenSymb
     inputIndex: 0, // TODO unhardcode
     outputIndex: 0,
     info: TRICRYPTO_SWAP,
-  })
+  }
+  return rv
 }

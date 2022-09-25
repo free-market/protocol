@@ -3,12 +3,7 @@ import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
 
 export type MangoTokenSymbol = 'SOL' | 'USDC'
 
-export class MangoSwapStep extends WorkflowStep {
-  constructor(init: MangoSwapStep) {
-    super(init)
-    Object.assign(this, init)
-  }
-
+export interface MangoStep extends WorkflowStep {
   // todo
 }
 
@@ -38,21 +33,23 @@ interface MangoBuilderArg {
 }
 
 export function mangoDeposit(arg: MangoBuilderArg): WorkflowStep {
-  return new MangoSwapStep({
+  const rv: MangoStep = {
     stepId: 'mango.deposit',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Solana', arg.symbol),
     outputAsset: getAccountAsset('Solana', MANGO_EXCHANGE_NAME, arg.symbol),
     info: MANGO_DEPOSIT_INFO,
-  })
+  }
+  return rv
 }
 
 export function mangoWithdrawal(arg: MangoBuilderArg): WorkflowStep {
-  return new MangoSwapStep({
+  const rv: MangoStep = {
     stepId: 'mango.withdrawal',
     inputAmount: arg.amount,
     inputAsset: getAccountAsset('Solana', MANGO_EXCHANGE_NAME, arg.symbol),
     outputAsset: getTokenAsset('Solana', arg.symbol),
     info: MANGO_WITHDRAWAL_INFO,
-  })
+  }
+  return rv
 }

@@ -5,19 +5,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "lint": "eslint",
     "test": "ava",
-    "coverage": "c8 ava"
+    "coverage": "c8 ava",
+    "typedoc": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docss src/index.ts",
+    "typedoc:watch": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docss src/index.ts --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fmp/evm": "workspace:../evm",
+    "@saberhq/stableswap-sdk": "^1.14.6",
     "@solana/web3.js": "^1.62.0",
     "ethers": "^5.7.1",
     "treeify": "^1.1.0",
     "web3": "^1.7.3",
-    "web3-core": "^1"
+    "web3-core": "^1",
+    "web3-eth": "^1.8.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
@@ -32,7 +38,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-tsdoc": "^0.2.17",
     "prettier": "^2.7.1",
-    "typedoc": "^0.23.14",
+    "typedoc": "^0.23.15",
+    "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.8.3"
   }
 }

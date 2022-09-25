@@ -1,11 +1,7 @@
 import { getTokenAsset, TokenSymbol } from '../assetInfo'
 import { BlockChain, ChainName, MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
 
-export class WormholeStep extends WorkflowStep {
-  constructor(init: WormholeStep) {
-    super(init)
-    Object.assign(this, init)
-  }
+export interface WormholeStep extends WorkflowStep {
   sourceChain: BlockChain
   targetChain: BlockChain
 }
@@ -53,7 +49,7 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
   const toAsset = getTokenAsset(args.toChain, toTokenSymbol)
   const fromAsset = getTokenAsset(args.fromChain, args.fromToken)
 
-  return new WormholeStep({
+  const rv: WormholeStep = {
     stepId: 'wormhole.transfer',
     inputAmount: args.amount,
     inputAsset: fromAsset,
@@ -61,5 +57,6 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
     info: WORMHOLE_INFO,
     sourceChain: BlockChain[args.fromChain],
     targetChain: BlockChain[args.toChain],
-  })
+  }
+  return rv
 }

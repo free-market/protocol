@@ -6,3 +6,5 @@ packages:
   - 'contracts-spec'
   - 'wormhole'
   - 'solana'
+  - 'sdk'
+  - 'examples-sdk'

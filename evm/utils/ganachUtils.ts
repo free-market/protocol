@@ -2,8 +2,9 @@ import { ethers, BigNumberish, BigNumber, Signer } from 'ethers'
 import type { Provider } from '@ethersproject/providers'
 import BN from 'bn.js'
 import dotenv from 'dotenv'
-import { FrontDoor__factory, IERC20__factory, Weth__factory } from '../types/ethers-contracts'
+import { FrontDoor__factory, IERC20__factory, IWorkflowRunner__factory, Weth__factory } from '../types/ethers-contracts'
 import fs from 'fs'
+import { EvmNetworkName, getEthConfig } from './contract-addresses'
 
 dotenv.config()
 
@@ -45,4 +46,12 @@ export function formatBN(bn: BN, decimals: number) {
 
 export function formatBigNumber(value: BigNumber, decimals: number) {
   return formatBN(toBN(value), decimals)
+}
+
+export async function printGasFromTransaction(provider: Provider, tx: ethers.ContractTransaction, message: string) {
+  const txReceipt = await provider.getTransactionReceipt(tx.hash)
+  printGasFromReceipt(txReceipt, message)
+}
+export function printGasFromReceipt(txReceipt: ethers.ContractReceipt, message: string) {
+  console.log(`${message}: ${txReceipt.gasUsed}`)
 }

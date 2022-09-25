@@ -1,19 +1,25 @@
 import test from 'ava'
 import { stringifyBigInt } from '../utils'
-import { StepFactories, WorkflowBuilder } from './WorkflowBuilder'
-
-const { weth, curve, wormhole, saber, mango } = StepFactories
+import {
+  curveThreePoolSwap,
+  curveTriCryptoSwap,
+  mangoDeposit,
+  saberSwap,
+  wethWrap,
+  WorkflowBuilder,
+  wormholeTokenTransfer,
+} from './WorkflowBuilder'
 
 test('instantiate a workflow with WorkflowBuilder', t => {
   const builder = new WorkflowBuilder()
   const workflow = builder
     .addSteps(
-      weth.wrap({ amount: 1000 }),
-      curve.triCrypto.swap({ from: 'WETH', to: 'USDT', amount: '100%' }),
-      curve.threePool.swap({ from: 'USDT', to: 'USDC', amount: '100%' }),
-      wormhole.transfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana', amount: '100%' }),
-      saber.swap({ from: 'USDCet', to: 'USDC', amount: '100%' }),
-      mango.deposit({ symbol: 'USDC', amount: '100%' })
+      wethWrap({ amount: 1000 }),
+      curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+      curveThreePoolSwap({ from: 'USDT', to: 'USDC', amount: '100%' }),
+      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana', amount: '100%' }),
+      saberSwap({ from: 'USDCet', to: 'USDC', amount: '100%' }),
+      mangoDeposit({ symbol: 'USDC', amount: '100%' })
     )
     .build()
 

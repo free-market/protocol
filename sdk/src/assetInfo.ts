@@ -1,4 +1,4 @@
-import { WorkflowStepInfo, BlockChain, Asset, AssetType, ChainName } from './types'
+import { BlockChain, Asset, AssetType, ChainName } from './types'
 
 export type TokenConfig = { [symbol: string]: Asset }
 
@@ -93,6 +93,15 @@ export const SOLANA_TOKENS: TokenConfig = {
     symbol: 'USDC',
     info: {
       fullName: 'USDC (solana)',
+      decimals: 18,
+    },
+  },
+  USDT: {
+    type: AssetType.token,
+    blockChain: BlockChain.Solana,
+    symbol: 'USDT',
+    info: {
+      fullName: 'USDT (solana)',
       decimals: 18,
     },
   },

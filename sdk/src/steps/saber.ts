@@ -3,12 +3,7 @@ import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
 
 export type SaberTokenSymbol = 'USDCet' | 'USDC' | 'USDT' | 'USDTet'
 
-export class SaberSwapStep extends WorkflowStep {
-  constructor(init: SaberSwapStep) {
-    super(init)
-    Object.assign(this, init)
-  }
-
+export interface SaberSwapStep extends WorkflowStep {
   // todo
 }
 
@@ -28,11 +23,12 @@ interface SaberSwapBuilderArg {
 }
 
 export function saberSwap(arg: SaberSwapBuilderArg): WorkflowStep {
-  return new SaberSwapStep({
+  const rv: SaberSwapStep = {
     stepId: 'saber.swap',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Solana', arg.from),
     outputAsset: getTokenAsset('Solana', arg.to),
     info: SABER_INFO,
-  })
+  }
+  return rv
 }

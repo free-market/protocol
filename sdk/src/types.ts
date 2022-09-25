@@ -47,10 +47,7 @@ export interface AssetBalance {
  * A parameterized workflow step.
  *  This is a common base class, subclasses can add step-specific parameters unique to their step.
  */
-export class WorkflowStep {
-  constructor(init: WorkflowStep) {
-    Object.assign(this, init)
-  }
+export interface WorkflowStep {
   stepId: string
   inputAmount: MoneyAmount
   inputAsset: Asset

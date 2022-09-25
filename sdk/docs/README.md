@@ -30,15 +30,12 @@ This style of integration is more suited for web3 use cases, as the end user onl
 WorkflowBuilder provides a means to define the steps of a workflow using a high level API. Here's an example:
 
 ```TypeScript
-  import { StepFactories, WorkflowBuilder } from '@fmp/sdk'
-  const { weth, curve, wormhole, saber, mango } = StepFactories
-
   const workflow = new WorkflowBuilder()
     .addSteps(
-      weth.wrap({ amount: '1000000000000000000' }),
-      curve.triCrypto.swap({ from: 'WETH', to: 'USDT', amount: '100%' }),
-      wormhole.transfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
-      saber.swap({ from: 'USDTet', to: 'USDC', amount: '100%' })
+      wethWrap({ amount: '1000000000000000000' }),
+      curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
+      saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
     )
     .build()
 ```

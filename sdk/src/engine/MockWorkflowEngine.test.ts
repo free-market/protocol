@@ -1,18 +1,16 @@
 import test from 'ava'
-import { StepFactories, WorkflowBuilder } from '../builder/WorkflowBuilder'
+import { curveTriCryptoSwap, saberSwap, wethWrap, WorkflowBuilder, wormholeTokenTransfer } from '../builder/WorkflowBuilder'
 import { Workflow } from '../types'
 import { MockWorkflowEngine, MockWorkflowEngineMode } from './MockWorkflowEngine'
 import { WorkflowEvent, WorkflowEventHandler } from './WorkflowEngine'
 
-const { weth, curve, wormhole, saber, mango } = StepFactories
-
 function buildWorkflow(): Workflow {
   return new WorkflowBuilder()
     .addSteps(
-      weth.wrap({ amount: '1000000000000000000' }),
-      curve.triCrypto.swap({ from: 'WETH', to: 'USDT', amount: '100%' }),
-      wormhole.transfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
-      saber.swap({ from: 'USDTet', to: 'USDC', amount: '100%' })
+      wethWrap({ amount: '1000000000000000000' }),
+      curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
+      saberSwap({ from: 'USDTet', to: 'USDC', amount: '100%' })
     )
     .build()
 }

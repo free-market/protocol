@@ -1,6 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "@typescript-plugin-tsdoc", "prettier"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended", "prettier"]
+  "plugins": ["@typescript-eslint", "prettier", "eslint-plugin-tsdoc"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "rules": { "tsdoc/syntax": "warn" }
 }

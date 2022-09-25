@@ -1,6 +1,10 @@
 import { getTokenAsset } from '../assetInfo'
 import { MoneyAmount, WorkflowStep, WorkflowStepInfo, WorkflowStepResult } from '../types'
 
+interface WethStep extends WorkflowStep {
+  // TODO
+}
+
 const WRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.wrap',
   name: 'Wrap Etherium',
@@ -24,21 +28,23 @@ interface WethBuilderArg {
 }
 
 export function wethWrap(arg: WethBuilderArg) {
-  return new WorkflowStep({
+  const rv: WethStep = {
     stepId: 'weth.wrap',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Ethereum', 'ETH'),
     outputAsset: getTokenAsset('Ethereum', 'WETH'),
     info: WRAP_INFO,
-  })
+  }
+  return rv
 }
 
 export function wethUnwrap(arg: WethBuilderArg) {
-  return new WorkflowStep({
+  const rv: WethStep = {
     stepId: 'weth.unwrap',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Ethereum', 'WETH'),
     outputAsset: getTokenAsset('Ethereum', 'ETH'),
     info: UNWRAP_INFO,
-  })
+  }
+  return rv
 }
