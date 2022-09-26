@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / Asset
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / Asset
 
 # Interface: Asset
 
@@ -22,7 +22,7 @@ e.g., some amount of some token, or an account balance at some exchange.
 
 #### Defined in
 
-[sdk/src/types.ts:29](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L29)
+sdk/src/types.ts:29
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:30](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L30)
+sdk/src/types.ts:30
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:28](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L28)
+sdk/src/types.ts:28
 
 ___
 
@@ -52,4 +52,4 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:27](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L27)
+sdk/src/types.ts:27

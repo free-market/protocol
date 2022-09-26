@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / AssetInfo
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / AssetInfo
 
 # Interface: AssetInfo
 
@@ -20,7 +20,7 @@ Informational aspects of an asset.
 
 #### Defined in
 
-[sdk/src/types.ts:36](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L36)
+sdk/src/types.ts:36
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:37](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L37)
+sdk/src/types.ts:37
 
 ___
 
@@ -40,4 +40,4 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:35](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L35)
+sdk/src/types.ts:35

@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / WorkflowBuilder
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / WorkflowBuilder
 
 # Class: WorkflowBuilder
 
@@ -47,7 +47,7 @@ Add a sequence of steps to the workflow.
 
 #### Defined in
 
-[sdk/src/builder/WorkflowBuilder.ts:43](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L43)
+sdk/src/builder/WorkflowBuilder.ts:43
 
 ___
 
@@ -65,7 +65,7 @@ a [Workflow](../interfaces/Workflow.md) instance.
 
 #### Defined in
 
-[sdk/src/builder/WorkflowBuilder.ts:53](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L53)
+sdk/src/builder/WorkflowBuilder.ts:53
 
 ___
 
@@ -90,4 +90,4 @@ Loops over  a sequence of [WorkflowStep](../interfaces/WorkflowStep.md) until a 
 
 #### Defined in
 
-[sdk/src/builder/WorkflowBuilder.ts:63](https://github.com/free-market/platform/blob/c18767c/sdk/src/builder/WorkflowBuilder.ts#L63)
+sdk/src/builder/WorkflowBuilder.ts:63

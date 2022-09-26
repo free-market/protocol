@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / WorkflowStepResult
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / WorkflowStepResult
 
 # Interface: WorkflowStepResult
 
@@ -20,7 +20,7 @@ The outcome of executing a workflow step.
 
 #### Defined in
 
-[sdk/src/types.ts:79](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L79)
+sdk/src/types.ts:79
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:78](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L78)
+sdk/src/types.ts:78
 
 ___
 
@@ -40,4 +40,4 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:77](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L77)
+sdk/src/types.ts:77

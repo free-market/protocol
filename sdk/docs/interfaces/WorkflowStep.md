@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / WorkflowStep
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / WorkflowStep
 
 # Interface: WorkflowStep
 
@@ -23,7 +23,7 @@ A parameterized workflow step.
 
 #### Defined in
 
-[sdk/src/types.ts:55](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L55)
+sdk/src/types.ts:55
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:52](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L52)
+sdk/src/types.ts:52
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:53](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L53)
+sdk/src/types.ts:53
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:54](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L54)
+sdk/src/types.ts:54
 
 ___
 
@@ -63,4 +63,4 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:51](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L51)
+sdk/src/types.ts:51

@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / AssetBalance
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / AssetBalance
 
 # Interface: AssetBalance
 
@@ -19,7 +19,7 @@ An asset along with an associated balance.
 
 #### Defined in
 
-[sdk/src/types.ts:42](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L42)
+sdk/src/types.ts:42
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 #### Defined in
 
-[sdk/src/types.ts:43](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L43)
+sdk/src/types.ts:43

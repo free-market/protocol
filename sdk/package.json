@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "ava",
     "coverage": "c8 ava",
-    "typedoc": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docss src/index.ts",
+    "build:docs": " markdown-toc README.md -i && typedoc --plugin typedoc-plugin-markdown  --excludePrivate --out docs src/index.ts && rimraf docs/README.md",
     "typedoc:watch": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docss src/index.ts --watch"
   },
   "keywords": [],
@@ -37,7 +37,9 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-tsdoc": "^0.2.17",
+    "markdown-toc": "^1.2.0",
     "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
     "typedoc": "^0.23.15",
     "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.8.3"

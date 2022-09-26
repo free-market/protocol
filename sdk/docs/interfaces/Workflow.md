@@ -1,4 +1,4 @@
-[@fmp/sdk](../docs/README.md) / [Exports](../modules.md) / Workflow
+[@fmp/sdk](../README.md) / [Exports](../modules.md) / Workflow
 
 # Interface: Workflow
 
@@ -18,4 +18,4 @@ A workflow.
 
 #### Defined in
 
-[sdk/src/types.ts:87](https://github.com/free-market/platform/blob/c18767c/sdk/src/types.ts#L87)
+sdk/src/types.ts:87
