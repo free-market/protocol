@@ -6,8 +6,8 @@ const BalanceCard = (props: {
   amount: string
   chain: string
 }): JSX.Element => (
-  <div className="rounded-2xl bg-sky-700 py-5 px-6 inline-flex items-center text-sky-200 space-x-5">
-    <div className="w-10 h-10 relative">
+  <div className="rounded-full bg-sky-700 py-2 px-6 inline-flex items-center text-sky-200 space-x-5">
+    <div className="w-10 h-10 relative translate-y-1">
       <img className="absolute w-8 h-8 rounded-full" src="/ethereum-eth.svg" />
       <div className="absolute w-4 h-4 rounded-md right-1 bottom-1 overflow-hidden flex items-center justify-center">
         <img className="w-4 h-4" src="/ethereum-chain.svg" />
@@ -40,7 +40,7 @@ export const ActionView = (props: {
   return (
     <>
       {/* snippetEls */}
-      <div className="max-w-4xl rounded-2xl bg-sky-900 p-5 flex justify-between items-center w-full">
+      <div className="max-w-4xl rounded-full bg-sky-900 flex justify-between items-center w-full">
         <BalanceCard ticker="ETH" amount="0.0030" chain="Ethereum" />
         <div className="border-t-4 border-dashed border-sky-600 flex grow shrink mx-5" />
         <div className="rounded-full p-2 bg-sky-700 text-sky-300 font-bold flex items-center space-x-2">
