@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  react-simple-code-editor@0.13.0:
+    hash: 5j6ti7usv4vm5kvbysyprdovd4
+    path: patches/react-simple-code-editor@0.13.0.patch
+
 importers:
 
   .:
@@ -275,6 +280,7 @@ importers:
       '@testing-library/user-event': 13.5.0
       '@types/jest': 27.0.3
       '@types/node': 17.0.6
+      '@types/prismjs': 1.26.0
       '@types/react': 17.0.38
       '@types/react-dom': 17.0.11
       '@types/react-syntax-highlighter': 15.5.5
@@ -309,11 +315,13 @@ importers:
       postcss: ^8.4.14
       postcss-loader: ^7.0.0
       prettier: ^2.7.1
+      prismjs: 1.29.0
       react: ^18
       react-dom: ^18
       react-final-form: 6.5.9
       react-refresh: ^0.10
       react-scripts: ^5
+      react-simple-code-editor: 0.13.0
       react-syntax-highlighter: 15.5.0
       require-from-string: ^2.0.2
       spectacle: 9.5.1
@@ -331,6 +339,7 @@ importers:
       '@metamask/detect-provider': 1.2.0
       '@project-serum/anchor': 0.25.0
       '@testing-library/dom': 8.18.1
+      '@types/prismjs': 1.26.0
       '@types/react-syntax-highlighter': 15.5.5
       '@types/testing-library__jest-dom': 5.14.5
       '@usedapp/core': 1.1.5_ethers@5.7.0+react@18.2.0
@@ -343,10 +352,12 @@ importers:
       ethers-react: 1.1.0
       final-form: 4.20.7
       framer-motion: 7.2.1_biqbaboplfbrettd7655fr4n2y
+      prismjs: 1.29.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-final-form: 6.5.9_b76tjmhm4bpbaoui6lan2hu4pm
       react-refresh: 0.10.0
+      react-simple-code-editor: 0.13.0_5j6ti7usv4vm5kvbysyprdovd4_biqbaboplfbrettd7655fr4n2y
       react-syntax-highlighter: 15.5.0_react@18.2.0
       spectacle: 9.5.1_biqbaboplfbrettd7655fr4n2y
       web-vitals: 2.1.2
@@ -6629,6 +6640,10 @@ packages:
   /@types/pretty-hrtime/1.0.1:
     resolution: {integrity: sha512-VjID5MJb1eGKthz2qUerWT8+R4b9N+CHvGCzg9fn4kWZgaF9AhdYikQio3R7wV8YY1NsQKPaCwKz1Yff+aHNUQ==}
     dev: true
+
+  /@types/prismjs/1.26.0:
+    resolution: {integrity: sha512-ZTaqn/qSqUuAq1YwvOFQfVW1AR/oQJlLSZVustdjwI+GZ8kr0MSHBj0tsXPW1EqHubx50gtBEjbPGsdZwQwCjQ==}
+    dev: false
 
   /@types/promise-retry/1.1.3:
     resolution: {integrity: sha512-LxIlEpEX6frE3co3vCO2EUJfHIta1IOmhDlcAsR4GMMv9hev1iTI9VwberVGkePJAuLZs5rMucrV8CziCfuJMw==}
@@ -21827,6 +21842,17 @@ packages:
       - webpack-hot-middleware
       - webpack-plugin-serve
     dev: true
+
+  /react-simple-code-editor/0.13.0_5j6ti7usv4vm5kvbysyprdovd4_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-v49lVlDv6dlda92Hm+7PorN9V8k+Ech7Y52dPZ3QYClJXaciiYW42Ja/j6MPb5ZPfU6w34ZMi2HRsLhxUjBF8A==}
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+    patched: true
 
   /react-spring/8.0.27_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-nDpWBe3ZVezukNRandTeLSPcwwTMjNVu1IDq9qA/AMiUqHuRN4BeSWvKr3eIxxg1vtiYiOLy4FqdfCP5IoP77g==}

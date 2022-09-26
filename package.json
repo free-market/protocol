@@ -8,5 +8,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "pnpm": {
+    "patchedDependencies": {
+      "react-simple-code-editor@0.13.0": "patches/react-simple-code-editor@0.13.0.patch"
+    }
+  }
 }
