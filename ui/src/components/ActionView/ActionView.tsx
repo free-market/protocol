@@ -34,6 +34,8 @@ export const ActionView = (props: {
   step: WorkflowStep
   children?: React.ReactNode
 }): JSX.Element => {
+  const [expanded, setExpanded] = React.useState(false)
+
   const snippets = ['1/3 Transaction', 'No Fee', '~15m']
 
   const snippetEls = snippets.map((snippet, index) => (
@@ -46,10 +48,14 @@ export const ActionView = (props: {
     </div>
   ))
 
+  const toggle = () => {
+    setExpanded(state => !state)
+  }
+
   return (
     <>
       {/* snippetEls */}
-      <div className="max-w-4xl rounded-full bg-sky-900 flex justify-between items-center w-full">
+      <div className="max-w-4xl rounded-full bg-sky-900 flex justify-between items-center w-full cursor-pointer" onClick={toggle}>
         <BalanceCard
           asset={props.step.inputAsset}
           amount={props.step.inputAmount}
