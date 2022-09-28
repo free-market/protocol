@@ -40,7 +40,7 @@ const TRICRYPTO_SWAP: WorkflowStepInfo = {
   blockchains: ['Ethereum'],
   gasEstimate: '40',
   exchangeFee: '1',
-  description: 'TriCrypto does swapping between the 3 most popular tokens on Etherium: WBTC, WETH and USDT',
+  description: 'TriCrypto does swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT',
   iconUrl: 'https://curve.fi/favicon-32x32.svg',
   webSiteUrl: 'https://curve.fi/',
 }

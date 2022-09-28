@@ -49,7 +49,7 @@
 
 ## About The Project
 
-FMP-SDK is a TypeScript library for programattic integrate with Free Market Protocol. It works with NodeJS and modern web browsers.  
+FMP-SDK is a TypeScript library for programattic integrate with Free Market Protocol. It works with NodeJS and modern web browsers.
 It provides:
 
 - A rich `Workflow` data structure that can be executed by WorkflowEngines, and is well suited as a source of information for user interfaces
@@ -196,7 +196,7 @@ The full workflow object produced by the above code `WorkflowBuilder` snipit can
                   stepId: weth.wrap
                 </blockquote>
                 <blockquote>
-                  name: Wrap Etherium
+                  name: Wrap Ethereum
                 </blockquote>
                 <blockquote>
                   <details>
@@ -324,7 +324,7 @@ The full workflow object produced by the above code `WorkflowBuilder` snipit can
                   exchangeFee: 1
                 </blockquote>
                 <blockquote>
-                  description: TriCrypto does swapping between the 3 most popular tokens on Etherium: WBTC, WETH and USDT
+                  description: TriCrypto does swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT
                 </blockquote>
               </details>
             </blockquote>
@@ -551,9 +551,9 @@ The full workflow object produced by the above code `WorkflowBuilder` snipit can
 
 A WorkflowEngine executes a Workflow. WorkflowEngine is provided as two variants:
 
-`SignEveryStepWorkflowEngine` Each step of the workflow is executed in a separate blockchain transaction.  
-This engine requires a separate signature from the user for each workflow step.  
-`OneClickWorkflowEngine` Multiple steps of the workflow are executed within the same transaction. Only one one signature is required to run the entire workflow.  
+`SignEveryStepWorkflowEngine` Each step of the workflow is executed in a separate blockchain transaction.
+This engine requires a separate signature from the user for each workflow step.
+`OneClickWorkflowEngine` Multiple steps of the workflow are executed within the same transaction. Only one one signature is required to run the entire workflow.
 This style of integration is more suited for web3 use cases, as the end user only has to approve one transaction from their browser wallet.
 
 #### SignEveryStepWorkflowEngine

@@ -10,13 +10,13 @@ interface WormholeBaseConfig {
   wormholeTokenBridgeAddress: string
 }
 
-interface EtheriumConfig extends WormholeBaseConfig {
+interface EthereumConfig extends WormholeBaseConfig {
   wethAddress: string
 }
 
 interface SolanaConfig extends WormholeBaseConfig {}
 
-const etheriumGoerliConfig: EtheriumConfig = {
+const ethereumGoerliConfig: EthereumConfig = {
   jsonRpcUrl: `wss://eth-goerli.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_TEST']}`,
   wethAddress: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
   wormholeChainId: CHAIN_ID_ETH,
@@ -24,7 +24,7 @@ const etheriumGoerliConfig: EtheriumConfig = {
   wormholeTokenBridgeAddress: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
 }
 
-const etheriumRopstenConfig: EtheriumConfig = {
+const ethereumRopstenConfig: EthereumConfig = {
   jsonRpcUrl: `wss://eth-ropsten.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_TEST']}`,
   wethAddress: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
   wormholeChainId: CHAIN_ID_ETHEREUM_ROPSTEN,
@@ -32,7 +32,7 @@ const etheriumRopstenConfig: EtheriumConfig = {
   wormholeTokenBridgeAddress: '0xF174F9A837536C449321df1Ca093Bb96948D5386',
 }
 
-const etheriumMainnetConfig: EtheriumConfig = {
+const ethereumMainnetConfig: EthereumConfig = {
   jsonRpcUrl: `wss://eth-mainnet.alchemyapi.io/v2/${process.env['ALCHEMY_URL_KEY_MAIN']}`,
   wethAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   wormholeChainId: CHAIN_ID_ETH,
@@ -40,7 +40,7 @@ const etheriumMainnetConfig: EtheriumConfig = {
   wormholeTokenBridgeAddress: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
 }
 
-const etheriumGanacheConfig: EtheriumConfig = {
+const ethereumGanacheConfig: EthereumConfig = {
   jsonRpcUrl: `http://127.0.0.1:8545`,
   wethAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   wormholeChainId: CHAIN_ID_ETH,
@@ -64,7 +64,7 @@ const solanaMainnetConfig: SolanaConfig = {
   wormholeTokenBridgeAddress: 'wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb',
 }
 
-export const ethConfig = etheriumGoerliConfig
+export const ethConfig = ethereumGoerliConfig
 export const solConfig = solanaDevnetConfig
 
 export const ETH_TEST_WALLET_PRIVATE_KEY = '18eb753b59d97a6ab5e2c4f7f35f68303508ef9e652b7a14030a80f96e20c02a'

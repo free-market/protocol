@@ -17,7 +17,7 @@ import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport'
 import bs58 from 'bs58'
 import { ethConfig, ETH_TEST_WALLET_PRIVATE_KEY, WORMHOLE_RPC_HOSTS, SOLANA_PRIVATE_KEY, solConfig } from './config'
 
-async function attestEtheriumTokenOnSolana(tokenAddress: string) {
+async function attestEthereumTokenOnSolana(tokenAddress: string) {
   try {
     // create a signer for Eth
     const provider = new ethers.providers.WebSocketProvider(ethConfig.jsonRpcUrl)
@@ -77,7 +77,7 @@ async function attestEtheriumTokenOnSolana(tokenAddress: string) {
 
 async function go() {
   try {
-    await attestEtheriumTokenOnSolana(ethConfig.wethAddress)
+    await attestEthereumTokenOnSolana(ethConfig.wethAddress)
     console.log('success!')
   } catch (e) {
     console.log(e)

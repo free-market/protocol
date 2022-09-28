@@ -27,7 +27,7 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/sp
 import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport'
 import { formatUnits, parseUnits } from '@ethersproject/units'
 
-async function transferSolanaToEtherium() {
+async function transferSolanaToEthereum() {
   // create a signer for Eth
   const ethProvider = new ethers.providers.WebSocketProvider(ethConfig.jsonRpcUrl)
   const ethSigner = new ethers.Wallet(ETH_TEST_WALLET_PRIVATE_KEY, ethProvider)
@@ -203,7 +203,7 @@ async function getSplTokenBalance(solConnection: Connection, owner: PublicKey, s
 
 async function go() {
   try {
-    await transferSolanaToEtherium()
+    await transferSolanaToEthereum()
   } catch (e) {
     console.error(e)
   }
