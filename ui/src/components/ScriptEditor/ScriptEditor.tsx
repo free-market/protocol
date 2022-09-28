@@ -28,7 +28,7 @@ export const ScriptEditor = (props: {
             Welcome! To get started, click "Prepare."
           </p>
 
-          <div className="bg-sky-600 w-full px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-sky-300 active:bg-sky-700 select-none">
+          <div className="bg-sky-600 w-full px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-sky-300 active:bg-sky-700 active:text-sky-500 select-none">
             Prepare
           </div>
         </div>
