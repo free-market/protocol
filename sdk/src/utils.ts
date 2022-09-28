@@ -1,8 +1,9 @@
 import { Workflow } from './types'
+import { BigNumber } from 'ethers'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function stringifyBigInt(key: any, value: any): string {
-  if (typeof value === 'bigint') {
+export function stringifyBigNumber(key: any, value: any): string {
+  if (value instanceof BigNumber) {
     return value.toString()
   }
   return value

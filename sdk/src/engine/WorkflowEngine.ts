@@ -18,7 +18,7 @@ export interface WorkflowEvent {
   workflow: Workflow
   steps: WorkflowStep[]
   balances: AssetBalance[]
-  absoluteInputAmount?: bigint
+  absoluteInputAmount?: string
   result?: WorkflowStepResult // defined when type is Completed
 }
 

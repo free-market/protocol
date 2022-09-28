@@ -2,6 +2,7 @@ import { NoAsset, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
 import { promisify } from 'util'
+import { BigNumber } from 'ethers'
 
 const sleep = promisify(setTimeout)
 
@@ -44,7 +45,7 @@ export class MockWorkflowEngine implements WorkflowEngine {
       workflow: this.workflow,
       steps: [step],
       balances: this.balances.toArray(),
-      absoluteInputAmount: amount,
+      absoluteInputAmount: amount.toString(),
     }
 
     this.options.eventHandler(submittingEvent)
@@ -66,7 +67,7 @@ export class MockWorkflowEngine implements WorkflowEngine {
       this.balances.debit(step.inputAsset, amount)
     }
     if (step.outputAsset !== NoAsset) {
-      this.balances.credit(step.outputAsset, BigInt(stepResult.outputAmount))
+      this.balances.credit(step.outputAsset, BigNumber.from(stepResult.outputAmount))
     }
 
     // fire the Completed event
@@ -81,29 +82,26 @@ export class MockWorkflowEngine implements WorkflowEngine {
     this.options.eventHandler(completedEvent)
   }
 
-  private actualizeAmount(step: WorkflowStep): [bigint, boolean] {
-    if (typeof step.inputAmount === 'bigint') {
-      return [step.inputAmount, false]
-    }
+  private actualizeAmount(step: WorkflowStep): [BigNumber, boolean] {
     if (typeof step.inputAmount === 'number') {
-      return [BigInt(step.inputAmount), false]
+      return [BigNumber.from(step.inputAmount), false]
     }
 
     const s = step.inputAmount.trim()
     if (s.endsWith('%')) {
       const pctValue = s.slice(0, s.length - 1)
-      const pct = BigInt(pctValue)
+      const pct = BigNumber.from(pctValue)
       const currentBalance = this.balances.get(step.inputAsset)
       if (!currentBalance) {
         throw new Error("invalid workflow: taking percentage of asset that hasn't been seen before")
       }
-      const amount = (currentBalance * pct) / BigInt(100)
+      const amount = currentBalance.mul(pct).div(100)
       return [amount, true]
     }
-    return [BigInt(s), false]
+    return [BigNumber.from(s), false]
   }
 
-  async callMockWorkflowStep(step: WorkflowStep, amount: bigint, statusCallback: (statusUpdate: string) => void) {
+  async callMockWorkflowStep(step: WorkflowStep, amount: BigNumber, statusCallback: (statusUpdate: string) => void) {
     await sleep(1000)
     statusCallback('Transaction submitted, waiting for validation')
     await this.mockBlockConfirmDelay()
@@ -136,17 +134,18 @@ function randomGas() {
   return (30.0 + Math.random() * 10.0).toString()
 }
 
-export async function mockExecuteWethWrapUnWrap(step: WorkflowStep, amount: bigint): Promise<WorkflowStepResult> {
+export async function mockExecuteWethWrapUnWrap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
   return {
     outputAmount: amount.toString(),
     gasCost: '10',
     exchangeFee: '0',
   }
 }
-export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: bigint): Promise<WorkflowStepResult> {
-  const ethInUsd = 1333n
-  const decimalDelta = BigInt(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
-  const amountOutput = (ethInUsd * amount) / 10n ** decimalDelta
+const ethInUsd = BigNumber.from(1333)
+const tenBigNumber = BigNumber.from(10)
+export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+  const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+  const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
   return {
     outputAmount: amountOutput.toString(),
     gasCost: randomGas(),
@@ -154,7 +153,7 @@ export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: bigin
   }
 }
 
-export async function mockExecuteWormholeTransfer(step: WorkflowStep, amount: bigint): Promise<WorkflowStepResult> {
+export async function mockExecuteWormholeTransfer(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
   return {
     outputAmount: amount.toString(),
     gasCost: randomGas(),
@@ -162,7 +161,7 @@ export async function mockExecuteWormholeTransfer(step: WorkflowStep, amount: bi
   }
 }
 
-export async function mockExecuteSerumSwap(step: WorkflowStep, amount: bigint): Promise<WorkflowStepResult> {
+export async function mockExecuteSerumSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
   return {
     outputAmount: amount.toString(),
     gasCost: randomGas(),

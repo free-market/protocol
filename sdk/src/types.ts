@@ -1,5 +1,5 @@
 /** Represents an integer or a percentage such as "100%" */
-export type MoneyAmount = bigint | string | number
+export type MoneyAmount = string | number
 
 /** Address of a wallet/account/contract.  Usually is a base58 encoding of a byte array, but exact specs for this string very by blockchain. */
 export type Address = string
@@ -13,6 +13,24 @@ export enum BlockChain {
 
 /** The names of blockchains as a string union. */
 export type ChainName = keyof typeof BlockChain
+
+export interface BlockChainInfo {
+  iconUrl: string
+}
+
+export type BlockChainInfos = { [name: string]: BlockChainInfo }
+
+export const BLOCKCHAIN_INFO = {
+  None: {
+    iconUrl: '',
+  },
+  Ethereum: {
+    iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/eth.png',
+  },
+  Solana: {
+    iconUrl: 'https://solana.com/favicon-32x32.png',
+  },
+}
 
 /** Enum containing all supported types of assets. */
 export enum AssetType {

@@ -1,5 +1,5 @@
 import test from 'ava'
-import { stringifyBigInt } from '../utils'
+import { stringifyBigNumber } from '../utils'
 import {
   curveThreePoolSwap,
   curveTriCryptoSwap,
@@ -23,6 +23,6 @@ test('instantiate a workflow with WorkflowBuilder', t => {
     )
     .build()
 
-  t.log('workflow\n' + JSON.stringify(workflow, stringifyBigInt, 4))
+  t.log('workflow\n' + JSON.stringify(workflow, stringifyBigNumber, 4))
   t.snapshot(workflow)
 })

@@ -21,7 +21,11 @@ function buildWorkflow(): Workflow {
 
 function formatMoney(amount: string, decimals: number) {
   const left = amount.slice(0, amount.length - decimals)
-  const right = amount.slice(decimals + 1, amount.length)
+  let right = amount.slice(decimals + 1, amount.length)
+  const m = right.match(/([1-9]*).*/)
+  if (m) {
+    right = m[1]
+  }
   if (right === '') {
     return left
   }

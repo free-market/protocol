@@ -9,7 +9,7 @@
     "ganache": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v --mnemonic \"$FMP_GANACHE_MNEMONIC\"",
     "g": "dotenv -- cross-var ganache --fork  https://eth-mainnet.alchemyapi.io/v2/$ALCHEMY_API_KEY -v ",
     "clean": "ts-node utils/clean.ts",
-    "build": "truffle compile",
+    "build": "truffle compile && pnpm run generate-clients && tsc",
     "generate-clients": "ts-node utils/ensure-abis.ts && typechain --target=ethers-v5  --glob=\"build/+(contracts|3rdparty)/*.json\" && typechain --target=truffle-v5  --glob=\"build/+(contracts|3rdparty)/*.json\" && typechain --target=web3-v1 --glob=\"build/+(contracts|3rdparty)/*.json\""
   },
   "keywords": [],

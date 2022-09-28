@@ -10,7 +10,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'Ethereum',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/eth.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/eth.png',
     },
   },
   WETH: {
@@ -20,7 +20,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'Wrapped Ethereum',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/eth.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/eth.png',
     },
   },
   USDT: {
@@ -30,7 +30,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'Tether USD',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdt.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdt.png',
     },
   },
   USDC: {
@@ -40,7 +40,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'USDC (Ethereum)',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdc.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdc.png',
     },
   },
   DAI: {
@@ -50,7 +50,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'Dai',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/dai.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/dai.png',
     },
   },
   WBTC: {
@@ -60,7 +60,7 @@ export const ETHEREUM_TOKENS = {
     info: {
       fullName: 'Wrapped Bitcoin',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/wbtc.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/wbtc.png',
     },
   },
 }
@@ -73,7 +73,7 @@ export const SOLANA_TOKENS: TokenConfig = {
     info: {
       fullName: 'Sol',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/sol.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/sol.png',
     },
   },
   USDCet: {
@@ -83,7 +83,7 @@ export const SOLANA_TOKENS: TokenConfig = {
     info: {
       fullName: 'USDCet (USDC via wormhole from Ethereum)',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdc.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdc.png',
     },
   },
   USDTet: {
@@ -93,7 +93,7 @@ export const SOLANA_TOKENS: TokenConfig = {
     info: {
       fullName: 'USDTet (USDT via wormhole from Ethereum)',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdt.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdt.png',
     },
   },
   USDC: {
@@ -103,7 +103,7 @@ export const SOLANA_TOKENS: TokenConfig = {
     info: {
       fullName: 'USDC (solana)',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdc.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdc.png',
     },
   },
   USDT: {
@@ -113,7 +113,7 @@ export const SOLANA_TOKENS: TokenConfig = {
     info: {
       fullName: 'USDT (solana)',
       decimals: 18,
-      iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/usdt.png',
+      iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdt.png',
     },
   },
 }
