@@ -5,6 +5,8 @@ interface NetworkType {
   type: string
 }
 
+
+
 export interface EthereumNetwork extends NetworkType {
   chain: 'Ethereum'
   type: 'mainnet' | 'goerli'

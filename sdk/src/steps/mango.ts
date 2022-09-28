@@ -3,10 +3,6 @@ import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
 
 export type MangoTokenSymbol = 'SOL' | 'USDC'
 
-export interface MangoStep extends WorkflowStep {
-  // todo
-}
-
 const MANGO_EXCHANGE_NAME = 'mangno'
 
 const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
@@ -16,6 +12,8 @@ const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
   gasEstimate: '4',
   exchangeFee: '1',
   description: 'Automated market maker for swapping SPL Tokens.',
+  iconUrl: 'https://mango.markets/img/logo_mango.svg',
+  webSiteUrl: 'https://mango.markets/',
 }
 
 const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
@@ -25,15 +23,17 @@ const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
   gasEstimate: '4',
   exchangeFee: '1',
   description: 'Automated market maker for swapping SPL Tokens.',
+  iconUrl: 'https://mango.markets/img/logo_mango.svg',
+  webSiteUrl: 'https://mango.markets/',
 }
 
-interface MangoBuilderArg {
+export interface MangoBuilderArg {
   symbol: MangoTokenSymbol
   amount: MoneyAmount
 }
 
 export function mangoDeposit(arg: MangoBuilderArg): WorkflowStep {
-  const rv: MangoStep = {
+  const rv: WorkflowStep = {
     stepId: 'mango.deposit',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Solana', arg.symbol),
@@ -44,7 +44,7 @@ export function mangoDeposit(arg: MangoBuilderArg): WorkflowStep {
 }
 
 export function mangoWithdrawal(arg: MangoBuilderArg): WorkflowStep {
-  const rv: MangoStep = {
+  const rv: WorkflowStep = {
     stepId: 'mango.withdrawal',
     inputAmount: arg.amount,
     inputAsset: getAccountAsset('Solana', MANGO_EXCHANGE_NAME, arg.symbol),

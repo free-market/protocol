@@ -1,5 +1,5 @@
 import test from 'ava'
-import { curveTriCryptoSwap, saberSwap, wethWrap, WorkflowBuilder, wormholeTokenTransfer } from '../builder/WorkflowBuilder'
+import { curveTriCryptoSwap, serumSwap, wethWrap, WorkflowBuilder, wormholeTokenTransfer } from '../builder/WorkflowBuilder'
 import { Workflow } from '../types'
 import { MockWorkflowEngine, MockWorkflowEngineMode } from './MockWorkflowEngine'
 import { WorkflowEvent, WorkflowEventHandler } from './WorkflowEngine'
@@ -10,7 +10,7 @@ function buildWorkflow(): Workflow {
       wethWrap({ amount: '1000000000000000000' }),
       curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
       wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
-      saberSwap({ from: 'USDTet', to: 'USDC', amount: '100%' })
+      serumSwap({ from: 'USDTet', to: 'USDC', amount: '100%' })
     )
     .build()
 }

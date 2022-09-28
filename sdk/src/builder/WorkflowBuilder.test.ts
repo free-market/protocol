@@ -4,7 +4,7 @@ import {
   curveThreePoolSwap,
   curveTriCryptoSwap,
   mangoDeposit,
-  saberSwap,
+  serumSwap,
   wethWrap,
   WorkflowBuilder,
   wormholeTokenTransfer,
@@ -18,7 +18,7 @@ test('instantiate a workflow with WorkflowBuilder', t => {
       curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
       curveThreePoolSwap({ from: 'USDT', to: 'USDC', amount: '100%' }),
       wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana', amount: '100%' }),
-      saberSwap({ from: 'USDCet', to: 'USDC', amount: '100%' }),
+      serumSwap({ from: 'USDCet', to: 'USDC', amount: '100%' }),
       mangoDeposit({ symbol: 'USDC', amount: '100%' })
     )
     .build()

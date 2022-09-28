@@ -12,7 +12,7 @@ A high level interface to concisely define workflows.
     wethWrap({ amount: '1000000000000000000' }),
     curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
     wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
-    saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
+    serumSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
   )
   .build()
 ```
@@ -35,8 +35,8 @@ Add a sequence of steps to the workflow.
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name       | Type                                              | Description                                                                                                                                                             |
+| :--------- | :------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `...steps` | [`WorkflowStep`](../interfaces/WorkflowStep.md)[] | one or more [WorkflowStep](../interfaces/WorkflowStep.md) instances. Use factory functions such as [wethWrap](../modules.md#wethwrap) to create WorkflowStep instances. |
 
 #### Returns
@@ -49,7 +49,7 @@ Add a sequence of steps to the workflow.
 
 sdk/src/builder/WorkflowBuilder.ts:43
 
-___
+---
 
 ### build
 
@@ -67,19 +67,19 @@ a [Workflow](../interfaces/Workflow.md) instance.
 
 sdk/src/builder/WorkflowBuilder.ts:53
 
-___
+---
 
 ### doWhile
 
 ▸ **doWhile**(`steps`, `callback`): [`WorkflowBuilder`](WorkflowBuilder.md)
 
-Loops over  a sequence of [WorkflowStep](../interfaces/WorkflowStep.md) until a condition is met as determined the callback function.
+Loops over a sequence of [WorkflowStep](../interfaces/WorkflowStep.md) until a condition is met as determined the callback function.
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `steps` | [`WorkflowStep`](../interfaces/WorkflowStep.md)[] | the sequence of steps to loop over.  Use factory functions such as [wethWrap](../modules.md#wethwrap) to create WorkflowStep instances. |
+| Name       | Type                                               | Description                                                                                                                                                                |
+| :--------- | :------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `steps`    | [`WorkflowStep`](../interfaces/WorkflowStep.md)[]  | the sequence of steps to loop over. Use factory functions such as [wethWrap](../modules.md#wethwrap) to create WorkflowStep instances.                                     |
 | `callback` | [`DoWhileCallback`](../modules.md#dowhilecallback) | A function matching the [DoWhileCallback](../modules.md#dowhilecallback) signature that decides if `steps` should be executed again based on the output of the final step. |
 
 #### Returns

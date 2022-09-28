@@ -5,6 +5,16 @@
 A parameterized workflow step.
  This is a common base class, subclasses can add step-specific parameters unique to their step.
 
+## Hierarchy
+
+- **`WorkflowStep`**
+
+  ↳ [`CurveStep`](CurveStep.md)
+
+  ↳ [`SerumSwapStep`](SerumSwapStep.md)
+
+  ↳ [`WormholeStep`](WormholeStep.md)
+
 ## Table of contents
 
 ### Properties

@@ -7,12 +7,15 @@ import { AssetBalance, Workflow, WorkflowStep, WorkflowStepResult } from '../typ
 export type EthereumProvider = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc
 
 export enum WorkflowEventType {
-  Submitting = 'Submitting',
+  Starting = 'Starting',
+  StatusUpdate = 'StatusUpdate',
   Completed = 'Completed',
 }
 
 export interface WorkflowEvent {
   type: WorkflowEventType
+  statusMessage: string
+  workflow: Workflow
   steps: WorkflowStep[]
   balances: AssetBalance[]
   absoluteInputAmount?: bigint

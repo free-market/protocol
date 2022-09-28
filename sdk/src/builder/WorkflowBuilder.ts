@@ -1,7 +1,7 @@
 import { Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 export { curveThreePoolSwap, curveTriCryptoSwap } from '../steps/curve'
 export { wormholeTokenTransfer } from '../steps/wormhole'
-export { saberSwap } from '../steps/saber'
+export { serumSwap as serumSwap } from '../steps/serum'
 export { mangoDeposit, mangoWithdrawal } from '../steps/mango'
 export { wethWrap, wethUnwrap } from '../steps/weth'
 
@@ -18,7 +18,7 @@ export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Prom
  *     wethWrap({ amount: '1000000000000000000' }),
  *     curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
  *     wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
- *     saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
+ *     serumSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
  *   )
  *   .build()
  * ```

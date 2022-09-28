@@ -6,6 +6,7 @@ export type Address = string
 
 /** Enum containing all supported blockchains. */
 export enum BlockChain {
+  None = 'None',
   Ethereum = 'Ethereum',
   Solana = 'Solana',
 }
@@ -15,8 +16,9 @@ export type ChainName = keyof typeof BlockChain
 
 /** Enum containing all supported types of assets. */
 export enum AssetType {
-  token = 'token',
-  account = 'account',
+  None = 'None',
+  Token = 'Token',
+  Account = 'Account',
 }
 
 /**
@@ -34,6 +36,7 @@ export interface Asset {
 export interface AssetInfo {
   fullName: string
   decimals: number
+  iconUrl: string
   decimals2?: number
 }
 
@@ -51,8 +54,19 @@ export interface WorkflowStep {
   stepId: string
   inputAmount: MoneyAmount
   inputAsset: Asset
-  outputAsset: Asset | 'none'
+  outputAsset: Asset
   info: WorkflowStepInfo
+}
+
+export const NoAsset: Asset = {
+  blockChain: BlockChain.None,
+  symbol: '',
+  type: AssetType.None,
+  info: {
+    decimals: 0,
+    fullName: '',
+    iconUrl: '',
+  },
 }
 
 /**
@@ -65,6 +79,8 @@ export interface WorkflowStepInfo {
   gasEstimate: string
   exchangeFee: string
   description: string
+  iconUrl: string
+  webSiteUrl: string
 }
 
 /**

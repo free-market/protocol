@@ -35,6 +35,8 @@ const WORMHOLE_INFO: WorkflowStepInfo = {
   gasEstimate: '400000',
   exchangeFee: '1',
   description: 'Enables transfering tokens to different blockchains.',
+  iconUrl: 'https://www.portalbridge.com/logo192.png',
+  webSiteUrl: 'https://www.portalbridge.com/',
 }
 
 interface WormholeTokenTransferBuilderArgs {

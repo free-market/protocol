@@ -1,10 +1,6 @@
 import { getTokenAsset } from '../assetInfo'
 import { MoneyAmount, WorkflowStep, WorkflowStepInfo, WorkflowStepResult } from '../types'
 
-interface WethStep extends WorkflowStep {
-  // TODO
-}
-
 const WRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.wrap',
   name: 'Wrap Etherium',
@@ -12,6 +8,8 @@ const WRAP_INFO: WorkflowStepInfo = {
   gasEstimate: '1',
   exchangeFee: '0',
   description: 'Convert native ETH to WETH tokens.',
+  iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/eth.png',
+  webSiteUrl: 'https://weth.io/',
 }
 
 const UNWRAP_INFO: WorkflowStepInfo = {
@@ -21,6 +19,8 @@ const UNWRAP_INFO: WorkflowStepInfo = {
   gasEstimate: '1',
   exchangeFee: '0',
   description: 'Convert WETH tokens to native ETH.',
+  iconUrl: 'https://github.com/spothq/cryptocurrency-icons/blob/master/32/icon/eth.png',
+  webSiteUrl: 'https://weth.io/',
 }
 
 interface WethBuilderArg {
@@ -28,7 +28,7 @@ interface WethBuilderArg {
 }
 
 export function wethWrap(arg: WethBuilderArg) {
-  const rv: WethStep = {
+  const rv: WorkflowStep = {
     stepId: 'weth.wrap',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Ethereum', 'ETH'),
@@ -39,7 +39,7 @@ export function wethWrap(arg: WethBuilderArg) {
 }
 
 export function wethUnwrap(arg: WethBuilderArg) {
-  const rv: WethStep = {
+  const rv: WorkflowStep = {
     stepId: 'weth.unwrap',
     inputAmount: arg.amount,
     inputAsset: getTokenAsset('Ethereum', 'WETH'),
