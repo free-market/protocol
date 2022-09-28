@@ -12,7 +12,10 @@
   "license": "ISC",
   "pnpm": {
     "patchedDependencies": {
-      "react-simple-code-editor@0.13.0": "patches/react-simple-code-editor@0.13.0.patch"
+      "@craco/craco@6.4.5": "patches/@craco__craco@6.4.5.patch",
+      "react-scripts@5.0.1": "patches/react-scripts@5.0.1.patch",
+      "react-simple-code-editor@0.13.0": "patches/react-simple-code-editor@0.13.0.patch",
+      "@storybook/preset-create-react-app@4.1.2": "patches/@storybook__preset-create-react-app@4.1.2.patch"
     }
   },
   "devDependencies": {
