@@ -1,5 +1,6 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { wethWrap } from '@fmp/sdk'
 
 import { ActionView as Component } from './ActionView'
 
@@ -12,4 +13,6 @@ export const ActionView: ComponentStory<typeof Component> = (args) => (
   <Component {...args} />
 )
 
-ActionView.args = {}
+ActionView.args = {
+  step: wethWrap({ amount: '1000000000000000000' })
+}
