@@ -14,7 +14,7 @@ export default {
       <WorkflowProvider>
         <Story />
       </WorkflowProvider>
-    )
+    ),
   ],
   parameters: {
     backgrounds: {

@@ -5,10 +5,18 @@ export type WorkflowContextShape = {
   prepare: () => void | Promise<void>
 }
 
-export const WorkflowContext = React.createContext<WorkflowContextShape>({status: 'editing', prepare: () => {}})
+export const WorkflowContext = React.createContext<WorkflowContextShape>({
+  status: 'editing',
+  prepare: () => {
+    // do nothing
+  },
+})
 
-export const WorkflowProvider = (props: { children: React.ReactNode }): JSX.Element => {
-  const [status, setStatus] = React.useState<WorkflowContextShape['status']>('editing')
+export const WorkflowProvider = (props: {
+  children: React.ReactNode
+}): JSX.Element => {
+  const [status, setStatus] =
+    React.useState<WorkflowContextShape['status']>('editing')
 
   const prepare = async () => {
     setStatus('preparing')
@@ -19,7 +27,7 @@ export const WorkflowProvider = (props: { children: React.ReactNode }): JSX.Elem
   }
 
   return (
-    <WorkflowContext.Provider value={{status, prepare}}>
+    <WorkflowContext.Provider value={{ status, prepare }}>
       {props.children}
     </WorkflowContext.Provider>
   )

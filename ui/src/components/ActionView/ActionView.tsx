@@ -160,7 +160,15 @@ export const ActionView = (props: {
 
   return (
     <>
-      <motion.div initial={{opacity: 0, y: 10, scale: 0.9}} animate={{opacity: 1, y: 0, scale: 1, transition: {delay: props.stepIndex * 0.1}}}>
+      <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: { delay: props.stepIndex * 0.1 },
+        }}
+      >
         <div>{/* snippetEls */}</div>
         <div
           className={cx(

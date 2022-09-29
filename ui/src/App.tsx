@@ -1,34 +1,34 @@
-import { MotionConfig, LazyMotion, domMax } from 'framer-motion'
-import { Mainnet, DAppProvider, useEthers, Config, Goerli } from '@usedapp/core'
-import { SiweProvider, useSiwe } from '@usedapp/siwe'
-import { getDefaultProvider } from 'ethers'
+import { WorkflowProvider } from './components/WorkflowProvider'
+import VisualizerLayout from './components/VisualizerLayout'
+import ScriptEditor from './components/ScriptEditor'
+import ActionView from './components/ActionView'
+import { buildWorkflow } from './utils'
 
-import ExampleWorkflow from './components/ExampleWorkflow'
+const workflow = buildWorkflow()
 
-const config: Config = {
-  readOnlyChainId: Mainnet.chainId,
-  readOnlyUrls: {
-    // [Mainnet.chainId]: getDefaultProvider('mainnet'),
-    // [Goerli.chainId]: getDefaultProvider('goerli'),
-  },
-}
+const snippet = `module.exports = [
+  wethWrap({ amount: '1000000000000000000' }),
+  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+  wormholeTokenTransfer({
+    fromChain: 'Ethereum',
+    fromToken: 'USDT',
+    toChain: 'Solana',
+    amount: '100%'
+  }),
+  saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
+]`
 
 function App(): JSX.Element {
+  const editor = <ScriptEditor snippet={snippet} children={null} />
+
   return (
-    <DAppProvider config={config}>
-      <SiweProvider>
-        <LazyMotion features={domMax} strict>
-          <MotionConfig transition={{ duration: 0.2 }}>
-            <ExampleWorkflow
-              children={null}
-              initialStageNumber={0}
-              showButtons
-              showStageName
-            />
-          </MotionConfig>
-        </LazyMotion>
-      </SiweProvider>
-    </DAppProvider>
+    <WorkflowProvider>
+      <VisualizerLayout editor={editor}>
+        {workflow.steps.map((it, index) => (
+          <ActionView step={it} stepIndex={index} />
+        ))}
+      </VisualizerLayout>
+    </WorkflowProvider>
   )
 }
 

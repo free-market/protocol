@@ -1,9 +1,7 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Editor from 'react-simple-code-editor'
-import {
-  CheckIcon,
-} from '@heroicons/react/24/outline'
+import { CheckIcon } from '@heroicons/react/24/outline'
 
 import LaddaButton, { SLIDE_DOWN } from './ladda'
 import { WorkflowContext, WorkflowContextShape } from '../WorkflowProvider'
@@ -16,7 +14,7 @@ export const ScriptEditor = (props: {
   children: React.ReactNode
 }): JSX.Element => {
   const [text, setText] = React.useState(props.snippet)
-  const {status, prepare} = React.useContext(WorkflowContext)
+  const { status, prepare } = React.useContext(WorkflowContext)
 
   return (
     <>
@@ -44,12 +42,21 @@ export const ScriptEditor = (props: {
             style={SLIDE_DOWN}
           >
             <AnimatePresence exitBeforeEnter>
-              <motion.span key={status} initial={{opacity: 0}} animate={{opacity: 1}} exit={status === 'preparing' ? undefined : {opacity: 0}}>
-              {['editing', 'preparing'].includes(status) ? (
-                'Prepare'
-               ) : 'prepared' === status ? <CheckIcon className="text-s-green w-8 h-8" /> : 'Execute'}
-               </motion.span>
-             </AnimatePresence>
+              <motion.span
+                key={status}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={status === 'preparing' ? undefined : { opacity: 0 }}
+              >
+                {['editing', 'preparing'].includes(status) ? (
+                  'Prepare'
+                ) : status === 'prepared' ? (
+                  <CheckIcon className="text-s-green w-8 h-8" />
+                ) : (
+                  'Execute'
+                )}
+              </motion.span>
+            </AnimatePresence>
           </LaddaButton>
         </div>
       </div>

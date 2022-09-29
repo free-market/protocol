@@ -7,7 +7,7 @@ export const VisualizerLayout = (props: {
   editor?: React.ReactNode
   children: React.ReactNode
 }): JSX.Element => {
-  const {status} = React.useContext(WorkflowContext)
+  const { status } = React.useContext(WorkflowContext)
 
   return (
     <div className="flex flex-col space-y-5 max-w-4xl mx-auto">
