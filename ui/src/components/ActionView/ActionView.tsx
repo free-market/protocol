@@ -62,64 +62,100 @@ export const ActionView = (props: {
 
   const bridgeBlock = (
     <div className="group">
-    <a key={0} className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02" target="_blank" href="https://etherscan.io/address/0x0000000000000000000000000000000000000000">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-        <span className="text-sm">Bridge:&nbsp;</span>
-      <span className="text-s-base0 dark:text-s-base00 flex items-center">{props.step.info.name}</span>
+      <a
+        key={0}
+        className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02"
+        target="_blank"
+        href="https://etherscan.io/address/0x0000000000000000000000000000000000000000"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-sm">Bridge:&nbsp;</span>
+            <span className="text-s-base0 dark:text-s-base00 flex items-center">
+              {props.step.info.name}
+            </span>
+          </div>
+          <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
         </div>
-        <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
-      </div>
-    <div><span className="text-sm">Contract Address:</span>&nbsp;<span className="text-s-base0 dark:text-s-base00 underline">0x0000000000000000000000000000000000000000</span></div>
+        <div>
+          <span className="text-sm">Contract Address:</span>&nbsp;
+          <span className="text-s-base0 dark:text-s-base00 underline">
+            0x0000000000000000000000000000000000000000
+          </span>
+        </div>
       </a>
     </div>
   )
 
   const inputBlock = (
     <div className="group">
-    <a key={1} className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02" target="_blank" href="https://etherscan.io/address/0x0000000000000000000000000000000000000000">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-        <span className="text-sm">Input Asset:&nbsp;</span>
-      <span className="text-s-base0 dark:text-s-base00 flex items-center">{props.step.inputAsset.info.fullName} (<code className="font-mono">{props.step.inputAsset.symbol}</code>) </span>
+      <a
+        key={1}
+        className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02"
+        target="_blank"
+        href="https://etherscan.io/address/0x0000000000000000000000000000000000000000"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-sm">Input Asset:&nbsp;</span>
+            <span className="text-s-base0 dark:text-s-base00 flex items-center">
+              {props.step.inputAsset.info.fullName} (
+              <code className="font-mono">{props.step.inputAsset.symbol}</code>){' '}
+            </span>
+          </div>
+          <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
         </div>
-        <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
-      </div>
-    <div><span className="text-sm">Contract Address:</span>&nbsp;<span className="text-s-base0 underline">0x0000000000000000000000000000000000000000</span></div>
+        <div>
+          <span className="text-sm">Contract Address:</span>&nbsp;
+          <span className="text-s-base0 underline">
+            0x0000000000000000000000000000000000000000
+          </span>
+        </div>
       </a>
     </div>
   )
 
   const outputBlock = (
     <div className="group">
-    <a key={2} className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02" target="_blank" href="https://etherscan.io/address/0x0000000000000000000000000000000000000000">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-        <span className="text-sm">Output Asset:&nbsp;</span>
-      <span className="text-s-base0 dark:text-s-base00 flex items-center">{props.step.outputAsset.info.fullName} (<code className="font-mono">{props.step.outputAsset.symbol}</code>) </span>
+      <a
+        key={2}
+        className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02"
+        target="_blank"
+        href="https://etherscan.io/address/0x0000000000000000000000000000000000000000"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-sm">Output Asset:&nbsp;</span>
+            <span className="text-s-base0 dark:text-s-base00 flex items-center">
+              {props.step.outputAsset.info.fullName} (
+              <code className="font-mono">{props.step.outputAsset.symbol}</code>
+              ){' '}
+            </span>
+          </div>
+          <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
         </div>
-        <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
-      </div>
-    <div><span className="text-sm">Contract Address:</span>&nbsp;<span className="text-s-base0 underline">0x0000000000000000000000000000000000000000</span></div>
+        <div>
+          <span className="text-sm">Contract Address:</span>&nbsp;
+          <span className="text-s-base0 underline">
+            0x0000000000000000000000000000000000000000
+          </span>
+        </div>
       </a>
     </div>
   )
 
-  const paragraphs = [
-  bridgeBlock,
-  inputBlock,
-  outputBlock
-  ]
+  const paragraphs = [bridgeBlock, inputBlock, outputBlock]
 
-  const descriptions =(
-      <motion.div className="flex flex-col justify-start items-start space-y-5"
+  const descriptions = (
+    <motion.div
+      className="flex flex-col justify-start items-start space-y-5"
       initial={{ opacity: 0, x: -10, y: -10 }}
       exit={{ opacity: 0, x: -10, y: -10, transition: { duration: 0.05 } }}
       animate={{ opacity: 1, x: 0, y: 0 }}
-      >
-        {paragraphs}
-      </motion.div>
-      )
+    >
+      {paragraphs}
+    </motion.div>
+  )
 
   return (
     <>

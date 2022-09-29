@@ -10,9 +10,12 @@ export default {
   parameters: {
     backgrounds: {
       default: 'dark',
-      values: [{name: 'dark', value: '#002b36' }, { name: 'light', value: '#fdf6e3' }]
-    }
-  }
+      values: [
+        { name: 'dark', value: '#002b36' },
+        { name: 'light', value: '#fdf6e3' },
+      ],
+    },
+  },
 } as ComponentMeta<typeof Component>
 
 export const ActionView: ComponentStory<typeof Component> = (args) => (
@@ -20,5 +23,5 @@ export const ActionView: ComponentStory<typeof Component> = (args) => (
 )
 
 ActionView.args = {
-  step: wethWrap({ amount: '1000000000000000000' })
+  step: wethWrap({ amount: '1000000000000000000' }),
 }
