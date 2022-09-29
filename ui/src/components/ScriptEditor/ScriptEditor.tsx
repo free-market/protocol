@@ -4,28 +4,19 @@ import Editor from 'react-simple-code-editor'
 import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
-import LaddaButton, { SLIDE_DOWN } from './ladda'
 
+import LaddaButton, { SLIDE_DOWN } from './ladda'
+import { WorkflowContext, WorkflowContextShape } from '../WorkflowProvider'
 import highlight from '../../highlight'
 import '../../solarized-dark-atom.css'
 import 'ladda/dist/ladda.min.css'
-
-type Status = 'editing' | 'preparing' | 'prepared' | 'ready-to-execute'
 
 export const ScriptEditor = (props: {
   snippet: string
   children: React.ReactNode
 }): JSX.Element => {
   const [text, setText] = React.useState(props.snippet)
-  const [status, setStatus] = React.useState<Status>('editing')
-
-  const prepare = async () => {
-    setStatus('preparing')
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setStatus('prepared')
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setStatus('ready-to-execute')
-  }
+  const {status, prepare} = React.useContext(WorkflowContext)
 
   return (
     <>
@@ -53,7 +44,7 @@ export const ScriptEditor = (props: {
             style={SLIDE_DOWN}
           >
             <AnimatePresence exitBeforeEnter>
-              <motion.span key={status} initial={{opacity: 0}} animate={{opacity: 1}} exit={status === 'preparing' ? null : {opacity: 0}}>
+              <motion.span key={status} initial={{opacity: 0}} animate={{opacity: 1}} exit={status === 'preparing' ? undefined : {opacity: 0}}>
               {['editing', 'preparing'].includes(status) ? (
                 'Prepare'
                ) : 'prepared' === status ? <CheckIcon className="text-s-green w-8 h-8" /> : 'Execute'}

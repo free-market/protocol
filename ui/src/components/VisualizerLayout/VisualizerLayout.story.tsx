@@ -1,13 +1,21 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
+import { WorkflowProvider } from '../WorkflowProvider'
 import { VisualizerLayout as Component } from './VisualizerLayout'
 import { ScriptEditor } from '../ScriptEditor/ScriptEditor.story'
 import { ActionView } from '../ActionView/ActionView.story'
 import { buildWorkflow } from '../../utils'
 
-export const story = {
+export default {
   title: 'Example/VisualizerLayout',
   component: Component,
+  decorators: [
+    (Story) => (
+      <WorkflowProvider>
+        <Story />
+      </WorkflowProvider>
+    )
+  ],
   parameters: {
     backgrounds: {
       default:
@@ -22,9 +30,7 @@ export const story = {
       ],
     },
   },
-}
-
-export default story as ComponentMeta<typeof Component>
+} as ComponentMeta<typeof Component>
 
 export const VisualizerLayout: ComponentStory<typeof Component> = (args) => (
   <Component {...args} />
@@ -41,8 +47,8 @@ VisualizerLayout.args = {
   ),
   children: (
     <>
-      {workflow.steps.map((it) => (
-        <ActionView {...ActionView.args} step={it} />
+      {workflow.steps.map((it, index) => (
+        <ActionView {...ActionView.args} step={it} stepIndex={index} />
       ))}
     </>
   ),

@@ -40,6 +40,7 @@ const BalanceCard = (props: {
 
 export const ActionView = (props: {
   step: WorkflowStep
+  stepIndex: number
   children?: React.ReactNode
 }): JSX.Element => {
   const [expanded, setExpanded] = React.useState(false)
@@ -159,7 +160,7 @@ export const ActionView = (props: {
 
   return (
     <>
-      <div>
+      <motion.div initial={{opacity: 0, y: 10, scale: 0.9}} animate={{opacity: 1, y: 0, scale: 1, transition: {delay: props.stepIndex * 0.1}}}>
         <div>{/* snippetEls */}</div>
         <div
           className={cx(
@@ -190,7 +191,7 @@ export const ActionView = (props: {
           <BalanceCard asset={props.step.outputAsset} amount="" />
           {props.children}
         </div>
-      </div>
+      </motion.div>
       <AnimatePresence>{expanded && descriptions}</AnimatePresence>
     </>
   )
