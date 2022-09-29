@@ -8,7 +8,7 @@ export const ETHEREUM_TOKENS = {
     blockChain: BlockChain.Ethereum,
     symbol: 'ETH',
     info: {
-      fullName: 'Ethereum',
+      fullName: 'Ether',
       decimals: 18,
       iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/eth.png',
     },
@@ -18,7 +18,7 @@ export const ETHEREUM_TOKENS = {
     blockChain: BlockChain.Ethereum,
     symbol: 'WETH',
     info: {
-      fullName: 'Wrapped Ethereum',
+      fullName: 'Wrapped Ether',
       decimals: 18,
       iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/eth.png',
     },

@@ -3,7 +3,7 @@ import { MoneyAmount, WorkflowStep, WorkflowStepInfo, WorkflowStepResult } from 
 
 const WRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.wrap',
-  name: 'Wrap Ethereum',
+  name: 'Wrap Ether',
   blockchains: ['Ethereum'],
   gasEstimate: '1',
   exchangeFee: '0',
@@ -14,7 +14,7 @@ const WRAP_INFO: WorkflowStepInfo = {
 
 const UNWRAP_INFO: WorkflowStepInfo = {
   stepId: 'weth.unwrap',
-  name: 'Unwrap Ethereum',
+  name: 'Unwrap Ether',
   blockchains: ['Ethereum'],
   gasEstimate: '1',
   exchangeFee: '0',

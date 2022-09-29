@@ -9,4 +9,10 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  darkMode: {
+    // Override the default dark theme
+    dark: { appBg: '#002b36' },
+    // Override the default light theme
+    light: { appBg: '#fdf6e3' }
+  }
 };

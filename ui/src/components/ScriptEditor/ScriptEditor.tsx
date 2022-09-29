@@ -23,12 +23,12 @@ export const ScriptEditor = (props: {
           className="grow font-mono caret-sky-50 text-sm basis-0"
         />
 
-        <div className="bg-sky-800 p-5 max-w-lg basis-64 flex flex-col">
-          <p className="grow text-sky-400">
+        <div className="p-5 max-w-lg basis-64 flex flex-col">
+          <p className="grow text-s-base0 dark:text-s-base00">
             Welcome! To get started, click "Prepare."
           </p>
 
-          <div className="bg-sky-600 w-full px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-sky-300 active:bg-sky-700 active:text-sky-500 select-none">
+          <div className="bg-s-base2 dark:bg-s-base02 w-full px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-s-base1 dark:text-s-base01 hover:bg-s-base2 dark:hover:bg-s-base02 active:bg-s-base2/50 dark:active:bg-s-base02/50 active:text-s-base1/50 dark:active:text-s-base01/50 select-none">
             Prepare
           </div>
         </div>

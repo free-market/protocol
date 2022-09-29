@@ -5,7 +5,7 @@ export const VisualizerLayout = (props: {
   children: React.ReactNode
 }): JSX.Element => {
   return (
-    <div className="flex-col space-y-5">
+    <div className="flex flex-col space-y-5 max-w-4xl mx-auto">
       {props.editor}
       {props.children}
     </div>

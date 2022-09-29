@@ -15,7 +15,8 @@ module.exports = {
       options: {
         scriptsPackageName: 'react-scripts'
       }
-    }
+    },
+    'storybook-dark-mode'
   ],
   framework: '@storybook/react',
   core: {
