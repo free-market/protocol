@@ -104,8 +104,6 @@ export interface WorkflowStepInfo {
 /**
  * The outcome of executing a workflow step.
  *
- * @privateRemarks
- * This fits sign-every but not a good fit for 1-click.
  */
 export interface WorkflowStepResult {
   outputAmount: string

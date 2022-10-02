@@ -2,6 +2,7 @@
 const path = require('path')
 const { whenProd } = require('@craco/craco')
 const cssnano = require('cssnano')
+const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin')
 const {
   compilerOptions: { paths },
 } = require('./tsconfig.json')
@@ -15,14 +16,13 @@ module.exports = {
     alias: Object.keys(paths).reduce(
       (all, alias) => ({
         ...all,
-        [alias.replace('/*', '')]: path.resolve(
-          __dirname,
-          'src',
-          paths[alias][0].replace('/*', ''),
-        ),
+        [alias.replace('/*', '')]: path.resolve(__dirname, 'src', paths[alias][0].replace('/*', '')),
       }),
       {},
     ),
+    plugins: {
+      add: [[new VanillaExtractPlugin(), 'append']],
+    },
   },
   style: {
     postcss: {
@@ -35,10 +35,7 @@ module.exports = {
       moduleNameMapper: Object.keys(paths).reduce(
         (all, alias) => ({
           ...all,
-          [alias.replace('/*', '/(.*)')]: path.join(
-            '<rootDir>/src/',
-            paths[alias][0].replace('/*', '/$1'),
-          ),
+          [alias.replace('/*', '/(.*)')]: path.join('<rootDir>/src/', paths[alias][0].replace('/*', '/$1')),
         }),
         {},
       ),

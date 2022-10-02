@@ -3,6 +3,7 @@ import Editor from 'react-simple-code-editor'
 
 import highlight from '../../highlight'
 import '../../solarized-dark-atom.css'
+import '../../magic-box.css'
 
 export const ScriptEditor = (props: {
   snippet: string

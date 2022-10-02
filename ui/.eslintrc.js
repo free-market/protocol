@@ -1,9 +1,8 @@
 module.exports = {
   root: true,
-  extends: ['standard-typescript-prettier'],
-  parserOptions: {
-    project: './tsconfig.json',
-  },
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'prettier', 'eslint-plugin-tsdoc'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/eslint-recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   overrides: [
     {
       files: ['**/*.@(story|stories).*'],

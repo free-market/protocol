@@ -8,6 +8,7 @@ export type EthereumProvider = ethers.providers.ExternalProvider | ethers.provid
 
 export enum WorkflowEventType {
   Starting = 'Starting',
+  Submitted = 'Submitted',
   StatusUpdate = 'StatusUpdate',
   Completed = 'Completed',
 }

@@ -24,7 +24,9 @@
       "@asset/*": ["assets/*"],
       "@component/*": ["components/*"],
       "@app/*": ["/*"]
-    }
+    },
+    "typeRoots":  ["./node_modules/@types", "./typings"],
+    "downlevelIteration": true
   },
   "include": [
     "src",
@@ -32,5 +34,5 @@
     "*.js",
     ".storybook/*.js",
     ".eslintrc.js"
-  ]
+, "typings/react-flip-numbers.d.ts"  ]
 }

@@ -1,10 +1,13 @@
 import {
   curveTriCryptoSwap,
+  MockWorkflowEngine,
+  MockWorkflowEngineMode,
   MoneyAmount,
   serumSwap,
   wethWrap,
   Workflow,
   WorkflowBuilder,
+  WorkflowEventHandler,
   wormholeTokenTransfer,
 } from '@fmp/sdk'
 
@@ -42,4 +45,15 @@ export function formatMoney(amount: MoneyAmount, decimals: number) {
     return left
   }
   return left + '.' + right
+}
+
+export async function executeWorkflow(workflow: Workflow, eventHandler: WorkflowEventHandler) {
+  const engine = new MockWorkflowEngine({
+    mode: MockWorkflowEngineMode.SignEveryStep,
+    minStepDelay: 2000,
+    maxStepDelay: 4000,
+    submitDelay: 400,
+    eventHandler,
+  })
+  await engine.execute(workflow)
 }

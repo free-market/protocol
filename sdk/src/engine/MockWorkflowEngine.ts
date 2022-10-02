@@ -1,10 +1,13 @@
 import { NoAsset, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
-import { promisify } from 'util'
 import { BigNumber } from 'ethers'
 
-const sleep = promisify(setTimeout)
+function sleep(millis: number) {
+  return new Promise<void>(resolve => {
+    setTimeout(resolve, millis)
+  })
+}
 
 export enum MockWorkflowEngineMode {
   SignEveryStep,
@@ -14,9 +17,8 @@ interface MockWorkflowEngineOptions extends WorkflowEngineOptions {
   mode: MockWorkflowEngineMode
   minStepDelay?: number
   maxStepDelay?: number
+  submitDelay?: number
 }
-
-const VALID_MONEY_AMOUNT_REGEX = /^[0-9]%?$/
 
 export class MockWorkflowEngine implements WorkflowEngine {
   private options: MockWorkflowEngineOptions
@@ -50,10 +52,11 @@ export class MockWorkflowEngine implements WorkflowEngine {
 
     this.options.eventHandler(submittingEvent)
 
-    const statusUpdateHandler = (statusMessage: string) => {
+    const statusUpdateHandler = (type: WorkflowEventType, statusMessage: string, steps: WorkflowStep[]) => {
       const statusEvent: WorkflowEvent = {
         ...submittingEvent,
-        type: WorkflowEventType.StatusUpdate,
+        steps,
+        type,
         statusMessage,
       }
       this.options.eventHandler(statusEvent)
@@ -61,6 +64,8 @@ export class MockWorkflowEngine implements WorkflowEngine {
 
     // invoke the mock step
     const stepResult = await this.callMockWorkflowStep(step, amount, statusUpdateHandler)
+
+    console.log('back from  step')
 
     // adjust balances
     if (isPercent) {
@@ -78,6 +83,7 @@ export class MockWorkflowEngine implements WorkflowEngine {
       steps: [step],
       balances: this.balances.toArray(),
       result: stepResult,
+      absoluteInputAmount: amount.toString(),
     }
     this.options.eventHandler(completedEvent)
   }
@@ -101,9 +107,13 @@ export class MockWorkflowEngine implements WorkflowEngine {
     return [BigNumber.from(s), false]
   }
 
-  async callMockWorkflowStep(step: WorkflowStep, amount: BigNumber, statusCallback: (statusUpdate: string) => void) {
-    await sleep(1000)
-    statusCallback('Transaction submitted, waiting for validation')
+  async callMockWorkflowStep(
+    step: WorkflowStep,
+    amount: BigNumber,
+    statusCallback: (type: WorkflowEventType, statusUpdate: string, steps: WorkflowStep[]) => void
+  ) {
+    await sleep(this.options.submitDelay || 0)
+    statusCallback(WorkflowEventType.Submitted, 'Transaction submitted, waiting for validation', [step])
     await this.mockBlockConfirmDelay()
     switch (step.stepId) {
       case 'weth.wrap':
@@ -125,6 +135,7 @@ export class MockWorkflowEngine implements WorkflowEngine {
       if (maxStepDelay) {
         delay += Math.floor(Math.random() * (maxStepDelay - minStepDelay))
       }
+
       await sleep(delay)
     }
   }
