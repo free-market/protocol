@@ -11,10 +11,10 @@ export const story = {
   component: Component,
   parameters: {
     backgrounds: {
-      default:
-        window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      default: 'dark',
+        // window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
       values: [
-        { name: 'dark', value: '#00141a' },
+        { name: 'dark', value: '#101010' },
         { name: 'light', value: '#fdf6e3' },
       ],
     },
@@ -24,7 +24,7 @@ export const story = {
 export default story as ComponentMeta<typeof Component>
 
 export const VisualizerLayout: ComponentStory<typeof Component> = (args) => {
-  return <Component {...args} />
+  return <div className='dark'><Component {...args} /></div>
 }
 
 const workflow = buildWorkflow()

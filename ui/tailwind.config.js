@@ -1,11 +1,11 @@
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  // darkMode: 'class',
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         's-base03': '#002b36',
-        's-base02': '#073642',
+        's-base02': '#1d282b',
         's-base01': '#586e75',
         's-base00': '#657b83',
         's-base0': '#839496',
@@ -23,5 +23,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('tailwind-dracula')(),
+  ],
 }

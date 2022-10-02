@@ -54,6 +54,7 @@ export const ExampleWorkflow = (props: {
   const evmLocked = stageNumber >= stagesInOrder.indexOf('evm-locked')
 
   const signEVM = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const signer = library!.getSigner()
     const signature = await signer.signMessage('some stuff')
     setStageNumber(stageNumber + 1)

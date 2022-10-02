@@ -26,17 +26,17 @@ export const WorkflowView = (props: { workflow: Workflow; children?: React.React
     event.steps.forEach((it) => events.set(it, event))
     setLastEvents(events)
 
-    if (event.type === 'Completed') {
-      console.log(
-        `event: ${event.type} ${event.statusMessage} gasCost=${event.result!.gasCost},  ${
-          event.steps[0].outputAsset.symbol
-        } ${formatMoney(event.result!.outputAmount, event.steps[0].outputAsset.info.decimals)}`,
-      )
-    } else if (event.type === 'Starting') {
-      console.log(`event: ${event.type} ${event.steps[0].info.name}`)
-    } else {
-      console.log(`event: ${event.type} ${event.statusMessage}`)
-    }
+    // if (event.type === 'Completed') {
+    //   console.log(
+    //     `event: ${event.type} ${event.statusMessage} gasCost=${event.result!.gasCost},  ${
+    //       event.steps[0].outputAsset.symbol
+    //     } ${formatMoney(event.result!.outputAmount, event.steps[0].outputAsset.info.decimals)}`,
+    //   )
+    // } else if (event.type === 'Starting') {
+    //   console.log(`event: ${event.type} ${event.steps[0].info.name}`)
+    // } else {
+    //   console.log(`event: ${event.type} ${event.statusMessage}`)
+    // }
   }
 
   return (

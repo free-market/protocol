@@ -2,11 +2,11 @@ import React from 'react'
 import Editor from 'react-simple-code-editor'
 
 import highlight from '../../highlight'
-import '../../solarized-dark-atom.css'
-// import '../../material-dark.css'
-import '../../magic-box.css'
+// import '../../solarized-dark-atom.css'
+import '../../material-dark.css'
+// import '../../magic-box.css'
 
-export const ScriptEditor = (props: { snippet: string; children: React.ReactNode }): JSX.Element => {
+export const ScriptEditor = (props: { snippet: string; children?: React.ReactNode }): JSX.Element => {
   const [text, setText] = React.useState(props.snippet)
 
   return (
@@ -19,7 +19,7 @@ export const ScriptEditor = (props: { snippet: string; children: React.ReactNode
           preClassName="language-js"
           padding="1em"
           style={{}}
-          className="grow font-mono caret-sky-50 text-sm basis-0"
+          className="dark grow font-mono caret-sky-50 text-sm basis-0"
         />
 
         <div className="p-5 max-w-lg basis-64 flex flex-col">
