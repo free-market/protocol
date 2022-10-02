@@ -1,13 +1,18 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
-import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import {
+  InformationCircleIcon,
+  ChevronDownIcon,
+  ArrowTopRightOnSquareIcon,
+  CheckIcon,
+} from '@heroicons/react/24/outline'
 import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO, WorkflowEventType, WorkflowEvent } from '@fmp/sdk'
 import { formatMoney } from 'utils'
 import { StepInfo } from './StepInfo'
 import { Connector } from './Connector'
 import { WorkflowAssetView } from './AssetView'
-import { FlipNumbers } from './FlipNumbers'
+import { NumberSpinner } from './NumberSpinner'
 
 export const WorkflowStepView = (props: {
   step: WorkflowStep
@@ -85,7 +90,7 @@ export const WorkflowStepView = (props: {
             <span className="text-sm">Output Asset:&nbsp;</span>
             <span className="text-s-base0 dark:text-s-base00 flex items-center">
               {props.step.outputAsset.info.fullName} (<code className="font-mono">{props.step.outputAsset.symbol}</code>
-              ){' '}
+              )
             </span>
           </div>
           <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
@@ -124,7 +129,7 @@ export const WorkflowStepView = (props: {
     inputAssetMessage = (
       <>
         <span style={{ display: 'inline-block', minWidth: '60px' }}>{message}</span>
-        <FlipNumbers numbers={formattedMoney} />
+        <NumberSpinner numbers={formattedMoney} />
       </>
     )
   }
@@ -135,7 +140,7 @@ export const WorkflowStepView = (props: {
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
-        <FlipNumbers numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals)} />
+        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals)} />
       </div>
     )
   }
@@ -163,10 +168,23 @@ export const WorkflowStepView = (props: {
             status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
           />
           <Connector active={false /* props.stepStatus === WorkflowEventType.Starting*/} />
-          <StepInfo
-            step={props.step}
-            active={!!props.lastEvent && props.lastEvent?.type === WorkflowEventType.Submitted}
-          />
+          <div>
+            {props.lastEvent && <div style={{ textAlign: 'center' }}>&nbsp;</div>}
+            <StepInfo
+              step={props.step}
+              active={
+                (!!props.lastEvent && props.lastEvent?.type === WorkflowEventType.Submitted) ||
+                props.lastEvent?.type === WorkflowEventType.StatusUpdate
+              }
+            />
+            {props.lastEvent && (
+              <div style={{ textAlign: 'center' }}>
+                {/* <CheckIcon className="w-8 h-8" /> */}
+                {props.lastEvent.type === WorkflowEventType.Completed && <span>✔️</span>}
+                {props.lastEvent?.statusMessage}
+              </div>
+            )}
+          </div>
           <Connector active={false} />
           <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} />
           {props.children}

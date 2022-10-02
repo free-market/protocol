@@ -20,6 +20,8 @@ interface MockWorkflowEngineOptions extends WorkflowEngineOptions {
   submitDelay?: number
 }
 
+type StatusCallback = (type: WorkflowEventType, statusUpdate: string, steps: WorkflowStep[]) => void
+
 export class MockWorkflowEngine implements WorkflowEngine {
   private options: MockWorkflowEngineOptions
   private balances = new AssetBalances()
@@ -107,13 +109,9 @@ export class MockWorkflowEngine implements WorkflowEngine {
     return [BigNumber.from(s), false]
   }
 
-  async callMockWorkflowStep(
-    step: WorkflowStep,
-    amount: BigNumber,
-    statusCallback: (type: WorkflowEventType, statusUpdate: string, steps: WorkflowStep[]) => void
-  ) {
+  async callMockWorkflowStep(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback) {
     await sleep(this.options.submitDelay || 0)
-    statusCallback(WorkflowEventType.Submitted, 'Transaction submitted, waiting for validation', [step])
+    statusCallback(WorkflowEventType.Submitted, 'Waiting for tx confirmation', [step])
     await this.mockBlockConfirmDelay()
     switch (step.stepId) {
       case 'weth.wrap':
@@ -121,7 +119,7 @@ export class MockWorkflowEngine implements WorkflowEngine {
       case 'curve.tricrypto.swap':
         return mockExecuteTriCryptoSwap(step, amount)
       case 'wormhole.transfer':
-        return mockExecuteWormholeTransfer(step, amount)
+        return mockExecuteWormholeTransfer(step, amount, statusCallback)
       case 'serum.swap':
         return mockExecuteSerumSwap(step, amount)
     }
@@ -138,6 +136,16 @@ export class MockWorkflowEngine implements WorkflowEngine {
 
       await sleep(delay)
     }
+  }
+}
+
+async function sleepRandom(min?: number, max?: number) {
+  if (min) {
+    let delay = min
+    if (max) {
+      delay += Math.floor(Math.random() * (max - min))
+    }
+    await sleep(delay)
   }
 }
 
@@ -164,7 +172,15 @@ export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: BigNu
   }
 }
 
-export async function mockExecuteWormholeTransfer(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+export async function mockExecuteWormholeTransfer(
+  step: WorkflowStep,
+  amount: BigNumber,
+  statusCallback: StatusCallback
+): Promise<WorkflowStepResult> {
+  statusCallback(WorkflowEventType.StatusUpdate, 'Waiting for Guardians', [step])
+  await sleepRandom(2000, 4000)
+  statusCallback(WorkflowEventType.StatusUpdate, 'Submitting to target', [step])
+  await sleepRandom(1000, 2000)
   return {
     outputAmount: amount.toString(),
     gasCost: randomGas(),

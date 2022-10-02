@@ -2,7 +2,6 @@
 const path = require('path')
 const { whenProd } = require('@craco/craco')
 const cssnano = require('cssnano')
-const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin')
 const {
   compilerOptions: { paths },
 } = require('./tsconfig.json')
@@ -20,9 +19,6 @@ module.exports = {
       }),
       {},
     ),
-    plugins: {
-      add: [[new VanillaExtractPlugin(), 'append']],
-    },
   },
   style: {
     postcss: {
