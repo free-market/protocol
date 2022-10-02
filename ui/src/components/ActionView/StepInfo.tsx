@@ -8,8 +8,8 @@ import '../../magic-box.css'
 // import '../../magic-box2.css'
 
 export const StepInfo = (props: { step: WorkflowStep; active: boolean; children?: React.ReactNode }): JSX.Element => {
-  // const activeClass = props.active ? 'magicbox ' : ''
-  const activeClass = 'magicbox'
+  const activeClass = props.active ? 'magicbox ' : ''
+  // const activeClass = 'magicbox'
   return (
     <div
       className={`${activeClass} rounded-full p-2 bg-s-base2 dark:bg-s-base02 text-s-base0 dark:text-s-base00 font-bold flex items-center space-x-2 transition group-hover:bg-s-base2 dark:group-hover:bg-s-base02 min-w-[240px]`}

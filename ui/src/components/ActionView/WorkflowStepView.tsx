@@ -33,7 +33,7 @@ export const WorkflowStepView = (props: {
     <div className="group">
       <a
         key={0}
-        className="inline-block text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02"
+        className="inline-block  text-s-base1 dark:text-s-base01 border-l-2 border-s-base1 dark:border-s-base01 ml-7 px-5 max-w-prose group-hover:translate-x-2 transition group-hover:bg-s-base2/25 dark:group-hover:bg-s-base02"
         target="_blank"
         href="https://etherscan.io/address/0x0000000000000000000000000000000000000000"
       >
@@ -118,7 +118,7 @@ export const WorkflowStepView = (props: {
 
   let inputAssetMessage = <span>{'on ' + props.step.inputAsset.blockChain}</span>
   let outputAssetMessage = <span>{'on ' + props.step.outputAsset.blockChain}</span>
-  let outputAmount = ''
+  // let outputAmount = ''
   const { lastEvent } = props
   // if (props.step.stepId.includes('weth')) {
   //   console.log('last event', lastEvent)
@@ -135,8 +135,8 @@ export const WorkflowStepView = (props: {
   }
 
   if (lastEvent?.result) {
-    outputAmount = lastEvent.result.outputAmount
-    console.log('outputAmountt', outputAmount)
+    // outputAmount = lastEvent.result.outputAmount
+    // console.log('outputAmountt', outputAmount)
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
@@ -147,7 +147,7 @@ export const WorkflowStepView = (props: {
 
   return (
     <>
-      <div className={'flex'}>
+      <div className={'flex px-3 py-3'}>
         <div
           className={cx(
             'group max-w-4xl rounded-full border border-s-base2 dark:border-s-base02 text-s-base0 dark:text-s-base00 flex justify-between items-center w-full cursor-pointer transition transition-100',

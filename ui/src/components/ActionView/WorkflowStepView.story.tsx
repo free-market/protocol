@@ -19,7 +19,3 @@ export default {
 } as ComponentMeta<typeof Component>
 
 export const WorkflowStepView: ComponentStory<typeof Component> = (args) => <Component {...args} />
-
-WorkflowStepView.args = {
-  step: wethWrap({ amount: '1000000000000000000' }),
-}

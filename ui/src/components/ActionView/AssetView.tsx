@@ -12,7 +12,7 @@ export const WorkflowAssetView = (props: {
   amount?: MoneyAmount
   status?: React.ReactNode
 }): JSX.Element => {
-  console.log('amount', props.amount)
+  // console.log('amount', props.amount)
   const { amount } = props
   return (
     <div className="rounded-full flex py-1 px-6 items-center text-s-base0 dark:text-s-base00 space-x-5 min-w-[220px]">

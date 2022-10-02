@@ -152,7 +152,7 @@ export const NumberSpinner = (props: { numbers: string; minWidth?: number; class
       )
     } else {
       elements.push(
-        <div className={numberSpinnerStyles[n]}>
+        <div id={`numspinner-${i}`} className={numberSpinnerStyles[n]}>
           <span>&nbsp;</span>
         </div>,
       )

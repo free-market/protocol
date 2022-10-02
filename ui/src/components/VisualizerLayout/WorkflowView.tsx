@@ -19,18 +19,18 @@ export const WorkflowView = (props: { workflow: Workflow; children?: React.React
   function myWorkflowEventHandler(event: WorkflowEvent) {
     console.log('received event', event)
     setLastEvent(event)
-    if (event.type === WorkflowEventType.Completed) {
-      // completedSteps = completedSteps.concat(event.steps)
-      // setCompletedSteps(completedSteps)
-    }
+    // if (event.type === WorkflowEventType.Completed) {
+    // completedSteps = completedSteps.concat(event.steps)
+    // setCompletedSteps(completedSteps)
+    // }
     event.steps.forEach((it) => events.set(it, event))
     setLastEvents(events)
 
     // if (event.type === 'Completed') {
     //   console.log(
-    //     `event: ${event.type} ${event.statusMessage} gasCost=${event.result!.gasCost},  ${
+    //     `event: ${event.type} ${event.statusMessage} gasCost=${event.result?.gasCost},  ${
     //       event.steps[0].outputAsset.symbol
-    //     } ${formatMoney(event.result!.outputAmount, event.steps[0].outputAsset.info.decimals)}`,
+    //     } ${formatMoney(event.result?.outputAmount || 0, event.steps[0].outputAsset.info.decimals)}`,
     //   )
     // } else if (event.type === 'Starting') {
     //   console.log(`event: ${event.type} ${event.steps[0].info.name}`)
@@ -41,7 +41,7 @@ export const WorkflowView = (props: { workflow: Workflow; children?: React.React
 
   return (
     <>
-      <div className="flex">
+      <div className="flex px-5">
         <div
           className="mt-8 bg-s-base2 dark:bg-s-base02  px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-s-base1 dark:text-s-base01 hover:bg-s-base2 dark:hover:bg-s-base02 active:bg-s-base2/50 dark:active:bg-s-base02/50 active:text-s-base1/50 dark:active:text-s-base01/50 select-none"
           onClick={() => {
@@ -55,8 +55,8 @@ export const WorkflowView = (props: { workflow: Workflow; children?: React.React
       </div>
       {props.workflow.steps.map((step, i) => {
         const event = events.get(step)
-        console.log('a step', step)
-        console.log('event', event)
+        // console.log('a step', step)
+        console.log('steps event', event)
         return (
           <WorkflowStepView
             key={`workflowStep-${i}`}
