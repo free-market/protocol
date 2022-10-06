@@ -132,11 +132,11 @@ export const WorkflowStepView = (props: {
   //   console.log('last event', lastEvent)
   // }
   if (lastEvent?.absoluteInputAmount) {
-    const message = lastEvent.type === WorkflowEventType.Starting ? 'Sending' : 'Sent'
-    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals, 5)
+    const message = 'Sent'
+    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals, 4)
     inputAssetMessage = (
       <>
-        <span style={{ display: 'inline-block', minWidth: '60px' }}>{message}</span>
+        <span style={{ display: 'inline-block', marginRight: 6 }}>{message}</span>
         <NumberSpinner numbers={formattedMoney} />
       </>
     )
@@ -148,7 +148,7 @@ export const WorkflowStepView = (props: {
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
-        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals, 5)} />
+        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals, 4)} />
       </div>
     )
   }

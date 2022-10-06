@@ -54,7 +54,7 @@ const numberSpinnerStyles = [...Array(10).keys()].map((n) =>
     backgroundColor: '0',
     color: 'inherit',
     textAlign: 'center',
-    width: 10,
+    width: 7,
 
     $nest: {
       '&::before': {
@@ -161,7 +161,7 @@ export const NumberSpinner = (props: { numbers: string; minWidth?: number; class
 
   return (
     <div
-      className={flash}
+      // className={flash}
       style={{ color: 'inherit', font: 'inherit', display: 'inline-block', minWidth: props.minWidth }}
     >
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>{elements}</div>

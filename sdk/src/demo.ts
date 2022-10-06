@@ -84,7 +84,7 @@ function printBalances(balances: AssetBalance[]) {
   console.table(
     balances.map(it => ({
       asset: `${it.asset.symbol} (${it.asset.blockChain})`,
-      balance: formatMoney(it.balance, it.asset.info.decimals, 5),
+      balance: formatMoney(it.balance, it.asset.info.decimals, 4),
     }))
   )
 }

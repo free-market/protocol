@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { WorkflowStepView } from '../ActionView/WorkflowStepView.story'
+import { WorkflowStepView } from '../StepView/WorkflowStepView.story'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'

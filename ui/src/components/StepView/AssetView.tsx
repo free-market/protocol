@@ -1,4 +1,5 @@
 import React from 'react'
+import Box from '@mui/system/Box'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
@@ -14,6 +15,7 @@ import {
 
 import { StepInfo } from './StepInfo'
 import { Connector } from './Connector'
+import { Typography } from '@mui/material'
 
 export const WorkflowAssetView = (props: {
   asset: Asset
@@ -30,12 +32,11 @@ export const WorkflowAssetView = (props: {
           <img className="w-4 h-4" src={BLOCKCHAIN_INFO[props.asset.blockChain].iconUrl} />
         </div>
       </div>
-      <div className="flex flex-col">
+      <div style={{ marginLeft: 10 }}>
         <div className="font-bold">
-          {amount && formatMoney(amount, props.asset.info.decimals, 5)} {props.asset.symbol}
+          {amount && formatMoney(amount, props.asset.info.decimals, 4)} {props.asset.symbol}
         </div>
-        {/* {props.message && <div className="text-s-base1 dark:text-s-base01">{props.message}</div>} */}
-        {props.status}
+        <Box sx={{ fontSize: 12 }}>{props.status}</Box>
       </div>
     </div>
   )

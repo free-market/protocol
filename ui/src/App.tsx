@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { Box, Container } from '@mui/system'
+import Box from '@mui/system/Box'
+import Container from '@mui/system/Container'
 import CachedIcon from '@mui/icons-material/Cached'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { WorkflowView } from '@component/VisualizerLayout/WorkflowView'
@@ -14,13 +15,14 @@ import Editor from 'react-simple-code-editor'
 import highlight from './highlight'
 import './material-dark.css'
 import Button from '@mui/material/Button'
+import { StepInfo } from '@component/StepView/StepInfo'
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: { main: 'rgb(66, 89, 96)' },
     background: {
-      default: 'rgb(66, 89, 96)',
+      default: 'rgb(21, 31, 33)',
     },
   },
   typography: {
@@ -59,7 +61,18 @@ function App(): JSX.Element {
       <Container maxWidth="xl">
         <Box
           mx="auto"
-          sx={{ bgcolor: '#181818', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+          sx={{
+            position: 'relative',
+            backgroundColor: '#101010',
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            zIndex: 1,
+            backgroundImage: 'none',
+          }}
+
+          // sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
           <Box minHeight={10} />
           <SnipitSelector onChange={onSniptChanged} />
@@ -76,7 +89,7 @@ function App(): JSX.Element {
             />
           </Box>
           {/* buttons */}
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', zIndex: 1 }}>
             <Box m={1}>
               <Button
                 variant="contained"
@@ -98,12 +111,12 @@ function App(): JSX.Element {
               </Button>
             </Box>
           </Box>
-
           <WorkflowView
             workflow={workflow}
             run={workflowRunning}
             onWorkflowCompleted={() => setWorkflowRunning(false)}
           />
+          {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
         </Box>
       </Container>
     </ThemeProvider>
