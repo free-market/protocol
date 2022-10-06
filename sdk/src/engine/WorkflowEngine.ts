@@ -6,6 +6,7 @@ import { AssetBalance, Workflow, WorkflowStep, WorkflowStepResult } from '../typ
 
 export type EthereumProvider = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc
 
+// TODO there should be step level events and workflow level events (like workflow completed)
 export enum WorkflowEventType {
   Starting = 'Starting',
   Submitted = 'Submitted',

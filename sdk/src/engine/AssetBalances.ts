@@ -28,8 +28,12 @@ export class AssetBalances {
   toArray(): AssetBalance[] {
     const rv = [] as AssetBalance[]
     this.balances.forEach((balance, key) => {
+      const asset = this.assets.get(key)
+      if (!asset) {
+        throw new Error('asset not found for key: ' + key)
+      }
       rv.push({
-        asset: this.assets.get(key)!,
+        asset,
         balance: balance.toString(),
       })
     })

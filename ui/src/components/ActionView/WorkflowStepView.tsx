@@ -7,8 +7,16 @@ import {
   ArrowTopRightOnSquareIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline'
-import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO, WorkflowEventType, WorkflowEvent } from '@fmp/sdk'
-import { formatMoney } from 'utils'
+import {
+  Asset,
+  MoneyAmount,
+  WorkflowStep,
+  BLOCKCHAIN_INFO,
+  WorkflowEventType,
+  WorkflowEvent,
+  formatMoney,
+} from '@fmp/sdk'
+
 import { StepInfo } from './StepInfo'
 import { Connector } from './Connector'
 import { WorkflowAssetView } from './AssetView'
@@ -125,7 +133,7 @@ export const WorkflowStepView = (props: {
   // }
   if (lastEvent?.absoluteInputAmount) {
     const message = lastEvent.type === WorkflowEventType.Starting ? 'Sending' : 'Sent'
-    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals)
+    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals, 5)
     inputAssetMessage = (
       <>
         <span style={{ display: 'inline-block', minWidth: '60px' }}>{message}</span>
@@ -140,7 +148,7 @@ export const WorkflowStepView = (props: {
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
-        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals)} />
+        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals, 5)} />
       </div>
     )
   }

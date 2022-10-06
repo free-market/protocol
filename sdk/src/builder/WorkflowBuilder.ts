@@ -4,6 +4,7 @@ export { wormholeTokenTransfer } from '../steps/wormhole'
 export { serumSwap as serumSwap } from '../steps/serum'
 export { mangoDeposit, mangoWithdrawal } from '../steps/mango'
 export { wethWrap, wethUnwrap } from '../steps/weth'
+export { marinadeStake, marinadeUnstake } from '../steps/marinade'
 
 /** A callback implelemented by the integrator to determine when to exit a workflow loop based on WorkflowStepResult */
 export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Promise<boolean>

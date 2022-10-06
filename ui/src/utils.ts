@@ -30,29 +30,12 @@ export function buildWorkflow(): Workflow {
   return workflow
 }
 
-export function formatMoney(amount: MoneyAmount, decimals: number) {
-  const s = amount.toString()
-  if (s.endsWith('%')) {
-    return s
-  }
-  const left = s.slice(0, s.length - decimals)
-  let right = s.slice(decimals + 1, s.length)
-  const m = right.match(/([1-9]*).*/)
-  if (m) {
-    right = m[1]
-  }
-  if (right === '') {
-    return left
-  }
-  return left + '.' + right
-}
-
 export async function executeWorkflow(workflow: Workflow, eventHandler: WorkflowEventHandler) {
   const engine = new MockWorkflowEngine({
     mode: MockWorkflowEngineMode.SignEveryStep,
-    minStepDelay: 2000,
-    maxStepDelay: 4000,
-    submitDelay: 400,
+    minStepDelay: 5000,
+    maxStepDelay: 10000,
+    submitDelay: 1400,
     eventHandler,
   })
   await engine.execute(workflow)

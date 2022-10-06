@@ -23,8 +23,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('tailwind-dracula')(),
-  ],
+  plugins: [require('@tailwindcss/forms')],
 }

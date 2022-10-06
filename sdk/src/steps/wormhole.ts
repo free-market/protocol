@@ -6,6 +6,12 @@ export interface WormholeStep extends WorkflowStep {
   targetChain: BlockChain
 }
 
+// TODO use this to compute target token
+// const WormholeSubTypeExtensions = {
+//   so: BlockChain.Solana,
+//   et: BlockChain.Ethereum,
+// }
+
 //                             fromChain  fromToken,   toChain,   toToken
 type WormholeSymbolMapTuple = [ChainName, TokenSymbol, ChainName, TokenSymbol]
 const WORMHOLE_MAPPINGS: WormholeSymbolMapTuple[] = [
@@ -43,7 +49,7 @@ interface WormholeTokenTransferBuilderArgs {
   fromChain: ChainName
   fromToken: TokenSymbol
   toChain: ChainName
-  amount: MoneyAmount
+  amount?: MoneyAmount
 }
 
 export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): WorkflowStep {
@@ -53,7 +59,7 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
 
   const rv: WormholeStep = {
     stepId: 'wormhole.transfer',
-    inputAmount: args.amount,
+    inputAmount: args.amount || '100%',
     inputAsset: fromAsset,
     outputAsset: toAsset,
     info: WORMHOLE_INFO,

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO } from '@fmp/sdk'
-import { formatMoney } from 'utils'
+
 import '../../magic-box.css'
 // import '../../magic-box2.css'
 

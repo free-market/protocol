@@ -4,69 +4,91 @@ import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO, Workflow, WorkflowEvent, WorkflowEventType } from '@fmp/sdk'
-import { executeWorkflow, formatMoney } from 'utils'
+import { executeWorkflow } from 'utils'
 
-export const WorkflowView = (props: { workflow: Workflow; children?: React.ReactNode }): JSX.Element => {
-  const [lastEvent, setLastEvent] = useState<WorkflowEvent | undefined>(undefined)
-  const [lastEvents, setLastEvents] = useState<Map<WorkflowStep, WorkflowEvent>>(new Map())
+type WorkflowCompletedCallback = () => void
 
-  const events = lastEvents
+interface Props {
+  workflow: Workflow
+  onWorkflowCompleted?: WorkflowCompletedCallback
+  run?: boolean
+}
+
+interface State {
+  lastEvents: Map<WorkflowStep, WorkflowEvent>
+  isRunning: boolean
+}
+
+export class WorkflowView extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      lastEvents: new Map<WorkflowStep, WorkflowEvent>(),
+      isRunning: false,
+    }
+  }
+
+  // const [lastEvent, setLastEvent] = useState<WorkflowEvent | undefined>(undefined)
+  // const [lastEvents, setLastEvents] = useState<Map<WorkflowStep, WorkflowEvent>>(new Map())
+
+  // const events = lastEvents
 
   // const completedStepsState = useState<WorkflowStep[]>([])
   // let completedSteps = completedStepsState[0]
   // const setCompletedSteps = completedStepsState[1]
 
-  function myWorkflowEventHandler(event: WorkflowEvent) {
-    console.log('received event', event)
-    setLastEvent(event)
-    // if (event.type === WorkflowEventType.Completed) {
-    // completedSteps = completedSteps.concat(event.steps)
-    // setCompletedSteps(completedSteps)
-    // }
-    event.steps.forEach((it) => events.set(it, event))
-    setLastEvents(events)
-
-    // if (event.type === 'Completed') {
-    //   console.log(
-    //     `event: ${event.type} ${event.statusMessage} gasCost=${event.result?.gasCost},  ${
-    //       event.steps[0].outputAsset.symbol
-    //     } ${formatMoney(event.result?.outputAmount || 0, event.steps[0].outputAsset.info.decimals)}`,
-    //   )
-    // } else if (event.type === 'Starting') {
-    //   console.log(`event: ${event.type} ${event.steps[0].info.name}`)
-    // } else {
-    //   console.log(`event: ${event.type} ${event.statusMessage}`)
-    // }
+  myWorkflowEventHandler = (event: WorkflowEvent) => {
+    console.log('received event', event, this.state.lastEvents)
+    // TODO for on-chain workflows were event.steps.length>1, we need to see max-index being completed
+    // this.props.workflow.steps.findIndex(event.steps[0])
+    const newMap = new Map(this.state.lastEvents)
+    event.steps.forEach((it) => newMap.set(it, event))
+    this.setState({
+      ...this.state,
+      lastEvents: newMap,
+    })
+    // TODO really need workflow-complete event type
+    const finalStep = this.props.workflow.steps[this.props.workflow.steps.length - 1]
+    if (event.type === WorkflowEventType.Completed && event.steps.includes(finalStep)) {
+      if (this.props.onWorkflowCompleted) {
+        this.props.onWorkflowCompleted()
+        this.setState({
+          ...this.state,
+          isRunning: false,
+        })
+      }
+    }
   }
 
-  return (
-    <>
-      <div className="flex px-5">
-        <div
-          className="mt-8 bg-s-base2 dark:bg-s-base02  px-5 py-3 flex justify-center items-center cursor-pointer rounded-2xl font-bold text-lg text-s-base1 dark:text-s-base01 hover:bg-s-base2 dark:hover:bg-s-base02 active:bg-s-base2/50 dark:active:bg-s-base02/50 active:text-s-base1/50 dark:active:text-s-base01/50 select-none"
-          onClick={() => {
-            events.clear()
-            setLastEvents(events)
-            executeWorkflow(props.workflow, myWorkflowEventHandler)
-          }}
-        >
-          Execute Workflow
-        </div>
+  componentDidUpdate(_prevProps: Readonly<Props>, _prevState: Readonly<State>, _snapshot?: any): void {
+    if (this.props.run && !this.state.isRunning) {
+      this.setState({
+        ...this.state,
+        lastEvents: new Map(),
+        isRunning: true,
+      })
+      executeWorkflow(this.props.workflow, this.myWorkflowEventHandler)
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.workflow.steps.map((step, i) => {
+          const event = this.state.lastEvents.get(step)
+          // console.log('a step', step)
+          console.log('steps event ' + step.stepId, event)
+          return (
+            <WorkflowStepView
+              key={`workflowStep-${i}`}
+              {...WorkflowStepView.args}
+              step={step}
+              // completed={completedSteps.includes(it)}
+              lastEvent={event}
+            />
+          )
+        })}
       </div>
-      {props.workflow.steps.map((step, i) => {
-        const event = events.get(step)
-        // console.log('a step', step)
-        console.log('steps event', event)
-        return (
-          <WorkflowStepView
-            key={`workflowStep-${i}`}
-            {...WorkflowStepView.args}
-            step={step}
-            // completed={completedSteps.includes(it)}
-            lastEvent={event}
-          />
-        )
-      })}
-    </>
-  )
+    )
+  }
 }

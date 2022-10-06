@@ -2,6 +2,8 @@ import { NoAsset, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
 import { BigNumber } from 'ethers'
+import { StepImplFactory } from './StepImplFactory'
+import { MockStepsFactory } from './MockWorkflowSteps'
 
 function sleep(millis: number) {
   return new Promise<void>(resolve => {
@@ -20,12 +22,11 @@ interface MockWorkflowEngineOptions extends WorkflowEngineOptions {
   submitDelay?: number
 }
 
-type StatusCallback = (type: WorkflowEventType, statusUpdate: string, steps: WorkflowStep[]) => void
-
 export class MockWorkflowEngine implements WorkflowEngine {
   private options: MockWorkflowEngineOptions
   private balances = new AssetBalances()
   private workflow: Workflow
+  private stepImplFactory: StepImplFactory = new MockStepsFactory()
 
   constructor(options: MockWorkflowEngineOptions) {
     this.options = options
@@ -39,11 +40,13 @@ export class MockWorkflowEngine implements WorkflowEngine {
   }
 
   private async executeStep(step: WorkflowStep) {
+    const stepImpl = this.stepImplFactory.getStep(step.stepId)
+
     // get actual amount for this step
-    const [amount, isPercent] = this.actualizeAmount(step)
+    const [amount, isPercent] = await stepImpl.actualizeAmount(step, this.balances)
 
     // fire the Submitting event
-    const submittingEvent: WorkflowEvent = {
+    const workflowEvent: WorkflowEvent = {
       type: WorkflowEventType.Starting,
       statusMessage: 'Submitting to blockchain',
       workflow: this.workflow,
@@ -51,12 +54,11 @@ export class MockWorkflowEngine implements WorkflowEngine {
       balances: this.balances.toArray(),
       absoluteInputAmount: amount.toString(),
     }
-
-    this.options.eventHandler(submittingEvent)
+    this.options.eventHandler(workflowEvent)
 
     const statusUpdateHandler = (type: WorkflowEventType, statusMessage: string, steps: WorkflowStep[]) => {
       const statusEvent: WorkflowEvent = {
-        ...submittingEvent,
+        ...workflowEvent,
         steps,
         type,
         statusMessage,
@@ -64,10 +66,17 @@ export class MockWorkflowEngine implements WorkflowEngine {
       this.options.eventHandler(statusEvent)
     }
 
-    // invoke the mock step
-    const stepResult = await this.callMockWorkflowStep(step, amount, statusUpdateHandler)
+    // simulate delay from submitting to submitted
+    await sleep(this.options.submitDelay || 0)
 
-    console.log('back from  step')
+    // send Submitted event
+    statusUpdateHandler(WorkflowEventType.Submitted, 'Waiting for tx confirmation', [step])
+
+    // sleep while tx is getting confirmed
+    await this.mockBlockConfirmDelay()
+
+    // invoke the mock step
+    const stepResult = await stepImpl.executeStep(step, amount, statusUpdateHandler)
 
     // adjust balances
     if (isPercent) {
@@ -79,52 +88,60 @@ export class MockWorkflowEngine implements WorkflowEngine {
 
     // fire the Completed event
     const completedEvent: WorkflowEvent = {
+      ...workflowEvent,
       type: WorkflowEventType.Completed,
       statusMessage: 'Step completed',
-      workflow: this.workflow,
-      steps: [step],
       balances: this.balances.toArray(),
       result: stepResult,
-      absoluteInputAmount: amount.toString(),
     }
     this.options.eventHandler(completedEvent)
   }
 
-  private actualizeAmount(step: WorkflowStep): [BigNumber, boolean] {
-    if (typeof step.inputAmount === 'number') {
-      return [BigNumber.from(step.inputAmount), false]
-    }
+  // private actualizeAmount(step: WorkflowStep): [BigNumber, boolean] {
+  //   if (typeof step.inputAmount === 'number') {
+  //     return [BigNumber.from(step.inputAmount), false]
+  //   }
 
-    const s = step.inputAmount.trim()
-    if (s.endsWith('%')) {
-      const pctValue = s.slice(0, s.length - 1)
-      const pct = BigNumber.from(pctValue)
-      const currentBalance = this.balances.get(step.inputAsset)
-      if (!currentBalance) {
-        throw new Error("invalid workflow: taking percentage of asset that hasn't been seen before")
-      }
-      const amount = currentBalance.mul(pct).div(100)
-      return [amount, true]
-    }
-    return [BigNumber.from(s), false]
-  }
+  //   const s = step.inputAmount.trim()
+  //   if (s.endsWith('%')) {
+  //     const pctValue = s.slice(0, s.length - 1)
+  //     const pct = BigNumber.from(pctValue)
+  //     const currentBalance = this.balances.get(step.inputAsset)
+  //     if (!currentBalance) {
+  //       throw new Error("invalid workflow: taking percentage of asset that hasn't been seen before")
+  //     }
+  //     const amount = currentBalance.mul(pct).div(100)
+  //     return [amount, true]
+  //   }
+  //   return [BigNumber.from(s), false]
+  // }
 
-  async callMockWorkflowStep(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback) {
-    await sleep(this.options.submitDelay || 0)
-    statusCallback(WorkflowEventType.Submitted, 'Waiting for tx confirmation', [step])
-    await this.mockBlockConfirmDelay()
-    switch (step.stepId) {
-      case 'weth.wrap':
-        return mockExecuteWethWrapUnWrap(step, amount)
-      case 'curve.tricrypto.swap':
-        return mockExecuteTriCryptoSwap(step, amount)
-      case 'wormhole.transfer':
-        return mockExecuteWormholeTransfer(step, amount, statusCallback)
-      case 'serum.swap':
-        return mockExecuteSerumSwap(step, amount)
-    }
-    throw new Error('unknown stepId: ' + step.stepId)
-  }
+  // async callMockWorkflowStep(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback) {
+  //   await sleep(this.options.submitDelay || 0)
+  //   statusCallback(WorkflowEventType.Submitted, 'Waiting for tx confirmation', [step])
+  //   await this.mockBlockConfirmDelay()
+  //   switch (step.stepId) {
+  //     case 'weth.wrap':
+  //       return mockExecuteWethWrapUnWrap(step, amount)
+  //     case 'curve.tricrypto.swap':
+  //       return mockExecuteTriCryptoSwap(step, amount)
+  //     case 'curve.3pool.swap':
+  //       return mockExecuteThreePoolSwap(step, amount)
+  //     case 'wormhole.transfer':
+  //       return mockExecuteWormholeTransfer(step, amount, statusCallback)
+  //     case 'serum.swap':
+  //       return mockExecuteSerumSwap(step, amount)
+  //     case 'mango.deposit':
+  //       return mockExecuteMangoDeposit(step, amount)
+  //     case 'mango.withdrawal':
+  //       return mockExecuteMangoWithdrawal(step, amount)
+  //     case 'marinade.stake':
+  //       return mockExecuteMarinadeStake(step, amount)
+  //     case 'marinade.unstake':
+  //       return mockExecuteMarinadeUnStake(step, amount)
+  //   }
+  //   throw new Error('unknown stepId: ' + step.stepId)
+  // }
 
   async mockBlockConfirmDelay() {
     const { minStepDelay, maxStepDelay } = this.options
@@ -139,59 +156,110 @@ export class MockWorkflowEngine implements WorkflowEngine {
   }
 }
 
-async function sleepRandom(min?: number, max?: number) {
-  if (min) {
-    let delay = min
-    if (max) {
-      delay += Math.floor(Math.random() * (max - min))
-    }
-    await sleep(delay)
-  }
-}
+// async function sleepRandom(min?: number, max?: number) {
+//   if (min) {
+//     let delay = min
+//     if (max) {
+//       delay += Math.floor(Math.random() * (max - min))
+//     }
+//     await sleep(delay)
+//   }
+// }
 
-function randomGas() {
-  return (30.0 + Math.random() * 10.0).toString()
-}
+// function randomGas() {
+//   return (30.0 + Math.random() * 10.0).toString()
+// }
 
-export async function mockExecuteWethWrapUnWrap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
-  return {
-    outputAmount: amount.toString(),
-    gasCost: '10',
-    exchangeFee: '0',
-  }
-}
-const ethInUsd = BigNumber.from(1333)
-const tenBigNumber = BigNumber.from(10)
-export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
-  const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
-  const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
-  return {
-    outputAmount: amountOutput.toString(),
-    gasCost: randomGas(),
-    exchangeFee: '0',
-  }
-}
+// export async function mockExecuteWethWrapUnWrap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   return {
+//     outputAmount: amount.toString(),
+//     gasCost: '10',
+//     exchangeFee: '0',
+//   }
+// }
+// const ethInUsd = BigNumber.from(1333)
+// const tenBigNumber = BigNumber.from(10)
 
-export async function mockExecuteWormholeTransfer(
-  step: WorkflowStep,
-  amount: BigNumber,
-  statusCallback: StatusCallback
-): Promise<WorkflowStepResult> {
-  statusCallback(WorkflowEventType.StatusUpdate, 'Waiting for Guardians', [step])
-  await sleepRandom(2000, 4000)
-  statusCallback(WorkflowEventType.StatusUpdate, 'Submitting to target', [step])
-  await sleepRandom(1000, 2000)
-  return {
-    outputAmount: amount.toString(),
-    gasCost: randomGas(),
-    exchangeFee: '0',
-  }
-}
+// export async function mockExecuteTriCryptoSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
 
-export async function mockExecuteSerumSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
-  return {
-    outputAmount: amount.toString(),
-    gasCost: randomGas(),
-    exchangeFee: '0',
-  }
-}
+// export async function mockExecuteThreePoolSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteMangoDeposit(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteMangoWithdrawal(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteMarinadeStake(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteMarinadeUnStake(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   const decimalDelta = BigNumber.from(step.inputAsset.info.decimals - step.outputAsset.info.decimals)
+//   const amountOutput = ethInUsd.mul(amount).div(tenBigNumber.pow(decimalDelta))
+//   return {
+//     outputAmount: amountOutput.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteWormholeTransfer(
+//   step: WorkflowStep,
+//   amount: BigNumber,
+//   statusCallback: StatusCallback
+// ): Promise<WorkflowStepResult> {
+//   statusCallback(WorkflowEventType.StatusUpdate, 'Waiting for Guardians', [step])
+//   await sleepRandom(2000, 4000)
+//   statusCallback(WorkflowEventType.StatusUpdate, 'Submitting to target', [step])
+//   await sleepRandom(1000, 2000)
+//   return {
+//     outputAmount: amount.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }
+
+// export async function mockExecuteSerumSwap(step: WorkflowStep, amount: BigNumber): Promise<WorkflowStepResult> {
+//   return {
+//     outputAmount: amount.toString(),
+//     gasCost: randomGas(),
+//     exchangeFee: '0',
+//   }
+// }

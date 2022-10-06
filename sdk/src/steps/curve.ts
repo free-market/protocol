@@ -21,7 +21,7 @@ export interface CurveStepBuilderArgs<Symbols> {
   /** the token the Curve workflow step will swap to */
   to: Symbols
   /** the amount to swap (in term of the from token) */
-  amount: MoneyAmount
+  amount?: MoneyAmount
 }
 
 const THREE_CURVE_SWAP: WorkflowStepInfo = {
@@ -49,7 +49,7 @@ const TRICRYPTO_SWAP: WorkflowStepInfo = {
 export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymbol>): WorkflowStep {
   const rv: CurveStep = {
     stepId: 'curve.3pool.swap',
-    inputAmount: args.amount,
+    inputAmount: args.amount || '100%',
     inputAsset: getTokenAsset('Ethereum', args.from),
     outputAsset: getTokenAsset('Ethereum', args.to),
     inputIndex: 0, // TODO unhardcode
@@ -63,7 +63,7 @@ export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymb
 export function curveTriCryptoSwap(args: CurveStepBuilderArgs<TriCryptoTokenSymbol>): WorkflowStep {
   const rv: CurveStep = {
     stepId: 'curve.tricrypto.swap',
-    inputAmount: args.amount,
+    inputAmount: args.amount || '100%',
     inputAsset: getTokenAsset('Ethereum', args.from),
     outputAsset: getTokenAsset('Ethereum', args.to),
     inputIndex: 0, // TODO unhardcode

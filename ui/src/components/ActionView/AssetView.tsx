@@ -2,8 +2,16 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO, WorkflowEventType, WorkflowEvent } from '@fmp/sdk'
-import { formatMoney } from 'utils'
+import {
+  Asset,
+  MoneyAmount,
+  WorkflowStep,
+  BLOCKCHAIN_INFO,
+  WorkflowEventType,
+  WorkflowEvent,
+  formatMoney,
+} from '@fmp/sdk'
+
 import { StepInfo } from './StepInfo'
 import { Connector } from './Connector'
 
@@ -24,7 +32,7 @@ export const WorkflowAssetView = (props: {
       </div>
       <div className="flex flex-col">
         <div className="font-bold">
-          {amount && formatMoney(amount, props.asset.info.decimals)} {props.asset.symbol}
+          {amount && formatMoney(amount, props.asset.info.decimals, 5)} {props.asset.symbol}
         </div>
         {/* {props.message && <div className="text-s-base1 dark:text-s-base01">{props.message}</div>} */}
         {props.status}

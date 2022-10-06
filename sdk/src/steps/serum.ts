@@ -19,13 +19,13 @@ const SERUM_INFO: WorkflowStepInfo = {
 interface SerumSwapBuilderArg {
   from: SerumTokenSymbol
   to: SerumTokenSymbol
-  amount: MoneyAmount
+  amount?: MoneyAmount
 }
 
 export function serumSwap(arg: SerumSwapBuilderArg): WorkflowStep {
   const rv: SerumSwapStep = {
     stepId: 'serum.swap',
-    inputAmount: arg.amount,
+    inputAmount: arg.amount || '100%',
     inputAsset: getTokenAsset('Solana', arg.from),
     outputAsset: getTokenAsset('Solana', arg.to),
     info: SERUM_INFO,

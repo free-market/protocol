@@ -1,0 +1,9 @@
+{
+  "lang": "en",
+  "dir": "ltr",
+  "name": "Free Market Protocol Workflow Engine Demo",
+  "short_name": "FMP Demo",
+  "scope": "/",
+  "id": "fmpdemo",
+  "start_url": "/"
+}
