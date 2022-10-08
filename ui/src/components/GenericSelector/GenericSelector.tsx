@@ -14,6 +14,8 @@ type GenericSelectorProps = {
 export const GenericSelector = (props: GenericSelectorProps): JSX.Element => {
   const { id, heading, choiceName, choices, onChoice, oneline } = props
 
+  const slug = choices.map(({name}) => name).join('-')
+
   const choiceButtons = choices.map(({name, label}) => {
     const active = name === choiceName
     const container = cx('transition flex rounded-full pr-2 cursor-pointer items-center relative',
@@ -24,7 +26,7 @@ export const GenericSelector = (props: GenericSelectorProps): JSX.Element => {
     return (
       <div onClick={() => { onChoice(name) }} className={container} key={name}>
       <div className={cx('m-2 w-2 h-2 rounded-full', active ? 'poppy-bg-zinc-800 bg-s-base01' : 'bg-s-base0 poppy:bg-zinc-500')}/>
-      {active && <motion.div layoutId="active" className="m-2 w-2 h-2 rounded-full bg-s-blue absolute z-10"/>}
+      {active && <motion.div layoutId={`active-${slug}`} className="m-2 w-2 h-2 rounded-full bg-s-blue absolute z-10"/>}
       <div className="text-sm">{label}</div>
     </div>
     )

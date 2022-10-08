@@ -21,7 +21,11 @@ const PRESETS = [
   wethWrap({ amount: '10000000000000000000' }),
   curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
   curveThreePoolSwap({ from: 'USDT', to: 'USDC' }),
-  wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana' }),
+  wormholeTokenTransfer({
+    fromChain: 'Ethereum',
+    fromToken: 'USDC',
+    toChain: 'Solana'
+  }),
   serumSwap({ from: 'USDCet', to: 'USDC' }),
   mangoDeposit({ symbol: 'USDC' }),
   mangoWithdrawal({ symbol: 'SOL' }),

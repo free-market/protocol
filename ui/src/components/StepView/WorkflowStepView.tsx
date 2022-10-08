@@ -158,16 +158,16 @@ export const WorkflowStepView = (props: {
     <>
       <Box py={1}>
         <Box
-          sx={{ padding: 1, border: '1px #444 solid' }}
+          sx={{ padding: 1 }}
           className={cx(
             'group max-w-4xl rounded-full text-s-base0 dark:text-s-base00 flex justify-between items-center w-full cursor-pointer transition transition-100',
-            'active:bg-s-base1/25 active:transition-none hover:bg-s-base2/25 dark:hover:bg-s-base02/25',
+            'active:bg-s-base1/25 active:transition-none hover:bg-s-base2/25 dark:hover:bg-s-base02/25 poppy:hover:bg-zinc-800',
           )}
           onClick={toggle}
         >
           <ChevronDownIcon
             className={cx(
-              'text-s-base2 dark:text-s-base02 w-8 h-8 translate-x-3 transition transition-100 group-hover:text-s-base1 group-hover:text-s-base01',
+              'text-s-base2 dark:text-s-base02 poppy:text-zinc-600 poppy:group-hover:text-zinc-500 w-8 h-8 translate-x-3 transition transition-100 group-hover:text-s-base1 group-hover:text-s-base01',
               { '-rotate-90': !expanded },
             )}
           />
@@ -177,7 +177,8 @@ export const WorkflowStepView = (props: {
             amount={props.step.inputAmount}
             status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
           />
-          <Connector active={false /* props.stepStatus === WorkflowEventType.Starting*/} />
+          <div className="grow"/>
+          {/*<Connector active={ props.stepStatus === WorkflowEventType.Starting} />*/}
           <Box>
             {props.lastEvent && <div style={{ textAlign: 'center' }}>&nbsp;</div>}
             <StepInfo
@@ -194,7 +195,8 @@ export const WorkflowStepView = (props: {
               </Box>
             )}
           </Box>
-          <Connector active={false} />
+          <div className="grow"/>
+          {/*<Connector active={false} />*/}
           <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} />
           {props.children}
         </Box>

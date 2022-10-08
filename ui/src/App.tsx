@@ -16,6 +16,7 @@ import highlight from './highlight'
 import './material-dark.css'
 import './solarized-dark-atom.css'
 import './fonts.css'
+import './magic-box.css'
 import Button from '@mui/material/Button'
 import { StepInfo } from '@component/StepView/StepInfo'
 import Popup from 'Popup'
@@ -60,20 +61,21 @@ function App(): JSX.Element {
   return (
     <WorkflowProvider onWorkflowTextChange={setWorkflowText}>
       <ThemeProvider theme={darkTheme}>
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="relative min-h-screen flex flex-col items-center space-y-5 py-5">
+            <div className="w-full max-w-3xl mx-auto px-5">
             <ThemeSelector />
-            <WorkflowPresetSelector />
+            </div>
 
-            <Box sx={{ padding: 1, borderRadius: 4 }}>
+            <Box className="max-w-3xl mx-auto bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 rounded-xl w-full p-5 space-y-5">
+              <WorkflowPresetSelector />
               <Editor
                 value={workflowText}
                 highlight={highlight}
                 onValueChange={setWorkflowText}
                 preClassName="language-js"
                 padding="1em"
-                style={{ width: 900 }}
-                className="grow font-mono caret-sky-50 text-sm basis-0"
+                className="grow font-mono caret-sky-50 text-sm basis-0 rounded-xl w-full"
               />
             </Box>
             {/* buttons */}
@@ -85,7 +87,7 @@ function App(): JSX.Element {
                   disabled={workflowRunning}
                   startIcon={<CachedIcon />}
                 >
-                  Update Workflow
+                  Compile
                 </Button>
               </Box>
               <Box m={1}>
@@ -95,7 +97,7 @@ function App(): JSX.Element {
                   disabled={workflowRunning}
                   startIcon={<PlayArrowIcon />}
                 >
-                  Run Workflow
+                  Run
                 </Button>
               </Box>
             </Box>
