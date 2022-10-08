@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { WorkflowStepView } from '../StepView/WorkflowStepView.story'
+import { WorkflowStepView } from '../StepView/WorkflowStepView'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
@@ -81,7 +81,6 @@ export class WorkflowView extends React.Component<Props, State> {
           return (
             <WorkflowStepView
               key={`workflowStep-${i}`}
-              {...WorkflowStepView.args}
               step={step}
               // completed={completedSteps.includes(it)}
               lastEvent={event}
