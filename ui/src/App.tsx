@@ -19,6 +19,9 @@ import './fonts.css'
 import Button from '@mui/material/Button'
 import { StepInfo } from '@component/StepView/StepInfo'
 import Popup from 'Popup'
+import { WorkflowProvider } from './components/WorkflowProvider'
+import WorkflowPresetSelector from './components/WorkflowPresetSelector'
+import ThemeSelector from './components/ThemeSelector'
 
 const darkTheme = createTheme({
   palette: {
@@ -55,70 +58,57 @@ function App(): JSX.Element {
   }
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Container maxWidth="xl">
-        <Box
-          mx="auto"
-          sx={{
-            position: 'relative',
-            // height: '100vh',
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            zIndex: 1,
-            backgroundImage: 'none',
-          }}
+    <WorkflowProvider onWorkflowTextChange={setWorkflowText}>
+      <ThemeProvider theme={darkTheme}>
+        <div className="max-w-5xl mx-auto">
+          <div className="relative min-h-screen flex flex-col items-center space-y-5 py-5">
+            <ThemeSelector />
+            <WorkflowPresetSelector />
 
-          // sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-        >
-          <Popup popup={<span>The content of the Popover.</span>} />
-          <Box minHeight={10} />
-          <SnipitSelector onChange={onSniptChanged} />
-
-          <Box sx={{ padding: 1, borderRadius: 4 }}>
-            <Editor
-              value={workflowText}
-              highlight={highlight}
-              onValueChange={setWorkflowText}
-              preClassName="language-js"
-              padding="1em"
-              style={{ width: 900 }}
-              className="grow font-mono caret-sky-50 text-sm basis-0"
+            <Box sx={{ padding: 1, borderRadius: 4 }}>
+              <Editor
+                value={workflowText}
+                highlight={highlight}
+                onValueChange={setWorkflowText}
+                preClassName="language-js"
+                padding="1em"
+                style={{ width: 900 }}
+                className="grow font-mono caret-sky-50 text-sm basis-0"
+              />
+            </Box>
+            {/* buttons */}
+            <Box sx={{ display: 'flex', zIndex: 1 }}>
+              <Box m={1}>
+                <Button
+                  variant="contained"
+                  onClick={() => onUpdateWorkflow()}
+                  disabled={workflowRunning}
+                  startIcon={<CachedIcon />}
+                >
+                  Update Workflow
+                </Button>
+              </Box>
+              <Box m={1}>
+                <Button
+                  variant="contained"
+                  onClick={() => setWorkflowRunning(true)}
+                  disabled={workflowRunning}
+                  startIcon={<PlayArrowIcon />}
+                >
+                  Run Workflow
+                </Button>
+              </Box>
+            </Box>
+            <WorkflowView
+              workflow={workflow}
+              run={workflowRunning}
+              onWorkflowCompleted={() => setWorkflowRunning(false)}
             />
-          </Box>
-          {/* buttons */}
-          <Box sx={{ display: 'flex', zIndex: 1 }}>
-            <Box m={1}>
-              <Button
-                variant="contained"
-                onClick={() => onUpdateWorkflow()}
-                disabled={workflowRunning}
-                startIcon={<CachedIcon />}
-              >
-                Update Workflow
-              </Button>
-            </Box>
-            <Box m={1}>
-              <Button
-                variant="contained"
-                onClick={() => setWorkflowRunning(true)}
-                disabled={workflowRunning}
-                startIcon={<PlayArrowIcon />}
-              >
-                Run Workflow
-              </Button>
-            </Box>
-          </Box>
-          <WorkflowView
-            workflow={workflow}
-            run={workflowRunning}
-            onWorkflowCompleted={() => setWorkflowRunning(false)}
-          />
-          {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
-        </Box>
-      </Container>
-    </ThemeProvider>
+            {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
+          </div>
+        </div>
+      </ThemeProvider>
+    </WorkflowProvider>
   )
 }
 
