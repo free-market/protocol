@@ -1,8 +1,22 @@
 import React from 'react'
 
+const initialTheme: 'light' | 'dark' | 'poppy' = window &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+
+type WorkflowTheme = 'light' | 'dark' | 'poppy'
+
+type WorkflowPresetName = string
+
 export type WorkflowContextShape = {
   status: 'editing' | 'preparing' | 'prepared' | 'ready-to-execute'
   prepare: () => void | Promise<void>
+  theme: WorkflowTheme
+  setTheme: (theme: WorkflowTheme) => void
+  chosenPresetName: string
+  choosePreset: (presetName: string, text: string) => void
 }
 
 export const WorkflowContext = React.createContext<WorkflowContextShape>({
@@ -10,13 +24,26 @@ export const WorkflowContext = React.createContext<WorkflowContextShape>({
   prepare: () => {
     // do nothing
   },
+  theme: 'poppy',
+  setTheme: () => {
+    // do nothing
+  },
+  chosenPresetName: 'basic',
+  choosePreset: () => {
+    // do nothing
+  }
 })
 
 export const WorkflowProvider = (props: {
+  onWorkflowTextChange?: (text: string) => void
   children: React.ReactNode
 }): JSX.Element => {
   const [status, setStatus] =
     React.useState<WorkflowContextShape['status']>('editing')
+
+  const [theme, setTheme] = React.useState<'light' | 'dark' | 'poppy'>(initialTheme)
+
+  const [chosenPresetName, setChosenPresetName] = React.useState<string>('basic')
 
   const prepare = async () => {
     setStatus('preparing')
@@ -26,9 +53,23 @@ export const WorkflowProvider = (props: {
     setStatus('ready-to-execute')
   }
 
+  const className = theme === 'light' ? '' : theme === 'dark' ? 'dark' : 'fmp-poppy'
+
+  const choosePreset = (presetName: string, text: string) => {
+    setChosenPresetName(presetName)
+
+    if (props.onWorkflowTextChange) {
+      props.onWorkflowTextChange(text)
+    }
+  }
+
   return (
-    <WorkflowContext.Provider value={{ status, prepare }}>
-      {props.children}
+    <WorkflowContext.Provider value={{ status, prepare, theme, setTheme, choosePreset, chosenPresetName}}>
+      <div className={className}>
+        <div className="bg-s-base3 dark:bg-s-base03 poppy:bg-zinc-900 space-y-5">
+          {props.children}
+        </div>
+      </div>
     </WorkflowContext.Provider>
   )
 }
