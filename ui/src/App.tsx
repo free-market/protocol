@@ -16,6 +16,7 @@ import highlight from './highlight'
 import './material-dark.css'
 import Button from '@mui/material/Button'
 import { StepInfo } from '@component/StepView/StepInfo'
+import Popup from 'Popup'
 
 const darkTheme = createTheme({
   palette: {
@@ -64,7 +65,8 @@ function App(): JSX.Element {
           sx={{
             position: 'relative',
             backgroundColor: '#101010',
-            height: '100vh',
+            // height: '100vh',
+            minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -74,6 +76,7 @@ function App(): JSX.Element {
 
           // sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
+          <Popup popup={<span>The content of the Popover.</span>} />
           <Box minHeight={10} />
           <SnipitSelector onChange={onSniptChanged} />
 

@@ -21,6 +21,7 @@ import { StepInfo } from './StepInfo'
 import { Connector } from './Connector'
 import { WorkflowAssetView } from './AssetView'
 import { NumberSpinner } from './NumberSpinner'
+import Box from '@mui/system/Box'
 
 export const WorkflowStepView = (props: {
   step: WorkflowStep
@@ -155,10 +156,11 @@ export const WorkflowStepView = (props: {
 
   return (
     <>
-      <div className={'flex px-3 py-3'}>
-        <div
+      <Box py={1}>
+        <Box
+          sx={{ padding: 1, border: '1px #444 solid' }}
           className={cx(
-            'group max-w-4xl rounded-full border border-s-base2 dark:border-s-base02 text-s-base0 dark:text-s-base00 flex justify-between items-center w-full cursor-pointer transition transition-100',
+            'group max-w-4xl rounded-full text-s-base0 dark:text-s-base00 flex justify-between items-center w-full cursor-pointer transition transition-100',
             'active:bg-s-base1/25 active:transition-none hover:bg-s-base2/25 dark:hover:bg-s-base02/25',
           )}
           onClick={toggle}
@@ -169,14 +171,14 @@ export const WorkflowStepView = (props: {
               { '-rotate-90': !expanded },
             )}
           />
-          <div style={{ minWidth: 10 }} />
+          <Box sx={{ minWidth: 10 }} />
           <WorkflowAssetView
             asset={props.step.inputAsset}
             amount={props.step.inputAmount}
             status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
           />
           <Connector active={false /* props.stepStatus === WorkflowEventType.Starting*/} />
-          <div>
+          <Box>
             {props.lastEvent && <div style={{ textAlign: 'center' }}>&nbsp;</div>}
             <StepInfo
               step={props.step}
@@ -186,18 +188,17 @@ export const WorkflowStepView = (props: {
               }
             />
             {props.lastEvent && (
-              <div style={{ textAlign: 'center' }}>
-                {/* <CheckIcon className="w-8 h-8" /> */}
+              <Box sx={{ textAlign: 'center' }}>
                 {props.lastEvent.type === WorkflowEventType.Completed && <span>✔️</span>}
                 {props.lastEvent?.statusMessage}
-              </div>
+              </Box>
             )}
-          </div>
+          </Box>
           <Connector active={false} />
           <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} />
           {props.children}
-        </div>
-      </div>
+        </Box>
+      </Box>
       <AnimatePresence>{expanded && descriptions}</AnimatePresence>
     </>
   )

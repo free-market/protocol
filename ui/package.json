@@ -30,6 +30,7 @@
     "ethers-react": "1.1.0",
     "final-form": "^4.20",
     "framer-motion": "7.2.1",
+    "material-ui-popup-state": "4.1.0",
     "prismjs": "1.29.0",
     "react": "^18",
     "react-dom": "^18",

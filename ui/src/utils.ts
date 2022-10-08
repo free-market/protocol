@@ -33,9 +33,9 @@ export function buildWorkflow(): Workflow {
 export async function executeWorkflow(workflow: Workflow, eventHandler: WorkflowEventHandler) {
   const engine = new MockWorkflowEngine({
     mode: MockWorkflowEngineMode.SignEveryStep,
-    minStepDelay: 5000,
-    maxStepDelay: 10000,
-    submitDelay: 1400,
+    minStepDelay: 2000,
+    maxStepDelay: 4000,
+    submitDelay: 1000,
     eventHandler,
   })
   await engine.execute(workflow)
