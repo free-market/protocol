@@ -70,7 +70,9 @@ pre[class*="language-"] {
 }
 
 :not(pre) > code[class*="language-"],
-pre[class*="language-"] {
+pre[class*="language-"],
+body,
+html {
 	background-color: #fdf6e3; /* base3 */
 }
 
@@ -187,7 +189,9 @@ pre[class*="language-"] {
   }
 
   :not(pre) > code[class*="language-"],
-  pre[class*="language-"] {
+  pre[class*="language-"],
+  body,
+  html {
     background: #002b36;
   }
 

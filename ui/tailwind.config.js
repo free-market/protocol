@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   darkMode: 'class',
@@ -5,7 +7,7 @@ module.exports = {
     extend: {
       colors: {
         's-base03': '#002b36',
-        's-base02': '#1d282b',
+        's-base02': '#073642',
         's-base01': '#586e75',
         's-base00': '#657b83',
         's-base0': '#839496',
@@ -23,5 +25,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    plugin(function({ addVariant }) {
+      addVariant('poppy', '.fmp-poppy &')
+    })
+  ],
 }

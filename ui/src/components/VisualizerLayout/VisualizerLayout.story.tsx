@@ -1,27 +1,37 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
+import { WorkflowProvider } from '../WorkflowProvider'
 import { VisualizerLayout as Component } from './VisualizerLayout'
 import { ScriptEditor } from '../ScriptEditor/ScriptEditor.story'
 // import { WorkflowStepView } from '../ActionView/WorkflowStepView.story'
 import { buildWorkflow } from '../../utils'
 import { WorkflowView } from './WorkflowView'
 
-export const story = {
+export default {
   title: 'Example/VisualizerLayout',
   component: Component,
+  decorators: [
+    (Story) => (
+      <WorkflowProvider>
+        <Story />
+      </WorkflowProvider>
+    ),
+  ],
   parameters: {
     backgrounds: {
-      default: 'dark',
-        // window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      default:
+        window &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light',
       values: [
-        { name: 'dark', value: '#101010' },
+        { name: 'dark', value: '#002b36' },
         { name: 'light', value: '#fdf6e3' },
       ],
     },
   },
-}
-
-export default story as ComponentMeta<typeof Component>
+} as ComponentMeta<typeof Component>
 
 export const VisualizerLayout: ComponentStory<typeof Component> = (args) => {
   return <div className='dark'><Component {...args} /></div>

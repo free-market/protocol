@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { WorkflowStep } from '@fmp/sdk'
 
-import '../../magic-box.css'
+// import '../../magic-box.css'
 import Popup from 'Popup'
 import Paper from '@mui/material/Paper'
 import Link from '@mui/material/Link'

@@ -1,5 +1,5 @@
-code[class*="language-"],
-pre[class*="language-"] {
+.fmp-poppy code[class*="language-"],
+.fmp-poppy pre[class*="language-"] {
 	text-align: left;
 	white-space: pre;
 	word-spacing: normal;
@@ -21,36 +21,36 @@ pre[class*="language-"] {
 	hyphens: none;
 }
 
-code[class*="language-"]::-moz-selection,
-pre[class*="language-"]::-moz-selection,
-code[class*="language-"] ::-moz-selection,
-pre[class*="language-"] ::-moz-selection {
+.fmp-poppy code[class*="language-"]::-moz-selection,
+.fmp-poppy pre[class*="language-"]::-moz-selection,
+.fmp-poppy code[class*="language-"] ::-moz-selection,
+.fmp-poppy pre[class*="language-"] ::-moz-selection {
 	background: #363636;
 }
 
-code[class*="language-"]::selection,
-pre[class*="language-"]::selection,
-code[class*="language-"] ::selection,
-pre[class*="language-"] ::selection {
+.fmp-poppy code[class*="language-"]::selection,
+.fmp-poppy pre[class*="language-"]::selection,
+.fmp-poppy code[class*="language-"] ::selection,
+.fmp-poppy pre[class*="language-"] ::selection {
 	background: #363636;
 }
 
-:not(pre) > code[class*="language-"] {
+.fmp-poppy :not(pre) > code[class*="language-"] {
 	white-space: normal;
 	border-radius: 0.2em;
 	padding: 0.1em;
 }
 
-pre[class*="language-"] {
+.fmp-poppy pre[class*="language-"] {
 	overflow: auto;
 	position: relative;
 	margin: 0.5em 0;
 	padding: 1.25em 1em;
 }
 
-.language-css > code,
-.language-sass > code,
-.language-scss > code {
+.fmp-poppy .language-css > code,
+.fmp-poppy .language-sass > code,
+.fmp-poppy .language-scss > code {
 	color: #fd9170;
 }
 
@@ -58,148 +58,148 @@ pre[class*="language-"] {
 	opacity: 0.7;
 }
 
-.token.atrule {
+.fmp-poppy .token.atrule {
 	color: #c792ea;
 }
 
-.token.attr-name {
+.fmp-poppy .token.attr-name {
 	color: #ffcb6b;
 }
 
-.token.attr-value {
+.fmp-poppy .token.attr-value {
 	color: #a5e844;
 }
 
-.token.attribute {
+.fmp-poppy .token.attribute {
 	color: #a5e844;
 }
 
-.token.boolean {
+.fmp-poppy .token.boolean {
 	color: #c792ea;
 }
 
-.token.builtin {
+.fmp-poppy .token.builtin {
 	color: #ffcb6b;
 }
 
-.token.cdata {
+.fmp-poppy .token.cdata {
 	color: #80cbc4;
 }
 
-.token.char {
+.fmp-poppy .token.char {
 	color: #80cbc4;
 }
 
-.token.class {
+.fmp-poppy .token.class {
 	color: #ffcb6b;
 }
 
-.token.class-name {
+.fmp-poppy .token.class-name {
 	color: #f2ff00;
 }
 
-.token.comment {
+.fmp-poppy .token.comment {
 	color: #616161;
 }
 
-.token.constant {
+.fmp-poppy .token.constant {
 	color: #c792ea;
 }
 
-.token.deleted {
+.fmp-poppy .token.deleted {
 	color: #ff6666;
 }
 
-.token.doctype {
+.fmp-poppy .token.doctype {
 	color: #616161;
 }
 
-.token.entity {
+.fmp-poppy .token.entity {
 	color: #ff6666;
 }
 
-.token.function {
+.fmp-poppy .token.function {
 	color: #c792ea;
 }
 
-.token.hexcode {
+.fmp-poppy .token.hexcode {
 	color: #f2ff00;
 }
 
-.token.id {
+.fmp-poppy .token.id {
 	color: #c792ea;
 	font-weight: bold;
 }
 
-.token.important {
+.fmp-poppy .token.important {
 	color: #c792ea;
 	font-weight: bold;
 }
 
-.token.inserted {
+.fmp-poppy .token.inserted {
 	color: #80cbc4;
 }
 
-.token.keyword {
+.fmp-poppy .token.keyword {
 	color: #c792ea;
 }
 
-.token.number {
+.fmp-poppy .token.number {
 	color: #fd9170;
 }
 
-.token.operator {
+.fmp-poppy .token.operator {
 	color: #89ddff;
 }
 
-.token.prolog {
+.fmp-poppy .token.prolog {
 	color: #616161;
 }
 
-.token.property {
+.fmp-poppy .token.property {
 	color: #80cbc4;
 }
 
-.token.pseudo-class {
+.fmp-poppy .token.pseudo-class {
 	color: #a5e844;
 }
 
-.token.pseudo-element {
+.fmp-poppy .token.pseudo-element {
 	color: #a5e844;
 }
 
-.token.punctuation {
+.fmp-poppy .token.punctuation {
 	color: #89ddff;
 }
 
-.token.regex {
+.fmp-poppy .token.regex {
 	color: #f2ff00;
 }
 
-.token.selector {
+.fmp-poppy .token.selector {
 	color: #ff6666;
 }
 
-.token.string {
+.fmp-poppy .token.string {
 	color: #a5e844;
 }
 
-.token.symbol {
+.fmp-poppy .token.symbol {
 	color: #c792ea;
 }
 
-.token.tag {
+.fmp-poppy .token.tag {
 	color: #ff6666;
 }
 
-.token.unit {
+.fmp-poppy .token.unit {
 	color: #fd9170;
 }
 
-.token.url {
+.fmp-poppy .token.url {
 	color: #ff6666;
 }
 
-.token.variable {
+.fmp-poppy .token.variable {
 	color: #ff6666;
 }

@@ -14,6 +14,8 @@ import { Workflow } from '@fmp/sdk'
 import Editor from 'react-simple-code-editor'
 import highlight from './highlight'
 import './material-dark.css'
+import './solarized-dark-atom.css'
+import './fonts.css'
 import Button from '@mui/material/Button'
 import { StepInfo } from '@component/StepView/StepInfo'
 import Popup from 'Popup'
@@ -23,12 +25,8 @@ const darkTheme = createTheme({
     mode: 'dark',
     primary: { main: 'rgb(66, 89, 96)' },
     background: {
-      default: 'rgb(21, 31, 33)',
+      default: 'transparent',
     },
-  },
-  typography: {
-    fontFamily:
-      'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
   },
 })
 
@@ -58,13 +56,11 @@ function App(): JSX.Element {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
       <Container maxWidth="xl">
         <Box
           mx="auto"
           sx={{
             position: 'relative',
-            backgroundColor: '#101010',
             // height: '100vh',
             minHeight: '100vh',
             display: 'flex',
@@ -80,7 +76,7 @@ function App(): JSX.Element {
           <Box minHeight={10} />
           <SnipitSelector onChange={onSniptChanged} />
 
-          <Box sx={{ backgroundColor: '#2f2f2f', padding: 1, borderRadius: 4 }}>
+          <Box sx={{ padding: 1, borderRadius: 4 }}>
             <Editor
               value={workflowText}
               highlight={highlight}
@@ -88,7 +84,7 @@ function App(): JSX.Element {
               preClassName="language-js"
               padding="1em"
               style={{ width: 900 }}
-              className="dark grow font-mono caret-sky-50 text-sm basis-0"
+              className="grow font-mono caret-sky-50 text-sm basis-0"
             />
           </Box>
           {/* buttons */}
@@ -127,3 +123,40 @@ function App(): JSX.Element {
 }
 
 export default App
+/*
+import { WorkflowProvider } from './components/WorkflowProvider'
+import VisualizerLayout from './components/VisualizerLayout'
+import ScriptEditor from './components/ScriptEditor'
+import ActionView from './components/ActionView'
+import { buildWorkflow } from './utils'
+
+const workflow = buildWorkflow()
+
+const snippet = `module.exports = [
+  wethWrap({ amount: '1000000000000000000' }),
+  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+  wormholeTokenTransfer({
+    fromChain: 'Ethereum',
+    fromToken: 'USDT',
+    toChain: 'Solana',
+    amount: '100%'
+  }),
+  saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
+]`
+
+function App(): JSX.Element {
+  const editor = <ScriptEditor snippet={snippet} children={null} />
+
+  return (
+    <WorkflowProvider>
+      <VisualizerLayout editor={editor}>
+        {workflow.steps.map((it, index) => (
+          <ActionView step={it} stepIndex={index} />
+        ))}
+      </VisualizerLayout>
+    </WorkflowProvider>
+  )
+}
+
+export default App
+ */

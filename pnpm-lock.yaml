@@ -318,6 +318,7 @@ importers:
       '@usedapp/core': 1.1.5
       '@usedapp/siwe': 1.0.0
       '@vanilla-extract/webpack-plugin': 2.2.0
+      '@zumper/react-ladda': 7.2.4
       autoprefixer: ^10.4.9
       babel-loader: ^8.0.0
       classnames: 2.3.1
@@ -342,6 +343,7 @@ importers:
       husky: 7.0.4
       hygen: 6.2.8
       jest: ^28.1.0
+      ladda: 2.0.3
       material-ui-popup-state: 4.1.0
       postcss: ^8.4.14
       postcss-loader: ^7.0.0
@@ -385,6 +387,7 @@ importers:
       '@types/testing-library__jest-dom': 5.14.5
       '@usedapp/core': 1.1.5_ethers@5.7.0+react@18.2.0
       '@usedapp/siwe': 1.0.0_r3kwatxvf62dsaianogbclwv7q
+      '@zumper/react-ladda': 7.2.4_sh5qlbywuemxd2y3xkrw2y2kr4
       babel-loader: 8.2.5_rhsdbzevgb5tizdhlla5jsbgyu
       classnames: 2.3.1
       clipboard-polyfill: 4.0.0-rc1
@@ -393,6 +396,7 @@ importers:
       ethers-react: 1.1.0
       final-form: 4.20.7
       framer-motion: 7.2.1_biqbaboplfbrettd7655fr4n2y
+      ladda: 2.0.3
       material-ui-popup-state: 4.1.0_svlqr5ycmee2vxzvqfsslowuxi
       prismjs: 1.29.0
       react: 18.2.0
@@ -7751,7 +7755,7 @@ packages:
       debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.3.8
+      semver: 7.3.7
       tsutils: 3.21.0_typescript@4.5.4
       typescript: 4.5.4
     transitivePeerDependencies:
@@ -7814,7 +7818,7 @@ packages:
       debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.3.8
+      semver: 7.3.7
       tsutils: 3.21.0_typescript@4.5.4
       typescript: 4.5.4
     transitivePeerDependencies:
@@ -8274,6 +8278,18 @@ packages:
   /@zeit/schemas/2.21.0:
     resolution: {integrity: sha512-/J4WBTpWtQ4itN1rb3ao8LfClmVcmz2pO6oYb7Qd4h7VSqUhIbJIvrykz9Ew1WMg6eFWsKdsMHc5uPbFxqlCpg==}
     dev: true
+
+  /@zumper/react-ladda/7.2.4_sh5qlbywuemxd2y3xkrw2y2kr4:
+    resolution: {integrity: sha512-gKRBG8cScQAJfhQwW6tH/mLfKmrlHll6ot3E+XyUe/4FiMIAn1MiYdfdwOwtbjfS6GTpua+H2ApOgPbtcgkdZQ==}
+    peerDependencies:
+      prop-types: ^15.0.0
+      react: ^16.4.0
+    dependencies:
+      '@babel/runtime': 7.19.0
+      ladda: 2.0.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
 
   /JSONStream/1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -19748,6 +19764,12 @@ packages:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
     dev: true
 
+  /ladda/2.0.3:
+    resolution: {integrity: sha512-b/m5BP2M2s37GkwEMBJV6mnvLsFUUo1pdn13n6x18bPEFFf+zEl5TmeeqYXmUjgkEEugICe+dTvmciteJ+CGcQ==}
+    dependencies:
+      spin.js: 4.1.1
+    dev: false
+
   /language-subtag-registry/0.3.22:
     resolution: {integrity: sha512-tN0MCzyWnoz/4nHS6uxdlFWoUZT7ABptwKPQ52Ea7URk6vll88bWBVhodtnlfEuCcKWNGoc+uGbw1cwa9IKh/w==}
     dev: true
@@ -25922,6 +25944,10 @@ packages:
       unified: 9.2.2
       unist-util-visit: 2.0.3
       use-resize-observer: 6.1.0_biqbaboplfbrettd7655fr4n2y
+    dev: false
+
+  /spin.js/4.1.1:
+    resolution: {integrity: sha512-3cjbjZBw8TmZmvzcmlXqArUpefJ1vGgQZ+dh1CdyDyxZZNxNmw+2Dq5jyoP/OCqQP+z78rWgSJX9m3uMuGaxxw==}
     dev: false
 
   /split-lines/1.1.0:
