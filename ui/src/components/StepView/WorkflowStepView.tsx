@@ -173,6 +173,7 @@ export const WorkflowStepView = (props: {
           />
           <Box sx={{ minWidth: 10 }} />
           <WorkflowAssetView
+            useLegacyWidth
             asset={props.step.inputAsset}
             amount={props.step.inputAmount}
             status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
@@ -197,7 +198,7 @@ export const WorkflowStepView = (props: {
           </Box>
           <div className="grow"/>
           {/*<Connector active={false} />*/}
-          <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} />
+          <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} useLegacyWidth />
           {props.children}
         </Box>
       </Box>

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { WorkflowStepView } from '../StepView/WorkflowStepView'
+import WorkflowStepCard from '../WorkflowStepCard'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
 import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
@@ -9,6 +10,7 @@ import { executeWorkflow } from 'utils'
 type WorkflowCompletedCallback = () => void
 
 interface Props {
+  legacyStepView?: boolean
   workflow: Workflow
   onWorkflowCompleted?: WorkflowCompletedCallback
   run?: boolean
@@ -72,6 +74,9 @@ export class WorkflowView extends React.Component<Props, State> {
   }
 
   render() {
+    const { legacyStepView = false } = this.props
+
+    if (legacyStepView) {
     return (
       <div>
         {this.props.workflow.steps.map((step, i) => {
@@ -80,6 +85,25 @@ export class WorkflowView extends React.Component<Props, State> {
           console.log('steps event ' + step.stepId, event)
           return (
             <WorkflowStepView
+              key={`workflowStep-${i}`}
+              step={step}
+              // completed={completedSteps.includes(it)}
+              lastEvent={event}
+            />
+          )
+        })}
+      </div>
+    )
+    }
+
+    return (
+      <div>
+        {this.props.workflow.steps.map((step, i) => {
+          const event = this.state.lastEvents.get(step)
+          // console.log('a step', step)
+          console.log('steps event ' + step.stepId, event)
+          return (
+            <WorkflowStepCard
               key={`workflowStep-${i}`}
               step={step}
               // completed={completedSteps.includes(it)}
