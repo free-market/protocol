@@ -1,10 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React  from 'react'
 import { WorkflowStepView } from '../StepView/WorkflowStepView'
 import WorkflowStepCard from '../WorkflowStepCard'
-import { motion, AnimatePresence } from 'framer-motion'
-import cx from 'classnames'
-import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { Asset, MoneyAmount, WorkflowStep, BLOCKCHAIN_INFO, Workflow, WorkflowEvent, WorkflowEventType } from '@fmp/sdk'
+import {  WorkflowStep, Workflow, WorkflowEvent, WorkflowEventType } from '@fmp/sdk'
 import { executeWorkflow } from 'utils'
 
 type WorkflowCompletedCallback = () => void
@@ -97,7 +94,7 @@ export class WorkflowView extends React.Component<Props, State> {
     }
 
     return (
-      <div>
+      <div className="w-full flex flex-col items-stretch space-y-5">
         {this.props.workflow.steps.map((step, i) => {
           const event = this.state.lastEvents.get(step)
           // console.log('a step', step)
@@ -105,6 +102,7 @@ export class WorkflowView extends React.Component<Props, State> {
           return (
             <WorkflowStepCard
               key={`workflowStep-${i}`}
+              count={i + 1}
               step={step}
               // completed={completedSteps.includes(it)}
               lastEvent={event}

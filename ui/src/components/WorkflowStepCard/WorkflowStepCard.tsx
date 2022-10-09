@@ -1,11 +1,12 @@
+import cx from 'classnames'
 import {WorkflowAssetView} from '@component/StepView/AssetView'
 import {NumberSpinner} from '@component/StepView/NumberSpinner'
-import {formatMoney, WorkflowEvent, WorkflowStep} from '@fmp/sdk'
+import {formatMoney, WorkflowEvent, WorkflowEventType, WorkflowStep} from '@fmp/sdk'
 import { InformationCircleIcon } from '@heroicons/react/24/outline'
-import { InformationCircleIcon as SolidInformationCircleIcon } from '@heroicons/react/24/solid'
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 
-export const WorkflowStepCard = (props: { step: WorkflowStep, lastEvent?: WorkflowEvent }): JSX.Element => {
-  const { step, lastEvent } = props
+export const WorkflowStepCard = (props: { step: WorkflowStep, lastEvent?: WorkflowEvent, count?: number }): JSX.Element => {
+  const { step, lastEvent, count = 1 } = props
 
   let inputAssetMessage = <span>{'on ' + props.step.inputAsset.blockChain}</span>
   let outputAssetMessage = <span>{'on ' + props.step.outputAsset.blockChain}</span>
@@ -35,53 +36,60 @@ export const WorkflowStepCard = (props: { step: WorkflowStep, lastEvent?: Workfl
     )
   }
 
-  const item = 'flex items-center text-sm text-s-base1 last:rounded-br-lg last:border-r border-l first:border-l-0 border-s-base3 bg-s-base2 px-2 py-1 border-b space-x-1'
+  const item = 'flex items-center text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500 first:rounded-bl-lg first:border-l border-r last:border-r-0 border-s-base3 dark:border-s-base03 poppy:border-zinc-700 bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 px-2 py-1 border-b space-x-1'
+
+  const active =
+                (!!lastEvent && lastEvent?.type === WorkflowEventType.Submitted) ||
+                lastEvent?.type === WorkflowEventType.StatusUpdate
 
   return (
-    <div className="max-w-lg mx-auto border border-s-base1 rounded-xl overflow-hidden">
-      <div className="flex items-center mb-2">
+    <div className="w-full max-w-4xl mx-auto border border-s-base2 dark:border-s-base02 poppy:border-zinc-700 rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <div className={item}>#1</div>
-          <div className={item}>
-            <InformationCircleIcon className="w-4 h-4 text-s-base1" />
-            <div>
-            $15 Fee
+          <div className="pl-2 text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500">#{count}</div>
+          <div className="px-2 text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500">
+              {props.lastEvent?.statusMessage}
             </div>
-          </div>
-          <div className={item}>
-            <InformationCircleIcon className="w-4 h-4 text-s-base1" />
-            <div>
-            ~1m
+        </div>
+        <div className="flex items-center">
+          <div className="flex items-center">
+            <div className={item}>
+              <InformationCircleIcon className="w-4 h-4 text-s-base1 dark:text-s-base01 poppy:text-zinc-500" />
+              <div>
+              $15 Fee
+              </div>
+            </div>
+            <div className={item}>
+              <InformationCircleIcon className="w-4 h-4 text-s-base1 dark:text-s-base01 poppy:text-zinc-500" />
+              <div>
+              ~1m
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="flex items-center">
-          <div className="px-2 text-sm text-s-base1">compiled</div>
-        </div>
       </div>
 
-      <div className="flex space-x-2 items-center px-2">
-        <img style={{ width: 24, height: 24 }} src={step.info.iconUrl} />
-        <div className="text-lg text-s-base02">{step.info.name}</div>
-        <InformationCircleIcon className="w-4 h-4 text-s-base1" />
-      </div>
-      <div className="py-1" />
-      <div className="border-t border-s-base1 w-full" />
-      <div className="grid grid-cols-2">
-        <div className="px-2 py-1">
-          <div className="text-sm text-s-base1">Input</div>
-
+      <div className="flex items-center justify-between">
+        <div className="px-2 py-1 basis-0">
           <WorkflowAssetView
             asset={props.step.inputAsset}
             amount={props.step.inputAmount}
-            status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
+            status={<div className="text-s-base1 dark:text-s-base01 poppy:text-zinc-500">{inputAssetMessage}</div>}
           />
         </div>
+        <ArrowLongRightIcon className="w-12 h-12 text-s-base2 dark:text-s-base02 poppy:text-zinc-700"/>
 
-        <div className="border-l border-s-base1 px-2 py-1">
-          <div className="text-sm text-s-base1">Output</div>
-          <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} />
+        <div className={cx('transition flex items-center space-x-2 min-w-[270px] p-1 rounded-full', {'bg-[linear-gradient(var(--rotate),#3f3f46,#27272a,#52525b)] animate-[magicspin_2s_linear_infinite]': active})}>
+          <div className={cx('transition p-2 flex items-center space-x-2 min-w-[270px] rounded-full', {'bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-700': active})}>
+        <img style={{ width: 24, height: 24 }} src={step.info.iconUrl} />
+          <div className="text-lg text-s-base02 dark:text-s-base1 poppy:text-zinc-300">{step.info.name}</div>
+          <InformationCircleIcon className="w-4 h-4 text-s-base1 dark:text-s-base01 poppy:text-zinc-500" />
+          </div>
+        </div>
+        <ArrowLongRightIcon className="w-12 h-12 text-s-base2 dark:text-s-base02 poppy:text-zinc-700"/>
+
+        <div className="px-2 py-1 basis-0">
+          <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} reverse/>
         </div>
       </div>
     </div>

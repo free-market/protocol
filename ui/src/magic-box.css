@@ -70,10 +70,18 @@
     --rotate: 0deg;
   }
   100% {
-    --rotate: 360deg;
+    --rotate: 359deg;
   }
 }
 
+@keyframes magicspin {
+  0% {
+    --rotate: 0deg;
+  }
+  100% {
+    --rotate: 359deg;
+  }
+}
 /* a {
   color: #212534;
   text-decoration: none;

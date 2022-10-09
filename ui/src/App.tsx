@@ -105,7 +105,6 @@ function App(): JSX.Element {
               workflow={workflow}
               run={workflowRunning}
               onWorkflowCompleted={() => setWorkflowRunning(false)}
-              legacyStepView
             />
             {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
           </div>
