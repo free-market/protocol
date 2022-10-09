@@ -65,6 +65,7 @@
   background-color: initial;
 } */
 
+  /*
 @keyframes spin {
   0% {
     --rotate: 0deg;
@@ -73,6 +74,7 @@
     --rotate: 359deg;
   }
 }
+*/
 
 @keyframes magicspin {
   0% {
