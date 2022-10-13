@@ -5,6 +5,6 @@ packages:
   - 'evm'
   - 'contracts-spec'
   - 'wormhole'
-  - 'solana'
+  # - 'solana'
   - 'sdk'
   - 'examples-sdk'
