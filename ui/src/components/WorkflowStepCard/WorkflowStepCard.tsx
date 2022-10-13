@@ -71,7 +71,7 @@ export const WorkflowStepCard = (props: { step: WorkflowStep, lastEvent?: Workfl
     </div>
         </div>
       }>
-    <div className={cx('transition flex items-center space-x-2 min-w-[270px] p-1 rounded-full', {'bg-[linear-gradient(var(--rotate),#268bd2,#cb4b16,#859900)] poppy:bg-[linear-gradient(var(--rotate),#3f3f46,#27272a,#52525b)] animate-[magicspin_2s_linear_infinite]': active})}>
+    <div className={cx('transition flex items-center space-x-2 min-w-[270px] p-1 rounded-full', {'bg-[linear-gradient(var(--rotate),#268bd2,#cb4b16,#859900)] poppy:bg-[linear-gradient(var(--rotate),#5ddcff,#3c67e3_43%,#4e00c2)] animate-[magicspin_2s_linear_infinite]': active})}>
       <div className={cx('transition p-2 flex items-center space-x-2 min-w-[270px] rounded-full', {'bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-700': active})}>
         <img style={{ width: 24, height: 24 }} src={step.info.iconUrl} />
         <div className="text-lg text-s-base02 dark:text-s-base1 poppy:text-zinc-300">{step.info.name}</div>
