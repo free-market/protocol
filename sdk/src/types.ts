@@ -1,3 +1,5 @@
+import { Trigger } from './Trigger'
+
 /** Represents an integer or a percentage such as "100%" */
 export type MoneyAmount = string | number
 
@@ -74,6 +76,7 @@ export interface WorkflowStep {
   inputAsset: Asset
   outputAsset: Asset
   info: WorkflowStepInfo
+  trigger?: Trigger
 }
 
 export const NoAsset: Asset = {

@@ -31,8 +31,8 @@
     "ethers-react": "1.1.0",
     "final-form": "^4.20",
     "framer-motion": "7.2.1",
-    "material-ui-popup-state": "4.1.0",
     "ladda": "2.0.3",
+    "material-ui-popup-state": "4.1.0",
     "prismjs": "1.29.0",
     "react": "^18",
     "react-dom": "^18",
@@ -46,6 +46,7 @@
     "web-vitals": "2.1.2"
   },
   "scripts": {
+    "clean": "rimraf build",
     "start": "craco start",
     "start:storybook": "start-storybook -p 3001",
     "test": "craco test --watchAll=false",
@@ -110,6 +111,7 @@
     "prettier": "^2.7.1",
     "react-scripts": "^5",
     "require-from-string": "^2.0.2",
+    "rimraf": "^3.0.2",
     "serve": "14.0.1",
     "storybook-dark-mode": "1.1.2",
     "style-loader": "^3.0.0",

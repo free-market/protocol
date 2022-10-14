@@ -59,14 +59,10 @@ function App(): JSX.Element {
   }
 
   return (
-    <WorkflowProvider onWorkflowTextChange={setWorkflowText}>
+    <WorkflowProvider onWorkflowTextChange={onSniptChanged}>
       <ThemeProvider theme={darkTheme}>
         <div className="max-w-4xl mx-auto">
           <div className="relative min-h-screen flex flex-col items-center space-y-5 py-5">
-            <div className="w-full max-w-3xl mx-auto px-5">
-            <ThemeSelector />
-            </div>
-
             <Box className="max-w-3xl mx-auto bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 rounded-xl w-full p-5 space-y-5">
               <WorkflowPresetSelector />
               <Editor
@@ -81,12 +77,7 @@ function App(): JSX.Element {
             {/* buttons */}
             <Box sx={{ display: 'flex', zIndex: 1 }}>
               <Box m={1}>
-                <Button
-                  variant="contained"
-                  onClick={() => onUpdateWorkflow()}
-                  disabled={workflowRunning}
-                  startIcon={<CachedIcon />}
-                >
+                <Button variant="contained" onClick={() => onUpdateWorkflow()} disabled={workflowRunning} startIcon={<CachedIcon />}>
                   Compile
                 </Button>
               </Box>
@@ -101,11 +92,7 @@ function App(): JSX.Element {
                 </Button>
               </Box>
             </Box>
-            <WorkflowView
-              workflow={workflow}
-              run={workflowRunning}
-              onWorkflowCompleted={() => setWorkflowRunning(false)}
-            />
+            <WorkflowView workflow={workflow} run={workflowRunning} onWorkflowCompleted={() => setWorkflowRunning(false)} />
             {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
           </div>
         </div>
@@ -115,40 +102,3 @@ function App(): JSX.Element {
 }
 
 export default App
-/*
-import { WorkflowProvider } from './components/WorkflowProvider'
-import VisualizerLayout from './components/VisualizerLayout'
-import ScriptEditor from './components/ScriptEditor'
-import ActionView from './components/ActionView'
-import { buildWorkflow } from './utils'
-
-const workflow = buildWorkflow()
-
-const snippet = `module.exports = [
-  wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
-  wormholeTokenTransfer({
-    fromChain: 'Ethereum',
-    fromToken: 'USDT',
-    toChain: 'Solana',
-    amount: '100%'
-  }),
-  saberSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
-]`
-
-function App(): JSX.Element {
-  const editor = <ScriptEditor snippet={snippet} children={null} />
-
-  return (
-    <WorkflowProvider>
-      <VisualizerLayout editor={editor}>
-        {workflow.steps.map((it, index) => (
-          <ActionView step={it} stepIndex={index} />
-        ))}
-      </VisualizerLayout>
-    </WorkflowProvider>
-  )
-}
-
-export default App
- */
