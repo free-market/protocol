@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography'
 const PRESETS = [
   {
     name: 'basic',
-    label: 'basic cross-chain workflow',
+    label: 'Cross Chain Deposit',
     text: `[
   wethWrap({ amount: '1000000000000000000' }),
   curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
