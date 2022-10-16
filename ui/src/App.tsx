@@ -63,7 +63,7 @@ function App(): JSX.Element {
       <ThemeProvider theme={darkTheme}>
         <div className="max-w-4xl mx-auto">
           <div className="relative min-h-screen flex flex-col items-center space-y-5 py-5">
-            <Box className="max-w-3xl mx-auto bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 rounded-xl w-full p-5 space-y-5">
+            <Box className="max-w-4xl mx-auto bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 rounded-xl w-full p-5 space-y-5">
               <WorkflowPresetSelector />
               <Editor
                 value={workflowText}
