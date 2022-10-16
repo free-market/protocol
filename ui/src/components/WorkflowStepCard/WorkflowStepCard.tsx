@@ -39,7 +39,7 @@ export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: Workfl
   }
 
   const item =
-    'flex items-center text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500 first:rounded-bl-lg first:border-l border-r last:border-r-0 border-s-base3 dark:border-s-base03 poppy:border-zinc-700 bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 px-2 py-1 border-b space-x-1'
+    'flex items-center text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500 first:rounded-bl-lg first:border-l border-r last:border-r-0 border-s-base3 dark:border-s-base03 poppy:border-zinc-800 bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 px-2 py-1 border-b space-x-1'
 
   const active = (!!lastEvent && lastEvent?.type === WorkflowEventType.Submitted) || lastEvent?.type === WorkflowEventType.StatusUpdate
 
@@ -94,7 +94,7 @@ export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: Workfl
   )
 
   return (
-    <div className="w-full max-w-4xl mx-auto border border-s-base2 dark:border-s-base02 poppy:border-zinc-700 rounded-xl overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto border border-s-base2 dark:border-s-base02 poppy:border-zinc-800 rounded-xl overflow-hidden">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div className="pl-2 text-sm text-s-base1 dark:text-s-base01 poppy:text-zinc-500 flex items-center">#{count}</div>

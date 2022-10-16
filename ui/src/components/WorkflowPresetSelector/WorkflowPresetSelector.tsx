@@ -26,7 +26,7 @@ const PRESETS = [
   },
   {
     name: 'ether-to-mango-to-marinaded-sol',
-    label: 'ether → mango → mSOL',
+    label: 'Ether → Mango → mSOL',
     text: `[
   wethWrap({ amount: '10000000000000000000' }),
   curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
@@ -47,14 +47,14 @@ const PRESETS = [
     label: 'AMM Pool Rebalancing',
     text: `[
       serumSwap({ from: 'USDC', to: 'USDCet', amount: 1_000_000_000000 }), // $1M USDC
-      wormholeTokenTransfer({ 
-          fromChain: 'Solana', 
-          fromToken: 'USDCet', 
+      wormholeTokenTransfer({
+          fromChain: 'Solana',
+          fromToken: 'USDCet',
           toChain: 'Ethereum' }),
       curveThreePoolSwap({ from: 'USDC', to: 'USDT' }),
-      wormholeTokenTransfer({ 
-          fromChain: 'Ethereum', 
-          fromToken: 'USDT', 
+      wormholeTokenTransfer({
+          fromChain: 'Ethereum',
+          fromToken: 'USDT',
           toChain: 'Solana' }),
       serumSwap({ from: 'USDTet', to: 'USDT' })
 ]`,
