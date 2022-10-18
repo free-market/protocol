@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import treeify from 'treeify'
 import {
@@ -56,19 +57,6 @@ function buildWorkflow(): Workflow {
   return workflow
 }
 
-// function formatMoney(amount: string, decimals: number) {
-//   const left = amount.slice(0, amount.length - decimals)
-//   let right = amount.slice(decimals + 1, amount.length)
-//   const m = right.match(/([1-9]*).*/)
-//   if (m) {
-//     right = m[1]
-//   }
-//   if (right === '') {
-//     return left
-//   }
-//   return left + '.' + right
-// }
-
 // callback invoked by the engine whenever there is a progress event
 function myWorkflowEventHandler(event: WorkflowEvent) {
   // console.log(treeify.asTree(event as any, true, true))
@@ -90,7 +78,6 @@ async function demo() {
   const workflow = buildWorkflow()
   // console.log(toHtml(workflow, 'Workflow', 0))
   // console.log(treeify.asTree(workflow as any, true, true))
-  // process.exit(0)
   const engine = new MockWorkflowEngine({
     mode: MockWorkflowEngineMode.SignEveryStep,
     minStepDelay: 5,

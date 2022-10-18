@@ -17,6 +17,7 @@ type WormholeSymbolMapTuple = [ChainName, TokenSymbol, ChainName, TokenSymbol]
 const WORMHOLE_MAPPINGS: WormholeSymbolMapTuple[] = [
   ['Ethereum', 'USDC', 'Solana', 'USDCet'],
   ['Ethereum', 'USDT', 'Solana', 'USDTet'],
+  ['Ethereum', 'WETH', 'Solana', 'WETHet'],
 ]
 
 function toMappingKey(tuple: WormholeSymbolMapTuple) {
