@@ -1,5 +1,24 @@
 import { Workflow } from './types'
 import { BigNumber } from 'ethers'
+import log from 'loglevel'
+
+export function initLogger() {
+  const originalFactory = log.methodFactory
+  log.methodFactory = function (methodName, logLevel, loggerName) {
+    const rawMethod = originalFactory(methodName, logLevel, loggerName)
+    return function (message) {
+      const now = new Date()
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      const seconds = String(now.getSeconds()).padStart(2, '0')
+      const millis = String(now.getMilliseconds()).padStart(2, '0')
+      const timeStr = `${hours}:${minutes}:${seconds}.${millis} `
+      rawMethod(timeStr + message)
+    }
+  }
+  // must call setLevel after patching: log.setLevel(log.getLevel())
+  log.setLevel('debug')
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function stringifyBigNumber(key: any, value: any): string {
@@ -30,9 +49,6 @@ function indent(n: number) {
 // </blockquote>
 
 export function toHtml(element: any, label: string, i = 0) {
-  if (element === null || null === undefined) {
-    console.log('wtf')
-  }
   const hasChildren = typeof element !== 'string' && Object.keys(element).length > 0
   let html = indent(i) + '<blockquote>\n'
   i += 2

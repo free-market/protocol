@@ -1,6 +1,6 @@
 import { setDefaultWasm } from '@certusone/wormhole-sdk/lib/cjs/solana/wasm'
 setDefaultWasm('node')
-
+import log from 'loglevel'
 import {
   attestFromEth,
   ChainId,
@@ -23,7 +23,7 @@ import {
 } from '@certusone/wormhole-sdk'
 
 import { Connection, Keypair, PublicKey, TokenAccountsFilter, Transaction } from '@solana/web3.js'
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import dotenv from 'dotenv'
 import bs58 from 'bs58'
 import * as ethers from 'ethers'
@@ -34,10 +34,6 @@ import { Weth__factory } from '@fmp/evm'
 import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport'
 import { StatusCallback } from './StepImpl'
 import { WorkflowEventType } from './WorkflowEngine'
-
-dotenv.config()
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const SOLANA_PRIVATE_KEY = process.env['SOLANA_PRIVATE_KEY']!
 
 export async function transferEthereumToSolana(
   signer: ethers.Signer,
@@ -63,8 +59,10 @@ export async function transferEthereumToSolana(
     tryNativeToUint8Array(ethConfig.wethAddress, ethConfig.wormholeChainId)
   )
 
+  // TODO null check
+
   const solanaMintKey = new PublicKey(SolanaForeignAsset!)
-  const recipient = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, solanaMintKey, keypair.publicKey)
+  const recipient = getAssociatedTokenAddressSync(solanaMintKey, keypair.publicKey)
   const DECIMALS = 18
 
   // approve the bridge to spend tokens
@@ -88,15 +86,17 @@ export async function transferEthereumToSolana(
 
   // printGasFromReceipt(receipt, 'wh.transferFromEth')
   // get the sequence from the logs (needed to fetch the vaa)
+  log.debug('bridge called')
   const sequence = parseSequenceFromLogEth(transferFromEthReceipt, ethConfig.wormholeCoreBridgeAddress)
-  console.log('sequence', sequence)
+  log.debug('sequence', sequence)
   const emitterAddress = getEmitterAddressEth(ethConfig.wormholeTokenBridgeAddress)
-  console.log('emitterAddress', emitterAddress)
+  log.debug('emitterAddress', emitterAddress)
   // poll until the guardian(s) witness and sign the vaa
+  log.debug('waiting for VAA')
   const { vaaBytes: signedVAA } = await getSignedVAAWithRetry(WORMHOLE_RPC_HOSTS, ethConfig.wormholeChainId, emitterAddress, sequence, {
     transport: NodeHttpTransport(),
   })
-  console.log('got VAA')
+  log.debug('got VAA, postVaaSolana')
   // post vaa to Solana
   await postVaaSolana(
     connection,
@@ -108,7 +108,7 @@ export async function transferEthereumToSolana(
     payerAddress,
     Buffer.from(signedVAA)
   )
-  console.log('posted to solana')
+  log.debug('posted to solana')
   // expect(
   //   await getIsTransferCompletedSolana(
   //     SOLANA_TOKEN_BRIDGE_ADDRESS,
@@ -118,6 +118,7 @@ export async function transferEthereumToSolana(
   // ).toBe(false);
   // redeem tokens on solana
   // should be false
+  log.debug('sending redeemOnSolana')
   const erasemeIsTransferComplete = await getIsTransferCompletedSolana(solConfig.wormholeTokenBridgeAddress, signedVAA, connection)
   const transaction = await redeemOnSolana(
     connection,
@@ -131,6 +132,7 @@ export async function transferEthereumToSolana(
   const txid = await connection.sendRawTransaction(transaction.serialize())
   await connection.confirmTransaction(txid)
   // should be true
+  log.debug('basck from redeemOnSolana')
   const erasemeIsTransferComplete2 = await getIsTransferCompletedSolana(solConfig.wormholeTokenBridgeAddress, signedVAA, connection)
   // expect(
   //   await getIsTransferCompletedSolana(
@@ -161,5 +163,6 @@ export async function transferEthereumToSolana(
   //     finalSolanaBalance = amount
   //   }
   // }
+  log.debug('leaving step')
   return '99'
 }

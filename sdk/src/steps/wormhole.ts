@@ -17,6 +17,7 @@ type WormholeSymbolMapTuple = [ChainName, TokenSymbol, ChainName, TokenSymbol]
 const WORMHOLE_MAPPINGS: WormholeSymbolMapTuple[] = [
   ['Ethereum', 'USDC', 'Solana', 'USDCet'],
   ['Ethereum', 'USDT', 'Solana', 'USDTet'],
+  ['Ethereum', 'WETH', 'Solana', 'WETHet'],
 ]
 
 function toMappingKey(tuple: WormholeSymbolMapTuple) {
@@ -24,7 +25,8 @@ function toMappingKey(tuple: WormholeSymbolMapTuple) {
 }
 
 const WORMHOLE_MAPPINGS_MAP = new Map<string, TokenSymbol>()
-WORMHOLE_MAPPINGS.forEach(it => WORMHOLE_MAPPINGS_MAP.set(toMappingKey(it), it[3]))
+WORMHOLE_MAPPINGS.forEach(it => WORMHOLE_MAPPINGS_MAP.set(`${it[0]}.${it[1]}.${it[2]}`, it[3]))
+WORMHOLE_MAPPINGS.forEach(it => WORMHOLE_MAPPINGS_MAP.set(`${it[2]}.${it[3]}.${it[0]}`, it[1]))
 
 export function getWormholeTargetSymbol(sourceChain: ChainName, sourceToken: TokenSymbol, targetChain: ChainName): TokenSymbol {
   const targetSymbol = WORMHOLE_MAPPINGS_MAP.get(toMappingKey([sourceChain, sourceToken, targetChain, '']))
@@ -41,7 +43,7 @@ const WORMHOLE_INFO: WorkflowStepInfo = {
   gasEstimate: '400000',
   exchangeFee: '1',
   description: 'Enables transfering tokens to different blockchains.',
-  iconUrl: 'https://www.portalbridge.com/logo192.png',
+  iconUrl: '/wormhole.png',
   webSiteUrl: 'https://www.portalbridge.com/',
 }
 

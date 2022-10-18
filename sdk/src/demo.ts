@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import treeify from 'treeify'
 import {
@@ -20,34 +21,41 @@ import { toHtml } from './utils'
 
 const ONE_ETH = '1000000000000000000'
 
+interface SlippageModelThreshold {
+  pool: string
+  from: string
+  to: string
+  slippageThreshold: number
+}
+
+declare function slippageModelThresholdExceeded(slippageModelThreshold: SlippageModelThreshold): Promise<boolean>
+
+async function usdt_under_liquidated() {
+  return slippageModelThresholdExceeded({
+    pool: 'USDC_USDT',
+    from: 'USDT',
+    to: 'USDC',
+    slippageThreshold: 0.005,
+  })
+}
+
 function buildWorkflow(): Workflow {
   const workflow = new WorkflowBuilder()
+    .setTrigger({
+      name: 'USDT under liquidated',
+      cronExpression: '*/5 * * * *', // every 5 minutes
+      triggerCondition: usdt_under_liquidated,
+    })
     .addSteps(
-      wethWrap({ amount: ONE_ETH }),
-      curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
-      curveThreePoolSwap({ from: 'USDT', to: 'USDC' }),
-      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana' }),
-      serumSwap({ from: 'USDCet', to: 'USDC' }),
-      mangoDeposit({ symbol: 'USDC' }),
-      mangoWithdrawal({ symbol: 'SOL' }),
-      marinadeStake()
+      serumSwap({ from: 'USDC', to: 'USDCet', amount: 1_000_000_000000 }), // $1M USDC
+      wormholeTokenTransfer({ fromChain: 'Solana', fromToken: 'USDCet', toChain: 'Ethereum' }),
+      curveThreePoolSwap({ from: 'USDC', to: 'USDT' }),
+      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana' }),
+      serumSwap({ from: 'USDTet', to: 'USDT' })
     )
     .build()
   return workflow
 }
-
-// function formatMoney(amount: string, decimals: number) {
-//   const left = amount.slice(0, amount.length - decimals)
-//   let right = amount.slice(decimals + 1, amount.length)
-//   const m = right.match(/([1-9]*).*/)
-//   if (m) {
-//     right = m[1]
-//   }
-//   if (right === '') {
-//     return left
-//   }
-//   return left + '.' + right
-// }
 
 // callback invoked by the engine whenever there is a progress event
 function myWorkflowEventHandler(event: WorkflowEvent) {
@@ -70,7 +78,6 @@ async function demo() {
   const workflow = buildWorkflow()
   // console.log(toHtml(workflow, 'Workflow', 0))
   // console.log(treeify.asTree(workflow as any, true, true))
-  // process.exit(0)
   const engine = new MockWorkflowEngine({
     mode: MockWorkflowEngineMode.SignEveryStep,
     minStepDelay: 5,

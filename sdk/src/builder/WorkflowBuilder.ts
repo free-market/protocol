@@ -1,3 +1,4 @@
+import { Trigger } from '../Trigger'
 import { Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 export { curveThreePoolSwap, curveTriCryptoSwap } from '../steps/curve'
 export { wormholeTokenTransfer } from '../steps/wormhole'
@@ -27,12 +28,26 @@ export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Prom
  */
 
 export class WorkflowBuilder {
+  private trigger?: Trigger
   private steps = [] as WorkflowStep[]
 
   // eslint-disable-next-line tsdoc/syntax
   /** @hidden */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
+
+  /**
+   * Add a trigger to this workflow.
+   * @remarks
+   * The trigger will be periodically evaluated based as  scheduled by the provided cron expression.
+   * When the trigger condition evaluates to true, the workflow will be executed.
+   * @param trigger - the trigger associated with this workflow
+   * @returns
+   */
+  setTrigger(trigger: Trigger): WorkflowBuilder {
+    this.trigger = trigger
+    return this
+  }
 
   /**
    * Add a sequence of steps to the workflow.

@@ -96,6 +96,16 @@ export const SOLANA_TOKENS: TokenConfig = {
       iconUrl: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/icon/usdt.png',
     },
   },
+  WETHet: {
+    type: AssetType.Token,
+    blockChain: BlockChain.Solana,
+    symbol: 'WETHet',
+    info: {
+      fullName: 'WETHet (USDT via wormhole from Ethereum)',
+      decimals: 18,
+      iconUrl: 'https://s3.amazonaws.com/token-icons/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png',
+    },
+  },
   USDC: {
     type: AssetType.Token,
     blockChain: BlockChain.Solana,
