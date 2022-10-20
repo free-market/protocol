@@ -5,7 +5,7 @@ import CachedIcon from '@mui/icons-material/Cached'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { WorkflowView } from '@component/VisualizerLayout/WorkflowView'
 import { useState } from 'react'
-import { INITIAL_WORKFLOW_TEXT, SnipitSelector } from 'SnipitSelector'
+import { INITIAL_WORKFLOW, SnipitSelector } from 'SnipitSelector'
 import { createWorkflowFromString } from 'workflowStepParser'
 import './magic-box.css'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -35,11 +35,14 @@ const darkTheme = createTheme({
 })
 
 function createWorkflow() {
-  return createWorkflowFromString(INITIAL_WORKFLOW_TEXT)
+  return createWorkflowFromString(INITIAL_WORKFLOW.snippit)
 }
 
+const TRIGGER_TYPES = ['Manual', 'xNFT', 'Market']
+
 function App(): JSX.Element {
-  const [workflowText, setWorkflowText] = useState<string>(INITIAL_WORKFLOW_TEXT)
+  const [workflowText, setWorkflowText] = useState<string>(INITIAL_WORKFLOW.snippit)
+  const [workflowTriggerType, setWorkflowTriggerType] = useState<string>(INITIAL_WORKFLOW.triggerType)
   const [workflow, setWorkflow] = useState<Workflow>(createWorkflow())
   const [workflowRunning, setWorkflowRunning] = useState(false)
 
@@ -59,12 +62,29 @@ function App(): JSX.Element {
   }
 
   return (
-    <WorkflowProvider onWorkflowTextChange={onSniptChanged}>
+    <WorkflowProvider
+      onWorkflowTextChange={onSniptChanged}
+      onWorkflowTrigggerChanged={(newTriggerType) => setWorkflowTriggerType(newTriggerType)}
+    >
       <ThemeProvider theme={darkTheme}>
         <div className="max-w-4xl mx-auto">
           <div className="relative min-h-screen flex flex-col items-center space-y-5 py-5">
             <Box className="max-w-4xl mx-auto bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-800 rounded-xl w-full p-5 space-y-5">
               <WorkflowPresetSelector />
+              <hr></hr>
+              <div>
+                <span style={{ color: 'white' }}>Trigger Type: &nbsp;</span>
+                <select onChange={(e) => setWorkflowTriggerType(e.target.value)}>
+                  {TRIGGER_TYPES.map((triggerType) => {
+                    console.log('triggerType', triggerType, workflowTriggerType)
+                    return (
+                      <option selected={triggerType === workflowTriggerType} value={triggerType}>
+                        {triggerType}
+                      </option>
+                    )
+                  })}
+                </select>
+              </div>
               <Editor
                 value={workflowText}
                 highlight={highlight}
@@ -81,7 +101,7 @@ function App(): JSX.Element {
                   Compile
                 </Button>
               </Box>
-              <Box m={1}>
+              <Box m={1} sx={{ display: workflowTriggerType === 'Manual' ? 'unset' : 'none' }}>
                 <Button
                   variant="contained"
                   onClick={() => setWorkflowRunning(true)}

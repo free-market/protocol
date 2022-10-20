@@ -12,6 +12,7 @@ const PRESETS = [
   {
     name: 'basic',
     label: 'Cross Chain Deposit',
+    triggerType: 'Manual',
     text: `[
   wethWrap({ amount: '1000000000000000000' }),
   curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
@@ -27,6 +28,7 @@ const PRESETS = [
   {
     name: 'ether-to-mango-to-marinaded-sol',
     label: 'Ether → Mango → mSOL',
+    triggerType: 'xNFT',
     text: `[
   wethWrap({ amount: '10000000000000000000' }),
   curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
@@ -44,6 +46,7 @@ const PRESETS = [
   },
   {
     name: 'pool-rebalance',
+    triggerType: 'Market',
     label: 'AMM Pool Rebalancing',
     text: `[
       serumSwap({ from: 'USDC', to: 'USDCet', amount: 1_000_000_000000 }), // $1M USDC
@@ -74,7 +77,7 @@ export const WorkflowPresetSelector = (props: Record<string, unknown>): JSX.Elem
       throw new Error('could not find preset choice')
     }
 
-    choosePreset(presetName, choice.text)
+    choosePreset(presetName, choice.text, choice.triggerType)
   }
 
   return (

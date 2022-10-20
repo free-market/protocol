@@ -12,7 +12,7 @@ export type WorkflowContextShape = {
   theme: WorkflowTheme
   setTheme: (theme: WorkflowTheme) => void
   chosenPresetName: string
-  choosePreset: (presetName: string, text: string) => void
+  choosePreset: (presetName: string, text: string, triggerType: string) => void
 }
 
 export const WorkflowContext = React.createContext<WorkflowContextShape>({
@@ -30,7 +30,11 @@ export const WorkflowContext = React.createContext<WorkflowContextShape>({
   },
 })
 
-export const WorkflowProvider = (props: { onWorkflowTextChange?: (text: string) => void; children: React.ReactNode }): JSX.Element => {
+export const WorkflowProvider = (props: {
+  onWorkflowTextChange?: (text: string) => void
+  onWorkflowTrigggerChanged?: (text: string) => void
+  children: React.ReactNode
+}): JSX.Element => {
   const [status, setStatus] = React.useState<WorkflowContextShape['status']>('editing')
 
   const [theme, setTheme] = React.useState<'light' | 'dark' | 'poppy'>(initialTheme)
@@ -47,11 +51,13 @@ export const WorkflowProvider = (props: { onWorkflowTextChange?: (text: string) 
 
   const className = theme === 'light' ? '' : theme === 'dark' ? 'dark' : 'fmp-poppy'
 
-  const choosePreset = (presetName: string, text: string) => {
+  const choosePreset = (presetName: string, text: string, triggerType: string) => {
     setChosenPresetName(presetName)
-
     if (props.onWorkflowTextChange) {
       props.onWorkflowTextChange(text)
+    }
+    if (props.onWorkflowTrigggerChanged) {
+      props.onWorkflowTrigggerChanged(triggerType)
     }
   }
 
