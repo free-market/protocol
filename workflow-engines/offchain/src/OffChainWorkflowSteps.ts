@@ -1,13 +1,12 @@
 import { BigNumber, ContractTransaction, ethers, Signer } from 'ethers'
-import { WorkflowStep, WorkflowStepResult } from '../types'
-import { StatusCallback, StepImpl } from './StepImpl'
-import { TokenStepImpl } from './TokenStepImpl'
-import { StepImplFactory } from './StepImplFactory'
 import { EvmNetworkName, getEthConfig, Weth__factory } from '@fmp/evm'
 import { transferEthereumToSolana } from './OffChainWormholeStep'
 import { Provider as EthersProvider } from '@ethersproject/providers'
 import { Connection, Keypair, PublicKey, TokenAccountsFilter, Transaction } from '@solana/web3.js'
-import { WorkflowEventHandler } from './WorkflowEngine'
+import { WorkflowEventHandler, WorkflowStep, WorkflowStepResult } from '@fmp/sdk'
+import { TokenStepImpl } from '@fmp/sdk/dist/engine/TokenStepImpl'
+import { StatusCallback, StepImpl } from '@fmp/sdk/dist/engine/StepImpl'
+import { StepImplFactory } from '@fmp/sdk/dist/engine/StepImplFactory'
 
 export enum BlockchainEnvironment {
   Local,

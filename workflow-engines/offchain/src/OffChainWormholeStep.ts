@@ -27,13 +27,12 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTo
 import dotenv from 'dotenv'
 import bs58 from 'bs58'
 import * as ethers from 'ethers'
+import { ethConfig, solConfig, WorkflowEventType, WORMHOLE_RPC_HOSTS } from '@fmp/sdk'
 
-import { Asset, WorkflowStep } from '../types'
-import { ethConfig, solConfig, WORMHOLE_RPC_HOSTS } from './config'
 import { Weth__factory } from '@fmp/evm'
 import { NodeHttpTransport } from '@improbable-eng/grpc-web-node-http-transport'
-import { StatusCallback } from './StepImpl'
-import { WorkflowEventType } from './WorkflowEngine'
+import { StatusCallback } from '@fmp/sdk/dist/engine/StepImpl'
+import { Asset, WorkflowStep } from '@fmp/sdk'
 
 export async function transferEthereumToSolana(
   signer: ethers.Signer,

@@ -1,5 +1,5 @@
 import { getTokenAsset, TokenSymbol } from '../assetInfo'
-import { BlockChain, ChainName, MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
+import { BlockChain, ChainName, MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
 
 export interface WormholeStep extends WorkflowStep {
   sourceChain: BlockChain
@@ -36,12 +36,13 @@ export function getWormholeTargetSymbol(sourceChain: ChainName, sourceToken: Tok
   return targetSymbol
 }
 
-const WORMHOLE_INFO: WorkflowStepInfo = {
+export const WORMHOLE_STEP_INFO: WorkflowStepInfo = {
   stepId: 'wormhole.transfer',
-  name: 'Wormhole Token Portal',
+  name: 'Wormhole Transfer',
   blockchains: ['Ethereum'],
   gasEstimate: '400000',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Bridge,
   description: 'Enables transfering tokens to different blockchains.',
   iconUrl: '/wormhole.png',
   webSiteUrl: 'https://www.portalbridge.com/',
@@ -64,7 +65,7 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
     inputAmount: args.amount || '100%',
     inputAsset: fromAsset,
     outputAsset: toAsset,
-    info: WORMHOLE_INFO,
+    info: WORMHOLE_STEP_INFO,
     sourceChain: BlockChain[args.fromChain],
     targetChain: BlockChain[args.toChain],
   }

@@ -1,16 +1,17 @@
 import { getTokenAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
+import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
 
 export type SerumTokenSymbol = 'USDCet' | 'USDC' | 'USDT' | 'USDTet'
 
 export type SerumSwapStep = WorkflowStep
 
-const SERUM_INFO: WorkflowStepInfo = {
+export const SERUM_SWAP_INFO: WorkflowStepInfo = {
   stepId: 'serum.swap',
-  name: 'Serum AMM',
+  name: 'Serum Swap',
   blockchains: ['Ethereum'],
   gasEstimate: '1',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Swap,
   description: 'Automated market maker for swapping SPL Tokens on Solana.',
   iconUrl: 'https://assets.website-files.com/61382d4555f82a75dc677b6f/61ff21f9dcce3b42bfe4135c_serum%20NOF.png',
   webSiteUrl: 'https://portal.projectserum.com/',
@@ -28,7 +29,7 @@ export function serumSwap(arg: SerumSwapBuilderArg): WorkflowStep {
     inputAmount: arg.amount || '100%',
     inputAsset: getTokenAsset('Solana', arg.from),
     outputAsset: getTokenAsset('Solana', arg.to),
-    info: SERUM_INFO,
+    info: SERUM_SWAP_INFO,
   }
   return rv
 }

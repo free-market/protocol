@@ -91,11 +91,21 @@ export const NoAsset: Asset = {
 }
 
 /**
+ *  The categories of workflow steps.
+ */
+export enum WorkflowStepCategory {
+  Swap = 'Swap',
+  Bridge = 'Bridge',
+  Invest = 'Invest',
+}
+
+/**
  *  Informational aspects of a workflow step (no runtime parameters here).
  */
 export interface WorkflowStepInfo {
   stepId: string
   name: string
+  category: WorkflowStepCategory
   blockchains: ChainName[]
   gasEstimate: string
   exchangeFee: string

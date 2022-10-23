@@ -1,10 +1,8 @@
-import { NoAsset, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
-import { AssetBalances } from './AssetBalances'
-import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
 import { BigNumber } from 'ethers'
-import { StepImplFactory } from './StepImplFactory'
-import { MockStepsFactory } from './MockWorkflowSteps'
 import { OffChainEngineParams, OffChainStepsFactory } from './OffChainWorkflowSteps'
+import { NoAsset, Workflow, WorkflowEngine, WorkflowEvent, WorkflowEventType, WorkflowStep } from '@fmp/sdk'
+import { AssetBalances } from '@fmp/sdk/dist/engine/AssetBalances'
+import { StepImplFactory } from '@fmp/sdk/dist/engine/StepImplFactory'
 
 export class OffChainWorkflowEngine implements WorkflowEngine {
   private balances = new AssetBalances()

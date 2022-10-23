@@ -1,27 +1,29 @@
 import { getTokenAsset, getAccountAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
+import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
 
 export type MangoTokenSymbol = 'SOL' | 'USDC'
 
 const MANGO_EXCHANGE_NAME = 'mangno'
 
-const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
+export const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
   stepId: 'mango.deposit',
-  name: 'Mango Dex',
+  name: 'Mango Deposit',
   blockchains: ['Ethereum'],
   gasEstimate: '4',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Invest,
   description: 'Automated market maker for swapping SPL Tokens.',
   iconUrl: 'https://v2.mango.markets/assets/icons/logo.svg',
   webSiteUrl: 'https://mango.markets/',
 }
 
-const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
+export const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
   stepId: 'mango.withdrawal',
-  name: 'Mango DeX',
+  name: 'Mango Withdrawal',
   blockchains: ['Ethereum'],
   gasEstimate: '4',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Invest,
   description: 'Automated market maker for swapping SPL Tokens.',
   iconUrl: 'https://v2.mango.markets/assets/icons/logo.svg',
   webSiteUrl: 'https://mango.markets/',

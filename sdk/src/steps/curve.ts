@@ -1,5 +1,5 @@
 import { getTokenAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepInfo } from '../types'
+import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
 
 /** the set of tokens than can be swapped by Curve 3Pool */
 export type ThreePoolTokenSymbol = 'DAI' | 'USDT' | 'USDC'
@@ -24,22 +24,24 @@ export interface CurveStepBuilderArgs<Symbols> {
   amount?: MoneyAmount
 }
 
-const THREE_CURVE_SWAP: WorkflowStepInfo = {
+export const CURVE_3POOL_SWAP_INFO: WorkflowStepInfo = {
   stepId: 'curve.3pool.swap',
-  name: 'Curve 3 Pool',
+  name: 'Curve 3 Pool Swap',
   blockchains: ['Ethereum'],
   gasEstimate: '20',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Swap,
   description: 'Three Pool at Curve Finance allows swapping between stable coins with very low fees.',
   iconUrl: 'https://curve.fi/favicon-32x32.svg',
   webSiteUrl: 'https://curve.fi/',
 }
-const TRICRYPTO_SWAP: WorkflowStepInfo = {
+export const CURVE_TRICRYPTO_SWAP: WorkflowStepInfo = {
   stepId: 'curve.tricrypto.swap',
-  name: 'Curve TriCrypto',
+  name: 'Curve TriCrypto Swap',
   blockchains: ['Ethereum'],
   gasEstimate: '40',
   exchangeFee: '1',
+  category: WorkflowStepCategory.Swap,
   description: 'TriCrypto does swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT',
   iconUrl: 'https://curve.fi/favicon-32x32.svg',
   webSiteUrl: 'https://curve.fi/',
@@ -54,7 +56,7 @@ export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymb
     outputAsset: getTokenAsset('Ethereum', args.to),
     inputIndex: 0, // TODO unhardcode
     outputIndex: 0,
-    info: THREE_CURVE_SWAP,
+    info: CURVE_3POOL_SWAP_INFO,
   }
   return rv
 }
@@ -68,7 +70,7 @@ export function curveTriCryptoSwap(args: CurveStepBuilderArgs<TriCryptoTokenSymb
     outputAsset: getTokenAsset('Ethereum', args.to),
     inputIndex: 0, // TODO unhardcode
     outputIndex: 0,
-    info: TRICRYPTO_SWAP,
+    info: CURVE_TRICRYPTO_SWAP,
   }
   return rv
 }
