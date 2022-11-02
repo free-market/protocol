@@ -1,0 +1,14 @@
+import * as Yup from 'yup'
+import { WorkflowAction, WorkflowStep } from './types'
+
+export const workflowStepSchema: Yup.ObjectSchema<WorkflowStep> = Yup.object({
+  stepId: Yup.string().required().meta({ noUi: true }),
+})
+
+export const workflowActionSchema: Yup.ObjectSchema<WorkflowAction> = workflowStepSchema.shape({
+  stepId: Yup.string().required().meta({ noUi: true }),
+  actionId: Yup.string().required().meta({ noUi: true }),
+  inputAmount: Yup.string().required(),
+  inputAssetId: Yup.string().required(),
+  outputAssetId: Yup.string().required(),
+})

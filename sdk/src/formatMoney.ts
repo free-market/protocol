@@ -1,9 +1,9 @@
-import { MoneyAmount } from './types'
+import { AssetAmount } from './types'
 import Big from 'big.js'
 
 const TEN = Big(10)
 
-export function formatMoney(amount: MoneyAmount, decimals: number, maxDecimals?: number) {
+export function formatMoney(amount: AssetAmount, decimals: number, maxDecimals?: number) {
   const s = amount.toString()
   if (s.endsWith('%')) {
     return s

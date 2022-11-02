@@ -1,33 +1,23 @@
-import { getTokenAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
+import { ActionBuilderArg, WorkflowActionInput } from '../builder/WorkflowBuilder'
+import { ChainName, WorkflowStepCategory, WorkflowActionInfo, Asset } from '../types'
+
+export const ThreePoolTokenSymbols = ['DAI', 'USDT', 'USDC'] as const
 
 /** the set of tokens than can be swapped by Curve 3Pool */
-export type ThreePoolTokenSymbol = 'DAI' | 'USDT' | 'USDC'
+export type ThreePoolTokenSymbol = typeof ThreePoolTokenSymbols[number]
 
 /** the set of tokens than can be swapped by Curve TriCrypto */
-export type TriCryptoTokenSymbol = 'WETH' | 'WBTC' | 'USDT'
+export const TriCryptoTokenSymbols = ['WETH', 'WBTC', 'USDT'] as const
+export type TriCryptoTokenSymbol = typeof TriCryptoTokenSymbols[number]
 
-export interface CurveStep extends WorkflowStep {
-  inputIndex: number
-  outputIndex: number
-}
-/**
- * Arguments for Curve workflow steps
- *  @typeParam Symbols - The allowable set of crypto symbols (as a string union)
- */
-export interface CurveStepBuilderArgs<Symbols> {
-  /** the token the Curve workflow step will swap from */
-  from: Symbols
-  /** the token the Curve workflow step will swap to */
-  to: Symbols
-  /** the amount to swap (in term of the from token) */
-  amount?: MoneyAmount
+export interface CurveAction extends WorkflowActionInput {
+  chain: ChainName
 }
 
-export const CURVE_3POOL_SWAP_INFO: WorkflowStepInfo = {
-  stepId: 'curve.3pool.swap',
+export const CURVE_3POOL_SWAP_INFO: WorkflowActionInfo = {
+  actionId: 'curve.3pool.swap',
   name: 'Curve 3 Pool Swap',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '20',
   exchangeFee: '1',
   category: WorkflowStepCategory.Swap,
@@ -35,42 +25,54 @@ export const CURVE_3POOL_SWAP_INFO: WorkflowStepInfo = {
   iconUrl: 'https://curve.fi/favicon-32x32.svg',
   webSiteUrl: 'https://curve.fi/',
 }
-export const CURVE_TRICRYPTO_SWAP: WorkflowStepInfo = {
-  stepId: 'curve.tricrypto.swap',
+
+export const CURVE_TRICRYPTO_SWAP: WorkflowActionInfo = {
+  actionId: 'curve.tricrypto.swap',
   name: 'Curve TriCrypto Swap',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '40',
   exchangeFee: '1',
   category: WorkflowStepCategory.Swap,
-  description: 'TriCrypto does swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT',
+  description: 'TriCrypto allows swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT',
   iconUrl: 'https://curve.fi/favicon-32x32.svg',
   webSiteUrl: 'https://curve.fi/',
 }
 
 /** define a workflow step that does a token swap using Curve 3Pool */
-export function curveThreePoolSwap(args: CurveStepBuilderArgs<ThreePoolTokenSymbol>): WorkflowStep {
-  const rv: CurveStep = {
-    stepId: 'curve.3pool.swap',
-    inputAmount: args.amount || '100%',
-    inputAsset: getTokenAsset('Ethereum', args.from),
-    outputAsset: getTokenAsset('Ethereum', args.to),
-    inputIndex: 0, // TODO unhardcode
-    outputIndex: 0,
-    info: CURVE_3POOL_SWAP_INFO,
+export function curveThreePoolSwap(args: CurveBuilderArgs<ThreePoolTokenSymbol>): CurveAction {
+  const rv: CurveAction = {
+    id: args.id,
+    chain: args.chain,
+    actionId: 'curve.3pool.swap',
+    amount: args.amount,
+    inputAsset: new Asset('Ethereum', args.from),
+    outputAsset: new Asset('Ethereum', args.to),
   }
   return rv
 }
 
+/**
+ * Arguments for Curve workflow steps
+ *  @typeParam Symbol - The allowable set of crypto symbols (as a string union)
+ */
+export interface CurveBuilderArgs<CurveSymbol> extends ActionBuilderArg {
+  /** the chain on which the action will operate */
+  chain: ChainName
+  /** the token the Curve workflow step will swap from */
+  from: CurveSymbol
+  /** the token the Curve workflow step will swap to */
+  to: CurveSymbol
+}
+
 /** define a workflow step that does a token swap using Curve 3Pool */
-export function curveTriCryptoSwap(args: CurveStepBuilderArgs<TriCryptoTokenSymbol>): WorkflowStep {
-  const rv: CurveStep = {
-    stepId: 'curve.tricrypto.swap',
-    inputAmount: args.amount || '100%',
-    inputAsset: getTokenAsset('Ethereum', args.from),
-    outputAsset: getTokenAsset('Ethereum', args.to),
-    inputIndex: 0, // TODO unhardcode
-    outputIndex: 0,
-    info: CURVE_TRICRYPTO_SWAP,
+export function curveTriCryptoSwap(args: CurveBuilderArgs<TriCryptoTokenSymbol>): CurveAction {
+  const rv: CurveAction = {
+    id: args.id,
+    chain: args.chain,
+    actionId: 'curve.tricrypto.swap',
+    amount: args.amount,
+    inputAsset: new Asset('Ethereum', args.from),
+    outputAsset: new Asset('Ethereum', args.to),
   }
   return rv
 }

@@ -1,5 +1,5 @@
 import { Trigger } from '../Trigger'
-import { Workflow, WorkflowStep, WorkflowStepResult } from '../types'
+import { Asset, AssetAmount, Workflow, WorkflowAction, WorkflowStep, WorkflowStepResult } from '../types'
 export { curveThreePoolSwap, curveTriCryptoSwap } from '../steps/curve'
 export { wormholeTokenTransfer } from '../steps/wormhole'
 export { serumSwap as serumSwap } from '../steps/serum'
@@ -9,6 +9,17 @@ export { marinadeStake, marinadeUnstake } from '../steps/marinade'
 
 /** A callback implelemented by the integrator to determine when to exit a workflow loop based on WorkflowStepResult */
 export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Promise<boolean>
+
+export interface StepBuilderArg {
+  id?: string
+}
+
+export interface ActionBuilderArg extends StepBuilderArg {
+  amount?: AssetAmount
+}
+
+export type WorkflowStepInput = Omit<WorkflowStep, 'stepId'> & { id?: string }
+export type WorkflowActionInput = Omit<WorkflowAction, 'stepId' | 'inputAmount'> & { id?: string; amount?: AssetAmount }
 
 /**
  * A high level interface to concisely define workflows.
@@ -30,11 +41,11 @@ export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Prom
 export class WorkflowBuilder {
   private trigger?: Trigger
   private steps = [] as WorkflowStep[]
-
-  // eslint-disable-next-line tsdoc/syntax
-  /** @hidden */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
+  private inputAssets = [] as Asset[]
+  private nextStepId = 1
+  constructor(...inputAssets: Asset[]) {
+    this.inputAssets = inputAssets
+  }
 
   /**
    * Add a trigger to this workflow.
@@ -56,8 +67,23 @@ export class WorkflowBuilder {
    * @returns `this` instance to allow chaining of method calls
    *
    */
-  addSteps(...steps: WorkflowStep[]): WorkflowBuilder {
-    this.steps = this.steps.concat(steps)
+  addSteps(...steps: WorkflowStepInput[]): WorkflowBuilder {
+    const stepsWithIds: WorkflowStep[] = steps.map(it => {
+      const rv = {
+        ...it,
+        stepId: it.id || `${this.nextStepId++}`,
+      }
+      delete rv.id
+      const isAction = !!(it as WorkflowActionInput).actionId
+      if (isAction) {
+        const actionInput = it as WorkflowActionInput
+        const actionRv = rv as WorkflowAction
+        actionRv.inputAmount = actionInput.amount || '100%'
+        delete (actionRv as any).amount
+      }
+      return rv
+    })
+    this.steps = this.steps.concat(stepsWithIds)
     return this
   }
 
@@ -67,16 +93,6 @@ export class WorkflowBuilder {
    * @returns a {@link Workflow} instance.
    */
   build(): Workflow {
-    return { steps: this.steps }
-  }
-
-  /**
-   * Loops over  a sequence of {@link WorkflowStep} until a condition is met as determined the callback function.
-   * @param steps - the sequence of steps to loop over.  Use factory functions such as {@link wethWrap} to create WorkflowStep instances.
-   * @param callback - A function matching the {@link DoWhileCallback} signature that decides if `steps` should be executed again based on the output of the final step.
-   * @returns `this` instance to allow chaining of method calls
-   */
-  doWhile(steps: WorkflowStep[], callback: DoWhileCallback): WorkflowBuilder {
-    throw new Error('not implemented')
+    return { inputAssets: this.inputAssets, steps: this.steps }
   }
 }

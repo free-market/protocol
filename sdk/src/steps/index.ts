@@ -1,4 +1,4 @@
-import { WorkflowStepInfo } from '../types'
+import { WorkflowActionInfo } from '../types'
 
 export * from './curve'
 export * from './mango'
@@ -13,7 +13,7 @@ import { SERUM_SWAP_INFO } from './serum'
 import { WETH_WRAP_INFO, WETH_UNWRAP_INFO } from './weth'
 import { WORMHOLE_STEP_INFO } from './wormhole'
 
-export function getAllStepInfos(): WorkflowStepInfo[] {
+export function getAllStepInfos(): WorkflowActionInfo[] {
   return [
     CURVE_3POOL_SWAP_INFO,
     CURVE_TRICRYPTO_SWAP,
@@ -28,12 +28,12 @@ export function getAllStepInfos(): WorkflowStepInfo[] {
   ]
 }
 
-const mapStepIdToStepInfo = new Map<string, WorkflowStepInfo>()
+const mapStepIdToStepInfo = new Map<string, WorkflowActionInfo>()
 
 for (const stepInfo of getAllStepInfos()) {
-  mapStepIdToStepInfo.set(stepInfo.stepId, stepInfo)
+  mapStepIdToStepInfo.set(stepInfo.actionId, stepInfo)
 }
 
-export function getStepInfo(stepId: string): WorkflowStepInfo | undefined {
+export function getStepInfo(stepId: string): WorkflowActionInfo | undefined {
   return mapStepIdToStepInfo.get(stepId)
 }

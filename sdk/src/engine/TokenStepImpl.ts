@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { WorkflowStep, MoneyAmount, WorkflowStepResult, NoAsset } from '../types'
+import { WorkflowAction, WorkflowStepResult } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { StatusCallback, StepImpl } from './StepImpl'
 
@@ -7,17 +7,17 @@ import { StatusCallback, StepImpl } from './StepImpl'
  * A common base class that implements actualizeAmount for token based steps
  */
 export abstract class TokenStepImpl implements StepImpl {
-  abstract executeStep(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback): Promise<WorkflowStepResult>
+  abstract executeAction(action: WorkflowAction, amount: BigNumber, statusCallback: StatusCallback): Promise<WorkflowStepResult>
 
-  async actualizeAmount(step: WorkflowStep, assetBalances: AssetBalances): Promise<[BigNumber, boolean]> {
-    if (typeof step.inputAmount === 'number') {
-      return [BigNumber.from(step.inputAmount), false]
+  async actualizeAmount(action: WorkflowAction, assetBalances: AssetBalances): Promise<[BigNumber, boolean]> {
+    if (typeof action.inputAmount === 'number') {
+      return [BigNumber.from(action.inputAmount), false]
     }
-    const s = step.inputAmount.trim()
+    const s = action.inputAmount.trim()
     if (s.endsWith('%')) {
       const pctValue = s.slice(0, s.length - 1)
       const pct = BigNumber.from(pctValue)
-      const currentBalance = assetBalances.get(step.inputAsset)
+      const currentBalance = assetBalances.get(action.inputAsset)
       if (!currentBalance) {
         throw new Error("invalid workflow: taking percentage of asset that hasn't been seen before")
       }

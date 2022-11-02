@@ -1,13 +1,15 @@
 import test from 'ava'
-import { ETHEREUM_TOKENS } from '../assetInfo'
+
 import { AssetBalances } from './AssetBalances'
 import { BigNumber } from 'ethers'
+import { Asset } from '../types'
 
 test('tracks balances', t => {
   const assetBalances = new AssetBalances()
+  const asset = new Asset('Ethereum', 'USDC')
   t.snapshot(assetBalances.toArray())
-  assetBalances.credit(ETHEREUM_TOKENS.USDC, BigNumber.from(10))
+  assetBalances.credit(asset, BigNumber.from(10))
   t.snapshot(assetBalances.toArray())
-  assetBalances.debit(ETHEREUM_TOKENS.USDC, BigNumber.from(10))
+  assetBalances.debit(asset, BigNumber.from(10))
   t.snapshot(assetBalances.toArray())
 })

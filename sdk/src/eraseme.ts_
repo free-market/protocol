@@ -1,0 +1,50 @@
+/* eslint-disable no-console */
+import * as Yup from 'yup'
+import { WorkflowActionMaybeId } from './builder/WorkflowBuilder'
+import { CurveAction } from './steps'
+import { WorkflowAction, WorkflowStep } from './types'
+import { ChainName } from './types'
+
+export enum WorkflowStepArgType {
+  StepId = 'StepId',
+  String = 'String',
+  Number = 'Number',
+  Percent = 'Percent',
+  Choice = 'Choice',
+}
+
+export interface WorkflowStepArgChoice {
+  value: string
+  label: string
+}
+
+export interface WorkflowStepArgMetadata {
+  label: string
+  type: WorkflowStepArgType
+  choices?: WorkflowStepArgChoice[]
+  defaultValue?: string
+}
+
+export const workflowStepSchema: Yup.ObjectSchema<WorkflowStep> = Yup.object({
+  stepId: Yup.string().required().meta(),
+})
+
+export const workflowActionMaybeIdSchema: Yup.ObjectSchema<WorkflowActionMaybeId> = workflowStepSchema.shape({
+  id: Yup.string(),
+  actionId: Yup.string().required().meta(),
+  amount: Yup.string(),
+  inputAssetId: Yup.string().required(),
+  outputAssetId: Yup.string().required(),
+})
+
+export const curveActionSchema: Yup.ObjectSchema<CurveAction> = workflowActionMaybeIdSchema.shape({
+  chain: Yup.string<ChainName>().required(),
+})
+
+const d = curveActionSchema.describe()
+
+console.log(d)
+console.log(curveActionSchema)
+for (const fieldName in d.fields) {
+  console.log(fieldName)
+}

@@ -1,5 +1,3 @@
-import Web3 from 'web3'
-// import { provider as EthereumProvider } from 'web3-core'
 import ethers from 'ethers'
 import { Connection as SolanaConnection, Keypair as SolanaKeypair } from '@solana/web3.js'
 import { AssetBalance, Workflow, WorkflowStep, WorkflowStepResult } from '../types'

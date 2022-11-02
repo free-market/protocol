@@ -1,6 +1,6 @@
 {
   "name": "@fmp/sdk",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,7 +28,8 @@
     "treeify": "^1.1.0",
     "web3": "^1.7.3",
     "web3-core": "^1",
-    "web3-eth": "^1.8.0"
+    "web3-eth": "^1.8.0",
+    "yup": "v1.0.0-beta.7"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",

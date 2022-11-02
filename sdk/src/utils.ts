@@ -1,6 +1,7 @@
 import { Workflow } from './types'
 import { BigNumber } from 'ethers'
 import log from 'loglevel'
+import bs58 from 'bs58'
 
 export function initLogger() {
   const originalFactory = log.methodFactory
@@ -48,6 +49,26 @@ function indent(n: number) {
 //   </details>
 // </blockquote>
 
+export function randomInt(maxExclusive: number) {
+  return Math.floor(Math.random() * maxExclusive)
+}
+
+const BASE58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+const SHORT_RANDOM_LENGTH = 17
+
+export function randomString() {
+  const bytes = new Uint8Array(SHORT_RANDOM_LENGTH)
+  for (let i = 0; i < SHORT_RANDOM_LENGTH; ++i) {
+    bytes[i] = randomInt(256)
+  }
+  let s = bs58.encode(bytes)
+  if (s.length === 23) {
+    s += BASE58_CHARS[randomInt(58)]
+  }
+  return s
+}
+
 export function toHtml(element: any, label: string, i = 0) {
   const hasChildren = typeof element !== 'string' && Object.keys(element).length > 0
   let html = indent(i) + '<blockquote>\n'
@@ -81,13 +102,3 @@ export function toHtml(element: any, label: string, i = 0) {
 
   return html
 }
-
-// const obj = {
-//   a: ['a', 'b', 'cc'],
-//   // b: {
-//   //   c: 2,
-//   // },
-// }
-
-// const x = toHtml(obj, 'root', 0)
-// console.log(x)

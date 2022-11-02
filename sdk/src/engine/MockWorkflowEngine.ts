@@ -1,4 +1,4 @@
-import { NoAsset, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
+import { Workflow, WorkflowAction, WorkflowStep } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
 import { BigNumber } from 'ethers'
@@ -40,7 +40,9 @@ export class MockWorkflowEngine implements WorkflowEngine {
   }
 
   private async executeStep(step: WorkflowStep) {
-    const stepImpl = this.stepImplFactory.getStep(step.stepId)
+    // TODO handle branch steps
+    const action = step as WorkflowAction
+    const stepImpl = this.stepImplFactory.getStep(action.actionId)
 
     // get actual amount for this step
     const [amount, isPercent] = await stepImpl.actualizeAmount(step, this.balances)
@@ -76,15 +78,13 @@ export class MockWorkflowEngine implements WorkflowEngine {
     await this.mockBlockConfirmDelay()
 
     // invoke the mock step
-    const stepResult = await stepImpl.executeStep(step, amount, statusUpdateHandler)
+    const stepResult = await stepImpl.executeAction(step, amount, statusUpdateHandler)
 
     // adjust balances
     if (isPercent) {
-      this.balances.debit(step.inputAsset, amount)
+      this.balances.debit(action.inputAsset, amount)
     }
-    if (step.outputAsset !== NoAsset) {
-      this.balances.credit(step.outputAsset, BigNumber.from(stepResult.outputAmount))
-    }
+    this.balances.credit(action.outputAsset, BigNumber.from(stepResult.outputAmount))
 
     // fire the Completed event
     const completedEvent: WorkflowEvent = {

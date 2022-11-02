@@ -5,19 +5,16 @@ const NEGATIVE_ONE_BIGNUMBER = BigNumber.from(-1)
 
 export class AssetBalances {
   balances = new Map<string, BigNumber>()
-  assets = new Map<string, Asset>()
 
   get(asset: Asset): BigNumber | undefined {
-    const key = AssetBalances.toKey(asset)
-    return this.balances.get(key)
+    return this.balances.get(asset.toString())
   }
 
   credit(asset: Asset, amount: BigNumber): BigNumber {
-    const key = AssetBalances.toKey(asset)
+    const key = asset.toString()
     const currentBalance = this.balances.get(key) || BigNumber.from(0)
     const newBalance = currentBalance.add(amount)
     this.balances.set(key, newBalance)
-    this.assets.set(key, asset)
     return newBalance
   }
 
@@ -27,20 +24,12 @@ export class AssetBalances {
 
   toArray(): AssetBalance[] {
     const rv = [] as AssetBalance[]
-    this.balances.forEach((balance, key) => {
-      const asset = this.assets.get(key)
-      if (!asset) {
-        throw new Error('asset not found for key: ' + key)
-      }
+    this.balances.forEach((balance, assetKey) => {
       rv.push({
-        asset,
+        asset: Asset.fromString(assetKey),
         balance: balance.toString(),
       })
     })
     return rv
-  }
-
-  private static toKey(asset: Asset) {
-    return `${asset.blockChain}.${asset.symbol}`
   }
 }

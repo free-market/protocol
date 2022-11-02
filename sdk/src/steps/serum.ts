@@ -1,14 +1,14 @@
-import { getTokenAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
+import { ActionBuilderArg, WorkflowActionInput } from '../builder/WorkflowBuilder'
+import { WorkflowStepCategory, WorkflowActionInfo, Asset } from '../types'
 
 export type SerumTokenSymbol = 'USDCet' | 'USDC' | 'USDT' | 'USDTet'
 
-export type SerumSwapStep = WorkflowStep
+export type SerumSwapStep = ActionBuilderArg
 
-export const SERUM_SWAP_INFO: WorkflowStepInfo = {
-  stepId: 'serum.swap',
+export const SERUM_SWAP_INFO: WorkflowActionInfo = {
+  actionId: 'serum.swap',
   name: 'Serum Swap',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '1',
   exchangeFee: '1',
   category: WorkflowStepCategory.Swap,
@@ -17,19 +17,18 @@ export const SERUM_SWAP_INFO: WorkflowStepInfo = {
   webSiteUrl: 'https://portal.projectserum.com/',
 }
 
-interface SerumSwapBuilderArg {
+interface SerumSwapBuilderArg extends ActionBuilderArg {
   from: SerumTokenSymbol
   to: SerumTokenSymbol
-  amount?: MoneyAmount
 }
 
-export function serumSwap(arg: SerumSwapBuilderArg): WorkflowStep {
-  const rv: SerumSwapStep = {
-    stepId: 'serum.swap',
-    inputAmount: arg.amount || '100%',
-    inputAsset: getTokenAsset('Solana', arg.from),
-    outputAsset: getTokenAsset('Solana', arg.to),
-    info: SERUM_SWAP_INFO,
+export function serumSwap(arg: SerumSwapBuilderArg): WorkflowActionInput {
+  const rv: WorkflowActionInput = {
+    id: arg.id,
+    actionId: 'serum.swap',
+    amount: arg.amount,
+    inputAsset: new Asset('Solana', arg.from),
+    outputAsset: new Asset('Solana', arg.to),
   }
   return rv
 }

@@ -1,9 +1,9 @@
-import { getTokenAsset, TokenSymbol } from '../assetInfo'
-import { BlockChain, ChainName, MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
+import { ActionBuilderArg, WorkflowActionInput } from '../builder/WorkflowBuilder'
+import { Chain, ChainName, AssetAmount, WorkflowStep, WorkflowStepCategory, WorkflowActionInfo, Asset } from '../types'
 
 export interface WormholeStep extends WorkflowStep {
-  sourceChain: BlockChain
-  targetChain: BlockChain
+  sourceChain: Chain
+  targetChain: Chain
 }
 
 // TODO use this to compute target token
@@ -12,8 +12,8 @@ export interface WormholeStep extends WorkflowStep {
 //   et: BlockChain.Ethereum,
 // }
 
-//                             fromChain  fromToken,   toChain,   toToken
-type WormholeSymbolMapTuple = [ChainName, TokenSymbol, ChainName, TokenSymbol]
+//                             fromChain  fromSy, toChain,   toSymbol
+type WormholeSymbolMapTuple = [ChainName, string, ChainName, string]
 const WORMHOLE_MAPPINGS: WormholeSymbolMapTuple[] = [
   ['Ethereum', 'USDC', 'Solana', 'USDCet'],
   ['Ethereum', 'USDT', 'Solana', 'USDTet'],
@@ -24,11 +24,11 @@ function toMappingKey(tuple: WormholeSymbolMapTuple) {
   return `${tuple[0]}.${tuple[1]}.${tuple[2]}`
 }
 
-const WORMHOLE_MAPPINGS_MAP = new Map<string, TokenSymbol>()
+const WORMHOLE_MAPPINGS_MAP = new Map<string, string>()
 WORMHOLE_MAPPINGS.forEach(it => WORMHOLE_MAPPINGS_MAP.set(`${it[0]}.${it[1]}.${it[2]}`, it[3]))
 WORMHOLE_MAPPINGS.forEach(it => WORMHOLE_MAPPINGS_MAP.set(`${it[2]}.${it[3]}.${it[0]}`, it[1]))
 
-export function getWormholeTargetSymbol(sourceChain: ChainName, sourceToken: TokenSymbol, targetChain: ChainName): TokenSymbol {
+export function getWormholeTargetSymbol(sourceChain: ChainName, sourceToken: string, targetChain: ChainName): string {
   const targetSymbol = WORMHOLE_MAPPINGS_MAP.get(toMappingKey([sourceChain, sourceToken, targetChain, '']))
   if (!targetSymbol) {
     throw new Error(`wormhole unknown output token, sourceChain=${sourceChain} sourceToken=${sourceToken} targetChain=${targetChain}`)
@@ -36,10 +36,10 @@ export function getWormholeTargetSymbol(sourceChain: ChainName, sourceToken: Tok
   return targetSymbol
 }
 
-export const WORMHOLE_STEP_INFO: WorkflowStepInfo = {
-  stepId: 'wormhole.transfer',
+export const WORMHOLE_STEP_INFO: WorkflowActionInfo = {
+  actionId: 'wormhole.transfer',
   name: 'Wormhole Transfer',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '400000',
   exchangeFee: '1',
   category: WorkflowStepCategory.Bridge,
@@ -48,26 +48,47 @@ export const WORMHOLE_STEP_INFO: WorkflowStepInfo = {
   webSiteUrl: 'https://www.portalbridge.com/',
 }
 
-interface WormholeTokenTransferBuilderArgs {
+interface WormholeTokenTransferBuilderArgs extends ActionBuilderArg {
   fromChain: ChainName
-  fromToken: TokenSymbol
+  fromToken: string
   toChain: ChainName
-  amount?: MoneyAmount
+  amount?: AssetAmount
 }
 
-export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): WorkflowStep {
-  const toTokenSymbol = getWormholeTargetSymbol(args.fromChain, args.fromToken, args.toChain)
-  const toAsset = getTokenAsset(args.toChain, toTokenSymbol)
-  const fromAsset = getTokenAsset(args.fromChain, args.fromToken)
+export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): WorkflowActionInput {
+  // supporting ethereum<->solana only
+  // we have symbols in the args here
+  // if it ends in et, it's a ethereum native asset on solana
+  // if it ends in so, it's a solana native asset on ethereum
+  let toTokenSymbol: string
+  if (args.fromChain === 'Ethereum') {
+    if (args.fromToken.endsWith('et')) {
+      throw new Error(`symbol ${args.fromToken} does not exist on Ethereum`)
+    }
+    if (args.fromToken.endsWith('so')) {
+      toTokenSymbol = args.fromToken.slice(0, args.fromToken.length - 2)
+    } else {
+      toTokenSymbol = args.fromToken + 'et'
+    }
+  } else {
+    if (args.fromToken.endsWith('so')) {
+      throw new Error(`symbol ${args.fromToken} does not exist on Solana`)
+    }
+    if (args.fromToken.endsWith('et')) {
+      toTokenSymbol = args.fromToken.slice(0, args.fromToken.length - 2)
+    } else {
+      toTokenSymbol = args.fromToken + 'so'
+    }
+  }
 
-  const rv: WormholeStep = {
-    stepId: 'wormhole.transfer',
-    inputAmount: args.amount || '100%',
-    inputAsset: fromAsset,
-    outputAsset: toAsset,
-    info: WORMHOLE_STEP_INFO,
-    sourceChain: BlockChain[args.fromChain],
-    targetChain: BlockChain[args.toChain],
+  const rv = {
+    id: args.id,
+    actionId: 'wormhole.transfer',
+    amount: args.amount,
+    inputAsset: new Asset(args.fromChain, args.fromToken),
+    outputAsset: new Asset(args.toChain, toTokenSymbol),
+    sourceChain: Chain[args.fromChain],
+    targetChain: Chain[args.toChain],
   }
   return rv
 }

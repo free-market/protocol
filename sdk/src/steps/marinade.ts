@@ -1,49 +1,45 @@
-import { getTokenAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
+import { ActionBuilderArg, WorkflowActionInput } from '../builder/WorkflowBuilder'
+import { WorkflowStepCategory, WorkflowActionInfo, Asset } from '../types'
 
 export type SerumTokenSymbol = 'USDCet' | 'USDC' | 'USDT' | 'USDTet'
 
-export type SerumSwapStep = WorkflowStep
+export type SerumSwapStep = ActionBuilderArg
 
-export const MARINADE_STAKE_INFO: WorkflowStepInfo = {
-  stepId: 'marinade.stake',
+export const MARINADE_STAKE_INFO: WorkflowActionInfo = {
+  actionId: 'marinade.stake',
   name: 'Marinade Stake',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '1',
   exchangeFee: '1',
-  category: WorkflowStepCategory.Invest,
+  category: WorkflowStepCategory.Yield,
   description: 'Non-custodial liquid staking protocol for the Solana blockchain',
   iconUrl: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
   webSiteUrl: 'https://marinade.finance/',
 }
 
-export const MARINADE_UNSTAKE_INFO: WorkflowStepInfo = {
+export const MARINADE_UNSTAKE_INFO: WorkflowActionInfo = {
   ...MARINADE_STAKE_INFO,
-  stepId: 'marinade.unstake',
+  actionId: 'marinade.unstake',
   name: 'Marinade Unstake',
 }
 
-interface MarinadeStepArg {
-  amount?: MoneyAmount
-}
-
-export function marinadeStake(arg?: MarinadeStepArg): WorkflowStep {
-  const rv: SerumSwapStep = {
-    stepId: 'marinade.stake',
-    inputAmount: (arg && arg.amount) || '100%',
-    inputAsset: getTokenAsset('Solana', 'SOL'),
-    outputAsset: getTokenAsset('Solana', 'mSOL'),
-    info: MARINADE_STAKE_INFO,
+export function marinadeStake(arg: ActionBuilderArg): WorkflowActionInput {
+  const rv: WorkflowActionInput = {
+    id: arg.id,
+    actionId: 'marinade.stake',
+    amount: arg.amount,
+    inputAsset: new Asset('Solana', 'SOL'),
+    outputAsset: new Asset('Solana', 'mSOL'),
   }
   return rv
 }
-export function marinadeUnstake(arg?: MarinadeStepArg): WorkflowStep {
-  const rv: SerumSwapStep = {
-    stepId: 'marinade.unstake',
-    inputAmount: (arg && arg.amount) || '100%',
-    inputAsset: getTokenAsset('Solana', 'mSOL'),
-    outputAsset: getTokenAsset('Solana', 'SOL'),
-    info: MARINADE_UNSTAKE_INFO,
+export function marinadeUnstake(arg: ActionBuilderArg): WorkflowActionInput {
+  const rv: WorkflowActionInput = {
+    id: arg.id,
+    actionId: 'marinade.unstake',
+    amount: arg.amount,
+    inputAsset: new Asset('Solana', 'mSOL'),
+    outputAsset: new Asset('Solana', 'SOL'),
   }
   return rv
 }

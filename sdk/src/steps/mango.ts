@@ -1,57 +1,60 @@
-import { getTokenAsset, getAccountAsset } from '../assetInfo'
-import { MoneyAmount, WorkflowStep, WorkflowStepCategory, WorkflowStepInfo } from '../types'
+import { ActionBuilderArg, StepBuilderArg, WorkflowActionInput } from '../builder/WorkflowBuilder'
+import { WorkflowStepCategory, WorkflowActionInfo, Asset } from '../types'
 
 export type MangoTokenSymbol = 'SOL' | 'USDC'
 
-const MANGO_EXCHANGE_NAME = 'mangno'
+// TODO need to maintain a list of supported tokens
 
-export const MANGO_DEPOSIT_INFO: WorkflowStepInfo = {
-  stepId: 'mango.deposit',
+export const MANGO_DEPOSIT_INFO: WorkflowActionInfo = {
+  actionId: 'mango.deposit',
   name: 'Mango Deposit',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '4',
   exchangeFee: '1',
-  category: WorkflowStepCategory.Invest,
+  category: WorkflowStepCategory.Yield,
   description: 'Automated market maker for swapping SPL Tokens.',
   iconUrl: 'https://v2.mango.markets/assets/icons/logo.svg',
   webSiteUrl: 'https://mango.markets/',
 }
 
-export const MANGO_WITHDRAWAL_INFO: WorkflowStepInfo = {
-  stepId: 'mango.withdrawal',
+export const MANGO_WITHDRAWAL_INFO: WorkflowActionInfo = {
+  actionId: 'mango.withdrawal',
   name: 'Mango Withdrawal',
-  blockchains: ['Ethereum'],
+  chains: ['Ethereum'],
   gasEstimate: '4',
   exchangeFee: '1',
-  category: WorkflowStepCategory.Invest,
+  category: WorkflowStepCategory.Yield,
   description: 'Automated market maker for swapping SPL Tokens.',
   iconUrl: 'https://v2.mango.markets/assets/icons/logo.svg',
   webSiteUrl: 'https://mango.markets/',
 }
 
-export interface MangoBuilderArg {
-  symbol: MangoTokenSymbol
-  amount?: MoneyAmount
+export interface MangoBuilderArg extends ActionBuilderArg {
+  symbol: string
 }
 
-export function mangoDeposit(arg: MangoBuilderArg): WorkflowStep {
-  const rv: WorkflowStep = {
-    stepId: 'mango.deposit',
-    inputAmount: arg.amount || '100%',
-    inputAsset: getTokenAsset('Solana', arg.symbol),
-    outputAsset: getTokenAsset('Solana', arg.symbol + 'man'),
-    info: MANGO_DEPOSIT_INFO,
+function toMangoAsset(symbol: string) {
+  return new Asset('Solana', symbol)
+}
+
+export function mangoDeposit(arg: MangoBuilderArg): WorkflowActionInput {
+  const rv: WorkflowActionInput = {
+    id: arg.id,
+    actionId: 'mango.deposit',
+    amount: arg.amount,
+    inputAsset: toMangoAsset(arg.symbol),
+    outputAsset: toMangoAsset(arg.symbol + 'man'),
   }
   return rv
 }
 
-export function mangoWithdrawal(arg: MangoBuilderArg): WorkflowStep {
-  const rv: WorkflowStep = {
-    stepId: 'mango.withdrawal',
-    inputAmount: arg.amount || '100%',
-    inputAsset: getTokenAsset('Solana', arg.symbol + 'man'),
-    outputAsset: getTokenAsset('Solana', arg.symbol),
-    info: MANGO_WITHDRAWAL_INFO,
+export function mangoWithdrawal(arg: MangoBuilderArg): StepBuilderArg {
+  const rv: WorkflowActionInput = {
+    id: arg.id,
+    actionId: 'mango.withdrawal',
+    amount: arg.amount,
+    inputAsset: toMangoAsset(arg.symbol + 'man'),
+    outputAsset: toMangoAsset(arg.symbol),
   }
   return rv
 }
