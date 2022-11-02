@@ -1,20 +1,19 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import cx from 'classnames'
-import {
-  InformationCircleIcon,
-  ChevronDownIcon,
-  ArrowTopRightOnSquareIcon,
-  CheckIcon,
-} from '@heroicons/react/24/outline'
+import { InformationCircleIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon, CheckIcon } from '@heroicons/react/24/outline'
 import {
   Asset,
-  MoneyAmount,
+  AssetAmount,
   WorkflowStep,
   BLOCKCHAIN_INFO,
   WorkflowEventType,
   WorkflowEvent,
   formatMoney,
+  getStepInfo,
+  WorkflowActionInput,
+  getAssetInfo,
+  WorkflowAction,
 } from '@fmp/sdk'
 
 import { StepInfo } from './StepInfo'
@@ -24,7 +23,7 @@ import { NumberSpinner } from './NumberSpinner'
 import Box from '@mui/system/Box'
 
 export const WorkflowStepView = (props: {
-  step: WorkflowStep
+  step: WorkflowAction
   lastEvent?: WorkflowEvent
   // completed: boolean
   children?: React.ReactNode
@@ -34,6 +33,9 @@ export const WorkflowStepView = (props: {
   // const [absoluteAmount, setAbsoluteAmount] = React.useState<string | undefined>(undefined)
   // console.log('lastEvent', props.lastEvent)
 
+  const stepInfo = getStepInfo(props.step)
+  const inputAssetInfo = getAssetInfo(props.step.inputAsset)
+  const outputAssetInfo = getAssetInfo(props.step.outputAsset)
   const toggle = () => {
     setExpanded((state) => !state)
   }
@@ -49,7 +51,7 @@ export const WorkflowStepView = (props: {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <span className="text-sm">Bridge:&nbsp;</span>
-            <span className="text-s-base0 dark:text-s-base00 flex items-center">{props.step.info.name}</span>
+            <span className="text-s-base0 dark:text-s-base00 flex items-center">{stepInfo.name}</span>
           </div>
           <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
         </div>
@@ -73,7 +75,7 @@ export const WorkflowStepView = (props: {
           <div className="flex items-center">
             <span className="text-sm">Input Asset:&nbsp;</span>
             <span className="text-s-base0 dark:text-s-base00 flex items-center">
-              {props.step.inputAsset.info.fullName} (<code className="font-mono">{props.step.inputAsset.symbol}</code>){' '}
+              {inputAssetInfo.name} (<code className="font-mono">{inputAssetInfo.symbol}</code>){' '}
             </span>
           </div>
           <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
@@ -98,8 +100,7 @@ export const WorkflowStepView = (props: {
           <div className="flex items-center">
             <span className="text-sm">Output Asset:&nbsp;</span>
             <span className="text-s-base0 dark:text-s-base00 flex items-center">
-              {props.step.outputAsset.info.fullName} (<code className="font-mono">{props.step.outputAsset.symbol}</code>
-              )
+              {outputAssetInfo.name} (<code className="font-mono">{outputAssetInfo.symbol}</code>)
             </span>
           </div>
           <ArrowTopRightOnSquareIcon className="w-4 h-4 text-s-base1 dark:text-s-base01" />
@@ -125,8 +126,8 @@ export const WorkflowStepView = (props: {
     </motion.div>
   )
 
-  let inputAssetMessage = <span>{'on ' + props.step.inputAsset.blockChain}</span>
-  let outputAssetMessage = <span>{'on ' + props.step.outputAsset.blockChain}</span>
+  let inputAssetMessage = <span>{'on ' + props.step.inputAsset.chain}</span>
+  let outputAssetMessage = <span>{'on ' + props.step.outputAsset.chain}</span>
   // let outputAmount = ''
   const { lastEvent } = props
   // if (props.step.stepId.includes('weth')) {
@@ -134,7 +135,7 @@ export const WorkflowStepView = (props: {
   // }
   if (lastEvent?.absoluteInputAmount) {
     const message = 'Sent'
-    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals, 4)
+    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, inputAssetInfo.decimals, 4)
     inputAssetMessage = (
       <>
         <span style={{ display: 'inline-block', marginRight: 6 }}>{message}</span>
@@ -149,7 +150,7 @@ export const WorkflowStepView = (props: {
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
-        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals, 4)} />
+        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, outputAssetInfo.decimals, 4)} />
       </div>
     )
   }
@@ -178,7 +179,7 @@ export const WorkflowStepView = (props: {
             amount={props.step.inputAmount}
             status={<div className="text-s-base1 dark:text-s-base01">{inputAssetMessage}</div>}
           />
-          <div className="grow"/>
+          <div className="grow" />
           {/*<Connector active={ props.stepStatus === WorkflowEventType.Starting} />*/}
           <Box>
             {props.lastEvent && <div style={{ textAlign: 'center' }}>&nbsp;</div>}
@@ -196,7 +197,7 @@ export const WorkflowStepView = (props: {
               </Box>
             )}
           </Box>
-          <div className="grow"/>
+          <div className="grow" />
           {/*<Connector active={false} />*/}
           <WorkflowAssetView asset={props.step.outputAsset} status={outputAssetMessage} useLegacyWidth />
           {props.children}

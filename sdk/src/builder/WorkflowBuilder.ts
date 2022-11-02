@@ -95,4 +95,24 @@ export class WorkflowBuilder {
   build(): Workflow {
     return { inputAssets: this.inputAssets, steps: this.steps }
   }
+
+  toWorkflowStep(input: WorkflowStepInput): WorkflowStep {
+    const rv = {
+      ...input,
+      stepId: input.id || `${this.nextStepId++}`,
+    }
+    delete rv.id
+    return rv
+  }
+  toWorkflowAction(it: WorkflowActionInput): WorkflowAction {
+    const rv = this.toWorkflowStep(it)
+    const isAction = !!(it as WorkflowActionInput).actionId
+    if (isAction) {
+      const actionInput = it as WorkflowActionInput
+      const actionRv = rv as WorkflowAction
+      actionRv.inputAmount = actionInput.amount || '100%'
+      delete (actionRv as any).amount
+    }
+    return rv as WorkflowAction
+  }
 }

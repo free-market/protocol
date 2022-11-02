@@ -41,7 +41,7 @@ const PRESETS = [
   serumSwap({ from: 'USDCet', to: 'USDC' }),
   mangoDeposit({ symbol: 'USDC' }),
   mangoWithdrawal({ symbol: 'SOL' }),
-  marinadeStake()
+  marinadeStake({})
 ]`,
   },
   {

@@ -1,10 +1,10 @@
-import { wethWrap} from '@fmp/sdk';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { wethWrap, WorkflowBuilder } from '@fmp/sdk'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { WorkflowProvider } from '../WorkflowProvider'
 import ThemeSelector from '../ThemeSelector'
 
-import { WorkflowStepCard as Component } from './WorkflowStepCard';
+import { WorkflowStepCard as Component } from './WorkflowStepCard'
 
 export default {
   title: 'Example/WorkflowStepCard',
@@ -19,12 +19,7 @@ export default {
   ],
   parameters: {
     backgrounds: {
-      default:
-        window &&
-        window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light',
+      default: window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
       values: [
         { name: 'dark', value: '#002b36' },
         { name: 'light', value: '#fdf6e3' },
@@ -32,11 +27,9 @@ export default {
       ],
     },
   },
-} as ComponentMeta<typeof Component>;
+} as ComponentMeta<typeof Component>
 
-export const WorkflowStepCard: ComponentStory<typeof Component> = (args) => (
-  <Component {...args} />
-);
+export const WorkflowStepCard: ComponentStory<typeof Component> = (args) => <Component {...args} />
 WorkflowStepCard.args = {
-  step: wethWrap({ amount: '1000000000000000000' }),
-};
+  step: new WorkflowBuilder().toWorkflowAction(wethWrap({ amount: '1000000000000000000' })),
+}

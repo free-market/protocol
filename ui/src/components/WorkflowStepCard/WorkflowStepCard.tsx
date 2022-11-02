@@ -1,24 +1,37 @@
 import cx from 'classnames'
 import { WorkflowAssetView } from '@component/StepView/AssetView'
 import { NumberSpinner } from '@component/StepView/NumberSpinner'
-import { formatMoney, WorkflowEvent, WorkflowEventType, WorkflowStep } from '@fmp/sdk'
+import {
+  formatMoney,
+  getActionInfo,
+  getAssetInfo,
+  getStepInfo,
+  WorkflowAction,
+  WorkflowActionInput,
+  WorkflowEvent,
+  WorkflowEventType,
+  WorkflowStep,
+} from '@fmp/sdk'
 import { InformationCircleIcon } from '@heroicons/react/24/outline'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import { motion, AnimatePresence } from 'framer-motion'
 import Popup from 'Popup'
 
-export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: WorkflowEvent; count?: number }): JSX.Element => {
+export const WorkflowStepCard = (props: { step: WorkflowAction; lastEvent?: WorkflowEvent; count?: number }): JSX.Element => {
   const { step, lastEvent, count = 1 } = props
 
-  let inputAssetMessage = <span>{'on ' + props.step.inputAsset.blockChain}</span>
-  let outputAssetMessage = <span>{'on ' + props.step.outputAsset.blockChain}</span>
+  let inputAssetMessage = <span>{'on ' + props.step.inputAsset.chain}</span>
+  let outputAssetMessage = <span>{'on ' + props.step.outputAsset.chain}</span>
+  const inputAssetInfo = getAssetInfo(props.step.inputAsset)
+  const outputAssetInfo = getAssetInfo(props.step.outputAsset)
+  const stepInfo = getStepInfo(props.step)
   // let outputAmount = ''
   // if (props.step.stepId.includes('weth')) {
   //   console.log('last event', lastEvent)
   // }
   if (lastEvent?.absoluteInputAmount) {
     const message = 'Sent'
-    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, props.step.inputAsset.info.decimals, 4)
+    const formattedMoney = formatMoney(lastEvent.absoluteInputAmount, inputAssetInfo.decimals, 4)
     inputAssetMessage = (
       <>
         <span style={{ display: 'inline-block', marginRight: 6 }}>{message}</span>
@@ -33,7 +46,7 @@ export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: Workfl
     outputAssetMessage = (
       <div style={{ all: 'initial', color: 'inherit', font: 'inherit' }}>
         <span style={{ display: 'inline-block' }}>Received&nbsp;&nbsp;</span>
-        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, props.step.outputAsset.info.decimals, 4)} />
+        <NumberSpinner numbers={formatMoney(lastEvent.result.outputAmount, outputAssetInfo.decimals, 4)} />
       </div>
     )
   }
@@ -48,15 +61,15 @@ export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: Workfl
       popup={
         <div className="poppy:bg-zinc-700 poppy:text-zinc-200 bg-s-base2 text-s-base01 dark:bg-s-base02 dark:text-s-base1 max-w-prose">
           <div className="flex items-center space-x-2 px-5 pt-5 pb-3">
-            <img style={{ width: 24, height: 24 }} src={step.info.iconUrl} />
-            <div className="font-bold text-lg">{props.step.info.name}</div>
+            <img style={{ width: 24, height: 24 }} src={stepInfo.iconUrl} />
+            <div className="font-bold text-lg">{stepInfo.name}</div>
           </div>
           <div className="">
-            <div className="text-sm px-5 pb-5">{props.step.info.description}</div>
+            <div className="text-sm px-5 pb-5">{stepInfo.description}</div>
             <div className="px-5 text-sm">
               <span>url:</span>{' '}
-              <a href={props.step.info.webSiteUrl} rel="noreferrer" target="_blank" className="text-s-blue underline cursor-pointer">
-                {props.step.info.webSiteUrl}
+              <a href={stepInfo.webSiteUrl} rel="noreferrer" target="_blank" className="text-s-blue underline cursor-pointer">
+                {stepInfo.webSiteUrl}
               </a>
             </div>
             <div className="px-5 pb-5 text-sm">
@@ -85,8 +98,8 @@ export const WorkflowStepCard = (props: { step: WorkflowStep; lastEvent?: Workfl
             'bg-s-base2 dark:bg-s-base02 poppy:bg-zinc-700': active,
           })}
         >
-          <img style={{ width: 24, height: 24 }} src={step.info.iconUrl} />
-          <div className="text-lg text-s-base02 dark:text-s-base1 poppy:text-zinc-300">{step.info.name}</div>
+          <img style={{ width: 24, height: 24 }} src={stepInfo.iconUrl} />
+          <div className="text-lg text-s-base02 dark:text-s-base1 poppy:text-zinc-300">{stepInfo.name}</div>
           {/* <InformationCircleIcon className="w-4 h-4 text-s-base1 dark:text-s-base01 poppy:text-zinc-500" /> */}
         </div>
       </div>

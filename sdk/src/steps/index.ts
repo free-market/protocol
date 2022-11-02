@@ -1,3 +1,4 @@
+import { WorkflowActionInput, WorkflowStepInput } from '../builder/WorkflowBuilder'
 import { WorkflowActionInfo } from '../types'
 
 export * from './curve'
@@ -28,12 +29,23 @@ export function getAllStepInfos(): WorkflowActionInfo[] {
   ]
 }
 
-const mapStepIdToStepInfo = new Map<string, WorkflowActionInfo>()
+const mapActionIdToStepInfo = new Map<string, WorkflowActionInfo>()
 
 for (const stepInfo of getAllStepInfos()) {
-  mapStepIdToStepInfo.set(stepInfo.actionId, stepInfo)
+  mapActionIdToStepInfo.set(stepInfo.actionId, stepInfo)
 }
 
-export function getStepInfo(stepId: string): WorkflowActionInfo | undefined {
-  return mapStepIdToStepInfo.get(stepId)
+export function getActionInfo(actionId: string): WorkflowActionInfo {
+  const info = mapActionIdToStepInfo.get(actionId)
+  if (!info) {
+    throw new Error('action info not available')
+  }
+  return info
+}
+export function getStepInfo(step: WorkflowStepInput): WorkflowActionInfo {
+  const action = step as WorkflowActionInput
+  if (!action.actionId) {
+    throw new Error('step info not available')
+  }
+  return getActionInfo(action.actionId)
 }

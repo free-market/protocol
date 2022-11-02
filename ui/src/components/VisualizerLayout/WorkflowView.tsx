@@ -1,7 +1,7 @@
-import React  from 'react'
+import React from 'react'
 import { WorkflowStepView } from '../StepView/WorkflowStepView'
 import WorkflowStepCard from '../WorkflowStepCard'
-import {  WorkflowStep, Workflow, WorkflowEvent, WorkflowEventType } from '@fmp/sdk'
+import { WorkflowStep, Workflow, WorkflowEvent, WorkflowEventType, WorkflowAction } from '@fmp/sdk'
 import { executeWorkflow } from 'utils'
 
 type WorkflowCompletedCallback = () => void
@@ -74,28 +74,28 @@ export class WorkflowView extends React.Component<Props, State> {
     const { legacyStepView = false } = this.props
 
     if (legacyStepView) {
-    return (
-      <div>
-        {this.props.workflow.steps.map((step, i) => {
-          const event = this.state.lastEvents.get(step)
-          // console.log('a step', step)
-          console.log('steps event ' + step.stepId, event)
-          return (
-            <WorkflowStepView
-              key={`workflowStep-${i}`}
-              step={step}
-              // completed={completedSteps.includes(it)}
-              lastEvent={event}
-            />
-          )
-        })}
-      </div>
-    )
+      return (
+        <div>
+          {(this.props.workflow.steps as WorkflowAction[]).map((step, i) => {
+            const event = this.state.lastEvents.get(step)
+            // console.log('a step', step)
+            console.log('steps event ' + step.stepId, event)
+            return (
+              <WorkflowStepView
+                key={`workflowStep-${i}`}
+                step={step}
+                // completed={completedSteps.includes(it)}
+                lastEvent={event}
+              />
+            )
+          })}
+        </div>
+      )
     }
 
     return (
       <div className="w-full flex flex-col items-stretch space-y-5">
-        {this.props.workflow.steps.map((step, i) => {
+        {(this.props.workflow.steps as WorkflowAction[]).map((step, i) => {
           const event = this.state.lastEvents.get(step)
           // console.log('a step', step)
           console.log('steps event ' + step.stepId, event)

@@ -2,7 +2,7 @@ import {
   curveTriCryptoSwap,
   MockWorkflowEngine,
   MockWorkflowEngineMode,
-  MoneyAmount,
+  AssetAmount,
   serumSwap,
   wethWrap,
   Workflow,
@@ -17,7 +17,7 @@ export function buildWorkflow(): Workflow {
   const workflow = new WorkflowBuilder()
     .addSteps(
       wethWrap({ amount: ONE_ETH }),
-      curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+      curveTriCryptoSwap({ chain: 'Ethereum', from: 'WETH', to: 'USDT', amount: '100%' }),
       wormholeTokenTransfer({
         fromChain: 'Ethereum',
         fromToken: 'USDT',
