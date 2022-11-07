@@ -4,8 +4,6 @@ const initialTheme = 'poppy'
 
 type WorkflowTheme = 'light' | 'dark' | 'poppy'
 
-type WorkflowPresetName = string
-
 export type WorkflowContextShape = {
   status: 'editing' | 'preparing' | 'prepared' | 'ready-to-execute'
   prepare: () => void | Promise<void>
@@ -32,7 +30,7 @@ export const WorkflowContext = React.createContext<WorkflowContextShape>({
 
 export const WorkflowProvider = (props: {
   onWorkflowTextChange?: (text: string) => void
-  onWorkflowTrigggerChanged?: (text: string) => void
+  onWorkflowTriggerChanged?: (text: string) => void
   children: React.ReactNode
 }): JSX.Element => {
   const [status, setStatus] = React.useState<WorkflowContextShape['status']>('editing')
@@ -56,8 +54,8 @@ export const WorkflowProvider = (props: {
     if (props.onWorkflowTextChange) {
       props.onWorkflowTextChange(text)
     }
-    if (props.onWorkflowTrigggerChanged) {
-      props.onWorkflowTrigggerChanged(triggerType)
+    if (props.onWorkflowTriggerChanged) {
+      props.onWorkflowTriggerChanged(triggerType)
     }
   }
 

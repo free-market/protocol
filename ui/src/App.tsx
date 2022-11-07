@@ -64,7 +64,7 @@ function App(): JSX.Element {
   return (
     <WorkflowProvider
       onWorkflowTextChange={onSniptChanged}
-      onWorkflowTrigggerChanged={(newTriggerType) => setWorkflowTriggerType(newTriggerType)}
+      onWorkflowTriggerChanged={(newTriggerType) => setWorkflowTriggerType(newTriggerType)}
     >
       <ThemeProvider theme={darkTheme}>
         <div className="max-w-4xl mx-auto">
@@ -113,7 +113,6 @@ function App(): JSX.Element {
               </Box>
             </Box>
             <WorkflowView workflow={workflow} run={workflowRunning} onWorkflowCompleted={() => setWorkflowRunning(false)} />
-            {/* <StepInfo step={workflow.steps[0]} active={true} /> */}
           </div>
         </div>
       </ThemeProvider>

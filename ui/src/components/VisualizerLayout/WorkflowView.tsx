@@ -3,6 +3,7 @@ import { WorkflowStepView } from '../StepView/WorkflowStepView'
 import WorkflowStepCard from '../WorkflowStepCard'
 import { WorkflowStep, Workflow, WorkflowEvent, WorkflowEventType, WorkflowAction } from '@fmp/sdk'
 import { executeWorkflow } from 'utils'
+import Balances from '@component/Balances'
 
 type WorkflowCompletedCallback = () => void
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 interface State {
+  lastEvent?: WorkflowEvent
   lastEvents: Map<WorkflowStep, WorkflowEvent>
   isRunning: boolean
 }
@@ -27,15 +29,6 @@ export class WorkflowView extends React.Component<Props, State> {
     }
   }
 
-  // const [lastEvent, setLastEvent] = useState<WorkflowEvent | undefined>(undefined)
-  // const [lastEvents, setLastEvents] = useState<Map<WorkflowStep, WorkflowEvent>>(new Map())
-
-  // const events = lastEvents
-
-  // const completedStepsState = useState<WorkflowStep[]>([])
-  // let completedSteps = completedStepsState[0]
-  // const setCompletedSteps = completedStepsState[1]
-
   myWorkflowEventHandler = (event: WorkflowEvent) => {
     console.log('received event', event, this.state.lastEvents)
     // TODO for on-chain workflows were event.steps.length>1, we need to see max-index being completed
@@ -44,6 +37,7 @@ export class WorkflowView extends React.Component<Props, State> {
     event.steps.forEach((it) => newMap.set(it, event))
     this.setState({
       ...this.state,
+      lastEvent: event,
       lastEvents: newMap,
     })
     // TODO really need workflow-complete event type
@@ -109,6 +103,7 @@ export class WorkflowView extends React.Component<Props, State> {
             />
           )
         })}
+        <Balances balances={this.state.lastEvent?.balances} />
       </div>
     )
   }
