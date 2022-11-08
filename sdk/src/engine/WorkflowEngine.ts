@@ -1,5 +1,5 @@
 import ethers from 'ethers'
-import { Connection as SolanaConnection, Keypair as SolanaKeypair } from '@solana/web3.js'
+// import { Connection as SolanaConnection, Keypair as SolanaKeypair } from '@solana/web3.js'
 import { AssetBalance, Workflow, WorkflowStep, WorkflowStepResult } from '../types'
 
 export type EthereumProvider = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc
@@ -26,11 +26,11 @@ export type WorkflowEventHandler = (event: WorkflowEvent) => void | Promise<void
 
 export interface WorkflowEngineOptions {
   ethereumProvider?: EthereumProvider
-  solanaConnection?: SolanaConnection
-  solanaUser?: SolanaKeypair
+  // solanaConnection?: SolanaConnection
+  // solanaUser?: SolanaKeypair
   eventHandler: WorkflowEventHandler
 }
 
 export interface WorkflowEngine {
-  execute(workflow: Workflow): Promise<void>
+  execute(workflow: Workflow, assetBalances: AssetBalance[]): Promise<void>
 }

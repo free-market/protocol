@@ -1,4 +1,4 @@
-import { Workflow, WorkflowAction, WorkflowStep } from '../types'
+import { AssetBalance, Workflow, WorkflowAction, WorkflowStep } from '../types'
 import { AssetBalances } from './AssetBalances'
 import { WorkflowEngine, WorkflowEngineOptions, WorkflowEvent, WorkflowEventType } from './WorkflowEngine'
 import { BigNumber } from 'ethers'
@@ -32,10 +32,44 @@ export class MockWorkflowEngine implements WorkflowEngine {
     this.options = options
   }
 
-  async execute(workflow: Workflow): Promise<void> {
+  async execute(workflow: Workflow /*, inputAssetAmounts: AssetBalance[]*/): Promise<void> {
     this.workflow = workflow
+    // this.validateInputAssets(inputAssetAmounts)
+    // this.setInitialBalances(inputAssetAmounts)
     for (const step of workflow.steps) {
       await this.executeStep(step)
+    }
+  }
+
+  private validateInputAssets(inputAssetAmounts: AssetBalance[]) {
+    const inputAssets = new Set<string>()
+    const errors: string[] = []
+    for (const inputAssetAmount of inputAssetAmounts) {
+      const assetStr = inputAssetAmount.asset.toString()
+      if (BigNumber.from(inputAssetAmount.balance).isZero()) {
+        errors.push('input asset amount is 0 for ' + assetStr)
+      }
+      if (inputAssets.has(assetStr)) {
+        errors.push('input asset specified more than once: ' + assetStr)
+      }
+      inputAssets.add(assetStr)
+    }
+    for (const inputAsset of this.workflow.inputAssets) {
+      const assetStr = inputAsset.toString()
+      if (!inputAssets.has(assetStr)) {
+        errors.push('asset is not an input to this workflow: ' + assetStr)
+      }
+      inputAssets.delete(assetStr)
+    }
+    inputAssets.forEach(assetStr => errors.push('asset is not an input to this workflow: ' + assetStr))
+    if (errors.length > 0) {
+      throw new Error(JSON.stringify(errors))
+    }
+  }
+
+  private setInitialBalances(inputAssetAmounts: AssetBalance[]) {
+    for (const inputAssetAmount of inputAssetAmounts) {
+      this.balances.credit(inputAssetAmount.asset, BigNumber.from(inputAssetAmount.balance))
     }
   }
 

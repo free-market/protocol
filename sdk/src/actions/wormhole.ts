@@ -49,8 +49,7 @@ export const WORMHOLE_STEP_INFO: WorkflowActionInfo = {
 }
 
 interface WormholeTokenTransferBuilderArgs extends ActionBuilderArg {
-  fromChain: ChainName
-  fromToken: string
+  fromAsset: string
   toChain: ChainName
   amount?: AssetAmount
 }
@@ -60,35 +59,38 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
   // we have symbols in the args here
   // if it ends in et, it's a ethereum native asset on solana
   // if it ends in so, it's a solana native asset on ethereum
-  let toTokenSymbol: string
-  if (args.fromChain === 'Ethereum') {
-    if (args.fromToken.endsWith('et')) {
-      throw new Error(`symbol ${args.fromToken} does not exist on Ethereum`)
+  const fromAsset = Asset.fromString(args.fromAsset)
+  let toSymbol: string
+  if (fromAsset.chain === 'Ethereum') {
+    if (fromAsset.symbol.endsWith('et')) {
+      throw new Error(`asset ${args.fromAsset} does not exist on Ethereum`)
     }
-    if (args.fromToken.endsWith('so')) {
-      toTokenSymbol = args.fromToken.slice(0, args.fromToken.length - 2)
+    if (fromAsset.symbol.endsWith('so')) {
+      toSymbol = fromAsset.symbol.slice(0, fromAsset.symbol.length - 2)
     } else {
-      toTokenSymbol = args.fromToken + 'et'
+      toSymbol = fromAsset.symbol + 'et'
     }
   } else {
-    if (args.fromToken.endsWith('so')) {
-      throw new Error(`symbol ${args.fromToken} does not exist on Solana`)
+    if (fromAsset.symbol.endsWith('so')) {
+      throw new Error(`symbol ${fromAsset.symbol} does not exist on Solana`)
     }
-    if (args.fromToken.endsWith('et')) {
-      toTokenSymbol = args.fromToken.slice(0, args.fromToken.length - 2)
+    if (fromAsset.symbol.endsWith('et')) {
+      toSymbol = fromAsset.symbol.slice(0, fromAsset.symbol.length - 2)
     } else {
-      toTokenSymbol = args.fromToken + 'so'
+      toSymbol = fromAsset.symbol + 'so'
     }
   }
+
+  const toAsset = new Asset(args.toChain, toSymbol)
 
   const rv = {
     id: args.id,
     actionId: 'wormhole.transfer',
     amount: args.amount,
-    inputAsset: new Asset(args.fromChain, args.fromToken),
-    outputAsset: new Asset(args.toChain, toTokenSymbol),
-    sourceChain: Chain[args.fromChain],
-    targetChain: Chain[args.toChain],
+    inputAsset: fromAsset,
+    outputAsset: toAsset,
+    sourceChain: fromAsset.chain,
+    targetChain: toAsset.chain,
   }
   return rv
 }

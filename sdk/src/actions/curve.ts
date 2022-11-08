@@ -22,7 +22,7 @@ export const CURVE_3POOL_SWAP_INFO: WorkflowActionInfo = {
   exchangeFee: '1',
   category: WorkflowStepCategory.Swap,
   description: 'Three Pool at Curve Finance allows swapping between stable coins with very low fees.',
-  iconUrl: 'https://curve.fi/favicon-32x32.svg',
+  iconUrl: 'https://curve.fi/favicon-32x32.png',
   webSiteUrl: 'https://curve.fi/',
 }
 
@@ -34,19 +34,21 @@ export const CURVE_TRICRYPTO_SWAP: WorkflowActionInfo = {
   exchangeFee: '1',
   category: WorkflowStepCategory.Swap,
   description: 'TriCrypto allows swapping between the 3 most popular tokens on Ethereum: WBTC, WETH and USDT',
-  iconUrl: 'https://curve.fi/favicon-32x32.svg',
+  iconUrl: 'https://curve.fi/favicon-32x32.png',
   webSiteUrl: 'https://curve.fi/',
 }
 
 /** define a workflow step that does a token swap using Curve 3Pool */
-export function curveThreePoolSwap(args: CurveBuilderArgs<ThreePoolTokenSymbol>): CurveAction {
+export function curveThreePoolSwap(args: CurveBuilderArgs): CurveAction {
+  const inputAsset = Asset.fromString(args.from)
+
   const rv: CurveAction = {
     id: args.id,
-    chain: args.chain,
+    chain: inputAsset.chain,
     actionId: 'curve.3pool.swap',
     amount: args.amount,
-    inputAsset: new Asset('Ethereum', args.from),
-    outputAsset: new Asset('Ethereum', args.to),
+    inputAsset: inputAsset,
+    outputAsset: Asset.fromString(args.to),
   }
   return rv
 }
@@ -55,24 +57,25 @@ export function curveThreePoolSwap(args: CurveBuilderArgs<ThreePoolTokenSymbol>)
  * Arguments for Curve workflow steps
  *  @typeParam Symbol - The allowable set of crypto symbols (as a string union)
  */
-export interface CurveBuilderArgs<CurveSymbol> extends ActionBuilderArg {
-  /** the chain on which the action will operate */
-  chain: ChainName
+export interface CurveBuilderArgs extends ActionBuilderArg {
   /** the token the Curve workflow step will swap from */
-  from: CurveSymbol
+  from: string
   /** the token the Curve workflow step will swap to */
-  to: CurveSymbol
+  to: string
 }
 
 /** define a workflow step that does a token swap using Curve 3Pool */
-export function curveTriCryptoSwap(args: CurveBuilderArgs<TriCryptoTokenSymbol>): CurveAction {
+export function curveTriCryptoSwap(args: CurveBuilderArgs): CurveAction {
+  // TODO add error if user specifies different chains in the assets
+  const inputAsset = Asset.fromString(args.from)
+
   const rv: CurveAction = {
     id: args.id,
-    chain: args.chain,
+    chain: inputAsset.chain,
     actionId: 'curve.tricrypto.swap',
     amount: args.amount,
-    inputAsset: new Asset('Ethereum', args.from),
-    outputAsset: new Asset('Ethereum', args.to),
+    inputAsset: inputAsset,
+    outputAsset: Asset.fromString(args.to),
   }
   return rv
 }
