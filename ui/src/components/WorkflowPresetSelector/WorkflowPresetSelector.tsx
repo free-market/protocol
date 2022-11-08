@@ -15,10 +15,9 @@ const PRESETS = [
     triggerType: 'Manual',
     text: `[
   wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
   wormholeTokenTransfer({
-    fromChain: 'Ethereum',
-    fromToken: 'USDT',
+    fromAsset: 'Ethereum.USDT',
     toChain: 'Solana',
     amount: '100%'
   }),
@@ -31,11 +30,10 @@ const PRESETS = [
     triggerType: 'xNFT',
     text: `[
   wethWrap({ amount: '10000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
-  curveThreePoolSwap({ from: 'USDT', to: 'USDC' }),
+  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT' }),
+  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC' }),
   wormholeTokenTransfer({
-      fromChain: 'Ethereum',
-      fromToken: 'USDC',
+      fromAsset: 'Ethereum.USDC',
       toChain: 'Solana'
   }),
   serumSwap({ from: 'USDCet', to: 'USDC' }),
@@ -51,13 +49,11 @@ const PRESETS = [
     text: `[
       serumSwap({ from: 'USDC', to: 'USDCet', amount: 1_000_000_000000 }), // $1M USDC
       wormholeTokenTransfer({
-          fromChain: 'Solana',
-          fromToken: 'USDCet',
+          fromAsset: 'Solana.USDCet',
           toChain: 'Ethereum' }),
-      curveThreePoolSwap({ from: 'USDC', to: 'USDT' }),
+      curveThreePoolSwap({ from: 'Ethereum.USDC', to: 'Ethereum.USDT' }),
       wormholeTokenTransfer({
-          fromChain: 'Ethereum',
-          fromToken: 'USDT',
+          fromAsset: 'Ethereum.USDT',
           toChain: 'Solana' }),
       serumSwap({ from: 'USDTet', to: 'USDT' })
 ]`,

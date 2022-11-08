@@ -1,11 +1,11 @@
 import { Trigger } from '../Trigger'
 import { Asset, AssetAmount, Workflow, WorkflowAction, WorkflowStep, WorkflowStepResult } from '../types'
-export { curveThreePoolSwap, curveTriCryptoSwap } from '../steps/curve'
-export { wormholeTokenTransfer } from '../steps/wormhole'
-export { serumSwap as serumSwap } from '../steps/serum'
-export { mangoDeposit, mangoWithdrawal } from '../steps/mango'
-export { wethWrap, wethUnwrap } from '../steps/weth'
-export { marinadeStake, marinadeUnstake } from '../steps/marinade'
+export { curveThreePoolSwap, curveTriCryptoSwap } from '../actions/curve'
+export { wormholeTokenTransfer } from '../actions/wormhole'
+export { serumSwap as serumSwap } from '../actions/serum'
+export { mangoDeposit, mangoWithdrawal } from '../actions/mango'
+export { wethWrap, wethUnwrap } from '../actions/weth'
+export { marinadeStake, marinadeUnstake } from '../actions/marinade'
 
 /** A callback implelemented by the integrator to determine when to exit a workflow loop based on WorkflowStepResult */
 export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Promise<boolean>

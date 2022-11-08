@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
@@ -18,10 +19,9 @@ const WORKFLOWS: SampleWorkflow[] = [
     triggerType: 'Manual',
     snippit: `[
   wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
+  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
   wormholeTokenTransfer({
-    fromChain: 'Ethereum',
-    fromToken: 'USDT',
+    fromAsset: 'Ethereum.USDT',
     toChain: 'Solana',
     amount: '100%'
   }),
@@ -32,9 +32,9 @@ const WORKFLOWS: SampleWorkflow[] = [
     triggerType: 'xNFT',
     snippit: `[
   wethWrap({ amount: '10000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT' }),
-  curveThreePoolSwap({ from: 'USDT', to: 'USDC' }),
-  wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDC', toChain: 'Solana' }),
+  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT' }),
+  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC' }),
+  wormholeTokenTransfer({ fromAsset: 'Ethereum.USDC', toChain: 'Solana' }),
   serumSwap({ from: 'USDCet', to: 'USDC' }),
   mangoDeposit({ symbol: 'USDC' }),
   mangoWithdrawal({ symbol: 'SOL' }),
@@ -45,11 +45,10 @@ const WORKFLOWS: SampleWorkflow[] = [
     triggerType: 'Market',
     snippit: `[
   wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'WETH', to: 'USDT', amount: '100%' }),
-  curveThreePoolSwap({ from: 'USDT', to: 'USDC', amount: '100%' }),
+  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
+  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC', amount: '100%' }),
   wormholeTokenTransfer({
-    fromChain: 'Ethereum',
-    fromToken: 'USDC',
+    fromAsset: 'Ethereum.USDC',
     toChain: 'Solana',
     amount: '100%'
   }),

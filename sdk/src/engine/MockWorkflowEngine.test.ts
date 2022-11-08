@@ -8,8 +8,8 @@ function buildWorkflow(): Workflow {
   return new WorkflowBuilder()
     .addSteps(
       wethWrap({ amount: '1000000000000000000' }),
-      curveTriCryptoSwap({ chain: 'Ethereum', from: 'WETH', to: 'USDT', amount: '100%' }),
-      wormholeTokenTransfer({ fromChain: 'Ethereum', fromToken: 'USDT', toChain: 'Solana', amount: '100%' }),
+      curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
+      wormholeTokenTransfer({ fromAsset: 'Ethereum.USDT', toChain: 'Solana', amount: '100%' }),
       serumSwap({ from: 'USDTet', to: 'USDC', amount: '100%' })
     )
     .build()
