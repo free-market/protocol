@@ -8,3 +8,4 @@ packages:
   # - 'solana'
   - 'sdk'
   - 'examples-sdk'
+  - 'ui2'
