@@ -1,10 +1,18 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
+import CoreProvider from '../CoreProvider';
 import { Layout as Component } from './Layout';
 
-export const story = {
+export default {
   title: 'Example/Layout',
   component: Component,
+  decorators: [
+    (Story) => (
+      <CoreProvider>
+        <Story />
+      </CoreProvider>
+    ),
+  ],
   parameters: {
     layout: 'fullscreen',
     backgrounds: {
@@ -15,9 +23,7 @@ export const story = {
       ],
     },
   },
-}
-
-export default story as ComponentMeta<typeof Component>;
+} as ComponentMeta<typeof Component>
 
 export const Layout: ComponentStory<typeof Component> = (args) => (
   <Component {...args} />
