@@ -17,7 +17,7 @@ export const Layout = (props: {
       <div className="p-3 border-b sm:border-b-0 sm:border-r border-zinc-800 select-none basis-0 grow-0">
         <Logo className="stroke-zinc-200 w-8 h-8"/>
       </div>
-      <div className="text-zinc-200 w-96 px-3 sm:h-screen sm:overflow-y-auto shrink grow-0">
+      <div className="text-zinc-200 w-96 px-3 sm:h-screen sm:overflow-y-auto shrink grow-0 space-y-2">
         {stepCatalog}
       </div>
       <div className="sm:h-screen p-4 w-full grow">
