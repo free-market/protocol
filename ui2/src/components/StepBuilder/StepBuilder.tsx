@@ -3,7 +3,8 @@ import cx from 'classnames'
 import {ChevronLeftIcon} from '@heroicons/react/20/solid'
 import {PlusIcon, XCircleIcon} from '@heroicons/react/24/solid'
 import { motion } from 'framer-motion'
-import { useCore } from '../CoreProvider'
+import { useCore } from '@component/CoreProvider'
+import AssetPill from '@component/AssetPill'
 
 const variants = {
   visible: {
@@ -66,23 +67,13 @@ const StepChoiceCard = (props: {
     </motion.button>
   )
 
-        const inputPill = (
-        <div className={cx('inline-flex items-center rounded-full bg-zinc-600 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg shadow-md', {'group-hover:bg-zinc-500/50': !editing})}>
-          <div className="rounded-full overflow-hidden w-5 h-5">
-            <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"/>
-          </div>
-          <span>USDC</span>
-        </div>
-        )
+  const inputPill = (
+    <AssetPill asset={{label: 'USDC', icon: {url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg'}}} />
+  )
 
-        const outputPill = (
-          <div className={cx('inline-flex items-center rounded-full bg-zinc-600 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg shadow-md', {'group-hover:bg-zinc-500/50': !editing})}>
-          <div className="rounded-full overflow-hidden w-5 h-5">
-            <img src="https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png"/>
-          </div>
-          <span>USDT</span>
-        </div>
-        )
+  const outputPill = (
+    <AssetPill asset={{label: 'USDT', icon: {url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png'}}} />
+  )
 
   return (
     <motion.div
@@ -99,25 +90,25 @@ const StepChoiceCard = (props: {
         {editing ? (
           <XCircleIcon className='w-8 h-8 p-2 -m-2 box-content text-zinc-500 cursor-pointer hover:text-zinc-400' onClick={deselect}/>
         ) : (
-        <PlusIcon className='w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50'/>
+          <PlusIcon className='w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50'/>
         )}
       </div>
       {editing ? (
         <>
           <div className="w-64 flex flex-col content-end justify-end items-end space-y-5">
 
-        {inputPill}
-        {outputPill}
+            {inputPill}
+            {outputPill}
           </div>
         </>
       ) : (
-      <div className={cx('flex items-center text-zinc-600', {'group-hover:text-zinc-500/50': !editing})}>
-        {inputPill}
+        <div className={cx('flex items-center text-zinc-600', {'group-hover:text-zinc-500/50': !editing})}>
+          {inputPill}
 
-        &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
+          &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
 
-        {outputPill}
-      </div>
+          {outputPill}
+        </div>
       )}
 
       {editing && button}
@@ -162,7 +153,7 @@ export const StepBuilder = (): JSX.Element => {
           className="flex items-center h-full justify-center">
           <p className="inline text-zinc-500 text-sm">Select an action group to get started.</p>
         </motion.div>
-    )
+      )
 
     default: {
       const choiceCardsAndDividers = (
@@ -234,8 +225,7 @@ export const StepBuilder = (): JSX.Element => {
 
       return (
         <>
-          {React.cloneElement(breadCrumbs, {
-          })}
+          {breadCrumbs}
           {choiceCardsAndDividers}
           {core.selectedStepChoiceName === 'swap' && stepChoiceEditor}
         </>
