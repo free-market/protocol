@@ -23,8 +23,8 @@ export const Layout = (props: {
       </div>
       <div className="sm:h-screen p-4 w-full grow">
         <div className="h-full p-2 rounded-xl bg-zinc-800 w-full sm:flex">
-          <div className="h-full p-2 rounded-xl bg-zinc-900 max-w-sm grow basis-0">
-            <AnimatePresence exitBeforeEnter>{stepBuilder}</AnimatePresence>
+          <div className="h-full p-2 rounded-xl bg-zinc-900 max-w-sm grow basis-0 space-y-5">
+            <AnimatePresence mode="wait">{stepBuilder}</AnimatePresence>
           </div>
           <div className="h-full shrink min-w-xs p-2 basis-0 grow">
             {workflow}
