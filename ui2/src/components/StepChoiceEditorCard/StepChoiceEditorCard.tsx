@@ -93,7 +93,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
                 <button
                   type="reset"
-                  className="w-8 h-8 p-2 -m-2 box-content text-zinc-500 cursor-pointer hover:text-zinc-400 focus:outline-2"
+                  className="w-8 h-8 p-2 -mt-2 -mb-2 -mr-3 box-content text-zinc-500 cursor-pointer hover:text-zinc-400 focus:outline-2"
                   onClick={deselect}
                 >
                   <XCircleIcon />
@@ -101,7 +101,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
               </div>
 
               <>
-                <div className="w-64 flex flex-col space-y-5">
+                <div className="w-64 flex flex-col space-y-1">
                   <div>
                     <Field
                       name="inputAmount"
@@ -145,6 +145,21 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                         </div>
                       )}
                     />
+                  </div>
+
+                  <div className="flex text-zinc-400 items-center gap-2">
+                    <div className="border-b-2 border-zinc-600 grow"></div>
+
+                    <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="border-b-2 border-zinc-600 grow"></div>
                   </div>
 
                   <div>
