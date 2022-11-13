@@ -1,10 +1,17 @@
+import React from 'react'
+import cx from 'classnames'
 import {ChevronLeftIcon} from '@heroicons/react/20/solid'
 import {PlusIcon} from '@heroicons/react/24/solid'
 import { motion } from 'framer-motion'
 import { useCore } from '../CoreProvider'
 
 const variants = {
-  visible: { y: 0, opacity: 1 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    // for debugging:
+    // transition: { duration: 5 }
+  },
   hidden: { y: -10, opacity: 0 }
 }
 
@@ -13,18 +20,30 @@ const variantsNoTransform = {
   hidden: { y: 0, opacity: 0 }
 }
 
-const StepChoiceCard = (): JSX.Element => {
+const StepChoiceCard = (props: { editing?: boolean }): JSX.Element => {
+  const { editing = false } = props
+  const core = useCore()
+
+  const click = () => {
+    core.selectStepChoice('swap')
+  }
+
   return (
-    <div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl cursor-pointer hover:bg-zinc-600/75 active:opacity-75 select-none items-center justify-between group flex-col space-y-2">
+    <motion.div
+      layout="position"
+      className={cx("inline-flex bg-zinc-700 py-2 px-2 rounded-xl  items-center justify-between group flex-col space-y-2", {
+        'cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none': !editing
+      })}
+      onClick={click}>
       <div className="inline-flex items-center w-full justify-between">
         <div className="inline-flex items-center">
           <img src='https://curve.fi/favicon-32x32.png' className="w-5 h-5"/>
-          <div className="text-zinc-300 px-2">Swap</div>
+          <div className="text-zinc-400 px-2">Swap</div>
         </div>
-        <PlusIcon className="w-8 h-8 text-zinc-500 group-hover:text-zinc-400/50"/>
+        <PlusIcon className={cx('w-6 h-6 text-zinc-500', {'group-hover:text-zinc-400/50': !editing})}/>
       </div>
-      <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
-        <div className="flex items-center rounded-full bg-zinc-600 text-zinc-300/75 py-1 px-2 space-x-2 font-medium group-hover:bg-zinc-500/50 text-lg">
+      <div className={cx('flex items-center text-zinc-600', {'group-hover:text-zinc-500/50': !editing})}>
+        <div className={cx('flex items-center rounded-full bg-zinc-600 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg', {'group-hover:bg-zinc-500/50': !editing})}>
           <div className="rounded-full overflow-hidden w-5 h-5">
             <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"/>
           </div>
@@ -33,40 +52,44 @@ const StepChoiceCard = (): JSX.Element => {
 
         &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
 
-        <div className="flex items-center rounded-full bg-zinc-600 text-zinc-300/75 py-1 px-2 space-x-2 font-medium group-hover:bg-zinc-500/50 text-lg">
+        <div className="flex items-center rounded-full bg-zinc-600 text-zinc-300 py-1 px-2 space-x-2 font-medium group-hover:bg-zinc-500/50 text-lg">
           <div className="rounded-full overflow-hidden w-5 h-5">
             <img src="https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png"/>
           </div>
           <span>USDT</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 const Divider = (props: { delay: number }): JSX.Element => {
-    return (
-          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" className="w-full relative px-5" transition={{ delay: props.delay }}>
-            <div className='border-t border-zinc-600 w-full' />
+  return (
+    <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" className="w-full px-5 flex items-center justify-center" transition={{ delay: props.delay }}>
 
-            <div className='absolute top-0 left-0 right-0 z-10'>
-              <div className='mx-auto w-10 flex justify-center -mt-3 bg-zinc-900 top-0 z-10 text-zinc-600'>
-                or
-              </div>
-            </div>
-            </motion.div>
-            )
-  }
+      <div className='border-t border-zinc-600 w-36 transform -translate-y-1' />
+        <div className='mx-auto w-10 flex justify-center -mt-3 text-zinc-600'>
+          or
+        </div>
+      <div className='border-t border-zinc-600 w-36 transform -translate-y-1' />
+    </motion.div>
+  )
+}
 
 export const StepBuilder = (): JSX.Element => {
   const core = useCore()
 
+  // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {
-    core.selectActionGroup('none')
+    if (core.selectedStepChoiceName == null) {
+      core.selectActionGroup(null)
+    } else {
+      core.selectStepChoice(null)
+    }
   }
 
   switch (core.selectedActionGroupName) {
-    case 'none':
+    case null:
       return (
         <motion.div
           key={core.selectedActionGroupName}
@@ -79,9 +102,30 @@ export const StepBuilder = (): JSX.Element => {
         </motion.div>
     )
 
-    default:
-      return (
+    default: {
+      const choiceCardsAndDividers = (
         <>
+          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.2 }}>
+            <motion.div layout layoutId="foo">
+              <StepChoiceCard />
+            </motion.div>
+          </motion.div>
+          <Divider delay={0.25} />
+          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.3 }}>
+            <StepChoiceCard />
+          </motion.div>
+          <Divider delay={0.35} />
+          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.4 }}>
+            <StepChoiceCard />
+          </motion.div>
+          <Divider delay={0.45} />
+          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.5 }}>
+            <StepChoiceCard />
+          </motion.div>
+        </>
+      )
+
+      const breadCrumbs = (
           <motion.div
             variants={variantsNoTransform}
             initial="hidden"
@@ -92,23 +136,42 @@ export const StepBuilder = (): JSX.Element => {
             <ChevronLeftIcon className="w-4 h-4 mx-2" />
             <div>Curve</div>
           </motion.div>
+      )
 
-          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.2 }}>
-            <StepChoiceCard />
+      const stepChoiceBreadCrumbs = (
+          <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
+            <ChevronLeftIcon className="w-4 h-4 mx-2" />
+            <div>Curve</div>
+            <ChevronLeftIcon className="w-4 h-4 mx-2" />
+            <div>Swap</div>
+          </div>
+      )
+
+      const stepChoiceShadow = (
+        <motion.div className="bg-zinc-800/75 absolute top-0 right-0 left-0 bottom-0 z-20 p-2 group cursor-pointer" onClick={deselect} variants={variantsNoTransform} initial="hidden" animate="visible" exit="hidden">
+          {stepChoiceBreadCrumbs}
+        </motion.div>
+      )
+
+      const stepChoiceEditor = (
+        <div className="absolute top-0 right-0 left-0 bottom-0 z-20 !m-0">
+          {stepChoiceShadow}
+          <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
+          <motion.div layout layoutId="foo" className="flex items-center flex-col content-end space-y-5 z-30">
+            <StepChoiceCard editing />
           </motion.div>
-            <Divider delay={0.25} />
-          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.3 }}>
-            <StepChoiceCard />
-          </motion.div>
-            <Divider delay={0.35} />
-          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.4 }}>
-            <StepChoiceCard />
-          </motion.div>
-            <Divider delay={0.45} />
-          <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" key={core.selectedActionGroupName} className="flex items-center flex-col content-end space-y-5" transition={{ delay: 0.5 }}>
-            <StepChoiceCard />
-          </motion.div>
+          </div>
+        </div>
+      )
+
+      return (
+        <>
+          {React.cloneElement(breadCrumbs, {
+          })}
+          {choiceCardsAndDividers}
+          {core.selectedStepChoiceName === 'swap' && stepChoiceEditor}
         </>
-    )
+      )
+    }
   }
 }

@@ -2,16 +2,21 @@ import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import React from 'react'
 
-export type ActionGroupName = 'none' | 'curve'
+export type ActionGroupName = 'curve'
+
+// TODO: deprecate this by storing identifiers instead of slugs
+export type StepChoiceName = 'swap'
 
 const initialState = {
-  selectedActionGroupName: 'none' as ActionGroupName
+  selectedActionGroupName: null as ActionGroupName | null,
+  selectedStepChoiceName: null as StepChoiceName | null
 }
 
 export type CoreState = typeof initialState
 
 export type Core = CoreState & {
-  selectActionGroup: (actionGroupName: ActionGroupName) => void
+  selectActionGroup: (actionGroupName: ActionGroupName | null) => void
+  selectStepChoice: (stepChoiceName: StepChoiceName | null) => void
 }
 
 export const CoreContext = React.createContext(null as Core | null)
@@ -31,11 +36,16 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
 
   const core: Core = {
     ...state,
-    selectActionGroup: (actionGroupName) => {
-      updateState((draft: Draft<CoreState>) => {
-        draft.selectedActionGroupName = actionGroupName
-      })
-    }
+    selectActionGroup: (actionGroupName) => updateState((draft: Draft<CoreState>) => {
+      if (actionGroupName !== draft.selectedActionGroupName) {
+        draft.selectedStepChoiceName = null
+      }
+
+      draft.selectedActionGroupName = actionGroupName
+    }),
+    selectStepChoice: (stepChoiceName) => updateState((draft: Draft<CoreState>) => {
+      draft.selectedStepChoiceName = stepChoiceName
+    })
   }
 
   return (
