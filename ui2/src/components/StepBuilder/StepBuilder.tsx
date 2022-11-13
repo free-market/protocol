@@ -1,7 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import {ChevronLeftIcon} from '@heroicons/react/20/solid'
-import {PlusIcon} from '@heroicons/react/24/solid'
+import {PlusIcon, XCircleIcon} from '@heroicons/react/24/solid'
 import { motion } from 'framer-motion'
 import { useCore } from '../CoreProvider'
 
@@ -30,6 +30,10 @@ const StepChoiceCard = (props: {
 
   const click = () => {
     core.selectStepChoice('swap')
+  }
+
+  const deselect = () => {
+    core.selectStepChoice(null)
   }
 
   const button = (
@@ -86,13 +90,17 @@ const StepChoiceCard = (props: {
       className={cx("inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col",
         editing ? 'space-y-5' : 'cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2'
       )}
-      onClick={click}>
+      onClick={editing ? undefined : click}>
       <div className="inline-flex items-center w-full justify-between">
         <div className="inline-flex items-center">
           <img src='https://curve.fi/favicon-32x32.png' className="w-5 h-5"/>
           <div className="text-zinc-400 px-2">Swap</div>
         </div>
-        <PlusIcon className={cx('w-6 h-6 text-zinc-500', {'group-hover:text-zinc-400/50': !editing})}/>
+        {editing ? (
+          <XCircleIcon className='w-8 h-8 p-2 -m-2 box-content text-zinc-500 cursor-pointer hover:text-zinc-400' onClick={deselect}/>
+        ) : (
+        <PlusIcon className='w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50'/>
+        )}
       </div>
       {editing ? (
         <>
@@ -119,13 +127,13 @@ const StepChoiceCard = (props: {
 
 const Divider = (props: { delay: number }): JSX.Element => {
   return (
-    <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" className="w-full px-5 flex items-center justify-center" transition={{ delay: props.delay }}>
+    <motion.div variants={variants} initial="hidden" animate="visible" exit="hidden" className="w-full px-5 flex items-center justify-center h-4 overflow-visible" transition={{ delay: props.delay }}>
 
-      <div className='border-t border-zinc-600 w-36 transform -translate-y-1' />
-      <div className='mx-auto w-10 flex justify-center -mt-3 text-zinc-600'>
+      <div className='border-t border-zinc-600 w-36' />
+      <div className='mx-auto w-10 flex justify-center -mt-3 text-zinc-600 transform translate-y-1'>
         or
       </div>
-      <div className='border-t border-zinc-600 w-36 transform -translate-y-1' />
+      <div className='border-t border-zinc-600 w-36' />
     </motion.div>
   )
 }
@@ -214,14 +222,14 @@ export const StepBuilder = (): JSX.Element => {
       )
 
       const stepChoiceEditor = (
-        <div className="absolute top-0 right-0 left-0 bottom-0 z-20 !m-0">
+        <motion.div className="absolute top-0 right-0 left-0 bottom-0 z-20 !m-0">
           {stepChoiceShadow}
           <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
             <motion.div layout layoutId="foo" className="flex items-center flex-col content-end space-y-5 z-30">
               <StepChoiceCard editing />
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       )
 
       return (
