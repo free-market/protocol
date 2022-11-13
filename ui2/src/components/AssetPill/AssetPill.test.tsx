@@ -4,7 +4,9 @@ import AssetPill from './';
 
 describe('Component: AssetPill', () => {
   it('should render children', () => {
-    const { asFragment } = render(<AssetPill />)
+    const { asFragment } = render(
+      <AssetPill asset={{label: 'USDC', icon: { url: 'sentinel' } }}/>
+    )
 
     expect(asFragment()).toMatchInlineSnapshot()
   });
