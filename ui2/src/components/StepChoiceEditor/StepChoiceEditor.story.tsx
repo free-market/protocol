@@ -24,7 +24,5 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const StepChoiceEditor: ComponentStory<typeof Component> = () => (
-  <Component />
-)
+export const StepChoiceEditor: ComponentStory<typeof Component> = () => <Component />
 StepChoiceEditor.args = {}

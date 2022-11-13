@@ -1,7 +1,7 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import CoreProvider from '../CoreProvider';
-import { Layout as Component } from './Layout';
+import CoreProvider from '../CoreProvider'
+import { Layout as Component } from './Layout'
 
 export default {
   title: 'Example/Layout',
@@ -25,7 +25,5 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const Layout: ComponentStory<typeof Component> = (args) => (
-  <Component {...args} />
-);
-Layout.args = {};
+export const Layout: ComponentStory<typeof Component> = (args) => <Component {...args} />
+Layout.args = {}

@@ -9,7 +9,7 @@ export type StepChoiceName = 'swap'
 
 const initialState = {
   selectedActionGroupName: null as ActionGroupName | null,
-  selectedStepChoiceName: null as StepChoiceName | null
+  selectedStepChoiceName: null as StepChoiceName | null,
 }
 
 export type CoreState = typeof initialState
@@ -36,21 +36,19 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
 
   const core: Core = {
     ...state,
-    selectActionGroup: (actionGroupName) => updateState((draft: Draft<CoreState>) => {
-      if (actionGroupName !== draft.selectedActionGroupName) {
-        draft.selectedStepChoiceName = null
-      }
+    selectActionGroup: (actionGroupName) =>
+      updateState((draft: Draft<CoreState>) => {
+        if (actionGroupName !== draft.selectedActionGroupName) {
+          draft.selectedStepChoiceName = null
+        }
 
-      draft.selectedActionGroupName = actionGroupName
-    }),
-    selectStepChoice: (stepChoiceName) => updateState((draft: Draft<CoreState>) => {
-      draft.selectedStepChoiceName = stepChoiceName
-    })
+        draft.selectedActionGroupName = actionGroupName
+      }),
+    selectStepChoice: (stepChoiceName) =>
+      updateState((draft: Draft<CoreState>) => {
+        draft.selectedStepChoiceName = stepChoiceName
+      }),
   }
 
-  return (
-    <CoreContext.Provider value={core}>
-      {props.children}
-    </CoreContext.Provider>
-  )
+  return <CoreContext.Provider value={core}>{props.children}</CoreContext.Provider>
 }

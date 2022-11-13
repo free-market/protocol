@@ -7,8 +7,8 @@ describe('Component: StepChoiceEditor', () => {
   it('should render children', () => {
     const { asFragment } = render(
       <CoreProvider>
-        <StepChoiceEditor/>
-      </CoreProvider>
+        <StepChoiceEditor />
+      </CoreProvider>,
     )
 
     expect(asFragment()).toMatchInlineSnapshot()

@@ -1,1 +1,1 @@
-export { CoreProvider as default, useCore } from './CoreProvider';
+export { CoreProvider as default, useCore } from './CoreProvider'

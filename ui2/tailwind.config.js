@@ -27,8 +27,8 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
-    plugin(function({ addVariant }) {
+    plugin(function ({ addVariant }) {
       addVariant('poppy', '.fmp-poppy &')
-    })
+    }),
   ],
 }

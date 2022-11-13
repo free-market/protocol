@@ -1,1 +1,1 @@
-export { StepHeading as default } from './StepHeading';
+export { StepHeading as default } from './StepHeading'

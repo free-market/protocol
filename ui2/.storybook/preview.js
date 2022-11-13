@@ -1,5 +1,5 @@
-import '!style-loader!css-loader!postcss-loader!tailwindcss/tailwind.css';
-import 'tailwindcss/tailwind.css';
+import '!style-loader!css-loader!postcss-loader!tailwindcss/tailwind.css'
+import 'tailwindcss/tailwind.css'
 import '../src/fonts.css'
 
 export const parameters = {
@@ -14,6 +14,6 @@ export const parameters = {
     // Override the default dark theme
     dark: { appBg: '#002b36' },
     // Override the default light theme
-    light: { appBg: '#fdf6e3' }
-  }
-};
+    light: { appBg: '#fdf6e3' },
+  },
+}

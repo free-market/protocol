@@ -7,8 +7,8 @@ describe('Component: StepChoiceCard', () => {
   it('should render children', () => {
     const { asFragment } = render(
       <CoreProvider>
-        <StepChoiceCard/>
-      </CoreProvider>
+        <StepChoiceCard />
+      </CoreProvider>,
     )
 
     expect(asFragment()).toMatchInlineSnapshot()

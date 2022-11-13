@@ -1,1 +1,1 @@
-export { StepCatalog as default } from './StepCatalog';
+export { StepCatalog as default } from './StepCatalog'

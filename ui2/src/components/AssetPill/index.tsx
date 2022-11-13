@@ -1,1 +1,1 @@
-export { AssetPill as default } from './AssetPill';
+export { AssetPill as default } from './AssetPill'
