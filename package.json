@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,13 @@
     }
   },
   "devDependencies": {
+    "husky": "7.0.4",
+    "lint-staged": "^13.0.3",
     "turbo": "^1.5.4"
+  },
+  "lint-staged": {
+    "./ui2/**/*.(js|ts|jsx|tsx)": [
+      "./ui2/node_modules/.bin/prettier --write -u"
+    ]
   }
 }
