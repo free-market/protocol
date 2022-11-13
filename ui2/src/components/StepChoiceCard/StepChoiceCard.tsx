@@ -1,14 +1,10 @@
 import { useCore } from '@component/CoreProvider'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
-import {PlusIcon} from '@heroicons/react/24/solid'
+import { PlusIcon } from '@heroicons/react/24/solid'
 import StepChoiceEditor from '@component/StepChoiceEditor'
 
-export const StepChoiceCard = (props: {
-  editing?: boolean
-  submitting?: boolean
-  empty?: boolean
-}): JSX.Element => {
+export const StepChoiceCard = (props: { editing?: boolean; submitting?: boolean; empty?: boolean }): JSX.Element => {
   if (props.editing) {
     return <StepChoiceEditor {...props} />
   }
@@ -20,32 +16,42 @@ export const StepChoiceCard = (props: {
   }
 
   const inputPill = (
-    <AssetPill asset={{label: 'USDC', icon: {url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg'}}} />
+    <AssetPill
+      asset={{
+        label: 'USDC',
+        icon: {
+          url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+        },
+      }}
+    />
   )
 
   const outputPill = (
-    <AssetPill asset={{label: 'USDT', icon: {url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png'}}} />
+    <AssetPill
+      asset={{
+        label: 'USDT',
+        icon: { url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png' },
+      }}
+    />
   )
 
   return (
     <motion.div
       layout="position"
-      className='inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2'
-      onClick={click}>
+      className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2"
+      onClick={click}
+    >
       <div className="inline-flex items-center w-full justify-between">
         <div className="inline-flex items-center">
-          <img src='https://curve.fi/favicon-32x32.png' className="w-5 h-5"/>
+          <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
           <div className="text-zinc-400 px-2">Swap</div>
         </div>
 
-        <PlusIcon className='w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50'/>
+        <PlusIcon className="w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50" />
       </div>
-      <div className='flex items-center text-zinc-600 group-hover:text-zinc-500/50'>
+      <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
         {inputPill}
-
-        &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp;{' '}
-
-        {outputPill}
+        &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
       </div>
     </motion.div>
   )

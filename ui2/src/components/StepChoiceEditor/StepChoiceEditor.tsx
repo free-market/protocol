@@ -1,77 +1,55 @@
-import AssetPill from '@component/AssetPill'
 import { useCore } from '@component/CoreProvider'
-import {XCircleIcon} from '@heroicons/react/24/solid'
-import cx from 'classnames'
-import {motion} from 'framer-motion'
+import StepChoiceEditorCard from '@component/StepChoiceEditorCard'
+import { ChevronLeftIcon } from '@heroicons/react/24/solid'
+import { motion } from 'framer-motion'
 
-export const StepChoiceEditor = (props: {
-  submitting?: boolean
-  empty?: boolean
-}): JSX.Element => {
-  const { empty = false, submitting = false } = props
+const variantsNoTransform = {
+  visible: { y: 0, opacity: 1 },
+  hidden: { y: 0, opacity: 0 },
+}
+
+export const StepChoiceEditor = (props: { submitting?: boolean; empty?: boolean }): JSX.Element => {
   const core = useCore()
 
+  // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {
-    core.selectStepChoice(null)
+    if (core.selectedStepChoiceName == null) {
+      core.selectActionGroup(null)
+    } else {
+      core.selectStepChoice(null)
+    }
   }
 
-  const button = (
-    <motion.button
-      className={cx(
-        'w-full text-stone-200 font-bold bg-sky-600 rounded-xl px-3 py-2 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden',
-        {
-          'cursor-not-allowed': submitting || empty,
-          'opacity-50': empty
-        }
-      )}
+  const stepChoiceBreadCrumbs = (
+    <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
+      <ChevronLeftIcon className="w-4 h-4 mx-2" />
+      <div>Curve</div>
+      <ChevronLeftIcon className="w-4 h-4 mx-2" />
+      <div>Swap</div>
+    </div>
+  )
+
+  const stepChoiceShadow = (
+    <motion.div
+      className="bg-zinc-800/75 absolute top-0 right-0 left-0 bottom-0 z-20 p-2 group cursor-pointer"
+      onClick={deselect}
+      variants={variantsNoTransform}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
     >
-      <div className='h-8'>
-        <div
-          className='transition-all h-8'
-          style={{
-            marginTop: submitting ? -77 : 2,
-            height: 'max-content'
-          }}
-        >
-          <div className='flex items-center'>Add Step</div>
-        </div>
-        <div className='transition-all h-8 mt-12'>
-          <span
-            className='border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full'
-            style={{ borderLeftColor: 'rgb(231 229 228)' }}
-          />
-        </div>
-      </div>
-    </motion.button>
-  )
-
-  const inputPill = (
-    <AssetPill asset={{label: 'USDC', icon: {url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg'}}} />
-  )
-
-  const outputPill = (
-    <AssetPill asset={{label: 'USDT', icon: {url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png'}}} />
+      {stepChoiceBreadCrumbs}
+    </motion.div>
   )
 
   return (
-    <motion.div
-      layout="position"
-      className='inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5'>
-      <div className="inline-flex items-center w-full justify-between">
-        <div className="inline-flex items-center">
-          <img src='https://curve.fi/favicon-32x32.png' className="w-5 h-5"/>
-          <div className="text-zinc-400 px-2">Swap</div>
-        </div>
-        <XCircleIcon className='w-8 h-8 p-2 -m-2 box-content text-zinc-500 cursor-pointer hover:text-zinc-400' onClick={deselect}/>
+    <motion.div className="absolute top-0 right-0 left-0 bottom-0 z-20 !m-0">
+      {stepChoiceShadow}
+      <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
+        <motion.div layout layoutId="foo" className="flex items-center flex-col content-end space-y-5 z-30">
+          <StepChoiceEditorCard {...props} />
+        </motion.div>
       </div>
-      <>
-        <div className="w-64 flex flex-col content-end justify-end items-end space-y-5">
-
-          {inputPill}
-          {outputPill}
-        </div>
-      </>
-      {button}
     </motion.div>
   )
 }
