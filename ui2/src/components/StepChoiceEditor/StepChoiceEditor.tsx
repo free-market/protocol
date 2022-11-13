@@ -1,6 +1,6 @@
 import { useCore } from '@component/CoreProvider'
 import StepChoiceEditorCard from '@component/StepChoiceEditorCard'
-import { ChevronLeftIcon } from '@heroicons/react/24/solid'
+import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { motion } from 'framer-motion'
 
 const variantsNoTransform = {
@@ -22,9 +22,9 @@ export const StepChoiceEditor = (props: { submitting?: boolean; empty?: boolean 
 
   const stepChoiceBreadCrumbs = (
     <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
-      <ChevronLeftIcon className="w-4 h-4 mx-2" />
+      <ChevronLeftIcon className="w-5 h-5 mx-2" />
       <div>Curve</div>
-      <ChevronLeftIcon className="w-4 h-4 mx-2" />
+      <ChevronLeftIcon className="w-5 h-5 mx-2" />
       <div>Swap</div>
     </div>
   )

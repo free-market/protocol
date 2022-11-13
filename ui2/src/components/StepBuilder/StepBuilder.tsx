@@ -133,7 +133,7 @@ export const StepBuilder = (): JSX.Element => {
           className="flex items-center text-sm text-zinc-500/75 pt-2 hover:text-zinc-500 cursor-pointer"
           onClick={deselect}
         >
-          <ChevronLeftIcon className="w-4 h-4 mx-2" />
+          <ChevronLeftIcon className="w-5 h-5 mx-2" />
           <div>Curve</div>
         </motion.div>
       )
