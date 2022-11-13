@@ -2,13 +2,8 @@ import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { PlusIcon } from '@heroicons/react/24/solid'
-import StepChoiceEditor from '@component/StepChoiceEditor'
 
-export const StepChoiceCard = (props: { editing?: boolean; submitting?: boolean; empty?: boolean }): JSX.Element => {
-  if (props.editing) {
-    return <StepChoiceEditor {...props} />
-  }
-
+export const StepChoiceCard = (): JSX.Element => {
   const core = useCore()
 
   const click = () => {
@@ -36,9 +31,9 @@ export const StepChoiceCard = (props: { editing?: boolean; submitting?: boolean;
   )
 
   return (
-    <motion.div
+    <motion.button
       layout="position"
-      className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2"
+      className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
       onClick={click}
     >
       <div className="inline-flex items-center w-full justify-between">
@@ -53,6 +48,6 @@ export const StepChoiceCard = (props: { editing?: boolean; submitting?: boolean;
         {inputPill}
         &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
       </div>
-    </motion.div>
+    </motion.button>
   )
 }

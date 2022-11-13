@@ -8,7 +8,7 @@ const variantsNoTransform = {
   hidden: { y: 0, opacity: 0 },
 }
 
-export const StepChoiceEditor = (props: { submitting?: boolean; empty?: boolean }): JSX.Element => {
+export const StepChoiceEditor = (): JSX.Element => {
   const core = useCore()
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
@@ -47,7 +47,7 @@ export const StepChoiceEditor = (props: { submitting?: boolean; empty?: boolean 
       {stepChoiceShadow}
       <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
         <motion.div layout layoutId="foo" className="flex items-center flex-col content-end space-y-5 z-30">
-          <StepChoiceEditorCard {...props} />
+          <StepChoiceEditorCard />
         </motion.div>
       </div>
     </motion.div>

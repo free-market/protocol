@@ -125,17 +125,17 @@ export const StepBuilder = (): JSX.Element => {
       )
 
       const breadCrumbs = (
-        <motion.div
+        <motion.button
           variants={variantsNoTransform}
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="flex items-center text-sm text-zinc-500/75 pt-2 hover:text-zinc-500 cursor-pointer"
+          className="flex items-center text-sm text-zinc-500/75 pt-2 hover:text-zinc-500 cursor-pointer focus:outline-2"
           onClick={deselect}
         >
           <ChevronLeftIcon className="w-5 h-5 mx-2" />
           <div>Curve</div>
-        </motion.div>
+        </motion.button>
       )
 
       const stepChoiceEditor = <StepChoiceEditor />
