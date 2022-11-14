@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useCore } from '@component/CoreProvider'
 import StepChoiceCard from '@component/StepChoiceCard'
 import StepChoiceEditor from '@component/StepChoiceEditor'
@@ -42,7 +42,7 @@ export const StepBuilder = (): JSX.Element => {
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {
-    if (core.selectedStepChoiceName == null) {
+    if (core.selectedStepChoice == null) {
       core.selectActionGroup(null)
     } else {
       core.selectStepChoice(null)
@@ -66,7 +66,13 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
-      const firstCardId = core.oneMoreStep ? 'foo2' : 'foo'
+      const firstCardId =
+        (core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
+        (core.newStep && core.newStep.recentlyAdded)
+          ? 'foo3'
+          : core.newStep
+          ? 'foo2'
+          : 'foo'
       const choiceCardsAndDividers = (
         <>
           <motion.div
@@ -79,7 +85,7 @@ export const StepBuilder = (): JSX.Element => {
             transition={{ delay: 0.2 }}
           >
             <motion.div key={firstCardId} layout layoutId={firstCardId}>
-              <StepChoiceCard />
+              <StepChoiceCard index={0} />
             </motion.div>
           </motion.div>
           <Divider delay={0.25} />
@@ -93,7 +99,7 @@ export const StepBuilder = (): JSX.Element => {
             transition={{ delay: 0.3 }}
           >
             <motion.div layout layoutId="baz">
-              <StepChoiceCard />
+              <StepChoiceCard index={1} />
             </motion.div>
           </motion.div>
           <Divider delay={0.35} />
@@ -107,7 +113,7 @@ export const StepBuilder = (): JSX.Element => {
             transition={{ delay: 0.4 }}
           >
             <motion.div layout layoutId="bar">
-              <StepChoiceCard />
+              <StepChoiceCard index={2} />
             </motion.div>
           </motion.div>
           <Divider delay={0.45} />
@@ -121,7 +127,7 @@ export const StepBuilder = (): JSX.Element => {
             transition={{ delay: 0.5 }}
           >
             <motion.div layout layoutId="quux">
-              <StepChoiceCard />
+              <StepChoiceCard index={3} />
             </motion.div>
           </motion.div>
         </>
@@ -154,7 +160,7 @@ export const StepBuilder = (): JSX.Element => {
           {choiceCardsAndDividers}
           {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
 
-          {core.selectedStepChoiceName === 'swap' && stepChoiceEditor}
+          <AnimatePresence>{core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && stepChoiceEditor}</AnimatePresence>
         </>
       )
     }

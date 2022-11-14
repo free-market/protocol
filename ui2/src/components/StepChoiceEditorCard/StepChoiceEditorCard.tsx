@@ -7,7 +7,9 @@ import { Form, Field } from 'react-final-form'
 
 export const StepChoiceEditorCard = (): JSX.Element => {
   const core = useCore()
-  const onSubmit = () => core.submitStepChoice(() => new Promise((resolve) => setTimeout(resolve, 1000)))
+  const onSubmit = () => {
+    return core.submitStepChoice()
+  }
 
   return (
     <Form
@@ -20,7 +22,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
         const core = useCore()
 
         const deselect = () => {
-          core.selectStepChoice(null)
+          core.escape()
         }
 
         const button = (
@@ -78,130 +80,138 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
         return (
           <form onSubmit={handleSubmit}>
-            <motion.div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5">
-              <div className="inline-flex items-center w-full justify-between">
-                <div className="inline-flex items-center">
-                  <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
-                  <div className="text-zinc-400 px-2">Curve Swap</div>
-                </div>
-
-                <button
-                  type="reset"
-                  className="w-8 h-8 p-2 -mt-2 -mb-2 -mr-3 box-content text-zinc-500 cursor-pointer hover:text-zinc-400 focus:outline-2"
-                  onClick={deselect}
-                >
-                  <XCircleIcon />
-                </button>
-              </div>
-
-              <>
-                <div className="w-64 flex flex-col space-y-1">
-                  <div>
-                    <Field
-                      name="inputAmount"
-                      render={({ input }) => (
-                        <div className="gap-1">
-                          <div className="text-2xl leading-7 tracking-[-0.01em] font-bold relative flex items-center flex-grow gap-3">
-                            <input
-                              disabled={submitting}
-                              inputMode="decimal"
-                              step="0.0001"
-                              title="Token Amount"
-                              autoComplete="off"
-                              autoCorrect="off"
-                              type="text"
-                              pattern="^\d*(\.\d{0,2})?$"
-                              placeholder="0.00"
-                              min="0"
-                              minLength={1}
-                              maxLength={79}
-                              spellCheck={false}
-                              autoFocus
-                              className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
-                              {...input}
-                              onBlur={(event) => {
-                                const value = parseFloat(event.target.value)
-                                if (!isNaN(value)) {
-                                  form.change('inputAmount', value.toFixed(2))
-                                }
-                                input.onBlur(event)
-                              }}
-                              onChange={(event) => {
-                                const value = parseFloat(event.target.value)
-                                if (!isNaN(value)) {
-                                  form.change('outputAmount', value.toFixed(2))
-                                }
-                                input.onChange(event)
-                              }}
-                            />
-                            {inputPill}
-                          </div>
-                        </div>
-                      )}
-                    />
+            <motion.div className="inline-flex bg-zinc-700 rounded-xl shadow-md items-center justify-between group flex-col space-y-5">
+              <div
+                className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5 transition-opacity"
+                style={{
+                  opacity:
+                    core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected ? 1 : 0,
+                }}
+              >
+                <div className="inline-flex items-center w-full justify-between">
+                  <div className="inline-flex items-center">
+                    <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
+                    <div className="text-zinc-400 px-2">Curve Swap</div>
                   </div>
 
-                  <div className="flex text-zinc-400 items-center gap-2">
-                    <div className="border-b-2 border-zinc-600 grow"></div>
+                  <button
+                    type="reset"
+                    className="w-8 h-8 p-2 -mt-2 -mb-2 -mr-3 box-content text-zinc-500 cursor-pointer hover:text-zinc-400 focus:outline-2"
+                    onClick={deselect}
+                  >
+                    <XCircleIcon />
+                  </button>
+                </div>
 
-                    <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
-                        <path
-                          fillRule="evenodd"
-                          d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                <>
+                  <div className="w-64 flex flex-col space-y-1">
+                    <div>
+                      <Field
+                        name="inputAmount"
+                        render={({ input }) => (
+                          <div className="gap-1">
+                            <div className="text-2xl leading-7 tracking-[-0.01em] font-bold relative flex items-center flex-grow gap-3">
+                              <input
+                                disabled={submitting}
+                                inputMode="decimal"
+                                step="0.0001"
+                                title="Token Amount"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                type="text"
+                                pattern="^\d*(\.\d{0,2})?$"
+                                placeholder="0.00"
+                                min="0"
+                                minLength={1}
+                                maxLength={79}
+                                spellCheck={false}
+                                autoFocus
+                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
+                                {...input}
+                                onBlur={(event) => {
+                                  const value = parseFloat(event.target.value)
+                                  if (!isNaN(value)) {
+                                    form.change('inputAmount', value.toFixed(2))
+                                  }
+                                  input.onBlur(event)
+                                }}
+                                onChange={(event) => {
+                                  const value = parseFloat(event.target.value)
+                                  if (!isNaN(value)) {
+                                    form.change('outputAmount', value.toFixed(2))
+                                  }
+                                  input.onChange(event)
+                                }}
+                              />
+                              {inputPill}
+                            </div>
+                          </div>
+                        )}
+                      />
                     </div>
-                    <div className="border-b-2 border-zinc-600 grow"></div>
-                  </div>
 
-                  <div>
-                    <Field
-                      name="outputAmount"
-                      render={({ input }) => (
-                        <div className="gap-1">
-                          <div className="text-2xl leading-7 tracking-[-0.01em] font-bold relative flex items-center flex-grow gap-3">
-                            <input
-                              disabled={submitting}
-                              inputMode="decimal"
-                              step="0.0001"
-                              title="Token Amount"
-                              autoComplete="off"
-                              autoCorrect="off"
-                              type="text"
-                              pattern="^\d*(\.\d{0,2})?$"
-                              placeholder="0.00"
-                              min="0"
-                              minLength={1}
-                              maxLength={79}
-                              spellCheck={false}
-                              className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
-                              {...input}
-                              onBlur={(event) => {
-                                const value = parseFloat(event.target.value)
-                                if (!isNaN(value)) {
-                                  form.change('outputAmount', value.toFixed(2))
-                                }
-                                input.onBlur(event)
-                              }}
-                              onChange={(event) => {
-                                const value = parseFloat(event.target.value)
-                                if (!isNaN(value)) {
-                                  form.change('inputAmount', value.toFixed(2))
-                                }
-                                input.onChange(event)
-                              }}
-                            />
-                            {outputPill}
+                    <div className="flex text-zinc-400 items-center gap-2">
+                      <div className="border-b-2 border-zinc-600 grow"></div>
+
+                      <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="border-b-2 border-zinc-600 grow"></div>
+                    </div>
+
+                    <div>
+                      <Field
+                        name="outputAmount"
+                        render={({ input }) => (
+                          <div className="gap-1">
+                            <div className="text-2xl leading-7 tracking-[-0.01em] font-bold relative flex items-center flex-grow gap-3">
+                              <input
+                                disabled={submitting}
+                                inputMode="decimal"
+                                step="0.0001"
+                                title="Token Amount"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                type="text"
+                                pattern="^\d*(\.\d{0,2})?$"
+                                placeholder="0.00"
+                                min="0"
+                                minLength={1}
+                                maxLength={79}
+                                spellCheck={false}
+                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
+                                {...input}
+                                onBlur={(event) => {
+                                  const value = parseFloat(event.target.value)
+                                  if (!isNaN(value)) {
+                                    form.change('outputAmount', value.toFixed(2))
+                                  }
+                                  input.onBlur(event)
+                                }}
+                                onChange={(event) => {
+                                  const value = parseFloat(event.target.value)
+                                  if (!isNaN(value)) {
+                                    form.change('inputAmount', value.toFixed(2))
+                                  }
+                                  input.onChange(event)
+                                }}
+                              />
+                              {outputPill}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    />
+                        )}
+                      />
+                    </div>
                   </div>
-                </div>
-              </>
-              {button}
+                </>
+                {button}
+              </div>
             </motion.div>
           </form>
         )

@@ -36,7 +36,7 @@ export const StepChoiceEditor = (props: {
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {
-    if (core.selectedStepChoiceName == null) {
+    if (core.selectedStepChoice == null) {
       core.selectActionGroup(null)
     } else {
       core.selectStepChoice(null)

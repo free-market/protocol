@@ -1,6 +1,7 @@
 import AssetPill from '@component/AssetPill'
 import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
+import cx from 'classnames'
 
 export const Workflow = (): JSX.Element => {
   const core = useCore()
@@ -62,7 +63,11 @@ export const Workflow = (): JSX.Element => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="inline-flex items-center gap-2 justify-between w-full">
+      <div
+        className={cx('inline-flex items-center gap-2 justify-between w-full transition-opacity', {
+          'opacity-0 pointer-events-none': core.newStep && core.newStep.recentlyAdded,
+        })}
+      >
         <div className="inline-flex items-center gap-2">
           <div className="text-zinc-400">#2</div>
           <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
@@ -80,7 +85,7 @@ export const Workflow = (): JSX.Element => {
     <>
       <div className="space-y-2">
         {step}
-        {core.oneMoreStep && secondStep}
+        {core.newStep && secondStep}
       </div>
     </>
   )

@@ -5,20 +5,20 @@ import React, { useEffect } from 'react'
 export type ActionGroupName = 'curve'
 
 // TODO: deprecate this by storing identifiers instead of slugs
-export type StepChoiceName = 'swap'
+export type StepChoice = { name: 'swap'; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
   selectedActionGroupName: null as ActionGroupName | null,
-  selectedStepChoiceName: null as StepChoiceName | null,
+  selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
-  oneMoreStep: false, // TODO: store real workflow state
+  newStep: null as { recentlyAdded: boolean } | null, // TODO: store real workflow state
 }
 
 export type CoreState = typeof initialState
 
 export type Core = CoreState & {
   selectActionGroup: (actionGroupName: ActionGroupName | null) => void
-  selectStepChoice: (stepChoiceName: StepChoiceName | null) => void
+  selectStepChoice: (stepChoiceName: string | null) => Promise<void>
   escape: () => void
   startPreviewingWorkflowStep: (identifier: string) => void
   stopPreviewingWorkflowStep: () => void
@@ -46,21 +46,43 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
     selectActionGroup: (actionGroupName) =>
       updateState((draft: Draft<CoreState>) => {
         if (actionGroupName !== draft.selectedActionGroupName) {
-          draft.selectedStepChoiceName = null
+          draft.selectedStepChoice = null
         }
 
         draft.selectedActionGroupName = actionGroupName
       }),
 
-    selectStepChoice: (stepChoiceName) =>
-      updateState((draft: Draft<CoreState>) => {
-        draft.selectedStepChoiceName = stepChoiceName
-      }),
+    selectStepChoice: async (stepChoiceName) => {
+      if (stepChoiceName == null) {
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = { recentlyClosed: true }
+        })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = null
+        })
+      } else {
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = { name: 'swap', recentlySelected: true, recentlyClosed: false }
+        })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        updateState((draft: Draft<CoreState>) => {
+          if (draft.selectedStepChoice && !draft.selectedStepChoice.recentlyClosed) {
+            draft.selectedStepChoice.recentlySelected = false
+          }
+        })
+      }
+    },
 
     escape: () =>
       updateState((draft: Draft<CoreState>) => {
-        if (draft.selectedStepChoiceName != null) {
-          draft.selectedStepChoiceName = null
+        if (draft.selectedStepChoice != null && !draft.selectedStepChoice.recentlyClosed) {
+          draft.selectedStepChoice = { recentlyClosed: true }
+          setTimeout(() => {
+            updateState((draft: Draft<CoreState>) => {
+              draft.selectedStepChoice = null
+            })
+          }, 300)
         } else if (draft.selectedActionGroupName != null) {
           draft.selectedActionGroupName = null
         }
@@ -87,7 +109,13 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
       await new Promise((resolve) => setTimeout(resolve, 1200))
 
       updateState((draft: Draft<CoreState>) => {
-        draft.oneMoreStep = true
+        draft.newStep = { recentlyAdded: true }
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 300))
+
+      updateState((draft: Draft<CoreState>) => {
+        draft.newStep = { recentlyAdded: false }
       })
 
       if (waitBeforeNavigation) {
@@ -95,7 +123,7 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
       }
 
       updateState((draft: Draft<CoreState>) => {
-        draft.selectedStepChoiceName = null
+        draft.selectedStepChoice = null
       })
     },
   }
