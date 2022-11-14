@@ -42,11 +42,7 @@ export const StepBuilder = (): JSX.Element => {
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {
-    if (core.selectedStepChoice == null) {
-      core.selectActionGroup(null)
-    } else {
-      core.selectStepChoice(null)
-    }
+    core.escape()
   }
 
   switch (core.selectedActionGroupName) {
@@ -61,7 +57,7 @@ export const StepBuilder = (): JSX.Element => {
           className="flex items-center h-full justify-center"
         >
           <p className="inline text-zinc-500 text-sm">Select an action group to get started.</p>
-          {core.previewStep != null && <StepEditorPreview />}
+          {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
         </motion.div>
       )
 
@@ -159,8 +155,7 @@ export const StepBuilder = (): JSX.Element => {
           {breadCrumbs}
           {choiceCardsAndDividers}
           {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
-
-          <AnimatePresence>{core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && stepChoiceEditor}</AnimatePresence>
+          <AnimatePresence>{core.selectedStepChoice && stepChoiceEditor}</AnimatePresence>
         </>
       )
     }
