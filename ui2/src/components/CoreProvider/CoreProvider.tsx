@@ -1,6 +1,6 @@
 import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 export type ActionGroupName = 'curve'
 
@@ -17,6 +17,7 @@ export type CoreState = typeof initialState
 export type Core = CoreState & {
   selectActionGroup: (actionGroupName: ActionGroupName | null) => void
   selectStepChoice: (stepChoiceName: StepChoiceName | null) => void
+  escape: () => void
 }
 
 export const CoreContext = React.createContext(null as Core | null)
@@ -36,6 +37,7 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
 
   const core: Core = {
     ...state,
+
     selectActionGroup: (actionGroupName) =>
       updateState((draft: Draft<CoreState>) => {
         if (actionGroupName !== draft.selectedActionGroupName) {
@@ -44,11 +46,35 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
 
         draft.selectedActionGroupName = actionGroupName
       }),
+
     selectStepChoice: (stepChoiceName) =>
       updateState((draft: Draft<CoreState>) => {
         draft.selectedStepChoiceName = stepChoiceName
       }),
+
+    escape: () =>
+      updateState((draft: Draft<CoreState>) => {
+        if (draft.selectedStepChoiceName != null) {
+          draft.selectedStepChoiceName = null
+        } else if (draft.selectedActionGroupName != null) {
+          draft.selectedActionGroupName = null
+        }
+      }),
   }
+
+  useEffect(() => {
+    const callback = (event: KeyboardEvent) => {
+      if (event.code === 'Escape') {
+        core.escape()
+      }
+    }
+
+    window.addEventListener('keydown', callback)
+
+    return () => {
+      window.removeEventListener('keydown', callback)
+    }
+  }, [])
 
   return <CoreContext.Provider value={core}>{props.children}</CoreContext.Provider>
 }
