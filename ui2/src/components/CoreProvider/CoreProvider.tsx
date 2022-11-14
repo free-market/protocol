@@ -39,11 +39,13 @@ export const useCore = (): Core => {
 
 export const CoreProvider = (props: { children: React.ReactNode; initialNoSelectedStepChoice?: boolean }): JSX.Element => {
   const { initialNoSelectedStepChoice = true } = props
-  const [state, updateState] = useImmer(initialState)
+  const [state, updateState] = useImmer({
+    ...initialState,
+    selectedStepChoice: initialNoSelectedStepChoice ? null : { name: 'swap', recentlySelected: false, recentlyClosed: false },
+  } as CoreState)
 
   const core: Core = {
     ...state,
-    selectedStepChoice: initialNoSelectedStepChoice ? { name: 'swap', recentlySelected: false, recentlyClosed: false } : null,
 
     selectActionGroup: (actionGroupName) =>
       updateState((draft: Draft<CoreState>) => {
@@ -57,7 +59,9 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
     selectStepChoice: async (stepChoiceName) => {
       if (stepChoiceName == null) {
         updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = { recentlyClosed: true }
+          if (draft.selectedStepChoice != null) {
+            draft.selectedStepChoice = { recentlyClosed: true }
+          }
         })
         await new Promise((resolve) => setTimeout(resolve, 300))
         updateState((draft: Draft<CoreState>) => {
@@ -78,13 +82,20 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
 
     escape: () =>
       updateState((draft: Draft<CoreState>) => {
-        if (draft.selectedStepChoice != null && !draft.selectedStepChoice.recentlyClosed) {
-          draft.selectedStepChoice = { recentlyClosed: true }
-          setTimeout(() => {
+        if (draft.selectedStepChoice != null) {
+          if (draft.selectedStepChoice.recentlyClosed) {
             updateState((draft: Draft<CoreState>) => {
               draft.selectedStepChoice = null
             })
-          }, 300)
+          } else {
+            draft.selectedStepChoice = { recentlyClosed: true }
+
+            setTimeout(() => {
+              updateState((draft: Draft<CoreState>) => {
+                draft.selectedStepChoice = null
+              })
+            }, 300)
+          }
         } else if (draft.selectedActionGroupName != null) {
           draft.selectedActionGroupName = null
         }
