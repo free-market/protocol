@@ -1,5 +1,6 @@
 import AssetPill from '@component/AssetPill'
 import { useCore } from '@component/CoreProvider'
+import { motion } from 'framer-motion'
 
 export const Workflow = (): JSX.Element => {
   const core = useCore()
@@ -33,24 +34,54 @@ export const Workflow = (): JSX.Element => {
       }}
     />
   )
+
+  const step = (
+    <motion.div
+      className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="inline-flex items-center gap-2 justify-between w-full">
+        <div className="inline-flex items-center gap-2">
+          <div className="text-zinc-400">#1</div>
+          <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
+          <div className="text-zinc-400">Curve Swap</div>
+        </div>
+        <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
+          {inputPill}
+          &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
+        </div>
+      </div>
+    </motion.div>
+  )
+
+  const secondStep = (
+    <motion.div
+      layout="position"
+      layoutId="foo"
+      className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="inline-flex items-center gap-2 justify-between w-full">
+        <div className="inline-flex items-center gap-2">
+          <div className="text-zinc-400">#2</div>
+          <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
+          <div className="text-zinc-400">Curve Swap</div>
+        </div>
+        <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
+          {inputPill}
+          &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
+        </div>
+      </div>
+    </motion.div>
+  )
+
   return (
     <>
-      <div
-        className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="inline-flex items-center gap-2 justify-between w-full">
-          <div className="inline-flex items-center gap-2">
-            <div className="text-zinc-400">#1</div>
-            <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
-            <div className="text-zinc-400">Curve Swap</div>
-          </div>
-          <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
-            {inputPill}
-            &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
-          </div>
-        </div>
+      <div className="space-y-2">
+        {step}
+        {core.oneMoreStep && secondStep}
       </div>
     </>
   )

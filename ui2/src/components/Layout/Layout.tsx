@@ -16,7 +16,7 @@ export const Layout = (props: {
   const { stepCatalog = <StepCatalog />, stepBuilder = <StepBuilder />, workflow = <Workflow /> } = props
 
   return (
-    <div className="sm:flex items-stretch max-h-full h-full overflow-hidden">
+    <div className="sm:flex items-stretch max-h-full h-full overflow-hidden bg-zinc-900">
       <div className="w-14 shrink-0 box-content sm:h-screen overflow-hidden">
         <div
           className="p-3 border-b sm:border-b-0 border-zinc-800 select-none bg-repeat bg-[length:70px_70px] w-full sm:h-screen bg-[url('/fmp-logo-repeat.svg')] "

@@ -66,6 +66,7 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
+      const firstCardId = core.oneMoreStep ? 'foo2' : 'foo'
       const choiceCardsAndDividers = (
         <>
           <motion.div
@@ -77,7 +78,7 @@ export const StepBuilder = (): JSX.Element => {
             className="flex items-center flex-col content-end space-y-5"
             transition={{ delay: 0.2 }}
           >
-            <motion.div layout layoutId="foo">
+            <motion.div key={firstCardId} layout layoutId={firstCardId}>
               <StepChoiceCard />
             </motion.div>
           </motion.div>

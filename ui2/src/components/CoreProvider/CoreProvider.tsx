@@ -11,6 +11,7 @@ const initialState = {
   selectedActionGroupName: null as ActionGroupName | null,
   selectedStepChoiceName: null as StepChoiceName | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
+  oneMoreStep: false, // TODO: store real workflow state
 }
 
 export type CoreState = typeof initialState
@@ -21,6 +22,7 @@ export type Core = CoreState & {
   escape: () => void
   startPreviewingWorkflowStep: (identifier: string) => void
   stopPreviewingWorkflowStep: () => void
+  submitStepChoice: (waitBeforeNavigation?: () => Promise<void>) => Promise<void>
 }
 
 export const CoreContext = React.createContext(null as Core | null)
@@ -79,6 +81,22 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
           draft.previewStep = null
         })
       }, 1)
+    },
+
+    submitStepChoice: async (waitBeforeNavigation) => {
+      await new Promise((resolve) => setTimeout(resolve, 1200))
+
+      updateState((draft: Draft<CoreState>) => {
+        draft.oneMoreStep = true
+      })
+
+      if (waitBeforeNavigation) {
+        await waitBeforeNavigation()
+      }
+
+      updateState((draft: Draft<CoreState>) => {
+        draft.selectedStepChoiceName = null
+      })
     },
   }
 

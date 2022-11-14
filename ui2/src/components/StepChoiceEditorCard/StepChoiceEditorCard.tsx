@@ -6,11 +6,8 @@ import { XCircleIcon } from '@heroicons/react/24/solid'
 import { Form, Field } from 'react-final-form'
 
 export const StepChoiceEditorCard = (): JSX.Element => {
-  // TODO: const core = useCore()
-  const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1200))
-    // TODO
-  }
+  const core = useCore()
+  const onSubmit = () => core.submitStepChoice(() => new Promise((resolve) => setTimeout(resolve, 1000)))
 
   return (
     <Form
@@ -81,10 +78,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
         return (
           <form onSubmit={handleSubmit}>
-            <motion.div
-              layout="position"
-              className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5"
-            >
+            <motion.div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5">
               <div className="inline-flex items-center w-full justify-between">
                 <div className="inline-flex items-center">
                   <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />

@@ -61,7 +61,7 @@ export const StepChoiceEditor = (props: {
     <motion.div className={cx('absolute top-0 right-0 left-0 bottom-0 z-20 !m-0', { invisible })}>
       {stepChoiceShadow}
       <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
-        <motion.div layout layoutId={layoutId} className="flex items-center flex-col content-end space-y-5 z-30">
+        <motion.div layoutId={layoutId} layout="position" className="flex items-center flex-col content-end space-y-5 z-30">
           {stepChoiceEditorCard}
         </motion.div>
       </div>
