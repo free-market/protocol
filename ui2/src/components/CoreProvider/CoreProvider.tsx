@@ -39,6 +39,8 @@ export const useCore = (): Core => {
 
 export const CoreProvider = (props: { children: React.ReactNode; initialNoSelectedStepChoice?: boolean }): JSX.Element => {
   const { initialNoSelectedStepChoice = true } = props
+
+  // TODO: FMP-219: replace updateState usage with sagas
   const [state, updateState] = useImmer({
     ...initialState,
     selectedStepChoice: initialNoSelectedStepChoice ? null : { name: 'swap', recentlySelected: false, recentlyClosed: false },
