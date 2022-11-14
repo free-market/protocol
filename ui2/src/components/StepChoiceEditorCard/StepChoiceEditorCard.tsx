@@ -8,7 +8,7 @@ import { Form, Field } from 'react-final-form'
 export const StepChoiceEditorCard = (): JSX.Element => {
   // TODO: const core = useCore()
   const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2500))
+    await new Promise((resolve) => setTimeout(resolve, 1200))
     // TODO
   }
 
