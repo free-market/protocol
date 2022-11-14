@@ -56,16 +56,19 @@ export const Workflow = (): JSX.Element => {
     </motion.div>
   )
 
+  const layoutId = core.newStep ? (core.newStep.recentlyAdded ? 'foo' : 'random-id') : 'random-id'
+
   const secondStep = (
     <motion.div
-      layoutId="foo"
+      key={layoutId}
+      layoutId={layoutId}
       className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div
         className={cx('inline-flex items-center gap-2 justify-between w-full transition-opacity', {
-          'opacity-0 pointer-events-none': core.newStep && core.newStep.recentlyAdded,
+          'opacity-0 pointer-events-none': core.newStep?.recentlyAdded,
         })}
       >
         <div className="inline-flex items-center gap-2">

@@ -62,11 +62,10 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
+      // TODO: FMP-217
       const firstCardId =
         (core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
         (core.newStep && core.newStep.recentlyAdded)
-          ? 'foo3'
-          : core.newStep
           ? 'foo2'
           : 'foo'
       const choiceCardsAndDividers = (
