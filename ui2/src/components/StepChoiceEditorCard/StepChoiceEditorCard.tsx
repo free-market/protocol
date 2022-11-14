@@ -88,7 +88,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
               <div className="inline-flex items-center w-full justify-between">
                 <div className="inline-flex items-center">
                   <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
-                  <div className="text-zinc-400 px-2">Swap</div>
+                  <div className="text-zinc-400 px-2">Curve Swap</div>
                 </div>
 
                 <button

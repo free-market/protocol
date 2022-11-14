@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useCore } from '@component/CoreProvider'
 import StepChoiceCard from '@component/StepChoiceCard'
 import StepChoiceEditor from '@component/StepChoiceEditor'
+import StepEditorPreview from '@component/StepEditorPreview'
 
 const variants = {
   visible: {
@@ -60,6 +61,7 @@ export const StepBuilder = (): JSX.Element => {
           className="flex items-center h-full justify-center"
         >
           <p className="inline text-zinc-500 text-sm">Select an action group to get started.</p>
+          {core.previewStep != null && <StepEditorPreview />}
         </motion.div>
       )
 
@@ -138,12 +140,19 @@ export const StepBuilder = (): JSX.Element => {
         </motion.button>
       )
 
-      const stepChoiceEditor = <StepChoiceEditor />
+      const stepChoiceEditor = (
+        <StepChoiceEditor
+          invisible={core.previewStep != null && !core.previewStep.recentlyClosed}
+          fadeIn={core.previewStep == null ? 'slow' : 'instant'}
+        />
+      )
 
       return (
         <>
           {breadCrumbs}
           {choiceCardsAndDividers}
+          {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
+
           {core.selectedStepChoiceName === 'swap' && stepChoiceEditor}
         </>
       )

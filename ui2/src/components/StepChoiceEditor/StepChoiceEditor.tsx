@@ -1,4 +1,5 @@
 import { useCore } from '@component/CoreProvider'
+import cx from 'classnames'
 import StepChoiceEditorCard from '@component/StepChoiceEditorCard'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { motion } from 'framer-motion'
@@ -8,7 +9,27 @@ const variantsNoTransform = {
   hidden: { y: 0, opacity: 0 },
 }
 
-export const StepChoiceEditor = (): JSX.Element => {
+export const StepChoiceEditor = (props: {
+  stepChoiceEditorCard?: React.ReactNode
+  stepChoiceBreadCrumbs?: React.ReactNode
+  fadeIn?: 'instant' | 'slow'
+  invisible?: boolean
+}): JSX.Element => {
+  const {
+    stepChoiceEditorCard = <StepChoiceEditorCard />,
+
+    stepChoiceBreadCrumbs = (
+      <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
+        <ChevronLeftIcon className="w-5 h-5 mx-2" />
+        <div>Curve</div>
+        <ChevronLeftIcon className="w-5 h-5 mx-2" />
+        <div>Swap</div>
+      </div>
+    ),
+    fadeIn = 'slow',
+    invisible = false,
+  } = props
+
   const core = useCore()
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
@@ -20,17 +41,9 @@ export const StepChoiceEditor = (): JSX.Element => {
     }
   }
 
-  const stepChoiceBreadCrumbs = (
-    <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
-      <ChevronLeftIcon className="w-5 h-5 mx-2" />
-      <div>Curve</div>
-      <ChevronLeftIcon className="w-5 h-5 mx-2" />
-      <div>Swap</div>
-    </div>
-  )
-
   const stepChoiceShadow = (
     <motion.div
+      transition={{ duration: fadeIn === 'instant' ? 0 : undefined }}
       className="bg-zinc-800/75 absolute top-0 right-0 left-0 bottom-0 z-20 p-2 group cursor-pointer"
       onClick={deselect}
       variants={variantsNoTransform}
@@ -43,12 +56,10 @@ export const StepChoiceEditor = (): JSX.Element => {
   )
 
   return (
-    <motion.div className="absolute top-0 right-0 left-0 bottom-0 z-20 !m-0">
+    <motion.div className={cx('absolute top-0 right-0 left-0 bottom-0 z-20 !m-0', { invisible })}>
       {stepChoiceShadow}
       <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
-        <motion.div layout layoutId="foo" className="flex items-center flex-col content-end space-y-5 z-30">
-          <StepChoiceEditorCard />
-        </motion.div>
+        <motion.div className="flex items-center flex-col content-end space-y-5 z-30">{stepChoiceEditorCard}</motion.div>
       </div>
     </motion.div>
   )

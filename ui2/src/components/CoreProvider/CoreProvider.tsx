@@ -10,6 +10,7 @@ export type StepChoiceName = 'swap'
 const initialState = {
   selectedActionGroupName: null as ActionGroupName | null,
   selectedStepChoiceName: null as StepChoiceName | null,
+  previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
 }
 
 export type CoreState = typeof initialState
@@ -18,6 +19,8 @@ export type Core = CoreState & {
   selectActionGroup: (actionGroupName: ActionGroupName | null) => void
   selectStepChoice: (stepChoiceName: StepChoiceName | null) => void
   escape: () => void
+  startPreviewingWorkflowStep: (identifier: string) => void
+  stopPreviewingWorkflowStep: () => void
 }
 
 export const CoreContext = React.createContext(null as Core | null)
@@ -60,6 +63,23 @@ export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element 
           draft.selectedActionGroupName = null
         }
       }),
+
+    startPreviewingWorkflowStep: (id) =>
+      updateState((draft: Draft<CoreState>) => {
+        draft.previewStep = { id, recentlyClosed: false }
+      }),
+
+    stopPreviewingWorkflowStep: () => {
+      updateState((draft: Draft<CoreState>) => {
+        draft.previewStep = { recentlyClosed: true }
+      })
+
+      setTimeout(() => {
+        updateState((draft: Draft<CoreState>) => {
+          draft.previewStep = null
+        })
+      }, 1)
+    },
   }
 
   useEffect(() => {
