@@ -2,12 +2,13 @@ import AssetPill from '@component/AssetPill'
 import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
 import cx from 'classnames'
+import { BellIcon } from '@heroicons/react/24/outline'
 
 export const Workflow = (): JSX.Element => {
   const core = useCore()
 
   const handleMouseEnter = () => {
-    core.startPreviewingWorkflowStep('#1')
+    core.startPreviewingWorkflowStep('#2')
   }
 
   const handleMouseLeave = () => {
@@ -36,6 +37,18 @@ export const Workflow = (): JSX.Element => {
     />
   )
 
+  const triggerStep = (
+    <motion.div className="rounded-xl bg-zinc-700/25 w-full p-2 group">
+      <div className="inline-flex items-center gap-2 justify-between w-full">
+        <div className="inline-flex items-center gap-2">
+          <div className="text-zinc-400">#1</div>
+          <BellIcon className="w-5 w-5 text-zinc-400" />
+          <div className="text-zinc-400">User Trigger</div>
+        </div>
+      </div>
+    </motion.div>
+  )
+
   const step = (
     <motion.div
       className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
@@ -44,7 +57,7 @@ export const Workflow = (): JSX.Element => {
     >
       <div className="inline-flex items-center gap-2 justify-between w-full">
         <div className="inline-flex items-center gap-2">
-          <div className="text-zinc-400">#1</div>
+          <div className="text-zinc-400">#2</div>
           <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
           <div className="text-zinc-400">Curve Swap</div>
         </div>
@@ -72,7 +85,7 @@ export const Workflow = (): JSX.Element => {
         })}
       >
         <div className="inline-flex items-center gap-2">
-          <div className="text-zinc-400">#2</div>
+          <div className="text-zinc-400">#3</div>
           <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
           <div className="text-zinc-400">Curve Swap</div>
         </div>
@@ -87,6 +100,7 @@ export const Workflow = (): JSX.Element => {
   return (
     <>
       <div className="space-y-2">
+        {triggerStep}
         {step}
         {core.newStep && secondStep}
       </div>
