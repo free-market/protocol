@@ -37,11 +37,13 @@ export const useCore = (): Core => {
   return core
 }
 
-export const CoreProvider = (props: { children: React.ReactNode }): JSX.Element => {
+export const CoreProvider = (props: { children: React.ReactNode; initialNoSelectedStepChoice?: boolean }): JSX.Element => {
+  const { initialNoSelectedStepChoice = true } = props
   const [state, updateState] = useImmer(initialState)
 
   const core: Core = {
     ...state,
+    selectedStepChoice: initialNoSelectedStepChoice ? { name: 'swap', recentlySelected: false, recentlyClosed: false } : null,
 
     selectActionGroup: (actionGroupName) =>
       updateState((draft: Draft<CoreState>) => {

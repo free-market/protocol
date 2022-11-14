@@ -8,7 +8,7 @@ export default {
   component: Component,
   decorators: [
     (Story) => (
-      <CoreProvider>
+      <CoreProvider initialNoSelectedStepChoice={false}>
         <Story />
       </CoreProvider>
     ),
