@@ -130,6 +130,7 @@ export const StepEditorPreview = (): JSX.Element => {
         </div>
       }
       fadeIn="instant"
+      layoutId="preview"
     />
   )
 }
