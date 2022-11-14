@@ -57,7 +57,6 @@ export const Workflow = (): JSX.Element => {
 
   const secondStep = (
     <motion.div
-      layout="position"
       layoutId="foo"
       className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
       onMouseEnter={handleMouseEnter}

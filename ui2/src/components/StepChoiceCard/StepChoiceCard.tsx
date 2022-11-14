@@ -32,7 +32,6 @@ export const StepChoiceCard = (): JSX.Element => {
 
   return (
     <motion.button
-      layout="position"
       className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
       onClick={click}
     >
