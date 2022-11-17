@@ -11,8 +11,8 @@ export const AssetPill = (props: { asset: AssetDescription; shadow?: boolean } &
       })}
       {...remaining}
     >
-      <div className="rounded-full overflow-hidden w-5 h-5">
-        <img src={asset.icon.url} />
+      <div className="rounded-full overflow-hidden w-5 h-5 bg-zinc-500">
+        <img className="w-full h-full" src={asset.icon.url} />
       </div>
       <span>{asset.label}</span>
     </div>

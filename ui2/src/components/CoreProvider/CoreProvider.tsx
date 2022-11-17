@@ -2,10 +2,12 @@ import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import React, { useEffect } from 'react'
 
-export type ActionGroupName = 'curve'
+export type ActionGroupName = 'curve' | 'zksync' | 'aave'
+
+export type StepChoiceName = 'curve/swap' | 'zksync/bridge' | 'aave/borrow'
 
 // TODO: deprecate this by storing identifiers instead of slugs
-export type StepChoice = { name: 'swap'; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
+export type StepChoice = { name: StepChoiceName; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
   selectedActionGroupName: null as ActionGroupName | null,
@@ -71,7 +73,7 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
         })
       } else {
         updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = { name: 'swap', recentlySelected: true, recentlyClosed: false }
+          draft.selectedStepChoice = { name: 'curve/swap', recentlySelected: true, recentlyClosed: false }
         })
         await new Promise((resolve) => setTimeout(resolve, 300))
         updateState((draft: Draft<CoreState>) => {
