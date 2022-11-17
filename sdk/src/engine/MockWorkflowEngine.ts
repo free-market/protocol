@@ -5,6 +5,8 @@ import { BigNumber } from 'ethers'
 import { StepImplFactory } from './StepImplFactory'
 import { MockStepsFactory } from './MockWorkflowSteps'
 
+export { mockStepsNoRandom } from './MockWorkflowSteps'
+
 function sleep(millis: number) {
   return new Promise<void>(resolve => {
     setTimeout(resolve, millis)

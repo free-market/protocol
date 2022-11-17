@@ -10,7 +10,15 @@ import { sleepRandom } from '../sleep'
 import { WorkflowEventType } from './WorkflowEngine'
 import { getAssetInfo } from '../assetInfo'
 
+let noRandom = false
+export function mockStepsNoRandom() {
+  noRandom = true
+}
+
 function randomGas() {
+  if (noRandom) {
+    return '10'
+  }
   return (30.0 + Math.random() * 10.0).toString()
 }
 
@@ -22,6 +30,9 @@ function toBig(amount: AssetAmount, decimals: number) {
 }
 
 function randomLoss(n: Big): Big {
+  if (noRandom) {
+    return n
+  }
   const loss = Math.random() / 10000
   const m = 1 - loss
   return n.mul(m)
@@ -38,6 +49,7 @@ class MockWethStepImpl extends TokenStepImpl {
 }
 
 const ETH_USD = Big('1346')
+const BTC_USD = Big('16123')
 
 class MockCurveStepImpl extends TokenStepImpl {
   async executeAction(action: WorkflowAction, amount: BigNumber, _statusCallback: StatusCallback): Promise<WorkflowStepResult> {
@@ -67,6 +79,29 @@ class MockCurveStepImpl extends TokenStepImpl {
   }
 }
 
+class MockOneInchSwapImpl extends TokenStepImpl {
+  async executeAction(action: WorkflowAction, amount: BigNumber, _statusCallback: StatusCallback): Promise<WorkflowStepResult> {
+    let outputAmount: Big
+    const inputAssetInfo = getAssetInfo(action.inputAsset)
+    const decimals = inputAssetInfo.decimals
+    const inputAmount = toBig(amount.toString(), decimals)
+    if (action.inputAsset.symbol === 'WBTC' && action.outputAsset.symbol === 'USDC') {
+      outputAmount = inputAmount.mul(BTC_USD)
+    } else if (action.inputAsset.symbol === 'USDC' && action.outputAsset.symbol === 'WBTC') {
+      outputAmount = inputAmount.div(BTC_USD)
+    } else {
+      throw new Error('not mocked')
+    }
+    outputAmount = randomLoss(outputAmount)
+    const outputAssetInfo = getAssetInfo(action.outputAsset)
+    return {
+      outputAmount: outputAmount.toFixed(outputAssetInfo.decimals).replace('.', ''),
+      gasCost: randomGas(),
+      exchangeFee: '0',
+    }
+  }
+}
+
 class MockWormholeStepImpl extends TokenStepImpl {
   async executeAction(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback): Promise<WorkflowStepResult> {
     statusCallback(WorkflowEventType.StatusUpdate, 'Waiting for Guardians', [step])
@@ -81,7 +116,7 @@ class MockWormholeStepImpl extends TokenStepImpl {
   }
 }
 
-class MockSerumStepImpl extends TokenStepImpl {
+class MockOceanDexSwap extends TokenStepImpl {
   async executeAction(action: WorkflowAction, amount: BigNumber, _statusCallback: StatusCallback): Promise<WorkflowStepResult> {
     const inputAssetInfo = getAssetInfo(action.inputAsset)
     const inputAmount = toBig(amount.toString(), inputAssetInfo.decimals)
@@ -95,48 +130,22 @@ class MockSerumStepImpl extends TokenStepImpl {
   }
 }
 
-const SOL_USD = Big(33.88)
-const MSOL_USD = Big(36.3)
-class MockMarinadeStepImpl extends TokenStepImpl {
-  async executeAction(action: WorkflowAction, amount: BigNumber, _statusCallback: StatusCallback): Promise<WorkflowStepResult> {
-    const inputAssetInfo = getAssetInfo(action.inputAsset)
-    const inputAmount = toBig(amount.toString(), inputAssetInfo.decimals)
-    let outputAmount: Big
-    if (action.inputAsset.symbol === 'mSOL') {
-      // convert to USD then to SOL
-      outputAmount = inputAmount.mul(MSOL_USD).div(SOL_USD)
-    } else {
-      // convert to USD then to mSOL
-      outputAmount = inputAmount.mul(SOL_USD).div(MSOL_USD)
-    }
-    outputAmount = randomLoss(outputAmount)
-    const outputAssetInfo = getAssetInfo(action.outputAsset)
-    return {
-      outputAmount: outputAmount.toFixed(outputAssetInfo.decimals).replace('.', ''),
-      gasCost: randomGas(),
-      exchangeFee: '0',
-    }
-  }
-}
-
 const COLLATERALIZATION_RATE = Big(1.5)
 
 const BIG_TEN = Big(10)
 
-class MockMangoStepImpl implements StepImpl {
+class AaveStepImpl implements StepImpl {
   async actualizeAmount(action: WorkflowAction, assetBalances: AssetBalances): Promise<[BigNumber, boolean]> {
-    if (action.actionId === 'mango.withdrawal') {
-      // not a realistic simulation of borrowing power for mango.  Their exact algorithm for borrowing 'max' requires research
-      // for now assume collator is in the form of USDC
-      const mangoUsdcAsset = new Asset('Solana', 'USDCman')
-      const mangoUsdcBalance = assetBalances.get(mangoUsdcAsset) // <-- this assumes a positive USDC balance and that is the only form of collateral
-      if (!mangoUsdcBalance || mangoUsdcBalance.lte(0)) {
+    if (action.actionId === 'aave.borrow') {
+      const aaveUsdcAsset = new Asset('Ethereum', 'USDCaave')
+      const aaveUsdcBalance = assetBalances.get(aaveUsdcAsset) // <-- this assumes a positive USDC balance and that is the only form of collateral
+      if (!aaveUsdcBalance || aaveUsdcBalance.lte(0)) {
         throw new Error('no collateral to borrow against')
       }
-      const mangoUsdcAssetInfo = getAssetInfo(mangoUsdcAsset)
-      const collateral = toBig(mangoUsdcBalance.toString(), mangoUsdcAssetInfo.decimals)
+      const aaveUsdcAssetInfo = getAssetInfo(aaveUsdcAsset)
+      const collateral = toBig(aaveUsdcBalance.toString(), aaveUsdcAssetInfo.decimals)
       // 150% collateralization
-      const sol = collateral.div(COLLATERALIZATION_RATE).div(SOL_USD)
+      const sol = collateral.div(COLLATERALIZATION_RATE).div(ETH_USD)
       const outputAssetInfo = getAssetInfo(action.outputAsset)
       const solDecimalMoved = sol.mul(BIG_TEN.pow(outputAssetInfo.decimals))
       const s = solDecimalMoved.toFixed(0)
@@ -165,7 +174,7 @@ class MockMangoStepImpl implements StepImpl {
   async executeAction(action: WorkflowAction, amount: BigNumber, _statusCallback: StatusCallback): Promise<WorkflowStepResult> {
     const inputAssetInfo = getAssetInfo(action.inputAsset)
     const inputAmount = toBig(amount.toString(), inputAssetInfo.decimals)
-    const outputAmount = randomLoss(inputAmount)
+    const outputAmount = inputAmount
     const outputAssetInfo = getAssetInfo(action.outputAsset)
     return {
       outputAmount: outputAmount.toFixed(outputAssetInfo.decimals).replace('.', ''),
@@ -175,18 +184,29 @@ class MockMangoStepImpl implements StepImpl {
   }
 }
 
+class MockZkSyncBridge extends TokenStepImpl {
+  async executeAction(step: WorkflowStep, amount: BigNumber, statusCallback: StatusCallback): Promise<WorkflowStepResult> {
+    statusCallback(WorkflowEventType.StatusUpdate, 'Submitting to target chain', [step])
+    await sleepRandom(2, 3)
+    return {
+      outputAmount: amount.toString(),
+      gasCost: randomGas(),
+      exchangeFee: '0',
+    }
+  }
+}
+
 type MockStepsObj = { [stepId: string]: StepImpl }
 const MOCK_STEPS: MockStepsObj = {
+  '1inch.swap': new MockOneInchSwapImpl(),
   'weth.wrap': new MockWethStepImpl(),
   'weth.unwrap': new MockWethStepImpl(),
   'curve.3pool.swap': new MockCurveStepImpl(),
   'curve.tricrypto.swap': new MockCurveStepImpl(),
   'wormhole.transfer': new MockWormholeStepImpl(),
-  'serum.swap': new MockSerumStepImpl(),
-  'mango.deposit': new MockMangoStepImpl(),
-  'mango.withdrawal': new MockMangoStepImpl(),
-  'marinade.stake': new MockMarinadeStepImpl(),
-  'marinade.unstake': new MockMarinadeStepImpl(),
+  'zksync.bridge': new MockZkSyncBridge(),
+  'aave.stake': new AaveStepImpl(),
+  'aave.borrow': new AaveStepImpl(),
 }
 
 export class MockStepsFactory implements StepImplFactory {

@@ -2,10 +2,7 @@ import { Trigger } from '../Trigger'
 import { Asset, AssetAmount, Workflow, WorkflowAction, WorkflowStep, WorkflowStepResult } from '../types'
 export { curveThreePoolSwap, curveTriCryptoSwap } from '../actions/curve'
 export { wormholeTokenTransfer } from '../actions/wormhole'
-export { serumSwap as serumSwap } from '../actions/serum'
-export { mangoDeposit, mangoWithdrawal } from '../actions/mango'
 export { wethWrap, wethUnwrap } from '../actions/weth'
-export { marinadeStake, marinadeUnstake } from '../actions/marinade'
 
 /** A callback implelemented by the integrator to determine when to exit a workflow loop based on WorkflowStepResult */
 export type DoWhileCallback = (stepResult: WorkflowStepResult) => boolean | Promise<boolean>
@@ -70,8 +67,8 @@ export class WorkflowBuilder {
   addSteps(...steps: WorkflowStepInput[]): WorkflowBuilder {
     const stepsWithIds: WorkflowStep[] = steps.map(it => {
       const rv = {
-        ...it,
         stepId: it.id || `${this.nextStepId++}`,
+        ...it,
       }
       delete rv.id
       const isAction = !!(it as WorkflowActionInput).actionId
@@ -98,8 +95,8 @@ export class WorkflowBuilder {
 
   toWorkflowStep(input: WorkflowStepInput): WorkflowStep {
     const rv = {
-      ...input,
       stepId: input.id || `${this.nextStepId++}`,
+      ...input,
     }
     delete rv.id
     return rv

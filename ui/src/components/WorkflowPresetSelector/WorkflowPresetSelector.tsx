@@ -14,12 +14,8 @@ const PRESETS = [
     label: 'Cross Chain Deposit',
     triggerType: 'Manual',
     text: `[
-  wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
-  wormholeTokenTransfer({
-    fromAsset: 'Ethereum.USDT',
-    toChain: 'Solana',
-    amount: '100%'
+    oneInchSwap({ chain: 'ZkSync', from: 'WBTC', to: 'USDC', amount: '240000000' })
+  
   }),
   serumSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
 ]`,
@@ -30,8 +26,8 @@ const PRESETS = [
     triggerType: 'xNFT',
     text: `[
   wethWrap({ amount: '10000000000000000000' }),
-  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT' }),
-  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC' }),
+  curveTriCryptoSwap({ chain: 'Ethereum', from: 'WETH', to: 'USDT' }),
+  curveThreePoolSwap({ chain: 'Ethereum', from: 'USDT', to: 'USDC' }),
   wormholeTokenTransfer({
       fromAsset: 'Ethereum.USDC',
       toChain: 'Solana'

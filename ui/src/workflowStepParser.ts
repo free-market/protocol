@@ -1,13 +1,12 @@
 import {
-  wethWrap,
-  curveTriCryptoSwap,
+  aaveStake,
+  aaveBorrow,
   curveThreePoolSwap,
+  curveTriCryptoSwap,
+  oneInchSwap,
   wormholeTokenTransfer,
-  serumSwap,
-  mangoDeposit,
-  mangoWithdrawal,
-  marinadeStake,
-  marinadeUnstake,
+  wethWrap,
+  zkSyncBridge,
   Workflow,
   WorkflowBuilder,
   WorkflowStep,
@@ -15,15 +14,15 @@ import {
 
 // eslint-disable-next-line
 const windowAsAny: any = window
-windowAsAny.wethWrap = wethWrap
-windowAsAny.curveTriCryptoSwap = curveTriCryptoSwap
+windowAsAny.aaveStake = aaveStake
+windowAsAny.aaveBorrow = aaveBorrow
 windowAsAny.curveThreePoolSwap = curveThreePoolSwap
+windowAsAny.curveTriCryptoSwap = curveTriCryptoSwap
+windowAsAny.oneInchSwap = oneInchSwap
+windowAsAny.wethWrap = wethWrap
 windowAsAny.wormholeTokenTransfer = wormholeTokenTransfer
-windowAsAny.serumSwap = serumSwap
-windowAsAny.mangoDeposit = mangoDeposit
-windowAsAny.mangoWithdrawal = mangoWithdrawal
-windowAsAny.marinadeStake = marinadeStake
-windowAsAny.marinadeUnstake = marinadeUnstake
+windowAsAny.zkSyncBridge = zkSyncBridge
+
 function executeScriptDynamic(scriptId: string, scriptText: string) {
   const scriptTags = window.document.head.getElementsByTagName('script')
   if (scriptTags) {

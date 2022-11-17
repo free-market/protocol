@@ -144,10 +144,10 @@ export const NumberSpinner = (props: { numbers: string; minWidth?: number; class
   for (let i = 0; i < numbers.length; ++i) {
     const c = props.numbers[i]
     const n = parseInt(c)
-    if (c === '.') {
+    if (c === '.' || c === '-') {
       elements.push(
         <div>
-          <span>.</span>
+          <span>{c}</span>
         </div>,
       )
     } else {

@@ -18,22 +18,19 @@ const WORKFLOWS: SampleWorkflow[] = [
   {
     triggerType: 'Manual',
     snippit: `[
-  wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
-  wormholeTokenTransfer({
-    fromAsset: 'Ethereum.USDT',
-    toChain: 'Solana',
-    amount: '100%'
-  }),
-  serumSwap({ from: 'USDTet', to: 'USDT', amount: '100%' })
-]`,
+    oneInchSwap({ chain: 'ZkSync', from: 'WBTC', to: 'USDC', amount: '240000000' }),
+    zkSyncBridge({ fromChain: 'ZkSync', token: 'USDC' }),
+    aaveStake({ chain: 'Ethereum', token: 'USDC' }),
+    aaveBorrow({ chain: 'Ethereum', token: 'WETH' }),
+    zkSyncBridge({ fromChain: 'Ethereum', token: 'WETH' })
+  ]`,
   },
   {
     triggerType: 'xNFT',
     snippit: `[
   wethWrap({ amount: '10000000000000000000' }),
-  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT' }),
-  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC' }),
+  curveTriCryptoSwap({ chain: 'Ethereum', from: 'WETH', to: 'USDT' }),
+  curveThreePoolSwap({ chain: 'Ethereum', from: 'USDT', to: 'USDC' }),
   wormholeTokenTransfer({ fromAsset: 'Ethereum.USDC', toChain: 'Solana' }),
   serumSwap({ from: 'USDCet', to: 'USDC' }),
   mangoDeposit({ symbol: 'USDC' }),
@@ -45,8 +42,8 @@ const WORKFLOWS: SampleWorkflow[] = [
     triggerType: 'Market',
     snippit: `[
   wethWrap({ amount: '1000000000000000000' }),
-  curveTriCryptoSwap({ from: 'Ethereum.WETH', to: 'Ethereum.USDT', amount: '100%' }),
-  curveThreePoolSwap({ from: 'Ethereum.USDT', to: 'Ethereum.USDC', amount: '100%' }),
+  curveTriCryptoSwap({ chain: 'Ethereum', from: 'WETH', to: 'USDT', amount: '100%' }),
+  curveThreePoolSwap({ chain: 'Ethereum', from: 'USDT', to: 'USDC', amount: '100%' }),
   wormholeTokenTransfer({
     fromAsset: 'Ethereum.USDC',
     toChain: 'Solana',

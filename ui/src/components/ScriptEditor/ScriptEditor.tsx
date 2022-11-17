@@ -9,15 +9,7 @@ import highlight from '../../highlight'
 import '../../solarized-dark-atom.css'
 import 'ladda/dist/ladda.min.css'
 import '../../material-dark.css'
-import {
-  wethWrap,
-  curveTriCryptoSwap,
-  wormholeTokenTransfer,
-  serumSwap,
-  Workflow,
-  WorkflowBuilder,
-  WorkflowStep,
-} from '@fmp/sdk'
+import { wethWrap, curveTriCryptoSwap, wormholeTokenTransfer, Workflow, WorkflowBuilder, WorkflowStep } from '@fmp/sdk'
 import { createWorkflowFromString } from 'workflowStepParser'
 
 type WorkflowChangedHandler = (workflowText: string) => void | Promise<void>

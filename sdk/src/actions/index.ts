@@ -1,48 +1,55 @@
 import { WorkflowActionInput, WorkflowStepInput } from '../builder/WorkflowBuilder'
 import { WorkflowActionInfo } from '../types'
 
+export * from './aave'
 export * from './curve'
-export * from './mango'
-export * from './serum'
+export * from './oceanDex'
+export * from './oneInch'
 export * from './weth'
 export * from './wormhole'
+export * from './zkSyncBridge'
 
+import { AAVE_BORROW_ACTION, AAVE_STAKE_ACTION } from './aave'
 import { CURVE_3POOL_SWAP_INFO, CURVE_TRICRYPTO_SWAP } from './curve'
-import { MANGO_DEPOSIT_INFO, MANGO_WITHDRAWAL_INFO } from './mango'
-import { MARINADE_STAKE_INFO, MARINADE_UNSTAKE_INFO } from './marinade'
-import { SERUM_SWAP_INFO } from './serum'
 import { WETH_WRAP_INFO, WETH_UNWRAP_INFO } from './weth'
 import { WORMHOLE_STEP_INFO } from './wormhole'
+import { ONEINCH_SWAP_ACTION } from './oneInch'
+import { ZKSYNC_BRIDGE_ACTION } from './zkSyncBridge'
+import { OCEAN_SWAP_ACTION } from './oceanDex'
 
 export function getAllStepInfos(): WorkflowActionInfo[] {
   return [
+    AAVE_BORROW_ACTION,
+    AAVE_STAKE_ACTION,
     CURVE_3POOL_SWAP_INFO,
     CURVE_TRICRYPTO_SWAP,
-    MANGO_DEPOSIT_INFO,
-    MANGO_WITHDRAWAL_INFO,
-    MARINADE_STAKE_INFO,
-    MARINADE_UNSTAKE_INFO,
-    SERUM_SWAP_INFO,
     WETH_WRAP_INFO,
     WETH_UNWRAP_INFO,
     WORMHOLE_STEP_INFO,
+    OCEAN_SWAP_ACTION,
+    ONEINCH_SWAP_ACTION,
+    ZKSYNC_BRIDGE_ACTION,
   ]
 }
 
-const mapActionIdToStepInfo = new Map<string, WorkflowActionInfo>()
+const mapActionIdToActionInfo = new Map<string, WorkflowActionInfo>()
 
 for (const stepInfo of getAllStepInfos()) {
-  mapActionIdToStepInfo.set(stepInfo.actionId, stepInfo)
+  mapActionIdToActionInfo.set(stepInfo.actionId, stepInfo)
 }
 
 export function getActionInfo(actionId: string): WorkflowActionInfo {
-  const info = mapActionIdToStepInfo.get(actionId)
+  const info = mapActionIdToActionInfo.get(actionId)
   if (!info) {
-    throw new Error('action info not available')
+    // mapActionIdToActionInfo.forEach((v, k) => {
+    //   console.log(`  key: ${k}`)
+    // })
+    throw new Error('action info not available actionId=' + actionId)
   }
   return info
 }
 export function getStepInfo(step: WorkflowStepInput): WorkflowActionInfo {
+  // console.log(`entering getStepInfo(${JSON.stringify(step)})`)
   const action = step as WorkflowActionInput
   if (!action.actionId) {
     throw new Error('step info not available')

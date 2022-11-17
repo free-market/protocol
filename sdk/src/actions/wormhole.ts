@@ -49,7 +49,8 @@ export const WORMHOLE_STEP_INFO: WorkflowActionInfo = {
 }
 
 interface WormholeTokenTransferBuilderArgs extends ActionBuilderArg {
-  fromAsset: string
+  fromChain: ChainName
+  fromToken: string
   toChain: ChainName
   amount?: AssetAmount
 }

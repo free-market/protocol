@@ -40,7 +40,7 @@ export const CURVE_TRICRYPTO_SWAP: WorkflowActionInfo = {
 
 /** define a workflow step that does a token swap using Curve 3Pool */
 export function curveThreePoolSwap(args: CurveBuilderArgs): CurveAction {
-  const inputAsset = Asset.fromString(args.from)
+  const inputAsset = new Asset(args.chain, args.from)
 
   const rv: CurveAction = {
     id: args.id,
@@ -48,7 +48,7 @@ export function curveThreePoolSwap(args: CurveBuilderArgs): CurveAction {
     actionId: 'curve.3pool.swap',
     amount: args.amount,
     inputAsset: inputAsset,
-    outputAsset: Asset.fromString(args.to),
+    outputAsset: new Asset(args.chain, args.to),
   }
   return rv
 }
@@ -58,6 +58,7 @@ export function curveThreePoolSwap(args: CurveBuilderArgs): CurveAction {
  *  @typeParam Symbol - The allowable set of crypto symbols (as a string union)
  */
 export interface CurveBuilderArgs extends ActionBuilderArg {
+  chain: ChainName
   /** the token the Curve workflow step will swap from */
   from: string
   /** the token the Curve workflow step will swap to */
@@ -66,16 +67,14 @@ export interface CurveBuilderArgs extends ActionBuilderArg {
 
 /** define a workflow step that does a token swap using Curve 3Pool */
 export function curveTriCryptoSwap(args: CurveBuilderArgs): CurveAction {
-  // TODO add error if user specifies different chains in the assets
-  const inputAsset = Asset.fromString(args.from)
-
+  const inputAsset = new Asset(args.chain, args.from)
   const rv: CurveAction = {
     id: args.id,
     chain: inputAsset.chain,
     actionId: 'curve.tricrypto.swap',
     amount: args.amount,
     inputAsset: inputAsset,
-    outputAsset: Asset.fromString(args.to),
+    outputAsset: new Asset(args.chain, args.to),
   }
   return rv
 }
