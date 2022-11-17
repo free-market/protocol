@@ -7,13 +7,14 @@ export const StepCatalog = (props: { content?: React.ReactNode }): JSX.Element =
     content = (
       <>
         <p className="text-zinc-300 text-sm">Welcome to Free Market! Browse our action catalog to get started.</p>
-        <StepHeading />
+        <StepHeading actionGroupName="curve" />
         <p className="text-zinc-300 text-sm">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed pharetra lectus. Nulla facilisi. Vestibulum tempus iaculis
           lorem a pharetra. Mauris a massa vitae ante tempus condimentum. Morbi non mi turpis. Vestibulum bibendum velit at tincidunt
           pretium. Ut consectetur dui sed nunc posuere, non porta lorem tincidunt. Orci varius natoque penatibus et magnis dis parturient
           montes, nascetur ridiculus mus.
         </p>
+        <StepHeading actionGroupName="zksync" />
 
         <p className="text-zinc-300 text-sm">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed pharetra lectus. Nulla facilisi. Vestibulum tempus iaculis
@@ -21,6 +22,7 @@ export const StepCatalog = (props: { content?: React.ReactNode }): JSX.Element =
           pretium. Ut consectetur dui sed nunc posuere, non porta lorem tincidunt. Orci varius natoque penatibus et magnis dis parturient
           montes, nascetur ridiculus mus.
         </p>
+        <StepHeading actionGroupName="aave" />
 
         <p className="text-zinc-300 text-sm">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed pharetra lectus. Nulla facilisi. Vestibulum tempus iaculis

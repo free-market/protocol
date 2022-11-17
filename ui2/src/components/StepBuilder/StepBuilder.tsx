@@ -4,6 +4,7 @@ import { useCore } from '@component/CoreProvider'
 import StepChoiceCard from '@component/StepChoiceCard'
 import StepChoiceEditor from '@component/StepChoiceEditor'
 import StepEditorPreview from '@component/StepEditorPreview'
+import { headingMap } from 'config'
 
 const variants = {
   visible: {
@@ -49,7 +50,7 @@ export const StepBuilder = (): JSX.Element => {
     case null:
       return (
         <motion.div
-          key={core.selectedActionGroupName}
+          key="null"
           variants={variants}
           animate="visible"
           exit="hidden"
@@ -62,20 +63,19 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
-      // TODO: FMP-217
-      const firstCardId =
-        (core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
-        (core.newStep && core.newStep.recentlyAdded)
-          ? 'foo2'
-          : 'foo'
+      const secondary: boolean =
+        !!(core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
+        !!(core.newStep && core.newStep.recentlyAdded)
+      const firstCardId = `${core.selectedActionGroupName}:secondary=${secondary}`
+
       const choiceCardsAndDividers = (
         <>
           <motion.div
+            key={`card0:${core.selectedActionGroupName}`}
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            key={core.selectedActionGroupName}
             className="flex items-center flex-col content-end space-y-5"
             transition={{ delay: 0.2 }}
           >
@@ -83,13 +83,13 @@ export const StepBuilder = (): JSX.Element => {
               <StepChoiceCard index={0} />
             </motion.div>
           </motion.div>
-          <Divider delay={0.25} />
+          <Divider key={`div1:${core.selectedActionGroupName}`} delay={0.25} />
           <motion.div
+            key={`card1:${core.selectedActionGroupName}`}
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            key={core.selectedActionGroupName}
             className="flex items-center flex-col content-end space-y-5"
             transition={{ delay: 0.3 }}
           >
@@ -97,13 +97,13 @@ export const StepBuilder = (): JSX.Element => {
               <StepChoiceCard index={1} />
             </motion.div>
           </motion.div>
-          <Divider delay={0.35} />
+          <Divider key={`div2:${core.selectedActionGroupName}`} delay={0.35} />
           <motion.div
+            key={`card2:${core.selectedActionGroupName}`}
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            key={core.selectedActionGroupName}
             className="flex items-center flex-col content-end space-y-5"
             transition={{ delay: 0.4 }}
           >
@@ -111,13 +111,13 @@ export const StepBuilder = (): JSX.Element => {
               <StepChoiceCard index={2} />
             </motion.div>
           </motion.div>
-          <Divider delay={0.45} />
+          <Divider key={`div3:${core.selectedActionGroupName}`} delay={0.45} />
           <motion.div
+            key={`card3:${core.selectedActionGroupName}`}
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            key={core.selectedActionGroupName}
             className="flex items-center flex-col content-end space-y-5"
             transition={{ delay: 0.5 }}
           >
@@ -130,6 +130,7 @@ export const StepBuilder = (): JSX.Element => {
 
       const breadCrumbs = (
         <motion.button
+          key={`breadcrumbs:${core.selectedActionGroupName}`}
           variants={variantsNoTransform}
           initial="hidden"
           animate="visible"
@@ -138,12 +139,13 @@ export const StepBuilder = (): JSX.Element => {
           onClick={deselect}
         >
           <ChevronLeftIcon className="w-5 h-5 mx-2" />
-          <div>Curve</div>
+          <div>{headingMap[core.selectedActionGroupName].title}</div>
         </motion.button>
       )
 
       const stepChoiceEditor = (
         <StepChoiceEditor
+          key={`editor:${core.selectedActionGroupName}`}
           invisible={core.previewStep != null && !core.previewStep.recentlyClosed}
           fadeIn={core.previewStep == null ? 'slow' : 'instant'}
         />
