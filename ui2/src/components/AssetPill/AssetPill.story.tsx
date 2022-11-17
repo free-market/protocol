@@ -28,3 +28,25 @@ USDTPill.args = {
     },
   },
 }
+
+export const ZkSyncPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
+
+ZkSyncPill.args = {
+  asset: {
+    label: 'zkSync',
+    icon: {
+      url: '/zksync.svg',
+    },
+  },
+}
+
+export const AavePill: ComponentStory<typeof Component> = (args) => <Component {...args} />
+
+AavePill.args = {
+  asset: {
+    label: 'Aave',
+    icon: {
+      url: 'https://app.aave.com/icons/tokens/aave.svg',
+    },
+  },
+}
