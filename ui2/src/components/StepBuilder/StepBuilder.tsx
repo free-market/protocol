@@ -4,7 +4,7 @@ import { useCore } from '@component/CoreProvider'
 import StepChoiceCard from '@component/StepChoiceCard'
 import StepChoiceEditor from '@component/StepChoiceEditor'
 import StepEditorPreview from '@component/StepEditorPreview'
-import { headingMap } from 'config'
+import { catalog } from 'config'
 
 const variants = {
   visible: {
@@ -139,7 +139,7 @@ export const StepBuilder = (): JSX.Element => {
           onClick={deselect}
         >
           <ChevronLeftIcon className="w-5 h-5 mx-2" />
-          <div>{headingMap[core.selectedActionGroupName].title}</div>
+          <div>{catalog[core.selectedActionGroupName].title}</div>
         </motion.button>
       )
 

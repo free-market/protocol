@@ -56,7 +56,7 @@ export const Workflow = (): JSX.Element => {
     </motion.div>
   )
 
-  const layoutId = core.newStep ? (core.newStep.recentlyAdded ? 'foo' : 'random-id') : 'random-id'
+  const layoutId = core.newStep ? (core.newStep.recentlyAdded ? 'curve:secondary=false' : 'random-id') : 'random-id'
 
   const secondStep = (
     <motion.div

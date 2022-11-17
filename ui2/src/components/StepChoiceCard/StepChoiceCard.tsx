@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import cx from 'classnames'
+import { catalog } from 'config'
 
 export const StepChoiceCard = (props: { index?: number }): JSX.Element => {
   const { index = 0 } = props
@@ -32,6 +33,10 @@ export const StepChoiceCard = (props: { index?: number }): JSX.Element => {
     />
   )
 
+  if (core.selectedActionGroupName == null) {
+    throw new Error('StepChoiceCard: selectedActionGroupName required')
+  }
+
   return (
     <motion.button
       className="inline-flex bg-zinc-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
@@ -45,8 +50,10 @@ export const StepChoiceCard = (props: { index?: number }): JSX.Element => {
       >
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
-            <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
-            <div className="text-zinc-400 px-2">Curve Swap</div>
+            <img src={catalog[core.selectedActionGroupName].icon.url} className="w-5 h-5" />
+            <div className="text-zinc-400 px-2">
+              {catalog[core.selectedActionGroupName].title} {catalog[core.selectedActionGroupName].actions[0].title}
+            </div>
           </div>
 
           <PlusIcon className="w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50" />

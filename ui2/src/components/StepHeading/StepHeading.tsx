@@ -1,6 +1,6 @@
 import { ActionGroupName } from '@component/CoreProvider/CoreProvider'
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
-import { headingMap } from 'config'
+import { catalog } from 'config'
 import { useCore } from '../CoreProvider'
 
 export const StepHeading = (props: { actionGroupName?: ActionGroupName }): JSX.Element => {
@@ -17,8 +17,8 @@ export const StepHeading = (props: { actionGroupName?: ActionGroupName }): JSX.E
       onClick={click}
     >
       <div className="flex items-center">
-        <img src={headingMap[actionGroupName].icon.url} className="w-8 h-8" />
-        <div className="text-zinc-300 text-lg px-2">{headingMap[actionGroupName].title}</div>
+        <img src={catalog[actionGroupName].icon.url} className="w-8 h-8" />
+        <div className="text-zinc-300 text-lg px-2">{catalog[actionGroupName].title}</div>
       </div>
       <ChevronRightIcon className="text-zinc-500 w-8 h-8 group-hover:text-zinc-400/50 transform translate-x-2" />
     </button>

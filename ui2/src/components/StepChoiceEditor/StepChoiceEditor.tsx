@@ -29,7 +29,7 @@ export const StepChoiceEditor = (props: {
     ),
     fadeIn = 'slow',
     invisible = false,
-    layoutId = 'foo',
+    layoutId = 'curve:secondary=false',
   } = props
 
   const core = useCore()

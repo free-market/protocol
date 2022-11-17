@@ -45,6 +45,7 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
   // TODO: FMP-219: replace updateState usage with sagas
   const [state, updateState] = useImmer({
     ...initialState,
+    selectedActionGroupName: initialNoSelectedStepChoice ? null : 'curve',
     selectedStepChoice: initialNoSelectedStepChoice ? null : { name: 'swap', recentlySelected: false, recentlyClosed: false },
   } as CoreState)
 
