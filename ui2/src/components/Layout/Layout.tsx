@@ -7,6 +7,7 @@ import StepBuilder from '../StepBuilder'
 import Workflow from '../Workflow'
 
 import './super-shadow.css'
+import { useCore } from '@component/CoreProvider'
 
 export const Layout = (props: {
   stepCatalog?: React.ReactNode
@@ -14,6 +15,7 @@ export const Layout = (props: {
   workflow?: React.ReactNode
 }): JSX.Element => {
   const { stepCatalog = <StepCatalog />, stepBuilder = <StepBuilder />, workflow = <Workflow /> } = props
+  const core = useCore()
 
   return (
     <div className="sm:flex items-stretch max-h-full h-full overflow-hidden bg-zinc-900">
@@ -29,7 +31,10 @@ export const Layout = (props: {
       <div className="sm:h-screen p-4 w-full grow">
         <div className="h-full p-2 rounded-xl bg-zinc-800 w-full sm:flex gap-2">
           <div className="h-full grow basis-0 max-w-sm rounded-xl relative super-shadow overflow-hidden">
-            <div className="h-full p-2 rounded-xl bg-zinc-900 max-w-sm grow basis-0 space-y-5 overflow-y-auto relative">
+            <div
+              className="h-full p-2 rounded-xl bg-zinc-900 max-w-sm grow basis-0 space-y-5 overflow-y-auto relative"
+              key={core.selectedActionGroupName}
+            >
               <AnimatePresence mode="wait">{stepBuilder}</AnimatePresence>
             </div>
           </div>
