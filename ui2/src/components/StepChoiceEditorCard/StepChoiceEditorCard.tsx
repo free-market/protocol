@@ -57,9 +57,9 @@ export const StepChoiceEditorCard = (): JSX.Element => {
           </motion.button>
         )
 
-        const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} />
+        const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} network="not-included" />
 
-        const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} />
+        const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} network="not-included" />
 
         return (
           <form onSubmit={handleSubmit}>

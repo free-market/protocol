@@ -12,9 +12,9 @@ export const StepEditorPreview = (): JSX.Element => {
     core.selectStepChoice(null)
   }
 
-  const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} />
+  const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} network="not-included" />
 
-  const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} />
+  const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} network="not-included" />
 
   const card = (
     <motion.div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-1 opacity-80">
