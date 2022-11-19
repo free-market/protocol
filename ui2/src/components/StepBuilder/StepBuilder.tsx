@@ -46,7 +46,7 @@ export const StepBuilder = (): JSX.Element => {
     core.escape()
   }
 
-  switch (core.selectedActionGroupName) {
+  switch (core.selectedActionGroup) {
     case null:
       return (
         <motion.div
@@ -63,22 +63,22 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
-      const { actions } = catalog[core.selectedActionGroupName]
+      const { actions } = catalog[core.selectedActionGroup.name]
       const secondary: boolean =
         !!(core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
         !!(core.newStep && core.newStep.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
-        let id = `${core.selectedActionGroupName}:secondary=${secondary}`
+        let id = `${core.selectedActionGroup}:secondary=${secondary}`
 
         if (index > 0) {
           id = `${index}:${id}`
         }
         return (
           <>
-            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroupName}`} delay={0.15 + index * 0.1} />}
+            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}`} delay={0.15 + index * 0.1} />}
             <motion.div
-              key={`card1:${core.selectedActionGroupName}`}
+              key={`card1:${core.selectedActionGroup}`}
               variants={variants}
               initial="hidden"
               animate="visible"
@@ -96,7 +96,7 @@ export const StepBuilder = (): JSX.Element => {
 
       const breadCrumbs = (
         <motion.button
-          key={`breadcrumbs:${core.selectedActionGroupName}`}
+          key={`breadcrumbs:${core.selectedActionGroup}`}
           variants={variantsNoTransform}
           initial="hidden"
           animate="visible"
@@ -105,13 +105,13 @@ export const StepBuilder = (): JSX.Element => {
           onClick={deselect}
         >
           <ChevronLeftIcon className="w-5 h-5 mx-2" />
-          <div>{catalog[core.selectedActionGroupName].title}</div>
+          <div>{catalog[core.selectedActionGroup.name].title}</div>
         </motion.button>
       )
 
       const stepChoiceEditor = (
         <StepChoiceEditor
-          key={`editor:${core.selectedActionGroupName}`}
+          key={`editor:${core.selectedActionGroup}`}
           invisible={core.previewStep != null && !core.previewStep.recentlyClosed}
           fadeIn={core.previewStep == null ? 'slow' : 'instant'}
         />

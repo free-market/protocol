@@ -33,7 +33,7 @@ export const Layout = (props: {
           <div className="h-full grow basis-0 max-w-sm rounded-xl relative super-shadow overflow-hidden">
             <div
               className="h-full p-2 rounded-xl bg-zinc-900 max-w-sm grow basis-0 space-y-5 overflow-y-auto relative"
-              key={core.selectedActionGroupName}
+              key={core.selectedActionGroup?.name}
             >
               <AnimatePresence mode="wait">{stepBuilder}</AnimatePresence>
             </div>

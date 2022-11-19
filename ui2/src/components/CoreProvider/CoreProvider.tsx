@@ -8,7 +8,7 @@ import { ActionGroupName, StepChoiceName } from 'config'
 export type StepChoice = { name: StepChoiceName; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
-  selectedActionGroupName: null as ActionGroupName | null,
+  selectedActionGroup: null as { name: ActionGroupName } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
   newStep: null as { recentlyAdded: boolean } | null, // TODO: store real workflow state
@@ -43,20 +43,26 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
   // TODO: FMP-219: replace updateState usage with sagas
   const [state, updateState] = useImmer({
     ...initialState,
-    selectedActionGroupName: initialNoSelectedStepChoice ? null : 'curve',
+    selectedActionGroup: initialNoSelectedStepChoice ? null : { name: 'curve' },
     selectedStepChoice: initialNoSelectedStepChoice ? null : { name: 'swap', recentlySelected: false, recentlyClosed: false },
   } as CoreState)
 
   const core: Core = {
     ...state,
 
-    selectActionGroup: (actionGroupName) =>
+    selectActionGroup: (actionGroupName: ActionGroupName | null) =>
       updateState((draft: Draft<CoreState>) => {
-        if (actionGroupName !== draft.selectedActionGroupName) {
-          draft.selectedStepChoice = null
-        }
+        if (actionGroupName == null) {
+          draft.selectedActionGroup = null
+        } else {
+          const { selectedActionGroup } = draft
 
-        draft.selectedActionGroupName = actionGroupName
+          if (selectedActionGroup != null && selectedActionGroup.name !== actionGroupName) {
+            draft.selectedStepChoice = null
+          }
+
+          draft.selectedActionGroup = { name: actionGroupName }
+        }
       }),
 
     selectStepChoice: async (stepChoiceName) => {
@@ -99,8 +105,8 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
               })
             }, 300)
           }
-        } else if (draft.selectedActionGroupName != null) {
-          draft.selectedActionGroupName = null
+        } else if (draft.selectedActionGroup != null) {
+          draft.selectedActionGroup = null
         }
       }),
 
