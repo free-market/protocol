@@ -36,7 +36,7 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
           <div className="inline-flex items-center">
             <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />
             <div className="text-zinc-400 px-2">
-              {catalog[core.selectedActionGroup.name].title} {catalog[core.selectedActionGroup.name].actions[0].title}
+              {catalog[core.selectedActionGroup.name].title} {action.title}
             </div>
           </div>
 
