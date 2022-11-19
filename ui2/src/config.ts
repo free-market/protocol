@@ -43,7 +43,7 @@ export const catalog: Catalog = {
   'curve': {
     name: 'curve',
     title: 'Curve',
-    icon: { url: 'https://curve.fi/favicon-32x32.png' },
+    icon: { url: '/curve.svg' },
     actions: [
       {
         title: 'Swap',
@@ -51,7 +51,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.ethereum,
           },
@@ -60,7 +60,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDT',
             icon: {
-              url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
+              url: 'https://app.aave.com/icons/tokens/usdt.svg',
             },
             network: networks.ethereum,
           },
@@ -73,7 +73,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDT',
             icon: {
-              url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
+              url: 'https://app.aave.com/icons/tokens/usdt.svg',
             },
             network: networks.ethereum,
           },
@@ -82,7 +82,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.ethereum,
           },
@@ -102,7 +102,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.zksync,
           },
@@ -111,7 +111,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.ethereum,
           },
@@ -152,7 +152,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.ethereum,
           },
@@ -161,7 +161,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDCaave',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.ethereum,
           },
@@ -211,7 +211,7 @@ export const catalog: Catalog = {
           asset: {
             label: 'USDC',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: '/usdc.svg',
             },
             network: networks.zksync,
           },
