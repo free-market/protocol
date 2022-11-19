@@ -57,9 +57,19 @@ export const StepChoiceEditorCard = (): JSX.Element => {
           </motion.button>
         )
 
-        const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} network="not-included" />
+        if (core.selectedActionGroup == null) {
+          throw new Error('selectedActionGroup required')
+        }
 
-        const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} network="not-included" />
+        if (core.selectedStepChoice == null || core.selectedStepChoice.recentlyClosed) {
+          return null
+        }
+
+        const action = catalog[core.selectedActionGroup.name].actions[core.selectedStepChoice?.index]
+
+        const inputPill = <AssetPill asset={action.input.asset} network="not-included" />
+
+        const outputPill = <AssetPill asset={action.output.asset} network="not-included" />
 
         return (
           <form onSubmit={handleSubmit}>
@@ -73,8 +83,10 @@ export const StepChoiceEditorCard = (): JSX.Element => {
               >
                 <div className="inline-flex items-center w-full justify-between">
                   <div className="inline-flex items-center">
-                    <img src="https://curve.fi/favicon-32x32.png" className="w-5 h-5" />
-                    <div className="text-zinc-400 px-2">Curve Swap</div>
+                    <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />
+                    <div className="text-zinc-400 px-2">
+                      {catalog[core.selectedActionGroup.name].title} {action.title}
+                    </div>
                   </div>
 
                   <button
