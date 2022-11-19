@@ -16,6 +16,8 @@ export const StepChoiceEditor = (props: {
   invisible?: boolean
   layoutId?: string
 }): JSX.Element => {
+  const core = useCore()
+
   const {
     stepChoiceEditorCard = <StepChoiceEditorCard />,
 
@@ -29,10 +31,10 @@ export const StepChoiceEditor = (props: {
     ),
     fadeIn = 'slow',
     invisible = false,
-    layoutId = 'curve:secondary=false',
+    layoutId = `${core.selectedActionGroup?.name}:${
+      !core.selectedStepChoice?.recentlyClosed && core.selectedStepChoice?.index
+    }:secondary=false`,
   } = props
-
-  const core = useCore()
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
   const deselect = () => {

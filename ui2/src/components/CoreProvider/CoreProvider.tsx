@@ -2,10 +2,9 @@ import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import React, { useEffect } from 'react'
 
-import { ActionGroupName, StepChoiceName } from 'config'
+import { ActionGroupName, StepChoiceIndex } from 'config'
 
-// TODO: deprecate this by storing identifiers instead of slugs
-export type StepChoice = { name: StepChoiceName; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
+export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
   selectedActionGroup: null as { name: ActionGroupName } | null,
@@ -18,7 +17,7 @@ export type CoreState = typeof initialState
 
 export type Core = CoreState & {
   selectActionGroup: (actionGroupName: ActionGroupName | null) => void
-  selectStepChoice: (stepChoiceName: string | null) => Promise<void>
+  selectStepChoice: (stepChoice: StepChoice | null) => Promise<void>
   escape: () => void
   startPreviewingWorkflowStep: (identifier: string) => void
   stopPreviewingWorkflowStep: () => void
@@ -65,8 +64,8 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
         }
       }),
 
-    selectStepChoice: async (stepChoiceName) => {
-      if (stepChoiceName == null) {
+    selectStepChoice: async (stepChoice) => {
+      if (stepChoice == null) {
         updateState((draft: Draft<CoreState>) => {
           if (draft.selectedStepChoice != null) {
             draft.selectedStepChoice = { recentlyClosed: true }
@@ -76,15 +75,20 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
         updateState((draft: Draft<CoreState>) => {
           draft.selectedStepChoice = null
         })
-      } else {
+      } else if (!stepChoice.recentlyClosed) {
         updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = { name: 'curve/swap', recentlySelected: true, recentlyClosed: false }
+          draft.selectedStepChoice = stepChoice
+          draft.selectedStepChoice.recentlySelected = true
         })
         await new Promise((resolve) => setTimeout(resolve, 300))
         updateState((draft: Draft<CoreState>) => {
           if (draft.selectedStepChoice && !draft.selectedStepChoice.recentlyClosed) {
             draft.selectedStepChoice.recentlySelected = false
           }
+        })
+      } else {
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = stepChoice
         })
       }
     },

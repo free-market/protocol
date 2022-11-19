@@ -14,7 +14,11 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
   }
 
   const click = () => {
-    core.selectStepChoice('swap')
+    core.selectStepChoice({
+      index,
+      recentlySelected: true,
+      recentlyClosed: false,
+    })
   }
 
   const inputPill = <AssetPill asset={action.input.asset} />

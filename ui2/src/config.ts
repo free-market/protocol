@@ -1,6 +1,6 @@
 export type ActionGroupName = 'curve' | 'zksync' | 'aave' | '1inch'
 
-export type StepChoiceName = 'curve/swap' | 'zksync/bridge' | 'aave/borrow'
+export type StepChoiceIndex = number
 
 export type CatalogAsset = {
   label: string
