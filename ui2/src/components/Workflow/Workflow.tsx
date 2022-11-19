@@ -2,6 +2,7 @@ import AssetPill from '@component/AssetPill'
 import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
 import cx from 'classnames'
+import { catalog } from 'config'
 
 export const Workflow = (): JSX.Element => {
   const core = useCore()
@@ -16,23 +17,17 @@ export const Workflow = (): JSX.Element => {
 
   const inputPill = (
     <AssetPill
+      network="not-included"
       className="inline-flex items-center rounded-full bg-zinc-700/75 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-zinc-600/75"
-      asset={{
-        label: 'USDC',
-        icon: {
-          url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
-        },
-      }}
+      asset={catalog.curve.actions[0].input.asset}
     />
   )
 
   const outputPill = (
     <AssetPill
+      network="not-included"
       className="inline-flex items-center rounded-full bg-zinc-700/75 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-zinc-600/75"
-      asset={{
-        label: 'USDT',
-        icon: { url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png' },
-      }}
+      asset={catalog.curve.actions[0].output.asset}
     />
   )
 

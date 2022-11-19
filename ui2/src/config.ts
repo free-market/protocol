@@ -35,8 +35,8 @@ const chains: Record<'ethereum' | 'zksync', CatalogAsset['network']['chain']> = 
 }
 
 const networks: Record<'ethereum' | 'zksync', CatalogAsset['network']> = {
-  ethereum: { label: 'Ethereum Mainnet', chain: chains.ethereum },
-  zksync: { label: 'zkSync Mainnet', chain: chains.ethereum },
+  ethereum: { label: 'Mainnet', chain: chains.ethereum },
+  zksync: { label: 'Mainnet', chain: chains.zksync },
 }
 
 export const catalog: Catalog = {

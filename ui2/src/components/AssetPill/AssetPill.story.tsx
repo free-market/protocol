@@ -1,4 +1,5 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { catalog } from 'config'
 
 import { AssetPill as Component } from './AssetPill'
 
@@ -10,43 +11,11 @@ export default {
 export const USDCPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
 
 USDCPill.args = {
-  asset: {
-    label: 'USDC',
-    icon: {
-      url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
-    },
-  },
+  asset: catalog.curve.actions[0].input.asset,
 }
 
 export const USDTPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
 
 USDTPill.args = {
-  asset: {
-    label: 'USDT',
-    icon: {
-      url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
-    },
-  },
-}
-
-export const ZkSyncPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
-
-ZkSyncPill.args = {
-  asset: {
-    label: 'zkSync',
-    icon: {
-      url: '/zksync.svg',
-    },
-  },
-}
-
-export const AavePill: ComponentStory<typeof Component> = (args) => <Component {...args} />
-
-AavePill.args = {
-  asset: {
-    label: 'Aave',
-    icon: {
-      url: 'https://app.aave.com/icons/tokens/aave.svg',
-    },
-  },
+  asset: catalog.curve.actions[0].output.asset,
 }
