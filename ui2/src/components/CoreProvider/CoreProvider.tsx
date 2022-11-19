@@ -2,9 +2,7 @@ import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import React, { useEffect } from 'react'
 
-export type ActionGroupName = 'curve' | 'zksync' | 'aave'
-
-export type StepChoiceName = 'curve/swap' | 'zksync/bridge' | 'aave/borrow'
+import { ActionGroupName, StepChoiceName } from 'config'
 
 // TODO: deprecate this by storing identifiers instead of slugs
 export type StepChoice = { name: StepChoiceName; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }

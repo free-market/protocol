@@ -1,4 +1,6 @@
-import { ActionGroupName } from '@component/CoreProvider/CoreProvider'
+export type ActionGroupName = 'curve' | 'zksync' | 'aave' | '1inch'
+
+export type StepChoiceName = 'curve/swap' | 'zksync/bridge' | 'aave/borrow'
 
 export type CatalogAsset = {
   label: string
@@ -21,7 +23,7 @@ export type CatalogGroup = {
 export type Catalog = Record<ActionGroupName, CatalogGroup>
 
 export const catalog: Catalog = {
-  curve: {
+  'curve': {
     name: 'curve',
     title: 'Curve',
     icon: { url: 'https://curve.fi/favicon-32x32.png' },
@@ -30,17 +32,17 @@ export const catalog: Catalog = {
         title: 'Swap',
         input: {
           asset: {
-            label: '1INCH',
+            label: 'USDC',
             icon: {
-              url: 'https://app.aave.com/icons/tokens/1inch.svg',
+              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
           },
         },
         output: {
           asset: {
-            label: 'USDC',
+            label: 'USDT',
             icon: {
-              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+              url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
             },
           },
         },
@@ -48,7 +50,7 @@ export const catalog: Catalog = {
     ],
   },
 
-  zksync: {
+  'zksync': {
     name: 'zksync',
     title: 'zkSync',
     icon: { url: '/zksync.svg' },
@@ -72,21 +74,86 @@ export const catalog: Catalog = {
           },
         },
       },
+      {
+        title: 'Bridge',
+        input: {
+          asset: {
+            label: 'WETH',
+            icon: {
+              url: 'https://app.aave.com/icons/tokens/weth.svg',
+            },
+          },
+        },
+        output: {
+          asset: {
+            label: 'WETH',
+            icon: {
+              url: 'https://app.aave.com/icons/tokens/weth.svg',
+            },
+          },
+        },
+      },
     ],
   },
 
-  aave: {
+  'aave': {
     name: 'aave',
     title: 'Aave',
     icon: { url: 'https://app.aave.com/icons/tokens/aave.svg' },
     actions: [
       {
-        title: 'Borrow',
+        title: 'Stake',
         input: {
           asset: {
             label: 'USDC',
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+            },
+          },
+        },
+        output: {
+          asset: {
+            label: 'USDC',
+            icon: {
+              url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
+            },
+          },
+        },
+      },
+      {
+        title: 'Borrow',
+        input: {
+          asset: {
+            label: 'WETHaave',
+            icon: {
+              url: 'https://app.aave.com/icons/tokens/weth.svg',
+            },
+          },
+        },
+        output: {
+          asset: {
+            label: 'WETH',
+            icon: {
+              url: 'https://app.aave.com/icons/tokens/weth.svg',
+            },
+          },
+        },
+      },
+    ],
+  },
+
+  '1inch': {
+    name: '1inch',
+    title: '1INCH',
+    icon: { url: 'https://app.aave.com/icons/tokens/1inch.svg' },
+    actions: [
+      {
+        title: 'Swap',
+        input: {
+          asset: {
+            label: 'WBTC',
+            icon: {
+              url: 'https://app.aave.com/icons/tokens/wbtc.svg',
             },
           },
         },
