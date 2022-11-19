@@ -9,7 +9,7 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
   const { action, index = 0 } = props
   const core = useCore()
 
-  if (core.selectedActionGroupName == null) {
+  if (core.selectedActionGroup == null) {
     throw new Error('StepChoiceCard: selectedActionGroupName required')
   }
 
@@ -34,9 +34,9 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
       >
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
-            <img src={catalog[core.selectedActionGroupName].icon.url} className="w-5 h-5" />
+            <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />
             <div className="text-zinc-400 px-2">
-              {catalog[core.selectedActionGroupName].title} {catalog[core.selectedActionGroupName].actions[0].title}
+              {catalog[core.selectedActionGroup.name].title} {catalog[core.selectedActionGroup.name].actions[0].title}
             </div>
           </div>
 
