@@ -69,11 +69,8 @@ export const StepBuilder = (): JSX.Element => {
         !!(core.newStep && core.newStep.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
-        let id = `${core.selectedActionGroup?.name}:secondary=${secondary}`
+        const id = `${core.selectedActionGroup?.name}:${index}:secondary=${secondary}`
 
-        if (index > 0) {
-          id = `${index}:${id}`
-        }
         return (
           <>
             {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}`} delay={0.15 + index * 0.1} />}
