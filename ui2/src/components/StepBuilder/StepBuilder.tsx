@@ -63,70 +63,36 @@ export const StepBuilder = (): JSX.Element => {
       )
 
     default: {
+      const { actions } = catalog[core.selectedActionGroupName]
       const secondary: boolean =
         !!(core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
         !!(core.newStep && core.newStep.recentlyAdded)
-      const firstCardId = `${core.selectedActionGroupName}:secondary=${secondary}`
 
-      const choiceCardsAndDividers = (
-        <>
-          <motion.div
-            key={`card0:${core.selectedActionGroupName}`}
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="flex items-center flex-col content-end space-y-5"
-            transition={{ delay: 0.2 }}
-          >
-            <motion.div key={firstCardId} layout layoutId={firstCardId}>
-              <StepChoiceCard index={0} />
+      const choiceCardsAndDividers = actions.map((action, index) => {
+        let id = `${core.selectedActionGroupName}:secondary=${secondary}`
+
+        if (index > 0) {
+          id = `${index}:${id}`
+        }
+        return (
+          <>
+            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroupName}`} delay={0.15 + index * 0.1} />}
+            <motion.div
+              key={`card1:${core.selectedActionGroupName}`}
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="flex items-center flex-col content-end space-y-5"
+              transition={{ delay: 0.2 + index * 0.1 }}
+            >
+              <motion.div key={id} layout layoutId={id}>
+                <StepChoiceCard index={index} action={action} />
+              </motion.div>
             </motion.div>
-          </motion.div>
-          <Divider key={`div1:${core.selectedActionGroupName}`} delay={0.25} />
-          <motion.div
-            key={`card1:${core.selectedActionGroupName}`}
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="flex items-center flex-col content-end space-y-5"
-            transition={{ delay: 0.3 }}
-          >
-            <motion.div layout layoutId="baz">
-              <StepChoiceCard index={1} />
-            </motion.div>
-          </motion.div>
-          <Divider key={`div2:${core.selectedActionGroupName}`} delay={0.35} />
-          <motion.div
-            key={`card2:${core.selectedActionGroupName}`}
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="flex items-center flex-col content-end space-y-5"
-            transition={{ delay: 0.4 }}
-          >
-            <motion.div layout layoutId="bar">
-              <StepChoiceCard index={2} />
-            </motion.div>
-          </motion.div>
-          <Divider key={`div3:${core.selectedActionGroupName}`} delay={0.45} />
-          <motion.div
-            key={`card3:${core.selectedActionGroupName}`}
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="flex items-center flex-col content-end space-y-5"
-            transition={{ delay: 0.5 }}
-          >
-            <motion.div layout layoutId="quux">
-              <StepChoiceCard index={3} />
-            </motion.div>
-          </motion.div>
-        </>
-      )
+          </>
+        )
+      })
 
       const breadCrumbs = (
         <motion.button
