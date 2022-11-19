@@ -5,6 +5,13 @@ export type StepChoiceName = 'curve/swap' | 'zksync/bridge' | 'aave/borrow'
 export type CatalogAsset = {
   label: string
   icon: { url: string }
+  network: {
+    label: string
+    chain: {
+      label: string
+      icon: { url: string }
+    }
+  }
 }
 
 export type CatalogAction = {
@@ -22,6 +29,16 @@ export type CatalogGroup = {
 
 export type Catalog = Record<ActionGroupName, CatalogGroup>
 
+const chains: Record<'ethereum' | 'zksync', CatalogAsset['network']['chain']> = {
+  ethereum: { label: 'Ethereum', icon: { url: '/ethereum-chain.svg' } },
+  zksync: { label: 'zkSync', icon: { url: '/zksync.svg' } },
+}
+
+const networks: Record<'ethereum' | 'zksync', CatalogAsset['network']> = {
+  ethereum: { label: 'Ethereum Mainnet', chain: chains.ethereum },
+  zksync: { label: 'zkSync Mainnet', chain: chains.ethereum },
+}
+
 export const catalog: Catalog = {
   'curve': {
     name: 'curve',
@@ -36,6 +53,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.ethereum,
           },
         },
         output: {
@@ -44,6 +62,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
             },
+            network: networks.ethereum,
           },
         },
       },
@@ -56,6 +75,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
             },
+            network: networks.ethereum,
           },
         },
         output: {
@@ -64,6 +84,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.ethereum,
           },
         },
       },
@@ -83,6 +104,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.zksync,
           },
         },
         output: {
@@ -91,6 +113,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.ethereum,
           },
         },
       },
@@ -102,6 +125,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://app.aave.com/icons/tokens/weth.svg',
             },
+            network: networks.ethereum,
           },
         },
         output: {
@@ -110,6 +134,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://app.aave.com/icons/tokens/weth.svg',
             },
+            network: networks.zksync,
           },
         },
       },
@@ -129,14 +154,16 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.ethereum,
           },
         },
         output: {
           asset: {
-            label: 'USDC',
+            label: 'USDCaave',
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.ethereum,
           },
         },
       },
@@ -148,6 +175,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://app.aave.com/icons/tokens/weth.svg',
             },
+            network: networks.ethereum,
           },
         },
         output: {
@@ -156,6 +184,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://app.aave.com/icons/tokens/weth.svg',
             },
+            network: networks.ethereum,
           },
         },
       },
@@ -175,6 +204,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://app.aave.com/icons/tokens/wbtc.svg',
             },
+            network: networks.zksync,
           },
         },
         output: {
@@ -183,6 +213,7 @@ export const catalog: Catalog = {
             icon: {
               url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
             },
+            network: networks.zksync,
           },
         },
       },
