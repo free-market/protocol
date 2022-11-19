@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { XCircleIcon } from '@heroicons/react/24/solid'
 import { useCore } from '@component/CoreProvider'
+import { catalog } from 'config'
 
 export const StepEditorPreview = (): JSX.Element => {
   const core = useCore()
@@ -11,27 +12,9 @@ export const StepEditorPreview = (): JSX.Element => {
     core.selectStepChoice(null)
   }
 
-  const inputPill = (
-    <AssetPill
-      asset={{
-        label: 'USDC',
-        icon: {
-          url: 'https://res.cloudinary.com/sushi-cdn/image/fetch/w_48,f_auto,q_auto,fl_sanitize/https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg',
-        },
-      }}
-    />
-  )
+  const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} />
 
-  const outputPill = (
-    <AssetPill
-      asset={{
-        label: 'USDT',
-        icon: {
-          url: 'https://cdn.jsdelivr.net/gh/curvefi/curve-assets/images/assets/0xdac17f958d2ee523a2206206994597c13d831ec7.png',
-        },
-      }}
-    />
-  )
+  const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} />
 
   const card = (
     <motion.div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-1 opacity-80">
