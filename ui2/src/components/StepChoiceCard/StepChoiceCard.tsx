@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import cx from 'classnames'
-import { catalog } from 'config'
+import { catalog, CatalogAction } from 'config'
 
-export const StepChoiceCard = (props: { index?: number }): JSX.Element => {
-  const { index = 0 } = props
+export const StepChoiceCard = (props: { index?: number; action: CatalogAction }): JSX.Element => {
+  const { action, index = 0 } = props
   const core = useCore()
 
   if (core.selectedActionGroupName == null) {
@@ -17,9 +17,9 @@ export const StepChoiceCard = (props: { index?: number }): JSX.Element => {
     core.selectStepChoice('swap')
   }
 
-  const inputPill = <AssetPill asset={catalog[core.selectedActionGroupName].actions[0].input.asset} />
+  const inputPill = <AssetPill asset={action.input.asset} />
 
-  const outputPill = <AssetPill asset={catalog[core.selectedActionGroupName].actions[0].output.asset} />
+  const outputPill = <AssetPill asset={action.output.asset} />
 
   return (
     <motion.button

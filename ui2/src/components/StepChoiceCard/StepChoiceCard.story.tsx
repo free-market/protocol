@@ -2,6 +2,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 import CoreProvider from '@component/CoreProvider'
 
 import { StepChoiceCard as Component } from './StepChoiceCard'
+import { catalog } from 'config'
 
 export default {
   title: 'Example/StepChoiceCard',
@@ -24,5 +25,5 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const StepChoiceCard: ComponentStory<typeof Component> = () => <Component />
+export const StepChoiceCard: ComponentStory<typeof Component> = () => <Component action={catalog.curve.actions[0]} />
 StepChoiceCard.args = {}
