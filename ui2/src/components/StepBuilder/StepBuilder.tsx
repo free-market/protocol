@@ -69,7 +69,7 @@ export const StepBuilder = (): JSX.Element => {
         !!(core.newStep && core.newStep.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
-        let id = `${core.selectedActionGroup}:secondary=${secondary}`
+        let id = `${core.selectedActionGroup?.name}:secondary=${secondary}`
 
         if (index > 0) {
           id = `${index}:${id}`
