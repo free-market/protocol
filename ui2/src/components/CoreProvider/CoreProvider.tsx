@@ -11,7 +11,58 @@ const initialState = {
   selectedActionGroup: null as { name: ActionGroupName } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
-  workflowSteps: [] as {
+  workflowSteps: [
+    {
+      id: '1inch:0',
+      stepChoice: {
+        index: 0,
+      },
+      actionGroup: {
+        name: '1inch',
+      },
+      recentlyAdded: false,
+    },
+    {
+      id: 'zksync:0',
+      stepChoice: {
+        index: 0,
+      },
+      actionGroup: {
+        name: 'zksync',
+      },
+      recentlyAdded: false,
+    },
+    {
+      id: 'aave:0',
+      stepChoice: {
+        index: 0,
+      },
+      actionGroup: {
+        name: 'aave',
+      },
+      recentlyAdded: false,
+    },
+    {
+      id: 'aave:1',
+      stepChoice: {
+        index: 1,
+      },
+      actionGroup: {
+        name: 'aave',
+      },
+      recentlyAdded: false,
+    },
+    {
+      id: 'zksync:1',
+      stepChoice: {
+        index: 1,
+      },
+      actionGroup: {
+        name: 'zksync',
+      },
+      recentlyAdded: false,
+    },
+  ] as {
     id: string
     recentlyAdded: boolean
     actionGroup: { name: ActionGroupName }
