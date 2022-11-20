@@ -8,7 +8,6 @@
     "@babel/plugin-transform-react-jsx": "^7.14.9",
     "@emotion/react": "11.10.4",
     "@emotion/styled": "11.10.4",
-    "@fmp/sdk": "workspace:*",
     "@headlessui/react": "1.6.6",
     "@heroicons/react": "2.0.8",
     "@metamask/detect-provider": "1.2.0",
