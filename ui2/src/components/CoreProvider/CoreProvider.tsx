@@ -7,10 +7,16 @@ import { ActionGroupName, StepChoiceIndex } from 'config'
 export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
+  submitting: false,
   selectedActionGroup: null as { name: ActionGroupName } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
-  newStep: null as { recentlyAdded: boolean } | null, // TODO: store real workflow state
+  workflowSteps: [] as {
+    id: string
+    recentlyAdded: boolean
+    actionGroup: { name: ActionGroupName }
+    stepChoice: { index: StepChoiceIndex }
+  }[],
 }
 
 export type CoreState = typeof initialState
@@ -132,16 +138,36 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
     },
 
     submitStepChoice: async (waitBeforeNavigation) => {
+      const group = state.selectedActionGroup
+      const choice = state.selectedStepChoice
+
+      if (state.submitting || choice == null || choice.recentlyClosed || group == null) {
+        return
+      }
+
+      updateState((draft: Draft<CoreState>) => {
+        draft.submitting = true
+      })
+
       await new Promise((resolve) => setTimeout(resolve, 1200))
 
       updateState((draft: Draft<CoreState>) => {
-        draft.newStep = { recentlyAdded: true }
+        draft.workflowSteps.push({
+          id: `${group.name}:${choice.index}`,
+          stepChoice: { index: choice.index },
+          actionGroup: { name: group.name },
+          recentlyAdded: true,
+        })
       })
 
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       updateState((draft: Draft<CoreState>) => {
-        draft.newStep = { recentlyAdded: false }
+        const index = draft.workflowSteps.findIndex((stepDraft) => stepDraft.id === `${group.name}:${choice.index}`)
+
+        if (index !== -1) {
+          draft.workflowSteps[index].recentlyAdded = false
+        }
       })
 
       if (waitBeforeNavigation) {
@@ -150,6 +176,7 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
 
       updateState((draft: Draft<CoreState>) => {
         draft.selectedStepChoice = null
+        draft.submitting = false
       })
     },
   }
