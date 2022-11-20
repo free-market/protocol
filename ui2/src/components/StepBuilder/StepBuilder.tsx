@@ -69,7 +69,7 @@ export const StepBuilder = (): JSX.Element => {
         !!core.workflowSteps.find((step) => step.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
-        let id = `${core.selectedActionGroup?.name}:${index}`
+        let id = `${core.selectedActionGroup?.name}:${index}:${core.salt}`
 
         // TODO(FMP-232): generate rotating salts
         //                when steps are added.

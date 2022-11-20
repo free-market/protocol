@@ -7,6 +7,7 @@ import { ActionGroupName, StepChoiceIndex } from 'config'
 export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
+  salt: 'initial',
   submitting: false,
   selectedActionGroup: null as { name: ActionGroupName } | null,
   selectedStepChoice: null as StepChoice | null,
@@ -189,8 +190,7 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
     },
 
     submitStepChoice: async (waitBeforeNavigation) => {
-      const group = state.selectedActionGroup
-      const choice = state.selectedStepChoice
+      const { selectedActionGroup: group, selectedStepChoice: choice, salt } = state
 
       if (state.submitting || choice == null || choice.recentlyClosed || group == null) {
         return
@@ -198,13 +198,17 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
 
       updateState((draft: Draft<CoreState>) => {
         draft.submitting = true
+
+        draft.salt = Math.random().toString()
       })
 
       await new Promise((resolve) => setTimeout(resolve, 1200))
 
+      const id = `${group.name}:${choice.index}:${salt}`
+
       updateState((draft: Draft<CoreState>) => {
         draft.workflowSteps.push({
-          id: `${group.name}:${choice.index}`,
+          id,
           stepChoice: { index: choice.index },
           actionGroup: { name: group.name },
           recentlyAdded: true,
@@ -214,7 +218,7 @@ export const CoreProvider = (props: { children: React.ReactNode; initialNoSelect
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       updateState((draft: Draft<CoreState>) => {
-        const index = draft.workflowSteps.findIndex((stepDraft) => stepDraft.id === `${group.name}:${choice.index}`)
+        const index = draft.workflowSteps.findIndex((stepDraft) => stepDraft.id === id)
 
         if (index !== -1) {
           draft.workflowSteps[index].recentlyAdded = false

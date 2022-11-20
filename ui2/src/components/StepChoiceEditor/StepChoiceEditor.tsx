@@ -42,7 +42,9 @@ export const StepChoiceEditor = (props: {
     ),
     fadeIn = 'slow',
     invisible = false,
-    layoutId = `${core.selectedActionGroup?.name}:${!core.selectedStepChoice?.recentlyClosed && core.selectedStepChoice?.index}`,
+    layoutId = `${core.selectedActionGroup?.name}:${!core.selectedStepChoice?.recentlyClosed && core.selectedStepChoice?.index}:${
+      core.salt
+    }`,
   } = props
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback

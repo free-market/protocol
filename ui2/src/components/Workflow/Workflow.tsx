@@ -33,6 +33,7 @@ export const Workflow = (): JSX.Element => {
         asset={action.output.asset}
       />
     )
+
     return (
       <motion.div
         layoutId={step.id}
