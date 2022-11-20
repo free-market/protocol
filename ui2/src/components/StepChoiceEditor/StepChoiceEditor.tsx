@@ -3,6 +3,7 @@ import cx from 'classnames'
 import StepChoiceEditorCard from '@component/StepChoiceEditorCard'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { motion } from 'framer-motion'
+import { catalog } from 'config'
 
 const variantsNoTransform = {
   visible: { y: 0, opacity: 1 },
@@ -18,15 +19,25 @@ export const StepChoiceEditor = (props: {
 }): JSX.Element => {
   const core = useCore()
 
+  if (core.selectedActionGroup == null) {
+    throw new Error('selectedActionGroup required')
+  }
+
+  if (core.selectedStepChoice == null || core.selectedStepChoice.recentlyClosed) {
+    return <></>
+  }
+
+  const action = catalog[core.selectedActionGroup.name].actions[core.selectedStepChoice?.index]
+
   const {
     stepChoiceEditorCard = <StepChoiceEditorCard />,
 
     stepChoiceBreadCrumbs = (
       <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
         <ChevronLeftIcon className="w-5 h-5 mx-2" />
-        <div>Curve</div>
+        <div>{catalog[core.selectedActionGroup.name].title}</div>
         <ChevronLeftIcon className="w-5 h-5 mx-2" />
-        <div>Swap</div>
+        <div>{action.title}</div>
       </div>
     ),
     fadeIn = 'slow',
