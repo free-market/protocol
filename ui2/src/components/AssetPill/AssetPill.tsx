@@ -25,7 +25,7 @@ export const AssetPill = (
             <img className="w-full h-full" src={asset.network.chain.icon.url} />
           </div>
         </div>
-        <span className="inline-flex flex-col items-start">
+        <span className="inline-flex flex-col items-start font-medium">
           <span>{asset.label}</span>
         </span>
       </div>
