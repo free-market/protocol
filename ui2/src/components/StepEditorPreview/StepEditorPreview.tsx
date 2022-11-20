@@ -2,7 +2,7 @@ import StepChoiceEditor from '@component/StepChoiceEditor'
 import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { XCircleIcon } from '@heroicons/react/24/solid'
-import { useCore } from '@component/CoreProvider'
+import { CoreContext, useCore } from '@component/CoreProvider/CoreProvider'
 import { catalog } from 'config'
 
 export const StepEditorPreview = (): JSX.Element => {
@@ -102,15 +102,23 @@ export const StepEditorPreview = (): JSX.Element => {
   )
 
   return (
-    <StepChoiceEditor
-      stepChoiceEditorCard={card}
-      stepChoiceBreadCrumbs={
-        <div className="flex justify-center items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer text-4xl">
-          click to view
-        </div>
-      }
-      fadeIn="instant"
-      layoutId="preview"
-    />
+    <CoreContext.Provider
+      value={{
+        ...core,
+        selectedStepChoice: { index: 0, recentlySelected: false, recentlyClosed: false },
+        selectedActionGroup: { name: 'curve' },
+      }}
+    >
+      <StepChoiceEditor
+        stepChoiceEditorCard={card}
+        stepChoiceBreadCrumbs={
+          <div className="flex justify-center items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer text-4xl">
+            click to view
+          </div>
+        }
+        fadeIn="instant"
+        layoutId="preview"
+      />
+    </CoreContext.Provider>
   )
 }
