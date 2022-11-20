@@ -66,10 +66,14 @@ export const StepBuilder = (): JSX.Element => {
       const { actions } = catalog[core.selectedActionGroup.name]
       const secondary: boolean =
         !!(core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
-        !!(core.newStep && core.newStep.recentlyAdded)
+        !!core.workflowSteps.find((step) => step.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
-        const id = `${core.selectedActionGroup?.name}:${index}:secondary=${secondary}`
+        let id = `${core.selectedActionGroup?.name}:${index}`
+
+        // TODO(FMP-232): generate rotating salts
+        //                when steps are added.
+        if (secondary) id = `${id}:secondary`
 
         return (
           <>
