@@ -7,8 +7,65 @@ export default {
   title: 'Example/Layout',
   component: Component,
   decorators: [
-    (Story) => (
-      <CoreProvider>
+    (Story, context) => (
+      <CoreProvider
+        initialWorkflowSteps={
+          context.globals.preset === '1inch'
+            ? [
+                {
+                  id: '1inch:0',
+                  stepChoice: {
+                    index: 0,
+                  },
+                  actionGroup: {
+                    name: '1inch',
+                  },
+                  recentlyAdded: false,
+                },
+                {
+                  id: 'zksync:0',
+                  stepChoice: {
+                    index: 0,
+                  },
+                  actionGroup: {
+                    name: 'zksync',
+                  },
+                  recentlyAdded: false,
+                },
+                {
+                  id: 'aave:0',
+                  stepChoice: {
+                    index: 0,
+                  },
+                  actionGroup: {
+                    name: 'aave',
+                  },
+                  recentlyAdded: false,
+                },
+                {
+                  id: 'aave:1',
+                  stepChoice: {
+                    index: 1,
+                  },
+                  actionGroup: {
+                    name: 'aave',
+                  },
+                  recentlyAdded: false,
+                },
+                {
+                  id: 'zksync:1',
+                  stepChoice: {
+                    index: 1,
+                  },
+                  actionGroup: {
+                    name: 'zksync',
+                  },
+                  recentlyAdded: false,
+                },
+              ]
+            : undefined
+        }
+      >
         <Story />
       </CoreProvider>
     ),

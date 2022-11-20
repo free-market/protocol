@@ -12,58 +12,7 @@ const initialState = {
   selectedActionGroup: null as { name: ActionGroupName } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
-  workflowSteps: [
-    {
-      id: '1inch:0',
-      stepChoice: {
-        index: 0,
-      },
-      actionGroup: {
-        name: '1inch',
-      },
-      recentlyAdded: false,
-    },
-    {
-      id: 'zksync:0',
-      stepChoice: {
-        index: 0,
-      },
-      actionGroup: {
-        name: 'zksync',
-      },
-      recentlyAdded: false,
-    },
-    {
-      id: 'aave:0',
-      stepChoice: {
-        index: 0,
-      },
-      actionGroup: {
-        name: 'aave',
-      },
-      recentlyAdded: false,
-    },
-    {
-      id: 'aave:1',
-      stepChoice: {
-        index: 1,
-      },
-      actionGroup: {
-        name: 'aave',
-      },
-      recentlyAdded: false,
-    },
-    {
-      id: 'zksync:1',
-      stepChoice: {
-        index: 1,
-      },
-      actionGroup: {
-        name: 'zksync',
-      },
-      recentlyAdded: false,
-    },
-  ] as {
+  workflowSteps: [] as {
     id: string
     recentlyAdded: boolean
     actionGroup: { name: ActionGroupName }
@@ -94,14 +43,19 @@ export const useCore = (): Core => {
   return core
 }
 
-export const CoreProvider = (props: { children: React.ReactNode; initialNoSelectedStepChoice?: boolean }): JSX.Element => {
-  const { initialNoSelectedStepChoice = true } = props
+export const CoreProvider = (props: {
+  children: React.ReactNode
+  initialNoSelectedStepChoice?: boolean
+  initialWorkflowSteps?: CoreState['workflowSteps']
+}): JSX.Element => {
+  const { initialNoSelectedStepChoice = true, initialWorkflowSteps } = props
 
   // TODO: FMP-219: replace updateState usage with sagas
   const [state, updateState] = useImmer({
     ...initialState,
     selectedActionGroup: initialNoSelectedStepChoice ? null : { name: 'curve' },
     selectedStepChoice: initialNoSelectedStepChoice ? null : { name: 'swap', recentlySelected: false, recentlyClosed: false },
+    workflowSteps: initialWorkflowSteps ?? initialState.workflowSteps,
   } as CoreState)
 
   const core: Core = {

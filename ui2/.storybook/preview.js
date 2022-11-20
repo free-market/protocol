@@ -17,3 +17,17 @@ export const parameters = {
     light: { appBg: '#fdf6e3' },
   },
 }
+
+export const globalTypes = {
+  preset: {
+    name: 'Preset',
+    description: 'starting workflow steps',
+    defaultValue: 'none',
+    toolbar: {
+      icon: 'circlehollow',
+      items: ['none', '1inch'],
+      // Should "Container size" be shown, or just the "circlehollow" icon
+      showName: true,
+    },
+  },
+}
