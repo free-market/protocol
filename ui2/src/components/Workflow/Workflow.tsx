@@ -7,16 +7,20 @@ import { catalog } from 'config'
 export const Workflow = (): JSX.Element => {
   const core = useCore()
 
-  const handleMouseLeave = () => {
-    core.stopPreviewingWorkflowStep()
-  }
-
   const steps = core.workflowSteps.map((step, index) => {
     const action = catalog[step.actionGroup.name].actions[step.stepChoice.index]
 
+    const handleMouseLeave = () => {
+      if (core.previewStep != null && !core.previewStep.recentlyClosed) {
+        if (core.previewStep.id === `${index}`) {
+          core.stopPreviewingWorkflowStep()
+        }
+      }
+    }
+
     const handleMouseEnter = () => {
       if (!step.recentlyAdded) {
-        core.startPreviewingWorkflowStep('#1')
+        core.startPreviewingWorkflowStep(`${index}`)
       }
     }
 
@@ -39,7 +43,8 @@ export const Workflow = (): JSX.Element => {
     return (
       <motion.div
         layoutId={step.id}
-        className="rounded-xl bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
+        className="bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
+        onMouseMove={handleMouseEnter}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -64,7 +69,7 @@ export const Workflow = (): JSX.Element => {
 
   return (
     <>
-      <div className="space-y-2">{steps}</div>
+      <div className="rounded-xl overflow-hidden">{steps}</div>
     </>
   )
 }
