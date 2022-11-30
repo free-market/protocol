@@ -7,16 +7,18 @@ import { catalog } from 'config'
 export const Workflow = (): JSX.Element => {
   const core = useCore()
 
-  const handleMouseEnter = () => {
-    core.startPreviewingWorkflowStep('#1')
-  }
-
   const handleMouseLeave = () => {
     core.stopPreviewingWorkflowStep()
   }
 
   const steps = core.workflowSteps.map((step, index) => {
     const action = catalog[step.actionGroup.name].actions[step.stepChoice.index]
+
+    const handleMouseEnter = () => {
+      if (!step.recentlyAdded) {
+        core.startPreviewingWorkflowStep('#1')
+      }
+    }
 
     const inputPill = (
       <AssetPill
