@@ -38,7 +38,7 @@ export const Layout = (props: {
               <AnimatePresence mode="wait">{stepBuilder}</AnimatePresence>
             </div>
           </div>
-          <div className="h-full shrink min-w-xs basis-0 grow">{workflow}</div>
+          <div className="h-full shrink min-w-xs basis-0 grow overflow-y-auto">{workflow}</div>
         </div>
       </div>
     </div>
