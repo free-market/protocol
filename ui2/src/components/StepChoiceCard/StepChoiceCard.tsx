@@ -30,12 +30,7 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
       className="inline-flex bg-zinc-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
       onClick={click}
     >
-      <div
-        className={cx(
-          'inline-flex bg-zinc-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity',
-          { 'opacity-0': index === 0 && core.selectedStepChoice && core.selectedStepChoice.recentlyClosed },
-        )}
-      >
+      <div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
             <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />

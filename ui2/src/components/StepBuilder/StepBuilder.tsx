@@ -69,7 +69,9 @@ export const StepBuilder = (): JSX.Element => {
         !!core.workflowSteps.find((step) => step.recentlyAdded)
 
       const choiceCardsAndDividers = actions.map((action, index) => {
+        const choice = core.selectedStepChoice
         let id = `${core.selectedActionGroup?.name}:${index}:${core.salt}`
+        const layout = choice != null ? !choice.recentlyClosed : true
 
         // TODO(FMP-232): generate rotating salts
         //                when steps are added.
@@ -87,7 +89,7 @@ export const StepBuilder = (): JSX.Element => {
               className="flex items-center flex-col content-end space-y-5"
               transition={{ delay: 0.2 + index * 0.1 }}
             >
-              <motion.div key={id} layout layoutId={id}>
+              <motion.div key={layout ? id : `${id}:instant`} layout={layout} layoutId={layout ? id : undefined}>
                 <StepChoiceCard index={index} action={action} />
               </motion.div>
             </motion.div>
