@@ -2,7 +2,6 @@ import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
 import AssetPill from '@component/AssetPill'
 import { PlusIcon } from '@heroicons/react/24/solid'
-import cx from 'classnames'
 import { catalog, CatalogAction } from 'config'
 
 export const StepChoiceCard = (props: { index?: number; action: CatalogAction }): JSX.Element => {
