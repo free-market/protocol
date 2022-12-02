@@ -399,7 +399,6 @@ importers:
       '@craco/craco': ^6.4.5
       '@emotion/react': 11.10.4
       '@emotion/styled': 11.10.4
-      '@fmp/sdk': workspace:*
       '@headlessui/react': 1.6.6
       '@heroicons/react': 2.0.8
       '@metamask/detect-provider': 1.2.0
@@ -485,7 +484,6 @@ importers:
       '@babel/plugin-transform-react-jsx': 7.19.0_@babel+core@7.19.1
       '@emotion/react': 11.10.4_epdrcolz2h2z2eazo6tjklb5uq
       '@emotion/styled': 11.10.4_klllyr6q6ddmynwlfkcjzvy5zy
-      '@fmp/sdk': link:../sdk
       '@headlessui/react': 1.6.6_biqbaboplfbrettd7655fr4n2y
       '@heroicons/react': 2.0.8_react@18.2.0
       '@metamask/detect-provider': 1.2.0
@@ -6101,7 +6099,7 @@ packages:
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.7_bgbvhssx5jbdjtmrq4m55itcsu
       '@storybook/node-logger': 6.5.12
       '@storybook/react': 6.5.12_w5gzqta7pcbvu5h6nj6vbse3we
-      '@storybook/react-docgen-typescript-plugin': 1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0_ttrao37nuk7vg6nnwicoi3pt2a
+      '@storybook/react-docgen-typescript-plugin': 1.0.2--canary.7.324a727c65a1819f7f3ede5abc1f32d440e4530a.0_ttrao37nuk7vg6nnwicoi3pt2a
       '@types/babel__core': 7.1.19
       babel-plugin-react-docgen: 4.2.1
       pnp-webpack-plugin: 1.7.0_typescript@4.5.4
@@ -6145,6 +6143,25 @@ packages:
       ts-dedent: 2.2.0
       unfetch: 4.2.0
       util-deprecate: 1.0.2
+    dev: true
+
+  /@storybook/react-docgen-typescript-plugin/1.0.2--canary.7.324a727c65a1819f7f3ede5abc1f32d440e4530a.0_ttrao37nuk7vg6nnwicoi3pt2a:
+    resolution: {integrity: sha512-tnaT0VqSGhmMi/I880aMOToSrNd7XCr1avS/M1tk/+FDO+0GqHXo9abC5sos705ly3Hmi1FxFvHnzV/cvU1JTg==}
+    peerDependencies:
+      typescript: '>= 3.x'
+      webpack: '>= 4'
+    dependencies:
+      debug: 4.3.4
+      endent: 2.1.0
+      find-cache-dir: 3.3.2
+      flat-cache: 3.0.4
+      micromatch: 4.0.5
+      react-docgen-typescript: 2.2.2_typescript@4.5.4
+      tslib: 2.4.0
+      typescript: 4.5.4
+      webpack: 5.74.0
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@storybook/react-docgen-typescript-plugin/1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0_ttrao37nuk7vg6nnwicoi3pt2a:
