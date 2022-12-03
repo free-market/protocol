@@ -1,14 +1,14 @@
-import { ActionGroupName } from 'config'
+import { CatalogGroup } from 'config'
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import { catalog } from 'config'
 import { useCore } from '../CoreProvider'
 
-export const StepHeading = (props: { actionGroupName?: ActionGroupName }): JSX.Element => {
+export const StepHeading = (props: { actionGroupName?: CatalogGroup['name'] }): JSX.Element => {
   const { actionGroupName = 'curve' } = props
   const core = useCore()
 
   const click = () => {
-    core.selectActionGroup(actionGroupName)
+    core.selectActionGroup({ name: actionGroupName })
   }
 
   return (

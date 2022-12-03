@@ -1,5 +1,3 @@
-export type ActionGroupName = 'curve' | 'zksync' | 'aave' | '1inch'
-
 export type StepChoiceIndex = number
 
 export type CatalogAsset = {
@@ -21,13 +19,13 @@ export type CatalogAction = {
 }
 
 export type CatalogGroup = {
-  name: ActionGroupName
+  name: 'curve' | 'zksync' | 'aave' | '1inch'
   title: string
   icon: { url: string }
   actions: CatalogAction[]
 }
 
-export type Catalog = Record<ActionGroupName, CatalogGroup>
+export type Catalog = Record<CatalogGroup['name'], CatalogGroup>
 
 const chains: Record<'ethereum' | 'zksync', CatalogAsset['network']['chain']> = {
   ethereum: { label: 'Ethereum', icon: { url: '/ethereum-chain.svg' } },
