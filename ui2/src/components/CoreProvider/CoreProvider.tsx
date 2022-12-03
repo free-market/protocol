@@ -2,20 +2,24 @@ import { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import React, { useEffect } from 'react'
 
-import { ActionGroupName, StepChoiceIndex } from 'config'
+import { CatalogGroup, StepChoiceIndex } from 'config'
+
+export type CoreAction =
+  | { name: 'ActionGroupSelected'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
+  | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice | null } }
 
 export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
   salt: 'initial',
   submitting: false,
-  selectedActionGroup: null as { name: ActionGroupName } | null,
+  selectedActionGroup: null as { name: CatalogGroup['name'] } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
   workflowSteps: [] as {
     id: string
     recentlyAdded: boolean
-    actionGroup: { name: ActionGroupName }
+    actionGroup: { name: CatalogGroup['name'] }
     stepChoice: { index: StepChoiceIndex }
   }[],
 }
@@ -23,7 +27,7 @@ const initialState = {
 export type CoreState = typeof initialState
 
 export type Core = CoreState & {
-  selectActionGroup: (actionGroupName: ActionGroupName | null) => void
+  selectActionGroup: (actionGroup: { name: CatalogGroup['name'] } | null) => void
   selectStepChoice: (stepChoice: StepChoice | null) => Promise<void>
   escape: () => void
   startPreviewingWorkflowStep: (identifier: string) => void
@@ -58,23 +62,50 @@ export const CoreProvider = (props: {
     workflowSteps: initialWorkflowSteps ?? initialState.workflowSteps,
   } as CoreState)
 
+  const dispatch = (action: CoreAction): void => {
+    switch (action.name) {
+      case 'ActionGroupSelected': {
+        updateState((draft: Draft<CoreState>) => {
+          const {
+            data: { actionGroup },
+          } = action
+
+          if (actionGroup == null) {
+            draft.selectedActionGroup = null
+          } else {
+            const { selectedActionGroup } = draft
+
+            if (selectedActionGroup != null && selectedActionGroup.name !== actionGroup.name) {
+              draft.selectedStepChoice = null
+            }
+
+            draft.selectedActionGroup = actionGroup
+          }
+        })
+
+        break
+      }
+
+      case 'StepChoiceSelected': {
+        /* TODO
+        updateState((draft: Draft<CoreState>) => {
+          const {
+            data: { stepChoice },
+          } = action
+
+        })
+         */
+
+        break
+      }
+    }
+  }
+
   const core: Core = {
     ...state,
 
-    selectActionGroup: (actionGroupName: ActionGroupName | null) =>
-      updateState((draft: Draft<CoreState>) => {
-        if (actionGroupName == null) {
-          draft.selectedActionGroup = null
-        } else {
-          const { selectedActionGroup } = draft
-
-          if (selectedActionGroup != null && selectedActionGroup.name !== actionGroupName) {
-            draft.selectedStepChoice = null
-          }
-
-          draft.selectedActionGroup = { name: actionGroupName }
-        }
-      }),
+    selectActionGroup: (actionGroup: { name: CatalogGroup['name'] } | null) =>
+      dispatch({ name: 'ActionGroupSelected', data: { actionGroup } }),
 
     selectStepChoice: async (stepChoice) => {
       if (stepChoice == null) {
