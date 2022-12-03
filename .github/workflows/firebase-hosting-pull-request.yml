@@ -1,6 +1,7 @@
-# TODO(FMP-225):
-#
-#   - create a ticket for deploying ui (demo.fmprotocol.com)
+# TODO(FMP-269): use this configuration in a
+#                separate workflow for main
+
+# TODO(FMP-273): deploy to demo.fmprotocol.com
 
 name: Deploy to Firebase Hosting on PR
 'on': pull_request
@@ -10,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      # TODO: understand if we want to use a specific Node.js here
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
