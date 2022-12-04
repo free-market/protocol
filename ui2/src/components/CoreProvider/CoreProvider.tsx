@@ -4,22 +4,21 @@ import React, { useEffect } from 'react'
 
 import { CatalogGroup, StepChoiceIndex } from 'config'
 
-export type StepChoice =
-  | {
-      index: StepChoiceIndex
-      recentlySelected: boolean
-      recentlyClosed: false
-    }
-  | { recentlyClosed: true }
+export type OpenStepChoice = {
+  index: StepChoiceIndex
+  recentlySelected: boolean
+  recentlyClosed: false
+}
+
+export type StepChoice = OpenStepChoice | { recentlyClosed: true }
 
 export type CoreAction =
   | { name: 'ActionGroupSelected'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
   | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
   | { name: 'StepChoiceDeselectionStarted' }
   | { name: 'StepChoiceDeselectionFinished' }
-  | { name: 'StepChoiceSelectionStarted'; data: { stepChoice: StepChoice } }
+  | { name: 'StepChoiceSelectionStarted'; data: { stepChoice: OpenStepChoice } }
   | { name: 'StepChoiceSelectionFinished' }
-  | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
 
 const initialState = {
   salt: 'initial',
@@ -109,6 +108,19 @@ export const CoreProvider = (props: {
       case 'StepChoiceDeselectionFinished': {
         updateState((draft: Draft<CoreState>) => {
           draft.selectedStepChoice = null
+        })
+
+        break
+      }
+
+      case 'StepChoiceSelectionStarted': {
+        const {
+          data: { stepChoice },
+        } = action
+
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = stepChoice
+          draft.selectedStepChoice.recentlySelected = true
         })
 
         break
