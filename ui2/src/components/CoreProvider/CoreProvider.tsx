@@ -4,6 +4,14 @@ import React, { useEffect } from 'react'
 
 import { CatalogGroup, StepChoiceIndex } from 'config'
 
+export type StepChoice =
+  | {
+      index: StepChoiceIndex
+      recentlySelected: boolean
+      recentlyClosed: false
+    }
+  | { recentlyClosed: true }
+
 export type CoreAction =
   | { name: 'ActionGroupSelected'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
   | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
@@ -12,8 +20,6 @@ export type CoreAction =
   | { name: 'StepChoiceSelectionStarted'; data: { stepChoice: StepChoice } }
   | { name: 'StepChoiceSelectionFinished' }
   | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
-
-export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
 const initialState = {
   salt: 'initial',
@@ -193,6 +199,7 @@ export const CoreProvider = (props: {
         return
       }
 
+      // TODO: dispatch({ name: 'StepChoiceSubmissionStarted', data: { salt: `${Math.random()}` }})
       updateState((draft: Draft<CoreState>) => {
         draft.submitting = true
 
@@ -203,6 +210,7 @@ export const CoreProvider = (props: {
 
       const id = `${group.name}:${choice.index}:${salt}`
 
+      // TODO: dispatch({ name: 'WorkflowStepAdded', data: { step: { ... }}})
       updateState((draft: Draft<CoreState>) => {
         draft.workflowSteps.push({
           id,
@@ -214,6 +222,7 @@ export const CoreProvider = (props: {
 
       await new Promise((resolve) => setTimeout(resolve, 300))
 
+      // TODO: dispatch({ name: 'WorkflowStepAdditionFinished', data: { step: { id }}})
       updateState((draft: Draft<CoreState>) => {
         const index = draft.workflowSteps.findIndex((stepDraft) => stepDraft.id === id)
 
@@ -226,6 +235,7 @@ export const CoreProvider = (props: {
         await waitBeforeNavigation()
       }
 
+      // TODO: dispatch({ name: 'StepChoiceSubmissionFinished' })
       updateState((draft: Draft<CoreState>) => {
         draft.selectedStepChoice = null
         draft.submitting = false
