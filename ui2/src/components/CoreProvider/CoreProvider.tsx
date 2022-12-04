@@ -6,7 +6,12 @@ import { CatalogGroup, StepChoiceIndex } from 'config'
 
 export type CoreAction =
   | { name: 'ActionGroupSelected'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
-  | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice | null } }
+  | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
+  | { name: 'StepChoiceDeselectionStarted' }
+  | { name: 'StepChoiceDeselectionFinished' }
+  | { name: 'StepChoiceSelectionStarted'; data: { stepChoice: StepChoice } }
+  | { name: 'StepChoiceSelectionFinished' }
+  | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
 
 export type StepChoice = { index: StepChoiceIndex; recentlySelected: boolean; recentlyClosed: false } | { recentlyClosed: true }
 
@@ -54,7 +59,6 @@ export const CoreProvider = (props: {
 }): JSX.Element => {
   const { initialNoSelectedStepChoice = true, initialWorkflowSteps } = props
 
-  // TODO: FMP-219: replace updateState usage with sagas
   const [state, updateState] = useImmer({
     ...initialState,
     selectedActionGroup: initialNoSelectedStepChoice ? null : { name: 'curve' },
@@ -86,15 +90,42 @@ export const CoreProvider = (props: {
         break
       }
 
-      case 'StepChoiceSelected': {
-        /* TODO
+      case 'StepChoiceDeselectionStarted': {
         updateState((draft: Draft<CoreState>) => {
-          const {
-            data: { stepChoice },
-          } = action
-
+          if (draft.selectedStepChoice != null) {
+            draft.selectedStepChoice = { recentlyClosed: true }
+          }
         })
-         */
+
+        break
+      }
+
+      case 'StepChoiceDeselectionFinished': {
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = null
+        })
+
+        break
+      }
+
+      case 'StepChoiceSelectionFinished': {
+        updateState((draft: Draft<CoreState>) => {
+          if (draft.selectedStepChoice && !draft.selectedStepChoice.recentlyClosed) {
+            draft.selectedStepChoice.recentlySelected = false
+          }
+        })
+
+        break
+      }
+
+      case 'StepChoiceSelected': {
+        const {
+          data: { stepChoice },
+        } = action
+
+        updateState((draft: Draft<CoreState>) => {
+          draft.selectedStepChoice = stepChoice
+        })
 
         break
       }
@@ -109,65 +140,46 @@ export const CoreProvider = (props: {
 
     selectStepChoice: async (stepChoice) => {
       if (stepChoice == null) {
-        updateState((draft: Draft<CoreState>) => {
-          if (draft.selectedStepChoice != null) {
-            draft.selectedStepChoice = { recentlyClosed: true }
-          }
-        })
+        dispatch({ name: 'StepChoiceDeselectionStarted' })
         await new Promise((resolve) => setTimeout(resolve, 300))
-        updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = null
-        })
+        dispatch({ name: 'StepChoiceDeselectionFinished' })
       } else if (!stepChoice.recentlyClosed) {
-        updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = stepChoice
-          draft.selectedStepChoice.recentlySelected = true
-        })
+        dispatch({ name: 'StepChoiceSelectionStarted', data: { stepChoice } })
         await new Promise((resolve) => setTimeout(resolve, 300))
-        updateState((draft: Draft<CoreState>) => {
-          if (draft.selectedStepChoice && !draft.selectedStepChoice.recentlyClosed) {
-            draft.selectedStepChoice.recentlySelected = false
-          }
-        })
+        dispatch({ name: 'StepChoiceSelectionFinished' })
       } else {
-        updateState((draft: Draft<CoreState>) => {
-          draft.selectedStepChoice = stepChoice
-        })
+        dispatch({ name: 'StepChoiceSelected', data: { stepChoice } })
       }
     },
 
-    escape: () =>
-      updateState((draft: Draft<CoreState>) => {
-        if (draft.selectedStepChoice != null) {
-          if (draft.selectedStepChoice.recentlyClosed) {
-            updateState((draft: Draft<CoreState>) => {
-              draft.selectedStepChoice = null
-            })
-          } else {
-            draft.selectedStepChoice = { recentlyClosed: true }
-
-            setTimeout(() => {
-              updateState((draft: Draft<CoreState>) => {
-                draft.selectedStepChoice = null
-              })
-            }, 300)
-          }
-        } else if (draft.selectedActionGroup != null) {
-          draft.selectedActionGroup = null
+    escape: async () => {
+      if (state.selectedStepChoice != null) {
+        if (state.selectedStepChoice.recentlyClosed) {
+          dispatch({ name: 'StepChoiceDeselectionFinished' })
+        } else {
+          dispatch({ name: 'StepChoiceDeselectionStarted' })
+          await new Promise((resolve) => setTimeout(resolve, 300))
+          dispatch({ name: 'StepChoiceDeselectionFinished' })
         }
-      }),
+      } else if (state.selectedActionGroup != null) {
+        dispatch({ name: 'ActionGroupSelected', data: { actionGroup: null } })
+      }
+    },
 
     startPreviewingWorkflowStep: (id) =>
+      // TODO: dispatch({ name: 'StepPreviewAppearanceFinished', data: { step: { id } } })
       updateState((draft: Draft<CoreState>) => {
         draft.previewStep = { id, recentlyClosed: false }
       }),
 
     stopPreviewingWorkflowStep: () => {
+      // TODO: dispatch({ name: 'StepPreviewDisappearanceStarted' })
       updateState((draft: Draft<CoreState>) => {
         draft.previewStep = { recentlyClosed: true }
       })
 
       setTimeout(() => {
+        // TODO: dispatch({ name: 'StepPreviewDisappearanceFinished' })
         updateState((draft: Draft<CoreState>) => {
           draft.previewStep = null
         })

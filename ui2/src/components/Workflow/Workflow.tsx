@@ -11,6 +11,9 @@ export const Workflow = (): JSX.Element => {
     const action = catalog[step.actionGroup.name].actions[step.stepChoice.index]
 
     const handleMouseLeave = () => {
+      // TODO:
+      //   - refactor this block into
+      //     core.stopPreviewingWorkflowStep(`${index}`)
       if (core.previewStep != null && !core.previewStep.recentlyClosed) {
         if (core.previewStep.id === `${index}`) {
           core.stopPreviewingWorkflowStep()
