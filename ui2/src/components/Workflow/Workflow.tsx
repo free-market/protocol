@@ -3,6 +3,7 @@ import { useCore } from '@component/CoreProvider'
 import { motion } from 'framer-motion'
 import cx from 'classnames'
 import { catalog } from 'config'
+import { BellIcon } from '@heroicons/react/24/outline'
 
 export const Workflow = (): JSX.Element => {
   const core = useCore()
@@ -57,7 +58,7 @@ export const Workflow = (): JSX.Element => {
           })}
         >
           <div className="inline-flex items-center gap-2">
-            <div className="text-zinc-400">#{index + 1}</div>
+            <div className="text-zinc-400">#{index + 2}</div>
             <img src={catalog[step.actionGroup.name].icon.url} className="w-5 h-5" />
             <div className="text-zinc-400">{action.title}</div>
           </div>
@@ -70,9 +71,24 @@ export const Workflow = (): JSX.Element => {
     )
   })
 
+  const triggerStep = (
+    <motion.div className="rounded-xl bg-zinc-700/25 w-full p-2 group">
+      <div className="inline-flex items-center gap-2 justify-between w-full">
+        <div className="inline-flex items-center gap-2">
+          <div className="text-zinc-400">#1</div>
+          <BellIcon className="w-5 w-5 text-zinc-400" />
+          <div className="text-zinc-400">User Trigger</div>
+        </div>
+      </div>
+    </motion.div>
+  )
+
   return (
     <>
-      <div className="rounded-xl overflow-hidden">{steps}</div>
+      <div className="rounded-xl overflow-hidden">
+        {triggerStep}
+        {steps}
+      </div>
     </>
   )
 }
