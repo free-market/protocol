@@ -13,7 +13,8 @@ export type OpenStepChoice = {
 export type StepChoice = OpenStepChoice | { recentlyClosed: true }
 
 export type CoreAction =
-  | { name: 'ActionGroupSelected'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
+  | { name: 'ActionGroupSelectionStarted'; data: { actionGroup: { name: CatalogGroup['name'] } | null } }
+  | { name: 'ActionGroupSelectionFinished' }
   | { name: 'StepChoiceSelected'; data: { stepChoice: StepChoice } }
   | { name: 'StepChoiceDeselectionStarted' }
   | { name: 'StepChoiceDeselectionFinished' }
@@ -23,7 +24,7 @@ export type CoreAction =
 const initialState = {
   salt: 'initial',
   submitting: false,
-  selectedActionGroup: null as { name: CatalogGroup['name'] } | null,
+  selectedActionGroup: null as { name: CatalogGroup['name']; recentlySelected: boolean } | null,
   selectedStepChoice: null as StepChoice | null,
   previewStep: null as { id: string; recentlyClosed: false } | { recentlyClosed: true } | null,
   workflowSteps: [] as {
@@ -73,7 +74,7 @@ export const CoreProvider = (props: {
 
   const dispatch = (action: CoreAction): void => {
     switch (action.name) {
-      case 'ActionGroupSelected': {
+      case 'ActionGroupSelectionStarted': {
         updateState((draft: Draft<CoreState>) => {
           const {
             data: { actionGroup },
@@ -88,10 +89,19 @@ export const CoreProvider = (props: {
               draft.selectedStepChoice = null
             }
 
-            draft.selectedActionGroup = actionGroup
+            draft.selectedActionGroup = { ...actionGroup, recentlySelected: true }
           }
         })
 
+        break
+      }
+
+      case 'ActionGroupSelectionFinished': {
+        updateState((draft: Draft<CoreState>) => {
+          if (draft.selectedActionGroup?.recentlySelected) {
+            draft.selectedActionGroup.recentlySelected = false
+          }
+        })
         break
       }
 
@@ -153,8 +163,11 @@ export const CoreProvider = (props: {
   const core: Core = {
     ...state,
 
-    selectActionGroup: (actionGroup: { name: CatalogGroup['name'] } | null) =>
-      dispatch({ name: 'ActionGroupSelected', data: { actionGroup } }),
+    selectActionGroup: async (actionGroup: { name: CatalogGroup['name'] } | null) => {
+      dispatch({ name: 'ActionGroupSelectionStarted', data: { actionGroup } })
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      dispatch({ name: 'ActionGroupSelectionFinished' })
+    },
 
     selectStepChoice: async (stepChoice) => {
       if (stepChoice == null) {
@@ -180,7 +193,7 @@ export const CoreProvider = (props: {
           dispatch({ name: 'StepChoiceDeselectionFinished' })
         }
       } else if (state.selectedActionGroup != null) {
-        dispatch({ name: 'ActionGroupSelected', data: { actionGroup: null } })
+        dispatch({ name: 'ActionGroupSelectionStarted', data: { actionGroup: null } })
       }
     },
 
@@ -267,7 +280,7 @@ export const CoreProvider = (props: {
     return () => {
       window.removeEventListener('keydown', callback)
     }
-  }, [])
+  }, [core.escape])
 
   return <CoreContext.Provider value={core}>{props.children}</CoreContext.Provider>
 }
