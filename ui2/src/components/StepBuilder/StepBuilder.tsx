@@ -93,7 +93,7 @@ export const StepBuilder = (): JSX.Element => {
 
         return (
           <>
-            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}:${core.salt}`} delay={0.15 + index * 0.1} />}
+            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}`} delay={0.15 + index * 0.1} />}
             <motion.div
               key={`card${index}:${core.selectedActionGroup}:${core.salt}`}
               variants={variants}
