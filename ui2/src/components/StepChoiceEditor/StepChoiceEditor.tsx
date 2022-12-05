@@ -63,7 +63,7 @@ export const StepChoiceEditor = (props: {
       onClick={deselect}
       variants={variantsNoTransform}
       initial="hidden"
-      animate="visible"
+      animate={{ y: 0, opacity: Number(!core.workflowSteps.some((step) => step.recentlyAdded)) }}
       exit="hidden"
     >
       {stepChoiceBreadCrumbs}

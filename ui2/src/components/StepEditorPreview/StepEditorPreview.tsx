@@ -106,7 +106,7 @@ export const StepEditorPreview = (): JSX.Element => {
       value={{
         ...core,
         selectedStepChoice: { index: 0, recentlySelected: false, recentlyClosed: false },
-        selectedActionGroup: { name: 'curve' },
+        selectedActionGroup: { name: 'curve', recentlySelected: false },
       }}
     >
       <StepChoiceEditor

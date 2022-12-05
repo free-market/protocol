@@ -64,34 +64,46 @@ export const StepBuilder = (): JSX.Element => {
 
     default: {
       const { actions } = catalog[core.selectedActionGroup.name]
-      const secondary: boolean =
-        !!(core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected) ||
-        !!core.workflowSteps.find((step) => step.recentlyAdded)
-
       const choiceCardsAndDividers = actions.map((action, index) => {
+        const secondary: boolean =
+          !!(
+            core.selectedStepChoice &&
+            !core.selectedStepChoice.recentlyClosed &&
+            !core.selectedStepChoice.recentlySelected &&
+            core.selectedStepChoice.index === index
+          ) || !!core.workflowSteps.find((step) => step.recentlyAdded)
         const choice = core.selectedStepChoice
         let id = `${core.selectedActionGroup?.name}:${index}:${core.salt}`
         const layout = choice != null ? !choice.recentlyClosed : true
 
-        // TODO(FMP-232): generate rotating salts
-        //                when steps are added.
         if (secondary) id = `${id}:secondary`
+
+        const cardWrapper = (
+          <motion.div
+            key={layout ? id : `${id}:instant`}
+            layout={layout}
+            layoutId={layout ? id : undefined}
+            initial={{ opacity: Number(core.selectedStepChoice == null || core.submitting || core.selectedStepChoice.recentlyClosed) }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <StepChoiceCard index={index} action={action} />
+          </motion.div>
+        )
 
         return (
           <>
-            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}`} delay={0.15 + index * 0.1} />}
+            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}:${core.salt}`} delay={0.15 + index * 0.1} />}
             <motion.div
-              key={`card1:${core.selectedActionGroup}`}
+              key={`card${index}:${core.selectedActionGroup}:${core.salt}`}
               variants={variants}
-              initial="hidden"
+              initial={core.selectedActionGroup?.recentlySelected ? 'hidden' : 'visible'}
               animate="visible"
               exit="hidden"
               className="flex items-center flex-col content-end space-y-5"
               transition={{ delay: 0.2 + index * 0.1 }}
             >
-              <motion.div key={layout ? id : `${id}:instant`} layout={layout} layoutId={layout ? id : undefined}>
-                <StepChoiceCard index={index} action={action} />
-              </motion.div>
+              {cardWrapper}
             </motion.div>
           </>
         )
