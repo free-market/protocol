@@ -12,9 +12,9 @@ export const parameters = {
   },
   darkMode: {
     // Override the default dark theme
-    dark: { appBg: '#002b36' },
+    dark: { appBg: '#18181b' },
     // Override the default light theme
-    light: { appBg: '#fdf6e3' },
+    light: { appBg: '#f4f4f5' },
   },
 }
 
