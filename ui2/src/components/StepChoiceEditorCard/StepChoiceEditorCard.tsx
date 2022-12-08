@@ -121,7 +121,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                                 maxLength={79}
                                 spellCheck={false}
                                 autoFocus
-                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
+                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
                                 {...input}
                                 onBlur={(event) => {
                                   const value = parseFloat(event.target.value)
