@@ -6,7 +6,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
     <>
       <div className="max-w-sm mx-auto p-2 flex items-center gap-2">
         <Logo className="stroke-zinc-300 w-6 h-6 rounded-full bg-zinc-800 p-1" />
-        <div className="font-light text-md">cross-chain-deposit.fmprotocol.com</div>
+        <div className="font-light text-md">ccd.fmprotocol.com</div>
       </div>
 
       <div className="bg-zinc-700 rounded-xl p-2 space-y-2 max-w-sm mx-auto shadow-md">
@@ -36,7 +36,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
             <div className="text-zinc-300 font-medium">0.00</div>
           </div>
         </div>
-        <div className="bg-zinc-600 p-2 text-zinc-200 rounded-xl text-center bg-sky-600 font-medium text-xl">Start</div>
+        <button className="w-full bg-zinc-600 p-2 text-zinc-200 rounded-xl text-center bg-sky-600 font-medium text-xl">Start</button>
       </div>
     </>
   )
