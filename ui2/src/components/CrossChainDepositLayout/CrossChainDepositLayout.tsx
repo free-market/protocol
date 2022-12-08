@@ -1,8 +1,57 @@
 import Logo from '@component/Logo'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
+import { useState } from 'react'
 
 export const CrossChainDepositLayout = (): JSX.Element => {
   const url = 'https://app.aave.com/icons/tokens/eth.svg'
+  const [editing, setEditing] = useState(false)
+
+  const startEditing = () => {
+    setEditing(true)
+  }
+
+  const amountButton = (
+    <button
+      className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50"
+      onClick={startEditing}
+    >
+      <div className="space-y-2">
+        <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">AMOUNT</div>
+        <div className="flex items-center gap-2">
+          <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-bold">10.00</div>
+        </div>
+      </div>
+      <div className="invisible group-hover:visible flex items-center gap-2">
+        <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
+        <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
+      </div>
+    </button>
+  )
+
+  const amountInput = (
+    <div className="bg-zinc-600 pt-2 rounded-xl group hover:bg-zinc-500/75">
+      <div className="text-xs text-zinc-200 font-light ml-2 group-hover:text-zinc-300">AMOUNT</div>
+      <input
+        inputMode="decimal"
+        step="0.00000001"
+        title="Token Amount"
+        autoComplete="off"
+        autoCorrect="off"
+        type="text"
+        pattern="^\d*(\.\d{0,2})?$"
+        placeholder="0.00"
+        min="0"
+        minLength={1}
+        maxLength={79}
+        spellCheck={false}
+        autoFocus
+        className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full"
+        onBlur={() => {
+          setEditing(false)
+        }}
+      />
+    </div>
+  )
   return (
     <>
       <div className="max-w-sm mx-auto p-2 flex items-center gap-2">
@@ -43,25 +92,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
           </div>
         </button>
 
-        <div className="bg-zinc-600 pt-2 rounded-xl group flex flex-col-reverse">
-          <input
-            inputMode="decimal"
-            step="0.00000001"
-            title="Token Amount"
-            autoComplete="off"
-            autoCorrect="off"
-            type="text"
-            pattern="^\d*(\.\d{0,2})?$"
-            placeholder="0.00"
-            min="0"
-            minLength={1}
-            maxLength={79}
-            spellCheck={false}
-            autoFocus
-            className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-3 pt-8 -mt-6 hover:bg-zinc-500/75 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full"
-          />
-          <div className="text-xs text-zinc-400 font-light ml-2 group-hover:text-zinc-300">AMOUNT</div>
-        </div>
+        {editing ? amountInput : amountButton}
 
         {/* TODO(FMP-293): support hover, active states */}
         <button className="w-full bg-zinc-600 p-2 text-zinc-200 rounded-xl text-center bg-sky-600 font-medium text-xl">Start</button>
