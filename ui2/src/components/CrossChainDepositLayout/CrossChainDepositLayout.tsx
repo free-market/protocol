@@ -1,4 +1,5 @@
 import Logo from '@component/Logo'
+import { PencilSquareIcon } from '@heroicons/react/24/solid'
 
 export const CrossChainDepositLayout = (): JSX.Element => {
   const url = 'https://app.aave.com/icons/tokens/eth.svg'
@@ -10,31 +11,39 @@ export const CrossChainDepositLayout = (): JSX.Element => {
       </div>
 
       <div className="bg-zinc-700 rounded-xl p-2 space-y-2 max-w-sm mx-auto shadow-md">
-        {/* TODO(FMP-293): support hover, active states */}
-        <button className="w-full text-left bg-zinc-600 p-2 rounded-xl space-y-2">
-          <div className="text-xs text-zinc-400 font-light">CHAIN</div>
-          <div className="flex items-center gap-2">
-            <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500">
-              <img className="w-full h-full opacity-[0.9]" src={url} />
+        <button className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50">
+          <div className="space-y-2">
+            <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">CHAIN</div>
+            <div className="flex items-center gap-2">
+              <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
+                <img className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75" src={url} />
+              </div>
+              <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75">Ethereum</div>
             </div>
-            <div className="text-zinc-300">Ethereum</div>
+          </div>
+          <div className="invisible group-hover:visible flex items-center gap-2">
+            <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
+            <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
           </div>
         </button>
 
-        {/* TODO(FMP-293): support hover, active states */}
-        <button className="w-full text-left bg-zinc-600 p-2 rounded-xl space-y-2">
-          <div className="text-xs text-zinc-400 font-light">TOKEN</div>
-          <div className="flex items-center gap-2">
-            <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500">
-              <img className="w-full h-full opacity-[0.9]" src={url} />
+        <button className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50">
+          <div className="space-y-2">
+            <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">TOKEN</div>
+            <div className="flex items-center gap-2">
+              <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
+                <img className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75" src={url} />
+              </div>
+              <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">ETH</div>
             </div>
-            <div className="text-zinc-300 font-medium">ETH</div>
+          </div>
+          <div className="invisible group-hover:visible flex items-center gap-2">
+            <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
+            <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
           </div>
         </button>
 
-        <div className="bg-zinc-600 pt-2 rounded-xl">
-          <div className="text-xs text-zinc-400 font-light ml-2">AMOUNT</div>
-          <div className="flex items-center gap-2"></div>
+        <div className="bg-zinc-600 pt-2 rounded-xl group flex flex-col-reverse">
           <input
             inputMode="decimal"
             step="0.00000001"
@@ -49,8 +58,9 @@ export const CrossChainDepositLayout = (): JSX.Element => {
             maxLength={79}
             spellCheck={false}
             autoFocus
-            className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 pb-3 pt-8 -mt-6 hover:bg-zinc-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full"
+            className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-3 pt-8 -mt-6 hover:bg-zinc-500/75 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full"
           />
+          <div className="text-xs text-zinc-400 font-light ml-2 group-hover:text-zinc-300">AMOUNT</div>
         </div>
 
         {/* TODO(FMP-293): support hover, active states */}
