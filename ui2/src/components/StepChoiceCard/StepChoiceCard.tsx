@@ -4,7 +4,10 @@ import AssetPill from '@component/AssetPill'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import { catalog, CatalogAction } from 'config'
 
-export const StepChoiceCard = (props: { index?: number; action: CatalogAction }): JSX.Element => {
+export const StepChoiceCard = (props: {
+  index?: number
+  action: CatalogAction
+}): JSX.Element => {
   const { action, index = 0 } = props
   const core = useCore()
 
@@ -32,7 +35,10 @@ export const StepChoiceCard = (props: { index?: number; action: CatalogAction })
       <div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
-            <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />
+            <img
+              src={catalog[core.selectedActionGroup.name].icon.url}
+              className="w-5 h-5"
+            />
             <div className="text-zinc-400 px-2">
               {catalog[core.selectedActionGroup.name].title} {action.title}
             </div>

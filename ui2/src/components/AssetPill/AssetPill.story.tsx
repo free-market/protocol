@@ -8,13 +8,17 @@ export default {
   component: Component,
 } as ComponentMeta<typeof Component>
 
-export const USDCPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
+export const USDCPill: ComponentStory<typeof Component> = (args) => (
+  <Component {...args} />
+)
 
 USDCPill.args = {
   asset: catalog.curve.actions[0].input.asset,
 }
 
-export const USDTPill: ComponentStory<typeof Component> = (args) => <Component {...args} />
+export const USDTPill: ComponentStory<typeof Component> = (args) => (
+  <Component {...args} />
+)
 
 USDTPill.args = {
   asset: catalog.curve.actions[0].output.asset,

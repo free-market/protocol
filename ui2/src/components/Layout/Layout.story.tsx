@@ -82,5 +82,7 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const Layout: ComponentStory<typeof Component> = (args) => <Component {...args} />
+export const Layout: ComponentStory<typeof Component> = (args) => (
+  <Component {...args} />
+)
 Layout.args = {}

@@ -27,10 +27,11 @@ export type CatalogGroup = {
 
 export type Catalog = Record<CatalogGroup['name'], CatalogGroup>
 
-const chains: Record<'ethereum' | 'zksync', CatalogAsset['network']['chain']> = {
-  ethereum: { label: 'Ethereum', icon: { url: '/ethereum-chain.svg' } },
-  zksync: { label: 'zkSync', icon: { url: '/zksync.svg' } },
-}
+const chains: Record<'ethereum' | 'zksync', CatalogAsset['network']['chain']> =
+  {
+    ethereum: { label: 'Ethereum', icon: { url: '/ethereum-chain.svg' } },
+    zksync: { label: 'zkSync', icon: { url: '/zksync.svg' } },
+  }
 
 const networks: Record<'ethereum' | 'zksync', CatalogAsset['network']> = {
   ethereum: { label: 'Mainnet', chain: chains.ethereum },

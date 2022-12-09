@@ -53,13 +53,19 @@ export const Workflow = (): JSX.Element => {
         onMouseLeave={handleMouseLeave}
       >
         <div
-          className={cx('inline-flex items-center gap-2 justify-between w-full transition-opacity', {
-            'opacity-0 pointer-events-none': step.recentlyAdded,
-          })}
+          className={cx(
+            'inline-flex items-center gap-2 justify-between w-full transition-opacity',
+            {
+              'opacity-0 pointer-events-none': step.recentlyAdded,
+            },
+          )}
         >
           <div className="inline-flex items-center gap-2">
             <div className="text-zinc-400">#{index + 2}</div>
-            <img src={catalog[step.actionGroup.name].icon.url} className="w-5 h-5" />
+            <img
+              src={catalog[step.actionGroup.name].icon.url}
+              className="w-5 h-5"
+            />
             <div className="text-zinc-400">{action.title}</div>
           </div>
           <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">

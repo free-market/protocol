@@ -2,11 +2,15 @@
 
 import StepHeading from '../StepHeading'
 
-export const StepCatalog = (props: { content?: React.ReactNode }): JSX.Element => {
+export const StepCatalog = (props: {
+  content?: React.ReactNode
+}): JSX.Element => {
   const {
     content = (
       <>
-        <p className="text-zinc-300 text-sm font-light">Welcome to Free Market! Browse our action catalog to get started.</p>
+        <p className="text-zinc-300 text-sm font-light">
+          Welcome to Free Market! Browse our action catalog to get started.
+        </p>
         <StepHeading actionGroupName="curve" />
         <StepHeading actionGroupName="1inch" />
         <StepHeading actionGroupName="zksync" />

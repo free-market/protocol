@@ -23,11 +23,17 @@ export const StepChoiceEditor = (props: {
     throw new Error('selectedActionGroup required')
   }
 
-  if (core.selectedStepChoice == null || core.selectedStepChoice.recentlyClosed) {
+  if (
+    core.selectedStepChoice == null ||
+    core.selectedStepChoice.recentlyClosed
+  ) {
     return <></>
   }
 
-  const action = catalog[core.selectedActionGroup.name].actions[core.selectedStepChoice?.index]
+  const action =
+    catalog[core.selectedActionGroup.name].actions[
+      core.selectedStepChoice?.index
+    ]
 
   const {
     stepChoiceEditorCard = <StepChoiceEditorCard />,
@@ -42,9 +48,9 @@ export const StepChoiceEditor = (props: {
     ),
     fadeIn = 'slow',
     invisible = false,
-    layoutId = `${core.selectedActionGroup?.name}:${!core.selectedStepChoice?.recentlyClosed && core.selectedStepChoice?.index}:${
-      core.salt
-    }`,
+    layoutId = `${core.selectedActionGroup?.name}:${
+      !core.selectedStepChoice?.recentlyClosed && core.selectedStepChoice?.index
+    }:${core.salt}`,
   } = props
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
@@ -63,7 +69,10 @@ export const StepChoiceEditor = (props: {
       onClick={deselect}
       variants={variantsNoTransform}
       initial="hidden"
-      animate={{ y: 0, opacity: Number(!core.workflowSteps.some((step) => step.recentlyAdded)) }}
+      animate={{
+        y: 0,
+        opacity: Number(!core.workflowSteps.some((step) => step.recentlyAdded)),
+      }}
       exit="hidden"
     >
       {stepChoiceBreadCrumbs}
@@ -71,10 +80,17 @@ export const StepChoiceEditor = (props: {
   )
 
   return (
-    <motion.div className={cx('absolute top-0 right-0 left-0 bottom-0 z-20 !m-0', { invisible })}>
+    <motion.div
+      className={cx('absolute top-0 right-0 left-0 bottom-0 z-20 !m-0', {
+        invisible,
+      })}
+    >
       {stepChoiceShadow}
       <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
-        <motion.div layoutId={layoutId} className="flex items-center flex-col content-end space-y-5 z-30">
+        <motion.div
+          layoutId={layoutId}
+          className="flex items-center flex-col content-end space-y-5 z-30"
+        >
           {stepChoiceEditorCard}
         </motion.div>
       </div>

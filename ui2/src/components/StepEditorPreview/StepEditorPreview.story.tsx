@@ -24,5 +24,7 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const StepEditorPreview: ComponentStory<typeof Component> = () => <Component />
+export const StepEditorPreview: ComponentStory<typeof Component> = () => (
+  <Component />
+)
 StepEditorPreview.args = {}
