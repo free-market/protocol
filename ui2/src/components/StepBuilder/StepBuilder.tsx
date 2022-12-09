@@ -32,7 +32,9 @@ const Divider = (props: { delay: number }): JSX.Element => {
       transition={{ delay: props.delay }}
     >
       <div className="border-t border-zinc-600 w-36" />
-      <div className="mx-auto w-10 flex justify-center -mt-3 text-zinc-600 transform translate-y-1">or</div>
+      <div className="mx-auto w-10 flex justify-center -mt-3 text-zinc-600 transform translate-y-1">
+        or
+      </div>
       <div className="border-t border-zinc-600 w-36" />
     </motion.div>
   )
@@ -57,8 +59,12 @@ export const StepBuilder = (): JSX.Element => {
           transition={{ stiffness: 100, duration: 0.05 }}
           className="flex items-center h-full justify-center"
         >
-          <p className="inline text-zinc-500 text-sm">Select an action group to get started.</p>
-          {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
+          <p className="inline text-zinc-500 text-sm">
+            Select an action group to get started.
+          </p>
+          {core.previewStep != null && !core.previewStep.recentlyClosed && (
+            <StepEditorPreview />
+          )}
         </motion.div>
       )
 
@@ -83,7 +89,13 @@ export const StepBuilder = (): JSX.Element => {
             key={layout ? id : `${id}:instant`}
             layout={layout}
             layoutId={layout ? id : undefined}
-            initial={{ opacity: Number(core.selectedStepChoice == null || core.submitting || core.selectedStepChoice.recentlyClosed) }}
+            initial={{
+              opacity: Number(
+                core.selectedStepChoice == null ||
+                  core.submitting ||
+                  core.selectedStepChoice.recentlyClosed,
+              ),
+            }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
           >
@@ -93,11 +105,20 @@ export const StepBuilder = (): JSX.Element => {
 
         return (
           <>
-            {index !== 0 && <Divider key={`div${index}:${core.selectedActionGroup}`} delay={0.15 + index * 0.1} />}
+            {index !== 0 && (
+              <Divider
+                key={`div${index}:${core.selectedActionGroup}`}
+                delay={0.15 + index * 0.1}
+              />
+            )}
             <motion.div
               key={`card${index}:${core.selectedActionGroup}:${core.salt}`}
               variants={variants}
-              initial={core.selectedActionGroup?.recentlySelected ? 'hidden' : 'visible'}
+              initial={
+                core.selectedActionGroup?.recentlySelected
+                  ? 'hidden'
+                  : 'visible'
+              }
               animate="visible"
               exit="hidden"
               className="flex items-center flex-col content-end space-y-5"
@@ -127,7 +148,9 @@ export const StepBuilder = (): JSX.Element => {
       const stepChoiceEditor = (
         <StepChoiceEditor
           key={`editor:${core.selectedActionGroup}`}
-          invisible={core.previewStep != null && !core.previewStep.recentlyClosed}
+          invisible={
+            core.previewStep != null && !core.previewStep.recentlyClosed
+          }
           fadeIn={core.previewStep == null ? 'slow' : 'instant'}
         />
       )
@@ -136,8 +159,12 @@ export const StepBuilder = (): JSX.Element => {
         <>
           {breadCrumbs}
           {choiceCardsAndDividers}
-          {core.previewStep != null && !core.previewStep.recentlyClosed && <StepEditorPreview />}
-          <AnimatePresence>{core.selectedStepChoice && stepChoiceEditor}</AnimatePresence>
+          {core.previewStep != null && !core.previewStep.recentlyClosed && (
+            <StepEditorPreview />
+          )}
+          <AnimatePresence>
+            {core.selectedStepChoice && stepChoiceEditor}
+          </AnimatePresence>
         </>
       )
     }

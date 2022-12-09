@@ -25,5 +25,7 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const StepChoiceCard: ComponentStory<typeof Component> = () => <Component action={catalog.curve.actions[0]} />
+export const StepChoiceCard: ComponentStory<typeof Component> = () => (
+  <Component action={catalog.curve.actions[0]} />
+)
 StepChoiceCard.args = {}

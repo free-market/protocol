@@ -12,9 +12,19 @@ export const StepEditorPreview = (): JSX.Element => {
     core.selectStepChoice(null)
   }
 
-  const inputPill = <AssetPill asset={catalog.curve.actions[0].input.asset} network="not-included" />
+  const inputPill = (
+    <AssetPill
+      asset={catalog.curve.actions[0].input.asset}
+      network="not-included"
+    />
+  )
 
-  const outputPill = <AssetPill asset={catalog.curve.actions[0].output.asset} network="not-included" />
+  const outputPill = (
+    <AssetPill
+      asset={catalog.curve.actions[0].output.asset}
+      network="not-included"
+    />
+  )
 
   const card = (
     <motion.div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-1 opacity-80">
@@ -62,7 +72,12 @@ export const StepEditorPreview = (): JSX.Element => {
           <div className="border-b-2 border-zinc-600 grow"></div>
 
           <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-8 h-8"
+            >
               <path
                 fillRule="evenodd"
                 d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
@@ -105,7 +120,11 @@ export const StepEditorPreview = (): JSX.Element => {
     <CoreContext.Provider
       value={{
         ...core,
-        selectedStepChoice: { index: 0, recentlySelected: false, recentlyClosed: false },
+        selectedStepChoice: {
+          index: 0,
+          recentlySelected: false,
+          recentlyClosed: false,
+        },
         selectedActionGroup: { name: 'curve', recentlySelected: false },
       }}
     >

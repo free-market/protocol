@@ -19,7 +19,9 @@ export const StepChoiceEditorCard = (): JSX.Element => {
       render={({ handleSubmit, submitting, form }) => {
         const outputAmount = form.getFieldState('outputAmount')?.value
         const inputAmount = form.getFieldState('inputAmount')?.value
-        const empty = (inputAmount == null || Number(inputAmount) === 0) && (outputAmount == null || Number(outputAmount) === 0)
+        const empty =
+          (inputAmount == null || Number(inputAmount) === 0) &&
+          (outputAmount == null || Number(outputAmount) === 0)
         const core = useCore()
 
         const deselect = () => {
@@ -61,15 +63,25 @@ export const StepChoiceEditorCard = (): JSX.Element => {
           throw new Error('selectedActionGroup required')
         }
 
-        if (core.selectedStepChoice == null || core.selectedStepChoice.recentlyClosed) {
+        if (
+          core.selectedStepChoice == null ||
+          core.selectedStepChoice.recentlyClosed
+        ) {
           return null
         }
 
-        const action = catalog[core.selectedActionGroup.name].actions[core.selectedStepChoice?.index]
+        const action =
+          catalog[core.selectedActionGroup.name].actions[
+            core.selectedStepChoice?.index
+          ]
 
-        const inputPill = <AssetPill asset={action.input.asset} network="not-included" />
+        const inputPill = (
+          <AssetPill asset={action.input.asset} network="not-included" />
+        )
 
-        const outputPill = <AssetPill asset={action.output.asset} network="not-included" />
+        const outputPill = (
+          <AssetPill asset={action.output.asset} network="not-included" />
+        )
 
         return (
           <form onSubmit={handleSubmit}>
@@ -78,14 +90,22 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                 className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5 transition-opacity"
                 style={{
                   opacity:
-                    core.selectedStepChoice && !core.selectedStepChoice.recentlyClosed && !core.selectedStepChoice.recentlySelected ? 1 : 0,
+                    core.selectedStepChoice &&
+                    !core.selectedStepChoice.recentlyClosed &&
+                    !core.selectedStepChoice.recentlySelected
+                      ? 1
+                      : 0,
                 }}
               >
                 <div className="inline-flex items-center w-full justify-between">
                   <div className="inline-flex items-center">
-                    <img src={catalog[core.selectedActionGroup.name].icon.url} className="w-5 h-5" />
+                    <img
+                      src={catalog[core.selectedActionGroup.name].icon.url}
+                      className="w-5 h-5"
+                    />
                     <div className="text-zinc-400 px-2">
-                      {catalog[core.selectedActionGroup.name].title} {action.title}
+                      {catalog[core.selectedActionGroup.name].title}{' '}
+                      {action.title}
                     </div>
                   </div>
 
@@ -133,7 +153,10 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                                 onChange={(event) => {
                                   const value = parseFloat(event.target.value)
                                   if (!isNaN(value)) {
-                                    form.change('outputAmount', value.toFixed(2))
+                                    form.change(
+                                      'outputAmount',
+                                      value.toFixed(2),
+                                    )
                                   }
                                   input.onChange(event)
                                 }}
@@ -149,7 +172,12 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                       <div className="border-b-2 border-zinc-600 grow"></div>
 
                       <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-8 h-8"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
@@ -185,7 +213,10 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                                 onBlur={(event) => {
                                   const value = parseFloat(event.target.value)
                                   if (!isNaN(value)) {
-                                    form.change('outputAmount', value.toFixed(2))
+                                    form.change(
+                                      'outputAmount',
+                                      value.toFixed(2),
+                                    )
                                   }
                                   input.onBlur(event)
                                 }}

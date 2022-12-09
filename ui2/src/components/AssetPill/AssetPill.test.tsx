@@ -5,7 +5,9 @@ import AssetPill from './'
 
 describe('Component: AssetPill', () => {
   it('should render children', () => {
-    const { asFragment } = render(<AssetPill asset={catalog.curve.actions[0].input.asset} />)
+    const { asFragment } = render(
+      <AssetPill asset={catalog.curve.actions[0].input.asset} />,
+    )
 
     expect(asFragment()).toMatchInlineSnapshot()
   })
