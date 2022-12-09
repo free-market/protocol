@@ -1,14 +1,20 @@
 import Logo from '@component/Logo'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import cx from 'classnames'
 
-export const CrossChainDepositLayout = (): JSX.Element => {
+export const CrossChainDepositLayout = (props: { submitting?: boolean; empty?: boolean }): JSX.Element => {
+  const { submitting = false, empty = false } = props
   const url = 'https://app.aave.com/icons/tokens/eth.svg'
   const [editing, setEditing] = useState(false)
 
-  const startEditing = () => {
+  const startEditing = useCallback(() => {
     setEditing(true)
-  }
+  }, [])
+
+  const onBlur = useCallback(() => {
+    setEditing(false)
+  }, [])
 
   const amountButton = (
     <button
@@ -21,7 +27,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
           <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-bold">10.00</div>
         </div>
       </div>
-      <div className="invisible group-hover:visible flex items-center gap-2">
+      <div className="invisible group-hover:visible flex items-center gap-1">
         <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
         <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
       </div>
@@ -46,9 +52,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
         spellCheck={false}
         autoFocus
         className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full"
-        onBlur={() => {
-          setEditing(false)
-        }}
+        onBlur={onBlur}
       />
     </div>
   )
@@ -70,7 +74,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
               <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75">Ethereum</div>
             </div>
           </div>
-          <div className="invisible group-hover:visible flex items-center gap-2">
+          <div className="invisible group-hover:visible flex items-center gap-1">
             <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
             <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
           </div>
@@ -86,7 +90,7 @@ export const CrossChainDepositLayout = (): JSX.Element => {
               <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">ETH</div>
             </div>
           </div>
-          <div className="invisible group-hover:visible flex items-center gap-2">
+          <div className="invisible group-hover:visible flex items-center gap-1">
             <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">click to edit</div>
             <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
           </div>
@@ -94,8 +98,33 @@ export const CrossChainDepositLayout = (): JSX.Element => {
 
         {editing ? amountInput : amountButton}
 
-        {/* TODO(FMP-293): support hover, active states */}
-        <button className="w-full bg-zinc-600 p-2 text-zinc-200 rounded-xl text-center bg-sky-600 font-medium text-xl">Start</button>
+        <button
+          className={cx(
+            'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.7]',
+            {
+              'cursor-not-allowed': submitting || empty,
+              'opacity-50': empty,
+            },
+          )}
+        >
+          <div className="h-8">
+            <div
+              className="transition-all h-8"
+              style={{
+                marginTop: submitting ? -77 : 2,
+                height: 'max-content',
+              }}
+            >
+              <div className="flex items-center">Start</div>
+            </div>
+            <div className="transition-all h-8 mt-12">
+              <span
+                className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                style={{ borderLeftColor: 'rgb(231 229 228)' }}
+              />
+            </div>
+          </div>
+        </button>
       </div>
     </>
   )

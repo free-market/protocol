@@ -13,5 +13,5 @@ export default {
   component: Component,
 } as ComponentMeta<typeof Component>
 
-export const CrossChainDepositLayout: ComponentStory<typeof Component> = () => <Component />
+export const CrossChainDepositLayout: ComponentStory<typeof Component> = (props) => <Component {...props} />
 CrossChainDepositLayout.args = {}
