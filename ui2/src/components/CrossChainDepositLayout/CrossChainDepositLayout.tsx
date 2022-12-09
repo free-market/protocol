@@ -3,8 +3,10 @@ import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import { useCallback, useState } from 'react'
 import cx from 'classnames'
 
-export const CrossChainDepositLayout = (props: { submitting?: boolean; empty?: boolean }): JSX.Element => {
-  const { submitting = false, empty = false } = props
+export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
+
+export const CrossChainDepositLayout = (props: { submitting?: boolean; empty?: boolean; walletState?: WalletState }): JSX.Element => {
+  const { submitting = false, empty = false, walletState = 'ready' } = props
   const url = 'https://app.aave.com/icons/tokens/eth.svg'
   const [editing, setEditing] = useState(false)
 
@@ -56,6 +58,13 @@ export const CrossChainDepositLayout = (props: { submitting?: boolean; empty?: b
       />
     </div>
   )
+
+  const buttonNames: Record<WalletState, string> = {
+    'ready': 'Start',
+    'insufficient-balance': 'Insufficient Balance',
+    'unconnected': 'Connect Wallet',
+  }
+
   return (
     <>
       <div className="max-w-sm mx-auto p-2 flex items-center gap-2">
@@ -115,7 +124,7 @@ export const CrossChainDepositLayout = (props: { submitting?: boolean; empty?: b
                 height: 'max-content',
               }}
             >
-              <div className="flex items-center">Start</div>
+              <div className="flex items-center">{buttonNames[walletState]}</div>
             </div>
             <div className="transition-all h-8 mt-12">
               <span
