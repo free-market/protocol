@@ -12,6 +12,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
+const STOP_EDITING_ON_BLUR = false
+
 export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
 
 export type EditingMode = {
@@ -46,19 +48,40 @@ export const CrossChainDepositLayout = forwardRef(
 
     const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
-    const [tokenSearchValue, setTokenSearchValue] = useState('')
     const [amountEditing, setAmountEditing] = useState(false)
+    const [tokenSearchValue, setTokenSearchValue] = useState('')
     const [tokenSearchDebounce, setTokenSearchDebounce] = useState<
       number | null
     >(null)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
     const tokenSearchRef = useRef<HTMLInputElement>(null)
 
-    const getExpandedHeight = () => containerRef.current?.scrollHeight ?? 0
-    useImperativeHandle(ref, () => ({ getExpandedHeight }), [
-      tokenSearchValue,
-      tokenSearchDebounce,
-    ])
+    const getExpandedHeightForTokenSelector = () =>
+      tokenSelectorContainerRef.current?.scrollHeight ?? 0
+    useImperativeHandle(
+      ref,
+      () => ({
+        getExpandedHeight: getExpandedHeightForTokenSelector,
+      }),
+      [tokenSearchValue, tokenSearchDebounce],
+    )
+
+    const [chainSearchValue, setChainSearchValue] = useState('')
+    const [chainSearchDebounce, setChainSearchDebounce] = useState<
+      number | null
+    >(null)
+    const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
+    const chainSearchRef = useRef<HTMLInputElement>(null)
+
+    const getExpandedHeightForChainSelector = () =>
+      chainSelectorContainerRef.current?.scrollHeight ?? 0
+    useImperativeHandle(
+      ref,
+      () => ({
+        getExpandedHeight: getExpandedHeightForChainSelector,
+      }),
+      [chainSearchValue, chainSearchDebounce],
+    )
 
     const startEditing = useCallback(() => {
       setAmountEditing(true)
@@ -147,12 +170,36 @@ export const CrossChainDepositLayout = forwardRef(
       }
     }
 
+    const handleChainSelectorClick = async () => {
+      if (
+        formEditingMode?.name === 'chain' &&
+        formEditingMode.recently !== 'opened'
+      ) {
+        // no-op
+        // setFormEditingMode({ name: 'chain', recently: 'closed' })
+        // await new Promise((resolve) => setTimeout(resolve, 300))
+        // setFormEditingMode(undefined)
+      } else if (
+        formEditingMode === undefined ||
+        formEditingMode.recently === 'closed'
+      ) {
+        setFormEditingMode({ name: 'chain', recently: 'opened' })
+        setChainSearchValue('')
+        setChainSearchDebounce(null)
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        setFormEditingMode({ name: 'chain', recently: undefined })
+        if (chainSearchRef.current) {
+          chainSearchRef.current.focus()
+        }
+      }
+    }
+
     const handleTokenSelectorInputBlur = async () => {
-      /*
-      setFormEditingMode({ name: 'token', recently: 'closed' })
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      setFormEditingMode(undefined)
-       */
+      if (STOP_EDITING_ON_BLUR) {
+        setFormEditingMode({ name: 'token', recently: 'closed' })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        setFormEditingMode(undefined)
+      }
     }
 
     const handleTokenSelectorInputKeyPress = async (
@@ -169,6 +216,50 @@ export const CrossChainDepositLayout = forwardRef(
     }
 
     const handleTokenSelectorInputChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      const oldValue = tokenSearchValue
+      let newValue
+      if (event.target.value.trim() === '') {
+        newValue = ''
+      } else {
+        newValue = event.target.value
+      }
+
+      if (oldValue !== newValue) {
+        setTokenSearchValue(newValue)
+        if (tokenSearchDebounce) {
+          clearTimeout(tokenSearchDebounce)
+        }
+        const timeout = setTimeout(() => {
+          setTokenSearchDebounce(null)
+        }, 1)
+        setTokenSearchDebounce(timeout as unknown as number)
+      }
+    }
+
+    const handleChainSelectorInputBlur = async () => {
+      if (STOP_EDITING_ON_BLUR) {
+        setFormEditingMode({ name: 'chain', recently: 'closed' })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        setFormEditingMode(undefined)
+      }
+    }
+
+    const handleChainSelectorInputKeyPress = async (
+      event: React.KeyboardEvent<HTMLInputElement>,
+    ) => {
+      if (event.code === 'Enter') {
+        setFormEditingMode({ name: 'chain', recently: 'closed' })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        setFormEditingMode(undefined)
+        setChainSearchValue('')
+        setChainSearchDebounce(null)
+        startEditing()
+      }
+    }
+
+    const handleChainSelectorInputChange = (
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
       const oldValue = tokenSearchValue
@@ -250,30 +341,141 @@ export const CrossChainDepositLayout = forwardRef(
               )}
           </AnimatePresence>
           <div className="space-y-2">
-            <button className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between items-stretch active:bg-zinc-500/50 focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/25">
-              <div className="space-y-2">
-                <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
-                  CHAIN
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
-                    <img
-                      className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
-                      src={url}
-                    />
+            <div
+              className={cx('relative max-h-64 overflow-hidden rounded-xl', {
+                'super-shadow-2':
+                  formEditingMode?.name === 'chain' &&
+                  tokenSelectorSearchResults.length > 5,
+              })}
+            >
+              <motion.button
+                onClick={handleChainSelectorClick}
+                className={cx(
+                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/25',
+                  {
+                    'z-30': formEditingMode?.name === 'chain',
+                    'hover:bg-zinc-500/75 active:bg-zinc-500/50':
+                      formEditingMode?.name !== 'chain' ||
+                      formEditingMode.recently === 'closed',
+                  },
+                )}
+                initial={{ height: 48 }}
+                animate={{
+                  height:
+                    formEditingMode?.name === 'chain' &&
+                    formEditingMode.recently !== 'closed'
+                      ? chainSearchDebounce
+                        ? 0
+                        : getExpandedHeightForChainSelector()
+                      : 48,
+                }}
+                transition={{
+                  delay: formEditingMode?.name === 'chain' ? 0 : 0.2,
+                }}
+              >
+                <div
+                  ref={chainSelectorContainerRef}
+                  className={cx('w-full', {
+                    'pb-5':
+                      formEditingMode?.name === 'chain' &&
+                      tokenSelectorSearchResults.length > 5,
+                  })}
+                >
+                  <div className="h-0 relative">
+                    <motion.div
+                      className="w-full absolute flex justify-between"
+                      animate={{
+                        opacity:
+                          formEditingMode?.name === 'chain' &&
+                          formEditingMode.recently !== 'closed'
+                            ? 0
+                            : 1,
+                      }}
+                      transition={{
+                        duration: 0.1,
+                        delay:
+                          formEditingMode?.name === 'chain' &&
+                          formEditingMode.recently === 'closed'
+                            ? 0.1
+                            : 0,
+                      }}
+                    >
+                      <div className="space-y-2">
+                        <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
+                          CHAIN
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
+                            <img
+                              className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
+                              src={url}
+                            />
+                          </div>
+                          <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
+                            ETH
+                          </div>
+                        </div>
+                      </div>
+                      <div className="invisible group-hover:visible flex items-center gap-1">
+                        <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
+                          click to edit
+                        </div>
+                        <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
+                      </div>
+                    </motion.div>
                   </div>
-                  <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75">
-                    Ethereum
-                  </div>
+                  <motion.div
+                    className="flex justify-between"
+                    animate={{
+                      opacity:
+                        formEditingMode?.name === 'chain' &&
+                        formEditingMode.recently !== 'closed'
+                          ? 1
+                          : 0,
+                    }}
+                    transition={{
+                      duration: 0.1,
+                      delay:
+                        formEditingMode?.name === 'chain' &&
+                        formEditingMode.recently === 'opened'
+                          ? 0.1
+                          : 0,
+                    }}
+                  >
+                    <div className="space-y-2 w-full">
+                      <div className="text-xs text-zinc-400 font-light">
+                        SELECT CHAIN
+                      </div>
+
+                      <div className="w-full flex items-center bg-zinc-500/25 rounded-md overflow-hidden">
+                        <input
+                          ref={chainSearchRef}
+                          type="text"
+                          placeholder="Search chain..."
+                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/25 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
+                          onBlur={handleChainSelectorInputBlur}
+                          onKeyPress={handleChainSelectorInputKeyPress}
+                          onChange={handleChainSelectorInputChange}
+                          tabIndex={
+                            formEditingMode?.name !== 'chain' ? -1 : undefined
+                          }
+                          value={chainSearchValue}
+                        />
+                        <div
+                          className={cx('w-1/6 text-right', {
+                            hidden: chainSearchValue,
+                          })}
+                        >
+                          <MagnifyingGlassIcon className="inline-block w-5 h-5 text-zinc-400" />
+                        </div>
+                      </div>
+
+                      {tokenSelectorSearchResultElements}
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
-              <div className="invisible group-hover:visible flex items-center gap-1">
-                <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
-                  click to edit
-                </div>
-                <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
-              </div>
-            </button>
+              </motion.button>
+            </div>
 
             <div
               className={cx('relative max-h-64 overflow-hidden rounded-xl', {
@@ -300,7 +502,7 @@ export const CrossChainDepositLayout = forwardRef(
                     formEditingMode.recently !== 'closed'
                       ? tokenSearchDebounce
                         ? 0
-                        : getExpandedHeight()
+                        : getExpandedHeightForTokenSelector()
                       : 48,
                 }}
                 transition={{
@@ -308,7 +510,7 @@ export const CrossChainDepositLayout = forwardRef(
                 }}
               >
                 <div
-                  ref={containerRef}
+                  ref={tokenSelectorContainerRef}
                   className={cx('w-full', {
                     'pb-5':
                       formEditingMode?.name === 'token' &&
