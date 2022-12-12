@@ -7,5 +7,7 @@ export default {
   component: Component,
 } as ComponentMeta<typeof Component>
 
-export const ErrorDialog: ComponentStory<typeof Component> = () => <Component />
+export const ErrorDialog: ComponentStory<typeof Component> = (props) => (
+  <Component {...props} />
+)
 ErrorDialog.args = {}
