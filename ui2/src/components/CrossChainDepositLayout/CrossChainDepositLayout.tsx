@@ -9,7 +9,7 @@ import {
 } from 'react'
 import cx from 'classnames'
 import { AnimatePresence, motion, useAnimationControls } from 'framer-motion'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { ChevronLeftIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
 // use this to debug the editing state
@@ -343,9 +343,21 @@ export const CrossChainDepositLayout = forwardRef(
 
     return (
       <>
-        <div className="max-w-sm mx-auto p-2 flex items-center gap-2">
-          <Logo className="stroke-zinc-300 w-6 h-6 rounded-full bg-zinc-800 p-1" />
-          <div className="font-light text-md">ccd.fmprotocol.com</div>
+        <div className="mx-5 p-2 flex items-center gap-2 justify-between">
+          <a
+            href="https://fmprotocol.com"
+            target="_blank"
+            className="p-2 group relative overflow-hidden rounded"
+            title="Free Market Protocol"
+          >
+            <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-zinc-800/[0.1] group-active:visible group-active:bg-zinc-800/[0.15] z-10" />
+            <Logo className="stroke-zinc-600 w-8 h-8 rounded-full bg-zinc-100" />
+          </a>
+
+          <div className="font-medium text-sm text-zinc-500 flex items-center rounded hover:bg-zinc-800/[0.1] active:bg-zinc-800/[0.15] px-3 cursor-pointer h-8">
+            <ChevronLeftIcon className="w-5 h-5" />
+            <span>Back</span>
+          </div>
         </div>
 
         <div className="bg-zinc-700 rounded-xl p-2 max-w-sm mx-auto shadow-md relative overflow-hidden">
@@ -622,37 +634,38 @@ export const CrossChainDepositLayout = forwardRef(
             </div>
 
             {amountEditing ? amountInput : amountButton}
-
-            <button
-              className={cx(
-                'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25',
-                {
-                  'cursor-not-allowed': submitting || empty,
-                  'opacity-50': empty,
-                },
-              )}
-            >
-              <div className="h-8">
-                <div
-                  className="transition-all h-8"
-                  style={{
-                    marginTop: submitting ? -77 : 2,
-                    height: 'max-content',
-                  }}
-                >
-                  <div className="flex items-center">
-                    {buttonNames[walletState]}
-                  </div>
-                </div>
-                <div className="transition-all h-8 mt-12">
-                  <span
-                    className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
-                    style={{ borderLeftColor: 'rgb(231 229 228)' }}
-                  />
+          </div>
+        </div>
+        <div className="p-2 max-w-xs mx-auto relative overflow-hidden">
+          <button
+            className={cx(
+              'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+              {
+                'cursor-not-allowed': submitting || empty,
+                'opacity-50': empty,
+              },
+            )}
+          >
+            <div className="h-8">
+              <div
+                className="transition-all h-8"
+                style={{
+                  marginTop: submitting ? -77 : 2,
+                  height: 'max-content',
+                }}
+              >
+                <div className="flex items-center">
+                  {buttonNames[walletState]}
                 </div>
               </div>
-            </button>
-          </div>
+              <div className="transition-all h-8 mt-12">
+                <span
+                  className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                  style={{ borderLeftColor: 'rgb(231 229 228)' }}
+                />
+              </div>
+            </div>
+          </button>
         </div>
       </>
     )
