@@ -64,7 +64,7 @@ export const CrossChainDepositLayout = forwardRef(
       [tokenSearchValue],
     )
 
-    const [chainSearchValue, setChainSearchValue] = useState('')
+    const [chainSearchValue /*, setChainSearchValue*/] = useState('')
     const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
     const chainSearchRef = useRef<HTMLInputElement>(null)
 
@@ -359,313 +359,322 @@ export const CrossChainDepositLayout = forwardRef(
             <span>Back</span>
           </div>
         </div>
+        <div className="space-y-4">
+          <h2 className="text-zinc-600 text-2xl font-medium max-w-sm mx-auto my-0 text-center">
+            Start a deposit
+          </h2>
+          <h4 className="text-zinc-500 text-sm max-w-sm mx-auto my-0 text-center font-medium">
+            When you start a deposit, Free Market will move your funds across
+            chains automatically.
+          </h4>
 
-        <div className="bg-zinc-700 rounded-xl p-2 max-w-sm mx-auto shadow-md relative overflow-hidden">
-          <AnimatePresence>
-            {formEditingMode?.name === 'token' &&
-              formEditingMode.recently !== 'closed' && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{
-                    opacity: 1,
-                  }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.1 }}
-                  className="bg-zinc-700/75 absolute top-0 right-0 left-0 bottom-0 p-2 group cursor-pointer"
-                ></motion.div>
-              )}
-          </AnimatePresence>
-          <div className="space-y-2">
-            <div
-              className={cx(
-                'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
-                {
+          <div className="bg-zinc-700 rounded-xl p-2 max-w-sm mx-auto shadow-md relative overflow-hidden">
+            <AnimatePresence>
+              {formEditingMode?.name === 'token' &&
+                formEditingMode.recently !== 'closed' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.1 }}
+                    className="bg-zinc-700/75 absolute top-0 right-0 left-0 bottom-0 p-2 group cursor-pointer"
+                  ></motion.div>
+                )}
+            </AnimatePresence>
+            <div className="space-y-2">
+              <div
+                className={cx(
+                  'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
+                  {
+                    'super-shadow-2':
+                      formEditingMode?.name === 'chain' &&
+                      formEditingMode.recently !== 'closed' &&
+                      tokenSelectorSearchResults.length > 5,
+                  },
+                )}
+              >
+                {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
+                <motion.button
+                  onClick={handleChainSelectorClick}
+                  className={cx(
+                    'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
+                    {
+                      'z-30': formEditingMode?.name === 'chain',
+                      'hover:bg-zinc-500/75 active:bg-zinc-500/50':
+                        formEditingMode?.name !== 'chain' ||
+                        formEditingMode.recently === 'closed',
+                    },
+                  )}
+                  initial={{ height: 48 }}
+                  animate={chainSelectorButtonControls}
+                >
+                  <div
+                    ref={chainSelectorContainerRef}
+                    className={cx('w-full', {
+                      'pb-5':
+                        formEditingMode?.name === 'chain' &&
+                        tokenSelectorSearchResults.length > 5,
+                    })}
+                  >
+                    <div className="h-0 relative">
+                      <motion.div
+                        className="w-full absolute flex justify-between"
+                        animate={{
+                          opacity:
+                            formEditingMode?.name === 'chain' &&
+                            formEditingMode.recently !== 'closed'
+                              ? 0
+                              : 1,
+                        }}
+                        transition={{
+                          duration: 0.1,
+                          delay:
+                            formEditingMode?.name === 'chain' &&
+                            formEditingMode.recently === 'closed'
+                              ? 0.1
+                              : 0,
+                        }}
+                      >
+                        <div className="space-y-2">
+                          <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
+                            CHAIN
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
+                              <img
+                                className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
+                                src={url}
+                              />
+                            </div>
+                            <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
+                              Ethereum
+                            </div>
+                          </div>
+                        </div>
+                        <div className="invisible group-hover:visible flex items-center gap-1">
+                          <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
+                            click to edit
+                          </div>
+                          <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
+                        </div>
+                      </motion.div>
+                    </div>
+                    <motion.div
+                      className="flex justify-between"
+                      animate={{
+                        opacity:
+                          formEditingMode?.name === 'chain' &&
+                          formEditingMode.recently !== 'closed'
+                            ? 1
+                            : 0,
+                      }}
+                      transition={{
+                        duration: 0.1,
+                        delay:
+                          formEditingMode?.name === 'chain' &&
+                          formEditingMode.recently === 'opened'
+                            ? 0.1
+                            : 0,
+                      }}
+                    >
+                      <div className="space-y-2 w-full">
+                        <div className="text-xs text-zinc-400 font-light">
+                          SELECT CHAIN
+                        </div>
+
+                        <div className="w-full flex items-center bg-zinc-500/25 rounded-md overflow-hidden">
+                          <input
+                            ref={chainSearchRef}
+                            type="text"
+                            placeholder="Search chain..."
+                            className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
+                            onBlur={handleChainSelectorInputBlur}
+                            onKeyPress={handleChainSelectorInputKeyPress}
+                            onChange={handleChainSelectorInputChange}
+                            tabIndex={
+                              formEditingMode?.name !== 'chain' ? -1 : undefined
+                            }
+                            value={tokenSearchValue}
+                          />
+                          <div
+                            className={cx('w-1/6 text-right', {
+                              hidden: chainSearchValue,
+                            })}
+                          >
+                            <MagnifyingGlassIcon className="inline-block w-5 h-5 text-zinc-400" />
+                          </div>
+                        </div>
+
+                        {tokenSelectorSearchResultElements}
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.button>
+              </div>
+
+              <div
+                className={cx('relative max-h-64 overflow-hidden rounded-xl', {
                   'super-shadow-2':
-                    formEditingMode?.name === 'chain' &&
+                    formEditingMode?.name === 'token' &&
                     formEditingMode.recently !== 'closed' &&
                     tokenSelectorSearchResults.length > 5,
+                })}
+              >
+                {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
+                <motion.button
+                  onClick={handleTokenSelectorClick}
+                  className={cx(
+                    'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
+                    {
+                      'z-30': formEditingMode?.name === 'token',
+                      'hover:bg-zinc-500/75 active:bg-zinc-500/50':
+                        formEditingMode?.name !== 'token' ||
+                        formEditingMode.recently === 'closed',
+                    },
+                  )}
+                  initial={{ height: 48 }}
+                  animate={tokenSelectorButtonControls}
+                >
+                  <div
+                    ref={tokenSelectorContainerRef}
+                    className={cx('w-full', {
+                      'pb-5':
+                        formEditingMode?.name === 'token' &&
+                        tokenSelectorSearchResults.length > 5,
+                    })}
+                  >
+                    <div className="h-0 relative">
+                      <motion.div
+                        className="w-full absolute flex justify-between"
+                        animate={{
+                          opacity:
+                            formEditingMode?.name === 'token' &&
+                            formEditingMode.recently !== 'closed'
+                              ? 0
+                              : 1,
+                        }}
+                        transition={{
+                          duration: 0.1,
+                          delay:
+                            formEditingMode?.name === 'token' &&
+                            formEditingMode.recently === 'closed'
+                              ? 0.1
+                              : 0,
+                        }}
+                      >
+                        <div className="space-y-2">
+                          <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
+                            TOKEN
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
+                              <img
+                                className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
+                                src={url}
+                              />
+                            </div>
+                            <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
+                              ETH
+                            </div>
+                          </div>
+                        </div>
+                        <div className="invisible group-hover:visible flex items-center gap-1">
+                          <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
+                            click to edit
+                          </div>
+                          <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
+                        </div>
+                      </motion.div>
+                    </div>
+                    <motion.div
+                      className="flex justify-between"
+                      animate={{
+                        opacity:
+                          formEditingMode?.name === 'token' &&
+                          formEditingMode.recently !== 'closed'
+                            ? 1
+                            : 0,
+                      }}
+                      transition={{
+                        duration: 0.1,
+                        delay:
+                          formEditingMode?.name === 'token' &&
+                          formEditingMode.recently === 'opened'
+                            ? 0.1
+                            : 0,
+                      }}
+                    >
+                      <div className="space-y-2 w-full">
+                        <div className="text-xs text-zinc-400 font-light">
+                          SELECT TOKEN
+                        </div>
+
+                        <div className="w-full flex items-center bg-zinc-500/25 rounded-md overflow-hidden">
+                          <input
+                            ref={tokenSearchRef}
+                            type="text"
+                            placeholder="Search address or name..."
+                            className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
+                            onBlur={handleTokenSelectorInputBlur}
+                            onKeyPress={handleTokenSelectorInputKeyPress}
+                            onChange={handleTokenSelectorInputChange}
+                            tabIndex={
+                              formEditingMode?.name !== 'token' ? -1 : undefined
+                            }
+                            value={tokenSearchValue}
+                          />
+                          <div
+                            className={cx('w-1/6 text-right', {
+                              hidden: tokenSearchValue,
+                            })}
+                          >
+                            <MagnifyingGlassIcon className="inline-block w-5 h-5 text-zinc-400" />
+                          </div>
+                        </div>
+
+                        {tokenSelectorSearchResultElements}
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.button>
+              </div>
+
+              {amountEditing ? amountInput : amountButton}
+            </div>
+          </div>
+          <div className="px-2 max-w-xs mx-auto relative overflow-hidden">
+            <button
+              className={cx(
+                'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+                {
+                  'cursor-not-allowed': submitting || empty,
+                  'opacity-50': empty,
                 },
               )}
             >
-              {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
-              <motion.button
-                onClick={handleChainSelectorClick}
-                className={cx(
-                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
-                  {
-                    'z-30': formEditingMode?.name === 'chain',
-                    'hover:bg-zinc-500/75 active:bg-zinc-500/50':
-                      formEditingMode?.name !== 'chain' ||
-                      formEditingMode.recently === 'closed',
-                  },
-                )}
-                initial={{ height: 48 }}
-                animate={chainSelectorButtonControls}
-              >
+              <div className="h-8">
                 <div
-                  ref={chainSelectorContainerRef}
-                  className={cx('w-full', {
-                    'pb-5':
-                      formEditingMode?.name === 'chain' &&
-                      tokenSelectorSearchResults.length > 5,
-                  })}
+                  className="transition-all h-8"
+                  style={{
+                    marginTop: submitting ? -77 : 2,
+                    height: 'max-content',
+                  }}
                 >
-                  <div className="h-0 relative">
-                    <motion.div
-                      className="w-full absolute flex justify-between"
-                      animate={{
-                        opacity:
-                          formEditingMode?.name === 'chain' &&
-                          formEditingMode.recently !== 'closed'
-                            ? 0
-                            : 1,
-                      }}
-                      transition={{
-                        duration: 0.1,
-                        delay:
-                          formEditingMode?.name === 'chain' &&
-                          formEditingMode.recently === 'closed'
-                            ? 0.1
-                            : 0,
-                      }}
-                    >
-                      <div className="space-y-2">
-                        <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
-                          CHAIN
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
-                            <img
-                              className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
-                              src={url}
-                            />
-                          </div>
-                          <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
-                            Ethereum
-                          </div>
-                        </div>
-                      </div>
-                      <div className="invisible group-hover:visible flex items-center gap-1">
-                        <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
-                          click to edit
-                        </div>
-                        <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
-                      </div>
-                    </motion.div>
+                  <div className="flex items-center">
+                    {buttonNames[walletState]}
                   </div>
-                  <motion.div
-                    className="flex justify-between"
-                    animate={{
-                      opacity:
-                        formEditingMode?.name === 'chain' &&
-                        formEditingMode.recently !== 'closed'
-                          ? 1
-                          : 0,
-                    }}
-                    transition={{
-                      duration: 0.1,
-                      delay:
-                        formEditingMode?.name === 'chain' &&
-                        formEditingMode.recently === 'opened'
-                          ? 0.1
-                          : 0,
-                    }}
-                  >
-                    <div className="space-y-2 w-full">
-                      <div className="text-xs text-zinc-400 font-light">
-                        SELECT CHAIN
-                      </div>
-
-                      <div className="w-full flex items-center bg-zinc-500/25 rounded-md overflow-hidden">
-                        <input
-                          ref={chainSearchRef}
-                          type="text"
-                          placeholder="Search chain..."
-                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
-                          onBlur={handleChainSelectorInputBlur}
-                          onKeyPress={handleChainSelectorInputKeyPress}
-                          onChange={handleChainSelectorInputChange}
-                          tabIndex={
-                            formEditingMode?.name !== 'chain' ? -1 : undefined
-                          }
-                          value={tokenSearchValue}
-                        />
-                        <div
-                          className={cx('w-1/6 text-right', {
-                            hidden: chainSearchValue,
-                          })}
-                        >
-                          <MagnifyingGlassIcon className="inline-block w-5 h-5 text-zinc-400" />
-                        </div>
-                      </div>
-
-                      {tokenSelectorSearchResultElements}
-                    </div>
-                  </motion.div>
                 </div>
-              </motion.button>
-            </div>
-
-            <div
-              className={cx('relative max-h-64 overflow-hidden rounded-xl', {
-                'super-shadow-2':
-                  formEditingMode?.name === 'token' &&
-                  formEditingMode.recently !== 'closed' &&
-                  tokenSelectorSearchResults.length > 5,
-              })}
-            >
-              {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
-              <motion.button
-                onClick={handleTokenSelectorClick}
-                className={cx(
-                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
-                  {
-                    'z-30': formEditingMode?.name === 'token',
-                    'hover:bg-zinc-500/75 active:bg-zinc-500/50':
-                      formEditingMode?.name !== 'token' ||
-                      formEditingMode.recently === 'closed',
-                  },
-                )}
-                initial={{ height: 48 }}
-                animate={tokenSelectorButtonControls}
-              >
-                <div
-                  ref={tokenSelectorContainerRef}
-                  className={cx('w-full', {
-                    'pb-5':
-                      formEditingMode?.name === 'token' &&
-                      tokenSelectorSearchResults.length > 5,
-                  })}
-                >
-                  <div className="h-0 relative">
-                    <motion.div
-                      className="w-full absolute flex justify-between"
-                      animate={{
-                        opacity:
-                          formEditingMode?.name === 'token' &&
-                          formEditingMode.recently !== 'closed'
-                            ? 0
-                            : 1,
-                      }}
-                      transition={{
-                        duration: 0.1,
-                        delay:
-                          formEditingMode?.name === 'token' &&
-                          formEditingMode.recently === 'closed'
-                            ? 0.1
-                            : 0,
-                      }}
-                    >
-                      <div className="space-y-2">
-                        <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
-                          TOKEN
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500 group-hover:bg-zinc-400 group-active:bg-zinc-400/75">
-                            <img
-                              className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
-                              src={url}
-                            />
-                          </div>
-                          <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
-                            ETH
-                          </div>
-                        </div>
-                      </div>
-                      <div className="invisible group-hover:visible flex items-center gap-1">
-                        <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
-                          click to edit
-                        </div>
-                        <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
-                      </div>
-                    </motion.div>
-                  </div>
-                  <motion.div
-                    className="flex justify-between"
-                    animate={{
-                      opacity:
-                        formEditingMode?.name === 'token' &&
-                        formEditingMode.recently !== 'closed'
-                          ? 1
-                          : 0,
-                    }}
-                    transition={{
-                      duration: 0.1,
-                      delay:
-                        formEditingMode?.name === 'token' &&
-                        formEditingMode.recently === 'opened'
-                          ? 0.1
-                          : 0,
-                    }}
-                  >
-                    <div className="space-y-2 w-full">
-                      <div className="text-xs text-zinc-400 font-light">
-                        SELECT TOKEN
-                      </div>
-
-                      <div className="w-full flex items-center bg-zinc-500/25 rounded-md overflow-hidden">
-                        <input
-                          ref={tokenSearchRef}
-                          type="text"
-                          placeholder="Search address or name..."
-                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
-                          onBlur={handleTokenSelectorInputBlur}
-                          onKeyPress={handleTokenSelectorInputKeyPress}
-                          onChange={handleTokenSelectorInputChange}
-                          tabIndex={
-                            formEditingMode?.name !== 'token' ? -1 : undefined
-                          }
-                          value={tokenSearchValue}
-                        />
-                        <div
-                          className={cx('w-1/6 text-right', {
-                            hidden: tokenSearchValue,
-                          })}
-                        >
-                          <MagnifyingGlassIcon className="inline-block w-5 h-5 text-zinc-400" />
-                        </div>
-                      </div>
-
-                      {tokenSelectorSearchResultElements}
-                    </div>
-                  </motion.div>
+                <div className="transition-all h-8 mt-12">
+                  <span
+                    className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                    style={{ borderLeftColor: 'rgb(231 229 228)' }}
+                  />
                 </div>
-              </motion.button>
-            </div>
-
-            {amountEditing ? amountInput : amountButton}
+              </div>
+            </button>
           </div>
-        </div>
-        <div className="p-2 max-w-xs mx-auto relative overflow-hidden">
-          <button
-            className={cx(
-              'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
-              {
-                'cursor-not-allowed': submitting || empty,
-                'opacity-50': empty,
-              },
-            )}
-          >
-            <div className="h-8">
-              <div
-                className="transition-all h-8"
-                style={{
-                  marginTop: submitting ? -77 : 2,
-                  height: 'max-content',
-                }}
-              >
-                <div className="flex items-center">
-                  {buttonNames[walletState]}
-                </div>
-              </div>
-              <div className="transition-all h-8 mt-12">
-                <span
-                  className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
-                  style={{ borderLeftColor: 'rgb(231 229 228)' }}
-                />
-              </div>
-            </div>
-          </button>
         </div>
       </>
     )
