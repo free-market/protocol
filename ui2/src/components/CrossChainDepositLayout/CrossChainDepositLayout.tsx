@@ -167,9 +167,12 @@ export const CrossChainDepositLayout = forwardRef(
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
-          tokenSelectorButtonControls.start({
-            height: Math.min(getExpandedHeightForTokenSelector(), 256),
-          }),
+          tokenSelectorButtonControls.start(
+            {
+              height: Math.min(getExpandedHeightForTokenSelector(), 256),
+            },
+            { ease: 'anticipate' },
+          ),
         ])
 
         setFormEditingMode({ name: 'token', recently: undefined })
@@ -198,9 +201,14 @@ export const CrossChainDepositLayout = forwardRef(
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
-          chainSelectorButtonControls.start({
-            height: Math.min(getExpandedHeightForChainSelector(), 256),
-          }),
+          chainSelectorButtonControls.start(
+            {
+              height: Math.min(getExpandedHeightForChainSelector(), 256),
+            },
+            {
+              ease: 'anticipate',
+            },
+          ),
         ])
 
         setFormEditingMode({ name: 'chain', recently: undefined })
@@ -262,9 +270,14 @@ export const CrossChainDepositLayout = forwardRef(
         setTokenSearchValue(newValue)
         await new Promise((resolve) => setTimeout(resolve, 10))
 
-        await tokenSelectorButtonControls.start({
-          height: Math.min(getExpandedHeightForTokenSelector(), 256),
-        })
+        await tokenSelectorButtonControls.start(
+          {
+            height: Math.min(getExpandedHeightForTokenSelector(), 256),
+          },
+          {
+            ease: 'anticipate',
+          },
+        )
       }
     }
 
@@ -319,9 +332,12 @@ export const CrossChainDepositLayout = forwardRef(
         // Maybe requestAnimationFrame?
         await new Promise((resolve) => setTimeout(resolve, 10))
 
-        await chainSelectorButtonControls.start({
-          height: Math.min(getExpandedHeightForChainSelector(), 256),
-        })
+        await chainSelectorButtonControls.start(
+          {
+            height: Math.min(getExpandedHeightForChainSelector(), 256),
+          },
+          { ease: 'anticipate' },
+        )
       }
     }
 
