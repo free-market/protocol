@@ -1,9 +1,13 @@
 const path = require('path')
 const cracoConfig = require('../craco.config')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 module.exports = {
   staticDirs: ['../public'],
-  stories: ['../src/**/*.@(stories|story).mdx', '../src/**/*.@(stories|story).@(js|jsx|ts|tsx)'],
+  stories: [
+    '../src/**/*.@(stories|story).mdx',
+    '../src/**/*.@(stories|story).@(js|jsx|ts|tsx)',
+  ],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -33,6 +37,16 @@ module.exports = {
           ...cracoConfig.webpack.alias,
         },
       },
+      plugins: baseConfig.plugins.map((plugin) => {
+        if (plugin.options?.overlay?.sockIntegration === 'whm') {
+          return new ReactRefreshWebpackPlugin({
+            overlay: false,
+            exclude: /node_modules/i,
+            include: /\.([cm]js|[jt]sx?|flow)$/i,
+          })
+        }
+        return plugin
+      }),
     }
 
     config.module.rules.push({
