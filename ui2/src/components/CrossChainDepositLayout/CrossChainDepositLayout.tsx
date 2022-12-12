@@ -12,8 +12,11 @@ import { AnimatePresence, motion, useAnimationControls } from 'framer-motion'
 import { ChevronLeftIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
+const MAX_SELECTOR_HEIGHT = 192
+
 // use this to debug the editing state
-const STOP_EDITING_ON_BLUR = true
+// TODO: when this is 'true', the search button is not usable because the input becomes blurred
+const STOP_EDITING_ON_BLUR = false
 
 export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
 
@@ -75,6 +78,18 @@ export const CrossChainDepositLayout = forwardRef(
       ref,
       () => ({
         getExpandedHeight: getExpandedHeightForChainSelector,
+      }),
+      [chainSearchValue],
+    )
+
+    const chainSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
+
+    const getExpandedHeightForChainSelectorResults = () =>
+      chainSelectorResultsContainerRef.current?.scrollHeight ?? 0
+    useImperativeHandle(
+      ref,
+      () => ({
+        getExpandedHeight: getExpandedHeightForChainSelectorResults,
       }),
       [chainSearchValue],
     )
@@ -203,7 +218,10 @@ export const CrossChainDepositLayout = forwardRef(
           new Promise((resolve) => setTimeout(resolve, 300)),
           chainSelectorButtonControls.start(
             {
-              height: Math.min(getExpandedHeightForChainSelector(), 256),
+              height: Math.min(
+                getExpandedHeightForChainSelectorResults(),
+                MAX_SELECTOR_HEIGHT,
+              ),
             },
             {
               ease: 'anticipate',
@@ -288,7 +306,7 @@ export const CrossChainDepositLayout = forwardRef(
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           await chainSelectorButtonControls.start({
-            height: 48,
+            height: 0,
           }),
         ])
 
@@ -306,7 +324,7 @@ export const CrossChainDepositLayout = forwardRef(
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           chainSelectorButtonControls.start({
-            height: 48,
+            height: 0,
           }),
         ])
 
@@ -334,7 +352,10 @@ export const CrossChainDepositLayout = forwardRef(
 
         await chainSelectorButtonControls.start(
           {
-            height: Math.min(getExpandedHeightForChainSelector(), 256),
+            height: Math.min(
+              getExpandedHeightForChainSelectorResults(),
+              MAX_SELECTOR_HEIGHT,
+            ),
           },
           { ease: 'anticipate' },
         )
@@ -353,6 +374,10 @@ export const CrossChainDepositLayout = forwardRef(
       { symbol: 'USDT', title: 'Tether USD' },
       { symbol: 'wBTC', title: 'WBTC' },
       { symbol: 'WBTC', title: 'Wrapped BTC' },
+      { symbol: 'sUSD', title: 'Synth sUSD' },
+      { symbol: 'sUSD', title: 'Synth sUSD' },
+      { symbol: 'sUSD', title: 'Synth sUSD' },
+      { symbol: 'sUSD', title: 'Synth sUSD' },
       { symbol: 'sUSD', title: 'Synth sUSD' },
     ].filter(
       ({ symbol, title }) =>
@@ -409,29 +434,20 @@ export const CrossChainDepositLayout = forwardRef(
               },
             )}
           >
-            {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
             <motion.button
               onClick={handleChainSelectorClick}
               className={cx(
-                'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
+                'w-full text-left bg-zinc-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
                 {
+                  'h-16': formEditingMode?.name !== 'chain',
                   'z-30': formEditingMode?.name === 'chain',
                   'hover:bg-zinc-500/75 active:bg-zinc-500/50 cursor-pointer':
                     formEditingMode?.name !== 'chain' ||
                     formEditingMode.recently === 'closed',
                 },
               )}
-              initial={{ height: 48 }}
-              animate={chainSelectorButtonControls}
             >
-              <div
-                ref={chainSelectorContainerRef}
-                className={cx('w-full', {
-                  'pb-5':
-                    formEditingMode?.name === 'chain' &&
-                    tokenSelectorSearchResults.length > 5,
-                })}
-              >
+              <div ref={chainSelectorContainerRef} className={'w-full'}>
                 <div className="h-0 relative">
                   <motion.div
                     className={cx(
@@ -499,7 +515,7 @@ export const CrossChainDepositLayout = forwardRef(
                 </div>
 
                 <motion.div
-                  className="flex justify-between"
+                  className="flex flex-col"
                   animate={{
                     opacity:
                       formEditingMode?.name === 'chain' &&
@@ -564,9 +580,18 @@ export const CrossChainDepositLayout = forwardRef(
                         </svg>
                       </motion.button>
                     </div>
-
-                    {tokenSelectorSearchResultElements}
                   </div>
+
+                  <motion.div className="w-[calc(100%_+_2rem)] max-h-[192px] overflow-y-scroll pr-5 -mr-5">
+                    <motion.div
+                      className="box-content pl-2 pr-6 -mr-5 flex items-start"
+                      animate={chainSelectorButtonControls}
+                    >
+                      <div className="" ref={chainSelectorResultsContainerRef}>
+                        {tokenSelectorSearchResultElements}
+                      </div>
+                    </motion.div>
+                  </motion.div>
                 </motion.div>
               </div>
             </motion.button>
