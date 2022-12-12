@@ -211,6 +211,7 @@ export const CrossChainDepositLayout = forwardRef(
             height: 48,
           }),
         ])
+        setTokenSearchValue('')
         setFormEditingMode(undefined)
       }
     }
@@ -262,6 +263,7 @@ export const CrossChainDepositLayout = forwardRef(
             height: 48,
           }),
         ])
+        setTokenSearchValue('')
         setFormEditingMode(undefined)
       }
     }
@@ -276,7 +278,7 @@ export const CrossChainDepositLayout = forwardRef(
           height: 48,
         })
         setFormEditingMode(undefined)
-        setChainSearchValue('')
+        setTokenSearchValue('')
       }
     }
 
