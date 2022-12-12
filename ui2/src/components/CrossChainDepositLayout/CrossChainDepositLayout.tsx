@@ -13,7 +13,7 @@ import { ChevronLeftIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
 // use this to debug the editing state
-const STOP_EDITING_ON_BLUR = false
+const STOP_EDITING_ON_BLUR = true
 
 export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
 
@@ -99,16 +99,19 @@ export const CrossChainDepositLayout = forwardRef(
           <div className="text-xs text-zinc-400 font-light group-hover:text-zinc-300 group-active:text-zinc-300/75">
             AMOUNT
           </div>
+
           <div className="flex items-center gap-2">
             <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-bold">
               10.00
             </div>
           </div>
         </div>
+
         <div className="invisible pointer-events-none group-hover:pointer-events-auto group-hover:visible flex items-center gap-1">
           <div className="text-sm font-light text-zinc-300 group-active:text-zinc-300/75">
             click to edit
           </div>
+
           <PencilSquareIcon className="text-zinc-300 group-active:text-zinc-300/75 w-4 h-4" />
         </div>
       </button>
@@ -119,6 +122,7 @@ export const CrossChainDepositLayout = forwardRef(
         <div className="text-xs text-zinc-200 font-light ml-2 group-hover:text-zinc-300">
           AMOUNT
         </div>
+
         <input
           inputMode="decimal"
           step="0.00000001"
@@ -160,13 +164,16 @@ export const CrossChainDepositLayout = forwardRef(
       ) {
         setFormEditingMode({ name: 'token', recently: 'opened' })
         setTokenSearchValue('')
+
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           tokenSelectorButtonControls.start({
             height: Math.min(getExpandedHeightForTokenSelector(), 256),
           }),
         ])
+
         setFormEditingMode({ name: 'token', recently: undefined })
+
         if (tokenSearchRef.current) {
           tokenSearchRef.current.focus()
         }
@@ -188,6 +195,7 @@ export const CrossChainDepositLayout = forwardRef(
       ) {
         setFormEditingMode({ name: 'chain', recently: 'opened' })
         setTokenSearchValue('')
+
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           chainSelectorButtonControls.start({
@@ -206,12 +214,14 @@ export const CrossChainDepositLayout = forwardRef(
     const handleTokenSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'token', recently: 'closed' })
+
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           await tokenSelectorButtonControls.start({
             height: 48,
           }),
         ])
+
         setTokenSearchValue('')
         setFormEditingMode(undefined)
       }
@@ -222,12 +232,14 @@ export const CrossChainDepositLayout = forwardRef(
     ) => {
       if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'token', recently: 'closed' })
+
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           await tokenSelectorButtonControls.start({
             height: 48,
           }),
         ])
+
         setFormEditingMode(undefined)
         setTokenSearchValue('')
         startEditing()
@@ -239,6 +251,7 @@ export const CrossChainDepositLayout = forwardRef(
     ) => {
       const oldValue = tokenSearchValue
       let newValue
+
       if (event.target.value.trim() === '') {
         newValue = ''
       } else {
@@ -258,12 +271,14 @@ export const CrossChainDepositLayout = forwardRef(
     const handleChainSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'chain', recently: 'closed' })
+
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
           await chainSelectorButtonControls.start({
             height: 48,
           }),
         ])
+
         setTokenSearchValue('')
         setFormEditingMode(undefined)
       }
@@ -274,10 +289,14 @@ export const CrossChainDepositLayout = forwardRef(
     ) => {
       if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'chain', recently: 'closed' })
-        // await new Promise((resolve) => setTimeout(resolve, 300))
-        await chainSelectorButtonControls.start({
-          height: 48,
-        })
+
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          chainSelectorButtonControls.start({
+            height: 48,
+          }),
+        ])
+
         setFormEditingMode(undefined)
         setTokenSearchValue('')
       }
@@ -482,7 +501,7 @@ export const CrossChainDepositLayout = forwardRef(
                   }}
                 >
                   <div className="space-y-2 w-full">
-                    <div className="text-xs text-zinc-400 font-light">
+                    <div className="text-xs text-zinc-200 font-light">
                       SELECT CHAIN
                     </div>
 
@@ -511,6 +530,7 @@ export const CrossChainDepositLayout = forwardRef(
                         animate={{
                           scale: tokenSearchValue ? 0 : 1,
                           marginRight: tokenSearchValue ? '-16.666667%' : '8px',
+                          marginLeft: tokenSearchValue ? 0 : '8px',
                         }}
                       >
                         <svg
@@ -629,7 +649,7 @@ export const CrossChainDepositLayout = forwardRef(
                   }}
                 >
                   <div className="space-y-2 w-full">
-                    <div className="text-xs text-zinc-400 font-light">
+                    <div className="text-xs text-zinc-200 font-light">
                       SELECT TOKEN
                     </div>
 

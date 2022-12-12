@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { CrossChainDepositLayout as Component } from './CrossChainDepositLayout'
 import ErrorDialog from '@component/ErrorDialog'
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundaryFoo extends React.Component {
   state = { hasError: false }
 
   static getDerivedStateFromError(/* error: any */) {
@@ -29,7 +29,7 @@ class ErrorBoundary extends React.Component {
     return (
       <>
         <ErrorDialog open={this.state.hasError} onClose={this.handleClose} />
-        {this.props.children}
+        {!this.state.hasError && this.props.children}
       </>
     )
   }
@@ -44,16 +44,13 @@ export default {
   },
   title: 'Example/CrossChainDepositLayout',
   component: Component,
-  decorators: [
-    (Story) => (
-      <ErrorBoundary>
-        <Story />
-      </ErrorBoundary>
-    ),
-  ],
 } as ComponentMeta<typeof Component>
 
 export const CrossChainDepositLayout: ComponentStory<typeof Component> = (
   props,
-) => <Component {...props} />
+) => (
+  <ErrorBoundaryFoo>
+    <Component {...props} />
+  </ErrorBoundaryFoo>
+)
 CrossChainDepositLayout.args = {}

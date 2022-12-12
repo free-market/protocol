@@ -26,10 +26,12 @@ module.exports = {
   webpackFinal(baseConfig, options) {
     const config = {
       ...baseConfig,
+
       module: {
         ...(baseConfig.module ?? {}),
         rules: [...(baseConfig.module?.rules ?? [])],
       },
+
       resolve: {
         ...(baseConfig.resolve ?? {}),
         alias: {
@@ -37,6 +39,7 @@ module.exports = {
           ...cracoConfig.webpack.alias,
         },
       },
+
       plugins: baseConfig.plugins.map((plugin) => {
         if (plugin.options?.overlay?.sockIntegration === 'whm') {
           return new ReactRefreshWebpackPlugin({
