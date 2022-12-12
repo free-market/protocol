@@ -92,7 +92,7 @@ export const CrossChainDepositLayout = forwardRef(
 
     const amountButton = (
       <button
-        className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
+        className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between items-stretch active:bg-zinc-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
         onClick={startEditing}
       >
         <div className="space-y-2">
