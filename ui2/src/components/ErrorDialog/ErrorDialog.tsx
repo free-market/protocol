@@ -38,7 +38,7 @@ export const ErrorDialog = (props: {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-zinc-100 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -54,10 +54,16 @@ export const ErrorDialog = (props: {
               >
                 <Dialog.Panel>
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.6, rotate: -180 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.1 }}
-                    className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+                    initial={{ opacity: 0, scale: 0, y: 200 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                      type: 'spring',
+                      damping: 20,
+                      duration: 0.1,
+                      stiffness: 150,
+                      bounce: 1,
+                    }}
+                    className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl sm:my-8 sm:w-full sm:max-w-lg"
                   >
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                       <div className="sm:flex sm:items-start">
