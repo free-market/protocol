@@ -8,11 +8,12 @@ import {
   useState,
 } from 'react'
 import cx from 'classnames'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useAnimationControls } from 'framer-motion'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
-const STOP_EDITING_ON_BLUR = false
+// use this to debug the editing state
+const STOP_EDITING_ON_BLUR = true
 
 export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
 
@@ -50,9 +51,6 @@ export const CrossChainDepositLayout = forwardRef(
 
     const [amountEditing, setAmountEditing] = useState(false)
     const [tokenSearchValue, setTokenSearchValue] = useState('')
-    const [tokenSearchDebounce, setTokenSearchDebounce] = useState<
-      number | null
-    >(null)
     const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
     const tokenSearchRef = useRef<HTMLInputElement>(null)
 
@@ -63,13 +61,10 @@ export const CrossChainDepositLayout = forwardRef(
       () => ({
         getExpandedHeight: getExpandedHeightForTokenSelector,
       }),
-      [tokenSearchValue, tokenSearchDebounce],
+      [tokenSearchValue],
     )
 
     const [chainSearchValue, setChainSearchValue] = useState('')
-    const [chainSearchDebounce, setChainSearchDebounce] = useState<
-      number | null
-    >(null)
     const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
     const chainSearchRef = useRef<HTMLInputElement>(null)
 
@@ -80,8 +75,11 @@ export const CrossChainDepositLayout = forwardRef(
       () => ({
         getExpandedHeight: getExpandedHeightForChainSelector,
       }),
-      [chainSearchValue, chainSearchDebounce],
+      [chainSearchValue],
     )
+
+    const chainSelectorButtonControls = useAnimationControls()
+    const tokenSelectorButtonControls = useAnimationControls()
 
     const startEditing = useCallback(() => {
       setAmountEditing(true)
@@ -93,7 +91,7 @@ export const CrossChainDepositLayout = forwardRef(
 
     const amountButton = (
       <button
-        className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/25"
+        className="w-full text-left bg-zinc-600 p-2 rounded-xl group hover:bg-zinc-500/75 flex justify-between active:bg-zinc-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
         onClick={startEditing}
       >
         <div className="space-y-2">
@@ -134,7 +132,7 @@ export const CrossChainDepositLayout = forwardRef(
           maxLength={79}
           spellCheck={false}
           autoFocus
-          className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/25"
+          className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
           onBlur={onBlur}
         />
       </div>
@@ -161,8 +159,12 @@ export const CrossChainDepositLayout = forwardRef(
       ) {
         setFormEditingMode({ name: 'token', recently: 'opened' })
         setTokenSearchValue('')
-        setTokenSearchDebounce(null)
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          tokenSelectorButtonControls.start({
+            height: Math.min(getExpandedHeightForTokenSelector(), 256),
+          }),
+        ])
         setFormEditingMode({ name: 'token', recently: undefined })
         if (tokenSearchRef.current) {
           tokenSearchRef.current.focus()
@@ -184,10 +186,16 @@ export const CrossChainDepositLayout = forwardRef(
         formEditingMode.recently === 'closed'
       ) {
         setFormEditingMode({ name: 'chain', recently: 'opened' })
-        setChainSearchValue('')
-        setChainSearchDebounce(null)
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        setTokenSearchValue('')
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          chainSelectorButtonControls.start({
+            height: Math.min(getExpandedHeightForChainSelector(), 256),
+          }),
+        ])
+
         setFormEditingMode({ name: 'chain', recently: undefined })
+
         if (chainSearchRef.current) {
           chainSearchRef.current.focus()
         }
@@ -195,9 +203,14 @@ export const CrossChainDepositLayout = forwardRef(
     }
 
     const handleTokenSelectorInputBlur = async () => {
-      if (STOP_EDITING_ON_BLUR) {
+      if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'token', recently: 'closed' })
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          await tokenSelectorButtonControls.start({
+            height: 48,
+          }),
+        ])
         setFormEditingMode(undefined)
       }
     }
@@ -205,17 +218,21 @@ export const CrossChainDepositLayout = forwardRef(
     const handleTokenSelectorInputKeyPress = async (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
-      if (event.code === 'Enter') {
+      if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'token', recently: 'closed' })
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          await tokenSelectorButtonControls.start({
+            height: 48,
+          }),
+        ])
         setFormEditingMode(undefined)
         setTokenSearchValue('')
-        setTokenSearchDebounce(null)
         startEditing()
       }
     }
 
-    const handleTokenSelectorInputChange = (
+    const handleTokenSelectorInputChange = async (
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
       const oldValue = tokenSearchValue
@@ -228,20 +245,23 @@ export const CrossChainDepositLayout = forwardRef(
 
       if (oldValue !== newValue) {
         setTokenSearchValue(newValue)
-        if (tokenSearchDebounce) {
-          clearTimeout(tokenSearchDebounce)
-        }
-        const timeout = setTimeout(() => {
-          setTokenSearchDebounce(null)
-        }, 1)
-        setTokenSearchDebounce(timeout as unknown as number)
+        await new Promise((resolve) => setTimeout(resolve, 10))
+
+        await tokenSelectorButtonControls.start({
+          height: Math.min(getExpandedHeightForTokenSelector(), 256),
+        })
       }
     }
 
     const handleChainSelectorInputBlur = async () => {
-      if (STOP_EDITING_ON_BLUR) {
+      if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'chain', recently: 'closed' })
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await Promise.all([
+          new Promise((resolve) => setTimeout(resolve, 300)),
+          await chainSelectorButtonControls.start({
+            height: 48,
+          }),
+        ])
         setFormEditingMode(undefined)
       }
     }
@@ -249,17 +269,18 @@ export const CrossChainDepositLayout = forwardRef(
     const handleChainSelectorInputKeyPress = async (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
-      if (event.code === 'Enter') {
+      if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
         setFormEditingMode({ name: 'chain', recently: 'closed' })
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        // await new Promise((resolve) => setTimeout(resolve, 300))
+        await chainSelectorButtonControls.start({
+          height: 48,
+        })
         setFormEditingMode(undefined)
         setChainSearchValue('')
-        setChainSearchDebounce(null)
-        startEditing()
       }
     }
 
-    const handleChainSelectorInputChange = (
+    const handleChainSelectorInputChange = async (
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
       const oldValue = tokenSearchValue
@@ -272,13 +293,13 @@ export const CrossChainDepositLayout = forwardRef(
 
       if (oldValue !== newValue) {
         setTokenSearchValue(newValue)
-        if (tokenSearchDebounce) {
-          clearTimeout(tokenSearchDebounce)
-        }
-        const timeout = setTimeout(() => {
-          setTokenSearchDebounce(null)
-        }, 1)
-        setTokenSearchDebounce(timeout as unknown as number)
+
+        // Maybe requestAnimationFrame?
+        await new Promise((resolve) => setTimeout(resolve, 10))
+
+        await chainSelectorButtonControls.start({
+          height: Math.min(getExpandedHeightForChainSelector(), 256),
+        })
       }
     }
 
@@ -342,16 +363,21 @@ export const CrossChainDepositLayout = forwardRef(
           </AnimatePresence>
           <div className="space-y-2">
             <div
-              className={cx('relative max-h-64 overflow-hidden rounded-xl', {
-                'super-shadow-2':
-                  formEditingMode?.name === 'chain' &&
-                  tokenSelectorSearchResults.length > 5,
-              })}
+              className={cx(
+                'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
+                {
+                  'super-shadow-2':
+                    formEditingMode?.name === 'chain' &&
+                    formEditingMode.recently !== 'closed' &&
+                    tokenSelectorSearchResults.length > 5,
+                },
+              )}
             >
+              {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
               <motion.button
                 onClick={handleChainSelectorClick}
                 className={cx(
-                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/25',
+                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
                   {
                     'z-30': formEditingMode?.name === 'chain',
                     'hover:bg-zinc-500/75 active:bg-zinc-500/50':
@@ -360,18 +386,7 @@ export const CrossChainDepositLayout = forwardRef(
                   },
                 )}
                 initial={{ height: 48 }}
-                animate={{
-                  height:
-                    formEditingMode?.name === 'chain' &&
-                    formEditingMode.recently !== 'closed'
-                      ? chainSearchDebounce
-                        ? 0
-                        : getExpandedHeightForChainSelector()
-                      : 48,
-                }}
-                transition={{
-                  delay: formEditingMode?.name === 'chain' ? 0 : 0.2,
-                }}
+                animate={chainSelectorButtonControls}
               >
                 <div
                   ref={chainSelectorContainerRef}
@@ -412,7 +427,7 @@ export const CrossChainDepositLayout = forwardRef(
                             />
                           </div>
                           <div className="text-zinc-300 group-hover:text-zinc-200 group-active:text-zinc-200/75 font-medium">
-                            ETH
+                            Ethereum
                           </div>
                         </div>
                       </div>
@@ -452,14 +467,14 @@ export const CrossChainDepositLayout = forwardRef(
                           ref={chainSearchRef}
                           type="text"
                           placeholder="Search chain..."
-                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/25 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
+                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
                           onBlur={handleChainSelectorInputBlur}
                           onKeyPress={handleChainSelectorInputKeyPress}
                           onChange={handleChainSelectorInputChange}
                           tabIndex={
                             formEditingMode?.name !== 'chain' ? -1 : undefined
                           }
-                          value={chainSearchValue}
+                          value={tokenSearchValue}
                         />
                         <div
                           className={cx('w-1/6 text-right', {
@@ -481,13 +496,15 @@ export const CrossChainDepositLayout = forwardRef(
               className={cx('relative max-h-64 overflow-hidden rounded-xl', {
                 'super-shadow-2':
                   formEditingMode?.name === 'token' &&
+                  formEditingMode.recently !== 'closed' &&
                   tokenSelectorSearchResults.length > 5,
               })}
             >
+              {/* TODO(FMP-314): prevent unwanted scrolling when closed */}
               <motion.button
                 onClick={handleTokenSelectorClick}
                 className={cx(
-                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/25',
+                  'box-content w-full text-left bg-zinc-600 p-2 rounded-xl group overflow-y-scroll relative max-h-64 -mr-5 flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
                   {
                     'z-30': formEditingMode?.name === 'token',
                     'hover:bg-zinc-500/75 active:bg-zinc-500/50':
@@ -496,18 +513,7 @@ export const CrossChainDepositLayout = forwardRef(
                   },
                 )}
                 initial={{ height: 48 }}
-                animate={{
-                  height:
-                    formEditingMode?.name === 'token' &&
-                    formEditingMode.recently !== 'closed'
-                      ? tokenSearchDebounce
-                        ? 0
-                        : getExpandedHeightForTokenSelector()
-                      : 48,
-                }}
-                transition={{
-                  delay: formEditingMode?.name === 'token' ? 0 : 0.2,
-                }}
+                animate={tokenSelectorButtonControls}
               >
                 <div
                   ref={tokenSelectorContainerRef}
@@ -588,7 +594,7 @@ export const CrossChainDepositLayout = forwardRef(
                           ref={tokenSearchRef}
                           type="text"
                           placeholder="Search address or name..."
-                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/25 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
+                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-2 rounded-md"
                           onBlur={handleTokenSelectorInputBlur}
                           onKeyPress={handleTokenSelectorInputKeyPress}
                           onChange={handleTokenSelectorInputChange}
@@ -617,7 +623,7 @@ export const CrossChainDepositLayout = forwardRef(
 
             <button
               className={cx(
-                'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.7] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25',
+                'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25',
                 {
                   'cursor-not-allowed': submitting || empty,
                   'opacity-50': empty,
