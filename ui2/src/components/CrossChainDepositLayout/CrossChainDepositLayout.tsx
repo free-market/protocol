@@ -207,7 +207,7 @@ export const CrossChainDepositLayout = forwardRef(
           tokenSelectorButtonControls.start(
             {
               height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 72,
+                getExpandedHeightForChainSelectorResults() + 68,
                 MAX_SELECTOR_HEIGHT,
               ),
             },
@@ -244,7 +244,7 @@ export const CrossChainDepositLayout = forwardRef(
           chainSelectorButtonControls.start(
             {
               height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 72,
+                getExpandedHeightForChainSelectorResults() + 68,
                 MAX_SELECTOR_HEIGHT,
               ),
             },
@@ -314,7 +314,7 @@ export const CrossChainDepositLayout = forwardRef(
         await tokenSelectorButtonControls.start(
           {
             height: Math.min(
-              getExpandedHeightForChainSelectorResults() + 72,
+              getExpandedHeightForChainSelectorResults() + 68,
               MAX_SELECTOR_HEIGHT,
             ),
           },
@@ -361,7 +361,7 @@ export const CrossChainDepositLayout = forwardRef(
           tokenSelectorButtonControls.start(
             {
               height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 72,
+                getExpandedHeightForChainSelectorResults() + 68,
                 MAX_SELECTOR_HEIGHT,
               ),
             },
@@ -397,7 +397,7 @@ export const CrossChainDepositLayout = forwardRef(
         await chainSelectorButtonControls.start(
           {
             height: Math.min(
-              getExpandedHeightForChainSelectorResults() + 72,
+              getExpandedHeightForChainSelectorResults() + 68,
               MAX_SELECTOR_HEIGHT,
             ),
           },
@@ -424,32 +424,31 @@ export const CrossChainDepositLayout = forwardRef(
 
     const tokenSelectorSearchResultElements = tokenSelectorSearchResults.map(
       ({ symbol, title }, index) => (
-        <motion.div
-          onViewportEnter={
-            index === tokenSelectorSearchResults.length
-              ? handleLastElementViewportEnter
-              : undefined
-          }
-          onViewportLeave={
-            index === tokenSelectorSearchResults.length
-              ? handleLastElementViewportLeave
-              : undefined
-          }
-          className={cx('flex items-center gap-2 rounded-xl px-2', {
-            'bg-zinc-500': index === 0,
-          })}
-          key={`${symbol}${index}`}
-        >
-          <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500">
-            <img className="w-full h-full" src={url} />
-          </div>
-          <div className="text-zinc-300">
-            <span className="font-medium">{symbol}</span>{' '}
-            <span className="text-zinc-400">
-              <span className="text-sm">{title}</span>
-            </span>
-          </div>
-        </motion.div>
+        <>
+          <motion.div
+            className={cx('flex items-center gap-2 rounded-xl px-2', {
+              'bg-zinc-500': index === 0,
+            })}
+            key={`${symbol}${index}`}
+          >
+            <div className="rounded-full overflow-hidden w-4 h-4 bg-zinc-500">
+              <img className="w-full h-full" src={url} />
+            </div>
+            <div className="text-zinc-300">
+              <span className="font-medium">{symbol}</span>{' '}
+              <span className="text-zinc-400">
+                <span className="text-sm">{title}</span>
+              </span>
+            </div>
+          </motion.div>
+          {index === tokenSelectorSearchResults.length - 1 && (
+            <motion.div
+              key="foo"
+              onViewportEnter={handleLastElementViewportEnter}
+              onViewportLeave={handleLastElementViewportLeave}
+            />
+          )}
+        </>
       ),
     )
 
