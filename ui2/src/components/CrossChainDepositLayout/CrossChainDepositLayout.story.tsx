@@ -37,6 +37,7 @@ class ErrorBoundaryFoo extends React.Component {
 
 export default {
   parameters: {
+    layout: 'fullscreen',
     backgrounds: {
       default: 'light',
       values: [{ name: 'light', value: '#f4f4f5' }],
