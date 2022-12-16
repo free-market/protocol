@@ -1001,32 +1001,41 @@ export const CrossChainDepositLayout = forwardRef(
     if (open && !loading) {
       return (
         <div className="h-full relative">
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: baseDelay }}
-              className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between"
+          <motion.div className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between">
+            <motion.a
+              layoutId="link"
+              href="https://fmprotocol.com"
+              target="_blank"
+              className="p-2 group relative overflow-hidden rounded"
+              title="Free Market Protocol"
             >
-              <a
-                href="https://fmprotocol.com"
-                target="_blank"
-                className="p-2 group relative overflow-hidden rounded"
-                title="Free Market Protocol"
-              >
-                <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-zinc-800/[0.1] group-active:visible group-active:bg-zinc-800/[0.15] z-10" />
-                <Logo className="stroke-zinc-600 w-8 h-8 bg-zinc-100" />
-              </a>
+              <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-zinc-800/[0.1] group-active:visible group-active:bg-zinc-800/[0.15] z-10" />
+              <Logo className="stroke-zinc-600 w-8 h-8 bg-zinc-100" />
+            </motion.a>
 
-              <button
+            <AnimatePresence>
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  y: -20,
+                  transition: {
+                    ease: 'anticipate',
+                    bounce: 1,
+                    stiffness: 500,
+                    velocity: 500,
+                  },
+                }}
+                transition={{ delay: baseDelay }}
                 className="font-medium text-sm text-zinc-500 flex items-center rounded hover:bg-zinc-800/[0.1] active:bg-zinc-800/[0.15] px-3 cursor-pointer h-8"
                 onClick={handleBackClick}
               >
                 <ChevronLeftIcon className="w-5 h-5" />
                 <span>Back</span>
-              </button>
-            </motion.div>
-          </AnimatePresence>
+              </motion.button>
+            </AnimatePresence>
+          </motion.div>
 
           <div className="h-screen">
             <div className="h-full flex items-start justify-center">
@@ -1057,11 +1066,11 @@ export const CrossChainDepositLayout = forwardRef(
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: baseDelay + 0.6, duration: 1 }}
-                    className="px-2 max-w-xs mx-auto relative overflow-hidden"
+                    className="px-2 max-w-xs mx-auto relative"
                   >
                     <button
                       className={cx(
-                        'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+                        'w-full text-zinc-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
                         {
                           'cursor-not-allowed': submitting || empty,
                           'opacity-50': empty,
@@ -1098,95 +1107,111 @@ export const CrossChainDepositLayout = forwardRef(
     }
 
     return (
-      <div className="h-screen flex items-center justify-center h-full">
-        <motion.button
-          layout
-          onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
-          onHoverEnd={loading ? undefined : handleDepositButtonHoverEnd}
-          whileTap={{ scale: loading ? 0.9 : 0.8 }}
-          onClick={handleDepositButtonClick}
-          className="w-24 h-24 relative rounded-full"
-          tabIndex={-1}
-        >
-          <motion.div
-            animate={depositButtonForegroundControls}
-            className="absolute font-medium text-zinc-300 w-24 h-24 flex items-center justify-center z-10 pointer-events-none user-select-none overflow-hidden rounded-full"
+      <div className="h-full relative">
+        <motion.div className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between">
+          <motion.a
+            layoutId="link"
+            href="https://fmprotocol.com"
+            target="_blank"
+            className="p-2 group relative overflow-hidden rounded"
+            title="Free Market Protocol"
           >
-            <AnimatePresence mode="wait" initial>
-              {loading && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0, y: 50 }}
-                  animate={loadingBarControls}
-                  transition={{
-                    type: 'spring',
-                    damping: 20,
-                    duration: 0.1,
-                    stiffness: 150,
-                    bounce: 1,
-                  }}
-                >
-                  <div className="w-[5.25rem] h-[5.25rem] rounded-full bg-zinc-500 flex items-center justify-center rotate-45">
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ rotate: 0 }}
-                        animate={loadingSpinnerControls}
-                        className="border-2 border-transparent inline-block w-[4.5rem] h-[4.5rem] border-[6px] rounded-full border-l-zinc-400"
-                      />
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-              )}
+            <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-zinc-800/[0.1] group-active:visible group-active:bg-zinc-800/[0.15] z-10" />
+            <Logo className="stroke-zinc-600 w-8 h-8 bg-zinc-100" />
+          </motion.a>
 
-              {!loading && (
-                <motion.span
-                  className="user-select-none"
-                  key="deposit"
-                  layout="position"
-                  initial={{ opacity: 0, scale: 1, y: 30 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    transition: { delay: 0.3 },
-                  }}
-                  exit={{ opacity: 0, scale: 0, y: 30 }}
-                  transition={{ ease: 'anticipate' }}
-                >
-                  Deposit
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.div>
+          <AnimatePresence />
+        </motion.div>
+        <div className="h-screen flex items-center justify-center">
           <motion.button
             layout
-            layoutId="foo"
-            className="bg-zinc-600 h-24 w-24 text-zinc-300 font-medium"
-            whileHover={
-              loading
-                ? undefined
-                : {
-                    // scale: 1.2,
-                    rotate: 90,
-                  }
-            }
-            whileTap={
-              loading
-                ? undefined
-                : {
-                    // scale: 0.8,
-                    rotate: -90,
-                    borderRadius: '100%',
-                  }
-            }
-            initial={{ borderRadius: loading ? '100%' : '24%' }}
-            animate={depositButtonBackgroundControls}
-            transition={{
-              type: 'spring',
-              stiffness: 260,
-              damping: 20,
-            }}
-          ></motion.button>
-        </motion.button>
+            onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
+            onHoverEnd={loading ? undefined : handleDepositButtonHoverEnd}
+            whileTap={{ scale: loading ? 0.9 : 0.8 }}
+            onClick={handleDepositButtonClick}
+            className="w-24 h-24 relative rounded-full"
+            tabIndex={-1}
+          >
+            <motion.div
+              animate={depositButtonForegroundControls}
+              className="absolute font-medium text-zinc-300 w-24 h-24 flex items-center justify-center z-10 pointer-events-none user-select-none overflow-hidden rounded-full"
+            >
+              <AnimatePresence mode="wait" initial>
+                {loading && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0, y: 50 }}
+                    animate={loadingBarControls}
+                    transition={{
+                      type: 'spring',
+                      damping: 20,
+                      duration: 0.1,
+                      stiffness: 150,
+                      bounce: 1,
+                    }}
+                  >
+                    <div className="w-[5.25rem] h-[5.25rem] rounded-full bg-zinc-500 flex items-center justify-center rotate-45">
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          animate={loadingSpinnerControls}
+                          className="border-2 border-transparent inline-block w-[4.5rem] h-[4.5rem] border-[6px] rounded-full border-l-zinc-400"
+                        />
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+
+                {!loading && (
+                  <motion.span
+                    className="user-select-none"
+                    key="deposit"
+                    layout="position"
+                    initial={{ opacity: 0, scale: 1, y: 30 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      y: 0,
+                      transition: { delay: 0.3 },
+                    }}
+                    exit={{ opacity: 0, scale: 0, y: 30 }}
+                    transition={{ ease: 'anticipate' }}
+                  >
+                    Deposit
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            <motion.button
+              layout
+              layoutId="foo"
+              className="bg-zinc-600 h-24 w-24 text-zinc-300 font-medium"
+              whileHover={
+                loading
+                  ? undefined
+                  : {
+                      // scale: 1.2,
+                      rotate: 90,
+                    }
+              }
+              whileTap={
+                loading
+                  ? undefined
+                  : {
+                      // scale: 0.8,
+                      rotate: -90,
+                      borderRadius: '100%',
+                    }
+              }
+              initial={{ borderRadius: loading ? '100%' : '24%' }}
+              animate={depositButtonBackgroundControls}
+              transition={{
+                type: 'spring',
+                stiffness: 260,
+                damping: 20,
+              }}
+            ></motion.button>
+          </motion.button>
+        </div>
       </div>
     )
   },
