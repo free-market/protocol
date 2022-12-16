@@ -32,7 +32,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
           <motion.button
             disabled={submitting || empty}
             className={cx(
-              'w-full text-zinc-200 font-bold bg-sky-600 rounded-xl px-3 py-2 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden',
+              'w-full text-stone-200 font-bold bg-sky-600 rounded-xl px-3 py-2 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden',
               {
                 'cursor-not-allowed': submitting || empty,
                 'opacity-50': empty,
@@ -85,9 +85,9 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
         return (
           <form onSubmit={handleSubmit}>
-            <motion.div className="inline-flex bg-zinc-700 rounded-xl shadow-md items-center justify-between group flex-col space-y-5">
+            <motion.div className="inline-flex bg-stone-700 rounded-xl shadow-md items-center justify-between group flex-col space-y-5">
               <div
-                className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5 transition-opacity"
+                className="inline-flex bg-stone-700 py-2 px-2 rounded-xl shadow-md items-center justify-between group flex-col space-y-5 transition-opacity"
                 style={{
                   opacity:
                     core.selectedStepChoice &&
@@ -103,7 +103,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                       src={catalog[core.selectedActionGroup.name].icon.url}
                       className="w-5 h-5"
                     />
-                    <div className="text-zinc-400 px-2">
+                    <div className="text-stone-400 px-2">
                       {catalog[core.selectedActionGroup.name].title}{' '}
                       {action.title}
                     </div>
@@ -111,7 +111,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
                   <button
                     type="reset"
-                    className="w-8 h-8 p-2 -mt-2 -mb-2 -mr-3 box-content text-zinc-500 cursor-pointer hover:text-zinc-400 focus:outline-2"
+                    className="w-8 h-8 p-2 -mt-2 -mb-2 -mr-3 box-content text-stone-500 cursor-pointer hover:text-stone-400 focus:outline-2"
                     onClick={deselect}
                   >
                     <XCircleIcon />
@@ -141,7 +141,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                                 maxLength={79}
                                 spellCheck={false}
                                 autoFocus
-                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
+                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-2xl px-2 py-3 hover:bg-stone-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
                                 {...input}
                                 onBlur={(event) => {
                                   const value = parseFloat(event.target.value)
@@ -168,10 +168,10 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                       />
                     </div>
 
-                    <div className="flex text-zinc-400 items-center gap-2">
-                      <div className="border-b-2 border-zinc-600 grow"></div>
+                    <div className="flex text-stone-400 items-center gap-2">
+                      <div className="border-b-2 border-stone-600 grow"></div>
 
-                      <div className="rounded-full border-2 border-zinc-600 w-8 h-8 flex items-center justify-center">
+                      <div className="rounded-full border-2 border-stone-600 w-8 h-8 flex items-center justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
@@ -185,7 +185,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                           />
                         </svg>
                       </div>
-                      <div className="border-b-2 border-zinc-600 grow"></div>
+                      <div className="border-b-2 border-stone-600 grow"></div>
                     </div>
 
                     <div>
@@ -208,7 +208,7 @@ export const StepChoiceEditorCard = (): JSX.Element => {
                                 minLength={1}
                                 maxLength={79}
                                 spellCheck={false}
-                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-zinc-400 text-zinc-200 rounded-2xl px-2 py-3 hover:bg-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
+                                className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis foucs:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-2xl px-2 py-3 hover:bg-stone-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent"
                                 {...input}
                                 onBlur={(event) => {
                                   const value = parseFloat(event.target.value)

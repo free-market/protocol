@@ -29,24 +29,24 @@ export const StepChoiceCard = (props: {
 
   return (
     <motion.button
-      className="inline-flex bg-zinc-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
+      className="inline-flex bg-stone-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2"
       onClick={click}
     >
-      <div className="inline-flex bg-zinc-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
+      <div className="inline-flex bg-stone-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-[#45454D] active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
             <img
               src={catalog[core.selectedActionGroup.name].icon.url}
               className="w-5 h-5"
             />
-            <div className="text-zinc-400 px-2">
+            <div className="text-stone-400 px-2">
               {catalog[core.selectedActionGroup.name].title} {action.title}
             </div>
           </div>
 
-          <PlusIcon className="w-6 h-6 text-zinc-500 group-hover:text-zinc-400/50" />
+          <PlusIcon className="w-6 h-6 text-stone-500 group-hover:text-stone-400/50" />
         </div>
-        <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
+        <div className="flex items-center text-stone-600 group-hover:text-stone-500/50">
           {inputPill}
           &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
         </div>

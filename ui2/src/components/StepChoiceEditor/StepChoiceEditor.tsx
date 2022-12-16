@@ -39,7 +39,7 @@ export const StepChoiceEditor = (props: {
     stepChoiceEditorCard = <StepChoiceEditorCard />,
 
     stepChoiceBreadCrumbs = (
-      <div className="flex items-center text-sm text-zinc-500/75 pt-2 group-hover:text-zinc-500 cursor-pointer">
+      <div className="flex items-center text-sm text-stone-500/75 pt-2 group-hover:text-stone-500 cursor-pointer">
         <ChevronLeftIcon className="w-5 h-5 mx-2" />
         <div>{catalog[core.selectedActionGroup.name].title}</div>
         <ChevronLeftIcon className="w-5 h-5 mx-2" />
@@ -65,7 +65,7 @@ export const StepChoiceEditor = (props: {
   const stepChoiceShadow = (
     <motion.div
       transition={{ duration: fadeIn === 'instant' ? 0 : undefined }}
-      className="bg-zinc-800/75 absolute top-0 right-0 left-0 bottom-0 z-20 p-2 group cursor-pointer"
+      className="bg-stone-800/75 absolute top-0 right-0 left-0 bottom-0 z-20 p-2 group cursor-pointer"
       onClick={deselect}
       variants={variantsNoTransform}
       initial="hidden"

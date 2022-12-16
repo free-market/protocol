@@ -12,7 +12,7 @@ export const AssetPill = (
   return (
     <div
       className={cx(
-        'inline-flex flex-col items-start rounded-xl bg-zinc-600 text-zinc-300 py-1 px-2',
+        'inline-flex flex-col items-start rounded-xl bg-stone-600 text-stone-300 py-1 px-2',
         {
           'shadow-md': shadow,
         },
@@ -21,10 +21,10 @@ export const AssetPill = (
     >
       <div className="inline-flex items-center space-x-2 font-medium text-lg">
         <div className="relative w-5 h-5">
-          <div className="rounded-full overflow-hidden w-5 h-5 bg-zinc-500">
+          <div className="rounded-full overflow-hidden w-5 h-5 bg-stone-500">
             <img className="w-full h-full" src={asset.icon.url} />
           </div>
-          <div className="absolute rounded-full overflow-hidden w-3 h-3 bg-zinc-500 -bottom-1 -right-1">
+          <div className="absolute rounded-full overflow-hidden w-3 h-3 bg-stone-500 -bottom-1 -right-1">
             <img className="w-full h-full" src={asset.network.chain.icon.url} />
           </div>
         </div>
@@ -34,7 +34,7 @@ export const AssetPill = (
       </div>
 
       {network !== 'not-included' && (
-        <span className="text-xs text-zinc-400 flex items-center gap-1">
+        <span className="text-xs text-stone-400 flex items-center gap-1">
           <span>on {asset.network.chain.label}</span>
           {network === 'included-with-tooltip' && (
             <svg
