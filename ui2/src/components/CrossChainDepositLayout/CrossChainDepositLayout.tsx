@@ -1028,7 +1028,7 @@ export const CrossChainDepositLayout = forwardRef(
                   },
                 }}
                 transition={{ delay: baseDelay }}
-                className="font-medium text-sm text-zinc-500 flex items-center rounded hover:bg-zinc-800/[0.1] active:bg-zinc-800/[0.15] px-3 cursor-pointer h-8"
+                className="font-medium text-sm text-zinc-500 flex items-center rounded hover:bg-zinc-800/[0.1] active:bg-zinc-800/[0.15] px-3 cursor-pointer h-8 user-select-none"
                 onClick={handleBackClick}
               >
                 <ChevronLeftIcon className="w-5 h-5" />
@@ -1184,7 +1184,7 @@ export const CrossChainDepositLayout = forwardRef(
             <motion.button
               layout
               layoutId="foo"
-              className="bg-zinc-600 h-24 w-24 text-zinc-300 font-medium"
+              className="bg-zinc-600 h-24 w-24 text-zinc-300 font-medium shadow-md"
               whileHover={
                 loading
                   ? undefined
