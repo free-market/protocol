@@ -31,11 +31,11 @@ const Divider = (props: { delay: number }): JSX.Element => {
       className="w-full px-5 flex items-center justify-center h-4 overflow-visible"
       transition={{ delay: props.delay }}
     >
-      <div className="border-t border-zinc-600 w-36" />
-      <div className="mx-auto w-10 flex justify-center -mt-3 text-zinc-600 transform translate-y-1">
+      <div className="border-t border-stone-600 w-36" />
+      <div className="mx-auto w-10 flex justify-center -mt-3 text-stone-600 transform translate-y-1">
         or
       </div>
-      <div className="border-t border-zinc-600 w-36" />
+      <div className="border-t border-stone-600 w-36" />
     </motion.div>
   )
 }
@@ -59,7 +59,7 @@ export const StepBuilder = (): JSX.Element => {
           transition={{ stiffness: 100, duration: 0.05 }}
           className="flex items-center h-full justify-center"
         >
-          <p className="inline text-zinc-500 text-sm">
+          <p className="inline text-stone-500 text-sm">
             Select an action group to get started.
           </p>
           {core.previewStep != null && !core.previewStep.recentlyClosed && (
@@ -137,7 +137,7 @@ export const StepBuilder = (): JSX.Element => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="flex items-center text-sm text-zinc-500/75 pt-2 hover:text-zinc-500 cursor-pointer focus:outline-2"
+          className="flex items-center text-sm text-stone-500/75 pt-2 hover:text-stone-500 cursor-pointer focus:outline-2"
           onClick={deselect}
         >
           <ChevronLeftIcon className="w-5 h-5 mx-2" />
