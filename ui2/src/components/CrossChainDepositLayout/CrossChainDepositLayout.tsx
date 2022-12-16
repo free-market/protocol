@@ -1037,7 +1037,7 @@ export const CrossChainDepositLayout = forwardRef(
             </AnimatePresence>
           </motion.div>
 
-          <div className="h-screen">
+          <div className="min-h-[512px] pb-8">
             <div className="h-full flex items-start justify-center">
               <div className="space-y-4 mt-16">
                 <AnimatePresence>
@@ -1122,7 +1122,7 @@ export const CrossChainDepositLayout = forwardRef(
 
           <AnimatePresence />
         </motion.div>
-        <div className="h-screen flex items-center justify-center">
+        <div className="min-h-[512px] flex items-center justify-center">
           <motion.button
             layout
             onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
@@ -1184,7 +1184,10 @@ export const CrossChainDepositLayout = forwardRef(
             <motion.button
               layout
               layoutId="foo"
-              className="bg-zinc-600 h-24 w-24 text-zinc-300 font-medium shadow-md"
+              className={cx(
+                'bg-zinc-600 h-24 w-24 text-zinc-300 font-medium shadow-md',
+                loading ? 'cursor-progress' : 'cursor-pointer',
+              )}
               whileHover={
                 loading
                   ? undefined
