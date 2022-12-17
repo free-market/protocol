@@ -61,7 +61,9 @@ export const Workflow = (): JSX.Element => {
           )}
         >
           <div className="inline-flex items-center gap-2">
-            <div className="text-stone-400">#{index + 2}</div>
+            <div className="text-stone-400">
+              #{index + 1 + Number(core.triggerStep === 'visible')}
+            </div>
             <img
               src={catalog[step.actionGroup.name].icon.url}
               className="w-5 h-5"
@@ -92,7 +94,7 @@ export const Workflow = (): JSX.Element => {
   return (
     <>
       <div className="rounded-xl overflow-hidden">
-        {triggerStep}
+        {core.triggerStep === 'visible' && triggerStep}
         {steps}
       </div>
     </>

@@ -6,15 +6,23 @@ export const AssetPill = (
     asset: CatalogAsset
     shadow?: boolean
     network?: 'not-included' | 'included' | 'included-with-tooltip'
+    groupHover?: boolean
   } & React.HTMLProps<HTMLDivElement>,
 ): JSX.Element => {
-  const { asset, shadow = false, network = 'included', ...remaining } = props
+  const {
+    asset,
+    shadow = false,
+    network = 'included',
+    groupHover = false,
+    ...remaining
+  } = props
   return (
     <div
       className={cx(
         'inline-flex flex-col items-start rounded-xl bg-stone-600 text-stone-300 py-1 px-2',
         {
           'shadow-md': shadow,
+          'group-hover:bg-stone-500 force-group-hover:bg-stone-500': groupHover,
         },
       )}
       {...remaining}

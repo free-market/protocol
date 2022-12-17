@@ -9,6 +9,7 @@ export default {
   decorators: [
     (Story, context) => (
       <CoreProvider
+        initialCatalog="open"
         initialWorkflowSteps={
           context.globals.preset === '1inch'
             ? [

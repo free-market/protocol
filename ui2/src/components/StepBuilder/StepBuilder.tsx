@@ -5,6 +5,7 @@ import StepChoiceCard from '@component/StepChoiceCard'
 import StepChoiceEditor from '@component/StepChoiceEditor'
 import StepEditorPreview from '@component/StepEditorPreview'
 import { catalog } from 'config'
+import { CoreContext, CoreState } from '@component/CoreProvider/CoreProvider'
 
 const variants = {
   visible: {
@@ -40,7 +41,12 @@ const Divider = (props: { delay: number }): JSX.Element => {
   )
 }
 
-export const StepBuilder = (): JSX.Element => {
+export const StepBuilder = (props: {
+  empty?: React.ReactNode
+  overrideSelectedActionGroup?: CoreState['selectedActionGroup']
+}): JSX.Element => {
+  const { empty = null, overrideSelectedActionGroup = null } = props
+
   const core = useCore()
 
   // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
@@ -48,125 +54,143 @@ export const StepBuilder = (): JSX.Element => {
     core.escape()
   }
 
-  switch (core.selectedActionGroup) {
-    case null:
-      return (
-        <motion.div
-          key="null"
-          variants={variants}
-          animate="visible"
-          exit="hidden"
-          transition={{ stiffness: 100, duration: 0.05 }}
-          className="flex items-center h-full justify-center"
-        >
-          <p className="inline text-stone-500 text-sm">
-            Select an action group to get started.
-          </p>
-          {core.previewStep != null && !core.previewStep.recentlyClosed && (
-            <StepEditorPreview />
-          )}
-        </motion.div>
-      )
+  let { selectedActionGroup } = core
 
-    default: {
-      const { actions } = catalog[core.selectedActionGroup.name]
-      const choiceCardsAndDividers = actions.map((action, index) => {
-        const secondary: boolean =
-          !!(
-            core.selectedStepChoice &&
-            !core.selectedStepChoice.recentlyClosed &&
-            !core.selectedStepChoice.recentlySelected &&
-            core.selectedStepChoice.index === index
-          ) || !!core.workflowSteps.find((step) => step.recentlyAdded)
-        const choice = core.selectedStepChoice
-        let id = `${core.selectedActionGroup?.name}:${index}:${core.salt}`
-        const layout = choice != null ? !choice.recentlyClosed : true
+  if (overrideSelectedActionGroup != null) {
+    selectedActionGroup = overrideSelectedActionGroup
+  }
 
-        if (secondary) id = `${id}:secondary`
-
-        const cardWrapper = (
+  const render = () => {
+    switch (selectedActionGroup) {
+      case null:
+        return (
           <motion.div
-            key={layout ? id : `${id}:instant`}
-            layout={layout}
-            layoutId={layout ? id : undefined}
-            initial={{
-              opacity: Number(
-                core.selectedStepChoice == null ||
-                  core.submitting ||
-                  core.selectedStepChoice.recentlyClosed,
-              ),
-            }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
+            key="null"
+            variants={variants}
+            animate="visible"
+            exit="hidden"
+            transition={{ stiffness: 100, duration: 0.05 }}
+            className="flex items-center h-full justify-center"
           >
-            <StepChoiceCard index={index} action={action} />
+            <p className="inline text-stone-500 text-sm">
+              {empty || <>Select an action group to get started.</>}
+            </p>
+            {core.previewStep != null && !core.previewStep.recentlyClosed && (
+              <StepEditorPreview />
+            )}
           </motion.div>
+        )
+
+      default: {
+        const { actions } = catalog[selectedActionGroup.name]
+        const choiceCardsAndDividers = actions.map((action, index) => {
+          const secondary: boolean =
+            !!(
+              core.selectedStepChoice &&
+              !core.selectedStepChoice.recentlyClosed &&
+              !core.selectedStepChoice.recentlySelected &&
+              core.selectedStepChoice.index === index
+            ) || !!core.workflowSteps.find((step) => step.recentlyAdded)
+          const choice = core.selectedStepChoice
+          let id = `${selectedActionGroup?.name}:${index}:${core.salt}`
+          const layout = choice != null ? !choice.recentlyClosed : true
+
+          if (secondary) id = `${id}:secondary`
+
+          const cardWrapper = (
+            <motion.div
+              key={layout ? id : `${id}:instant`}
+              layout={layout}
+              layoutId={layout ? id : undefined}
+              initial={{
+                opacity: Number(
+                  core.selectedStepChoice == null ||
+                    core.submitting ||
+                    core.selectedStepChoice.recentlyClosed,
+                ),
+              }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <StepChoiceCard index={index} action={action} />
+            </motion.div>
+          )
+
+          return (
+            <>
+              {index !== 0 && (
+                <Divider
+                  key={`div${index}:${selectedActionGroup}`}
+                  delay={0.15 + index * 0.1}
+                />
+              )}
+              <motion.div
+                key={`card${index}:${selectedActionGroup}:${core.salt}`}
+                variants={variants}
+                initial={
+                  selectedActionGroup?.recentlySelected ? 'hidden' : 'visible'
+                }
+                animate="visible"
+                exit="hidden"
+                className="flex items-center flex-col content-end space-y-5"
+                transition={{ delay: 0.2 + index * 0.1 }}
+              >
+                {cardWrapper}
+              </motion.div>
+            </>
+          )
+        })
+
+        const breadCrumbs = (
+          <motion.button
+            key={`breadcrumbs:${selectedActionGroup}`}
+            variants={variantsNoTransform}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="flex items-center text-sm text-stone-500/75 pt-2 hover:text-stone-500 cursor-pointer focus:outline-2"
+            onClick={deselect}
+          >
+            <ChevronLeftIcon className="w-5 h-5 mx-2" />
+            <div>{catalog[selectedActionGroup.name].title}</div>
+          </motion.button>
+        )
+
+        const stepChoiceEditor = (
+          <StepChoiceEditor
+            key={`editor:${selectedActionGroup}`}
+            invisible={
+              core.previewStep != null && !core.previewStep.recentlyClosed
+            }
+            fadeIn={core.previewStep == null ? 'slow' : 'instant'}
+          />
         )
 
         return (
           <>
-            {index !== 0 && (
-              <Divider
-                key={`div${index}:${core.selectedActionGroup}`}
-                delay={0.15 + index * 0.1}
-              />
+            {breadCrumbs}
+            {choiceCardsAndDividers}
+            {core.previewStep != null && !core.previewStep.recentlyClosed && (
+              <StepEditorPreview />
             )}
-            <motion.div
-              key={`card${index}:${core.selectedActionGroup}:${core.salt}`}
-              variants={variants}
-              initial={
-                core.selectedActionGroup?.recentlySelected
-                  ? 'hidden'
-                  : 'visible'
-              }
-              animate="visible"
-              exit="hidden"
-              className="flex items-center flex-col content-end space-y-5"
-              transition={{ delay: 0.2 + index * 0.1 }}
-            >
-              {cardWrapper}
-            </motion.div>
+            <AnimatePresence>
+              {core.selectedStepChoice && stepChoiceEditor}
+            </AnimatePresence>
           </>
         )
-      })
-
-      const breadCrumbs = (
-        <motion.button
-          key={`breadcrumbs:${core.selectedActionGroup}`}
-          variants={variantsNoTransform}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          className="flex items-center text-sm text-stone-500/75 pt-2 hover:text-stone-500 cursor-pointer focus:outline-2"
-          onClick={deselect}
-        >
-          <ChevronLeftIcon className="w-5 h-5 mx-2" />
-          <div>{catalog[core.selectedActionGroup.name].title}</div>
-        </motion.button>
-      )
-
-      const stepChoiceEditor = (
-        <StepChoiceEditor
-          key={`editor:${core.selectedActionGroup}`}
-          invisible={
-            core.previewStep != null && !core.previewStep.recentlyClosed
-          }
-          fadeIn={core.previewStep == null ? 'slow' : 'instant'}
-        />
-      )
-
-      return (
-        <>
-          {breadCrumbs}
-          {choiceCardsAndDividers}
-          {core.previewStep != null && !core.previewStep.recentlyClosed && (
-            <StepEditorPreview />
-          )}
-          <AnimatePresence>
-            {core.selectedStepChoice && stepChoiceEditor}
-          </AnimatePresence>
-        </>
-      )
+      }
     }
   }
+
+  const elements = render()
+
+  if (overrideSelectedActionGroup != null) {
+    return (
+      <CoreContext.Provider value={{ ...core, selectedActionGroup }}>
+        {elements}
+      </CoreContext.Provider>
+    )
+  }
+
+  return elements
 }

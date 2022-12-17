@@ -29,6 +29,10 @@ module.exports = {
     require('@tailwindcss/forms'),
     plugin(function ({ addVariant }) {
       addVariant('poppy', '.fmp-poppy &')
+      addVariant('force-hover', '&[data-force-hover="true"]')
+      addVariant('group-force-hover', '.group[data-force-hover="true"] &')
+      addVariant('force-active', '&[data-force-active="true"]')
+      addVariant('group-force-active', '.group[data-force-hover="true"] &')
     }),
   ],
 }
