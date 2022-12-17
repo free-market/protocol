@@ -42,6 +42,8 @@ const initialState = {
     actionGroup: { name: CatalogGroup['name'] }
     stepChoice: { index: StepChoiceIndex }
   }[],
+  catalog: 'open' as 'open' | 'collapsed',
+  triggerStep: 'visible' as 'visible' | 'hidden',
 }
 
 export type CoreState = typeof initialState
@@ -75,8 +77,15 @@ export const CoreProvider = (props: {
   children: React.ReactNode
   initialNoSelectedStepChoice?: boolean
   initialWorkflowSteps?: CoreState['workflowSteps']
+  initialCatalog?: 'open' | 'collapsed'
+  initialTriggerStep?: 'visible' | 'hidden'
 }): JSX.Element => {
-  const { initialNoSelectedStepChoice = true, initialWorkflowSteps } = props
+  const {
+    initialCatalog = 'collapsed',
+    initialNoSelectedStepChoice = true,
+    initialWorkflowSteps,
+    initialTriggerStep = 'visible',
+  } = props
 
   const [state, updateState] = useImmer({
     ...initialState,
@@ -85,6 +94,8 @@ export const CoreProvider = (props: {
       ? null
       : { name: 'swap', recentlySelected: false, recentlyClosed: false },
     workflowSteps: initialWorkflowSteps ?? initialState.workflowSteps,
+    catalog: initialCatalog,
+    triggerStep: initialTriggerStep,
   } as CoreState)
 
   const dispatch = (action: CoreAction): void => {
