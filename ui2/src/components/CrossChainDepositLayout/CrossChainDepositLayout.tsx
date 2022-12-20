@@ -1010,7 +1010,7 @@ export const CrossChainDepositLayout = forwardRef(
               title="Free Market Protocol"
             >
               <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
-              <Logo className="stroke-stone-600 w-8 h-8 bg-stone-100" />
+              <Logo className="stroke-stone-600 w-8 h-8" />
             </motion.a>
 
             <AnimatePresence>
@@ -1117,7 +1117,10 @@ export const CrossChainDepositLayout = forwardRef(
             title="Free Market Protocol"
           >
             <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
-            <Logo className="stroke-stone-600 w-8 h-8 bg-stone-100" />
+            <Logo
+              className="stroke-stone-600 w-8 h-8"
+              preserveAspectRatio="xMidYMid meet"
+            />
           </motion.a>
 
           <AnimatePresence />

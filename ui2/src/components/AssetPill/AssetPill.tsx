@@ -22,7 +22,7 @@ export const AssetPill = (
         'inline-flex flex-col items-start rounded-xl bg-stone-600 text-stone-300 py-1 px-2',
         {
           'shadow-md': shadow,
-          'group-hover:bg-stone-500 force-group-hover:bg-stone-500': groupHover,
+          'group-hover:bg-stone-500 group-force-hover:bg-stone-500': groupHover,
         },
       )}
       {...remaining}

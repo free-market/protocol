@@ -33,13 +33,14 @@ export const StepChoiceCard = (props: {
   // formlerly, we use bg-[#45454D] for the hover state
   return (
     <motion.button
+      data-force-hover={forceHover}
+      data-force-active={forceActive}
       className={cx(
-        'inline-flex bg-stone-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-stone-600/75 active:opacity-75 select-none space-y-2 focus:outline-2',
-        { 'force-hover': forceHover, 'force-active': forceActive },
+        'inline-flex bg-stone-700 rounded-xl shadow-md items-center justify-between group flex-col cursor-pointer hover:bg-stone-600/75 force-hover:bg-stone-600/75 active:opacity-75 force-active:opacity-75 select-none space-y-2 focus:outline-2 group',
       )}
       onClick={click}
     >
-      <div className="inline-flex bg-stone-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-stone-600/75 active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
+      <div className="inline-flex bg-stone-700 py-2 px-2 rounded-xl items-center justify-between flex-col cursor-pointer hover:bg-stone-600/75 group-force-hover:bg-stone-600/75 active:opacity-75 force-active:opacity-75 select-none space-y-2 focus:outline-2 transition-opacity">
         <div className="inline-flex items-center w-full justify-between">
           <div className="inline-flex items-center">
             <img
@@ -51,9 +52,9 @@ export const StepChoiceCard = (props: {
             </div>
           </div>
 
-          <PlusIcon className="w-6 h-6 text-stone-500 group-hover:text-stone-400/50" />
+          <PlusIcon className="w-6 h-6 text-stone-500 group-hover:text-stone-400/50 group-force-hover:text-stone-400/50" />
         </div>
-        <div className="flex items-center text-stone-600 group-hover:text-stone-500/50">
+        <div className="flex items-center text-stone-600 group-hover:text-stone-500/50 group-force-hover:text-stone-500/50">
           {inputPill}
           &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
         </div>

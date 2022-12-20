@@ -6,23 +6,28 @@ import { XCircleIcon } from '@heroicons/react/24/solid'
 import { Form, Field } from 'react-final-form'
 import { catalog } from 'config'
 
-export const StepChoiceEditorCard = (): JSX.Element => {
-  const core = useCore()
+export const StepChoiceEditorCard = (props: {
+  forceHover?: boolean
+  forceActive?: boolean
+}): JSX.Element => {
+  const { forceHover = false, forceActive = false } = props
+  const staleCore = useCore()
   const onSubmit = () => {
-    return core.submitStepChoice()
+    return staleCore.submitStepChoice()
   }
 
   return (
     <Form
       onSubmit={onSubmit}
-      initialValues={{ inputAmount: null, outputAmount: null }}
-      render={({ handleSubmit, submitting, form }) => {
+      initialValues={{ inputAmount: '1.00', outputAmount: '1.00' }}
+      render={({ handleSubmit, submitting: formSubmitting, form }) => {
+        const core = useCore()
+        const submitting = core.submitting || formSubmitting
         const outputAmount = form.getFieldState('outputAmount')?.value
         const inputAmount = form.getFieldState('inputAmount')?.value
         const empty =
           (inputAmount == null || Number(inputAmount) === 0) &&
           (outputAmount == null || Number(outputAmount) === 0)
-        const core = useCore()
 
         const deselect = () => {
           core.escape()
@@ -30,9 +35,11 @@ export const StepChoiceEditorCard = (): JSX.Element => {
 
         const button = (
           <motion.button
+            data-force-hover={forceHover}
+            data-force-active={forceActive}
             disabled={submitting || empty}
             className={cx(
-              'w-full text-stone-200 font-bold bg-sky-600 rounded-xl px-3 py-2 text-xl active:bg-sky-700 flex justify-center items-center overflow-hidden',
+              'w-full text-stone-200 font-bold bg-sky-600 rounded-xl px-3 py-2 text-xl hover:bg-sky-500/75 active:bg-sky-700 force-hover:bg-sky-500/75 force-active:bg-sky-700 flex justify-center items-center overflow-hidden',
               {
                 'cursor-not-allowed': submitting || empty,
                 'opacity-50': empty,
