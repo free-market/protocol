@@ -595,7 +595,7 @@ export const Landing = (): JSX.Element => {
                         <span className="font-semibold">
                           batteries-included
                         </span>
-                        . Explore new chains with 0 prep required.
+                        . Venture new chains with 0 prep required.
                       </li>
                       <li>
                         Only 1 transaction needed. Start your workflows from
@@ -625,9 +625,10 @@ export const Landing = (): JSX.Element => {
                 </p>
               </motion.div>
             </div>
-            <div className="absolute bg-stone-200 bg-clip-text max-w-7xl mx-auto -rotate-45 -translate-y-[40rem] translate-x-16">
-              <div className="w-[100rem]">
-                <div className="bg-repeat bg-[length:50px_50px] w-full bg-[url('/fmp-logo-repeat-2.svg')] flex flex-col items-start justify-center bg-clip-text">
+            <div className="absolute bg-stone-200 bg-clip-text max-w-7xl mx-auto -rotate-45 -translate-y-[40rem] translate-x-[4rem]">
+              <div className="w-[100rem] relative">
+                <div className="absolute -inset-[40rem] border-b-[20rem] border-l-[20rem] border-stone-800/25 z-50"></div>
+                <div className="bg-repeat bg-[length:50px_50px] w-full bg-[url('/fmp-logo-repeat-2.svg')] flex flex-col items-start justify-center bg-clip-text opacity-90">
                   <div className="text-[20rem] leading-none font-extrabold text-transparent">
                     FREE
                   </div>
@@ -746,7 +747,7 @@ export const Landing = (): JSX.Element => {
                     stiffness: 250,
                     damping: 100,
                   }}
-                  className="relative z-10 border border-stone-400/90 bg-stone-200/90 inline-flex items-center p-8"
+                  className="relative z-10 border border-stone-400/90 bg-stone-100/90 inline-flex items-center p-8"
                 >
                   <ul className="inline-block m-0 space-y-8 text-stone-600 font-medium text-lg">
                     <motion.li
@@ -783,11 +784,19 @@ export const Landing = (): JSX.Element => {
                     </motion.li>
                     <motion.li
                       initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0, transition: { delay: 1.1 } }}
+                      animate={{ opacity: 1, x: 0, transition: { delay: 1.3 } }}
                       className="flex items-center gap-3"
                     >
                       <CheckCircleIcon className="w-5 h-5 text-lime-500/90" />{' '}
                       developer SDK
+                    </motion.li>
+                    <motion.li
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0, transition: { delay: 1.5 } }}
+                      className="flex items-center gap-3"
+                    >
+                      <CheckCircleIcon className="w-5 h-5 text-lime-500/90" />{' '}
+                      ready-to-use UI
                     </motion.li>
                   </ul>
                 </motion.div>
@@ -906,7 +915,7 @@ export const Landing = (): JSX.Element => {
                 <CrossChainDepositLayout></CrossChainDepositLayout>
               </motion.div>
 
-              <motion.div className="grow flex">
+              <motion.div className="grow flex flex-col">
                 <motion.div className="flex-col justify-between text-[3.5rem] leading-none text-stone-600 max-w-[40%] relative z-10 border border-stone-400/90 bg-stone-100/90 inline-flex pl-4 pt-4 pr-8 pb-8 mt-20 mx-20 space-y-8 justify-end">
                   <p className="relative overflow-x-visible">
                     <div className="relative">
@@ -952,10 +961,78 @@ export const Landing = (): JSX.Element => {
                     </div>
                   </p>
                 </motion.div>
+
+                <div className="w-full max-w-2xl inline-block border border-stone-400/90 bg-stone-100/90 font-mono text-stone-600 ml-20 mt-20">
+                  <div className="flex flex-col items-center p-5 gap-5">
+                    <span className="flex gap-10">
+                      <p>
+                        Free Market enables potential customers from a variety
+                        of chains. Deploy your app on{' '}
+                        <span className="font-semibold">one chain</span>, and
+                        use Free Market to rapidly support a cross-chain
+                        experience for your customers.
+                      </p>
+                    </span>
+
+                    <div className="flex items-center">
+                      <div className="font-serif italic font-bold text-lg px-5">
+                        Sign up for our cross-chain deposit beta.
+                      </div>
+
+                      <form className="flex flex-col gap-2">
+                        <input
+                          type="email"
+                          placeholder="your email address"
+                          className="border border-stone-400/90 text-stone-700"
+                        />
+
+                        <button
+                          type="submit"
+                          className="w-sm p-2 text-center border border-stone-400/90 bg-stone-300/90 text-stone-600/90 font-bold underline hover:opacity-90 active:opacity-75"
+                        >
+                          Sign Up
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
-          <div className="h-[32rem] w-full"></div>
+          <div className="h-[48rem] w-full">
+            <div className="h-full flex items-center justify-center">
+              <div className="inline-block border border-stone-400/90 bg-stone-100/90 font-mono text-stone-600 max-w-xl">
+                <div className="flex flex-col items-center p-5 gap-5">
+                  <span className="flex flex-col gap-5">
+                    <div className="font-serif italic font-bold text-[2rem] leading-none">
+                      Subscribe to our newsletter!
+                    </div>
+                    <p className="text-stone-500/90">
+                      Subscribe to stay updated on the latest products from Free
+                      Market.
+                    </p>
+                  </span>
+
+                  <div className="w-full flex items-center justify-end">
+                    <form className="inline-flex flex-col gap-2">
+                      <input
+                        type="email"
+                        placeholder="your email address"
+                        className="border border-stone-400/90 text-stone-700"
+                      />
+
+                      <button
+                        type="submit"
+                        className="w-sm p-2 text-center border border-stone-400/90 bg-stone-300/90 text-stone-600/90 font-bold underline hover:opacity-90 active:opacity-75"
+                      >
+                        Subscribe
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
