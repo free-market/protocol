@@ -6,6 +6,8 @@ import StepChoiceEditor from '@component/StepChoiceEditor'
 import StepEditorPreview from '@component/StepEditorPreview'
 import { catalog } from 'config'
 import { CoreContext, CoreState } from '@component/CoreProvider/CoreProvider'
+import { useCallback, useState } from 'react'
+import StepChoiceEditorCard from '@component/StepChoiceEditorCard'
 
 const variants = {
   visible: {
@@ -44,21 +46,45 @@ const Divider = (props: { delay: number }): JSX.Element => {
 export const StepBuilder = (props: {
   empty?: React.ReactNode
   overrideSelectedActionGroup?: CoreState['selectedActionGroup']
+  forceHoverIndex?: number
+  forceActiveIndex?: number
+  forceHoverSubmit?: boolean
+  forceActiveSubmit?: boolean
 }): JSX.Element => {
-  const { empty = null, overrideSelectedActionGroup = null } = props
+  const {
+    empty = null,
+    overrideSelectedActionGroup = null,
+    forceHoverIndex = -1,
+    forceActiveIndex = -1,
+    forceHoverSubmit = false,
+    forceActiveSubmit = false,
+  } = props
+  const [fakeSubmitting, setFakeSubmitting] = useState(false)
 
   const core = useCore()
 
-  // TODO: use memoized callbacks: https://beta.reactjs.org/apis/react/useCallback
-  const deselect = () => {
+  const deselect = useCallback(() => {
     core.escape()
-  }
+  }, [])
 
   let { selectedActionGroup } = core
 
   if (overrideSelectedActionGroup != null) {
     selectedActionGroup = overrideSelectedActionGroup
   }
+
+  const submitStepChoice = useCallback(async () => {
+    if (overrideSelectedActionGroup) {
+      setFakeSubmitting(true)
+      setTimeout(() => {
+        core.escape()
+        setTimeout(() => {
+          core.escape()
+        }, 100)
+        setFakeSubmitting(false)
+      }, 2000)
+    }
+  }, [overrideSelectedActionGroup])
 
   const render = () => {
     switch (selectedActionGroup) {
@@ -105,14 +131,21 @@ export const StepBuilder = (props: {
               initial={{
                 opacity: Number(
                   core.selectedStepChoice == null ||
-                    core.submitting ||
+                    (overrideSelectedActionGroup == null
+                      ? core.submitting
+                      : fakeSubmitting) ||
                     core.selectedStepChoice.recentlyClosed,
                 ),
               }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <StepChoiceCard index={index} action={action} />
+              <StepChoiceCard
+                index={index}
+                action={action}
+                forceHover={index === forceHoverIndex}
+                forceActive={index === forceActiveIndex}
+              />
             </motion.div>
           )
 
@@ -125,7 +158,7 @@ export const StepBuilder = (props: {
                 />
               )}
               <motion.div
-                key={`card${index}:${selectedActionGroup}:${core.salt}`}
+                key={`card${index}:${selectedActionGroup?.name}:${core.salt}`}
                 variants={variants}
                 initial={
                   selectedActionGroup?.recentlySelected ? 'hidden' : 'visible'
@@ -163,6 +196,12 @@ export const StepBuilder = (props: {
               core.previewStep != null && !core.previewStep.recentlyClosed
             }
             fadeIn={core.previewStep == null ? 'slow' : 'instant'}
+            stepChoiceEditorCard={
+              <StepChoiceEditorCard
+                forceHover={forceHoverSubmit}
+                forceActive={forceActiveSubmit}
+              />
+            }
           />
         )
 
@@ -186,7 +225,14 @@ export const StepBuilder = (props: {
 
   if (overrideSelectedActionGroup != null) {
     return (
-      <CoreContext.Provider value={{ ...core, selectedActionGroup }}>
+      <CoreContext.Provider
+        value={{
+          ...core,
+          selectedActionGroup,
+          submitStepChoice,
+          submitting: fakeSubmitting,
+        }}
+      >
         {elements}
       </CoreContext.Provider>
     )

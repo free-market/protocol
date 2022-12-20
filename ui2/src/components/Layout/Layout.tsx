@@ -42,7 +42,7 @@ export const Layout = (props: {
         >
           <div
             className={cx(
-              "p-3 border-b sm:border-b-0 border-stone-800 select-none bg-repeat bg-[length:70px_70px] w-full sm:h-screen bg-[url('/fmp-logo-repeat.svg')] ",
+              "p-3 border-b sm:border-b-0 border-stone-800 select-none bg-repeat bg-[length:70px_70px] w-full bg-[url('/fmp-logo-repeat.svg')] ",
               { 'sm:h-screen': height === 'full' },
             )}
             style={{
