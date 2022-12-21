@@ -913,6 +913,7 @@ export const Landing = (): JSX.Element => {
                   }}
                   className="h-[45rem] bg-stone-100 rounded-xl shadow-md flex items-center justify-center relative z-10 -translate-y-32 w-full basis-1/2 pt-5 m-10"
                 >
+                  {/* TODO(FMP-345): animate cross chain deposit demo */}
                   <CrossChainDepositLayout></CrossChainDepositLayout>
                 </motion.div>
 
