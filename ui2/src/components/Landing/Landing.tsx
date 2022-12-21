@@ -135,6 +135,7 @@ export const Landing = (): JSX.Element => {
           <div className="bg-stone-700">
             <div className="h-12"></div>
             <div className="md:flex items-center px-8 max-w-7xl mx-auto">
+              {/* TODO(FMP-343): extract this */}
               <motion.div className="px-8 pb-8 pt-8">
                 <motion.svg
                   className="w-[calc(150px*0.4)] h-[calc(240px*0.4)] stroke-stone-300"
@@ -249,6 +250,7 @@ export const Landing = (): JSX.Element => {
                 </motion.svg>
               </motion.div>
 
+              {/* TODO(FMP-343): extract this */}
               <div className="inline-block flex flex-col items-start text-stone-700 text-4xl space-y-1 select-none font-light py-8">
                 <motion.div
                   variants={titleTextVariants}
@@ -367,40 +369,7 @@ export const Landing = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="flex justify-evenly overflow-hidden h-[17rem] max-w-7xl mx-auto">
-              {/*
-          <div className="h-96 max-w-6xl mx-auto rounded-xl shadow-md overflow-hidden">
-            <CoreProvider initialCatalog="open" initialTriggerStep='hidden'>
-              {' '}
-              <Layout
-                background='transparent'
-                height="auto"
-                gutter="hidden"
-                stepBuilder={
-                  <StepBuilder
-                    empty={
-                      <StepCatalog
-                        content={
-                          <>
-                            <div className="pt-2 pb-1 space-y-2">
-
-          <StepHeading actionGroupName="curve" />
-          <StepHeading actionGroupName="1inch" />
-          <StepHeading actionGroupName="zksync" />
-                            <StepHeading actionGroupName="aave" />
-                            </div>
-                          </>
-                        }
-                      />
-                    }
-                  />
-                }
-                stepCatalog={null}
-              />{' '}
-            </CoreProvider>
-          </div>
-            */}
-            </div>
+            <div className="flex justify-evenly overflow-hidden h-[17rem] max-w-7xl mx-auto" />
 
             <div className="relative h-0 z-50">
               <div className="flex justify-evenly max-w-7xl mx-auto transform -translate-y-[17rem]">
@@ -473,6 +442,7 @@ export const Landing = (): JSX.Element => {
                                 animate={secondStepMouseControls}
                                 className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center z-50"
                               >
+                                {/* TODO(FMP-344): finish animating the cursor */}
                                 {secondStepClicked &&
                                 !secondStepPartTwoHovered ? (
                                   <img src="/pointer.svg" />
