@@ -2,28 +2,44 @@ import { ethers, BigNumberish, BigNumber, Signer } from 'ethers'
 import type { Provider } from '@ethersproject/providers'
 import BN from 'bn.js'
 import dotenv from 'dotenv'
-import { FrontDoor__factory, IERC20__factory, IWorkflowRunner__factory, Weth__factory } from '../types/ethers-contracts'
+import { FrontDoor__factory } from '../types/ethers-contracts'
 import fs from 'fs'
 import { EvmNetworkName, getEthConfig } from './contract-addresses'
+import Web3 from 'web3'
 
 dotenv.config()
 
-export function getDeployedContractAddress(contractName: string): string {
+export async function getDeployedContractAddress(providerUrl: string, contractName: string): Promise<string> {
+  // can't find a way to get networkId from ethers (it supports chainId which is different)
+  const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl))
+  const networkId = await web3.eth.net.getId()
   const content = fs.readFileSync(`./build/contracts/${contractName}.json`).toString()
   const json = JSON.parse(content)
-  return json.networks['1'].address
+  return json.networks[networkId].address
 }
 
-export function getFrontDoor(signerOrProvider: Signer | Provider, address?: string) {
-  const addr = address || getDeployedContractAddress('FrontDoor')
-  return FrontDoor__factory.connect(addr, signerOrProvider)
+function getProvider(signerOrProvider: Signer | Provider): Provider {
+  if ('provider' in signerOrProvider) {
+    return signerOrProvider.provider!
+  }
+  if ('getNetwork' in signerOrProvider) {
+    return signerOrProvider
+  }
+  throw new Error('could not get signer or provider')
 }
+
+// export async function getFrontDoor(signerOrProvider: Signer | Provider, address?: string) {
+//   const provider = getProvider(signerOrProvider)
+//   const addr = address || (await getDeployedContractAddress(provider, 'FrontDoor'))
+//   return FrontDoor__factory.connect(addr, signerOrProvider)
+// }
 
 export function getTestWallet(testAccountIndex: number, provider: ethers.providers.Provider): ethers.Wallet {
   const mnemonic = process.env['FMP_GANACHE_MNEMONIC']
   if (!mnemonic) {
     throw new Error('FMP_GANACHE_MNEMONIC environment variable not')
   }
+  console.log('FMP_GANACHE_MNEMONIC', mnemonic)
   const hdNode = ethers.utils.HDNode.fromMnemonic(mnemonic)
   const account = new ethers.Wallet(hdNode.derivePath(`m/44'/60'/0'/0/${testAccountIndex}`).privateKey, provider)
   account.connect(provider)

@@ -60,12 +60,9 @@ export function wormholeTokenTransfer(args: WormholeTokenTransferBuilderArgs): W
   // we have symbols in the args here
   // if it ends in et, it's a ethereum native asset on solana
   // if it ends in so, it's a solana native asset on ethereum
-  const fromAsset = Asset.fromString(args.fromAsset)
+  const fromAsset = new Asset(args.fromChain, args.fromToken)
   let toSymbol: string
   if (fromAsset.chain === 'Ethereum') {
-    if (fromAsset.symbol.endsWith('et')) {
-      throw new Error(`asset ${args.fromAsset} does not exist on Ethereum`)
-    }
     if (fromAsset.symbol.endsWith('so')) {
       toSymbol = fromAsset.symbol.slice(0, fromAsset.symbol.length - 2)
     } else {

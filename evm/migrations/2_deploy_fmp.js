@@ -4,9 +4,9 @@ var WorkflowRunner = artifacts.require('WorkflowRunner')
 
 module.exports = async (deployer) => {
   await deployer.deploy(FrontDoor)
-  const frontDoor = await FrontDoor.deployed()
+  // const frontDoor = await FrontDoor.deployed()
 
-  await deployer.deploy(WorkflowRunner)
-  const workflowRunner = await WorkflowRunner.deployed()
-  await frontDoor.setUpstream(workflowRunner.address)
+  // await deployer.deploy(WorkflowRunner)
+  // const workflowRunner = await WorkflowRunner.deployed()
+  // await frontDoor.setUpstream(workflowRunner.address)
 }

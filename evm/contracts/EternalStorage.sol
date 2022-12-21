@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.13;
+import '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
 
-contract EternalStorage {
+import './Ownable.sol';
+
+struct ActionInfo {
+  uint16 actionId;
+  address actionAddres;
+}
+
+contract EternalStorage is Ownable {
   // owner will be front door
-  address owner = msg.sender;
+  // address payable owner = msg.sender;
   // address latestVersion;
 
   mapping(bytes32 => uint256) uIntStorage;
@@ -13,19 +21,10 @@ contract EternalStorage {
   mapping(bytes32 => bool) boolStorage;
   mapping(bytes32 => int256) intStorage;
 
-  // modifier onlyLatestVersion() {
-  //   require(msg.sender == latestVersion);
-  //   _;
-  // }
   modifier onlyOwner() {
     require(msg.sender == owner);
     _;
   }
-
-  // function upgradeVersion(address _newVersion) public {
-  //   require(msg.sender == owner);
-  //   latestVersion = _newVersion;
-  // }
 
   // *** Getter Methods ***
   function getUint(bytes32 _key) external view returns (uint256) {
@@ -100,5 +99,26 @@ contract EternalStorage {
 
   function deleteInt(bytes32 _key) external onlyOwner {
     delete intStorage[_key];
+  }
+
+  // this isn't part of the Eternal Storage pattern, but not sure where else it should go
+  using EnumerableMap for EnumerableMap.UintToAddressMap;
+  EnumerableMap.UintToAddressMap private mapActionIdToAddress;
+
+  function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
+    mapActionIdToAddress.set(uint256(actionId), actionAddress);
+  }
+
+  function getActionAddress(uint16 actionId) external view onlyOwner returns (address) {
+    return mapActionIdToAddress.get(uint256(actionId));
+  }
+
+  function getActionAddressCount() public view returns (uint256) {
+    return mapActionIdToAddress.length();
+  }
+
+  function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
+    (uint256 actionId, address actionAddress) = mapActionIdToAddress.at(index);
+    return ActionInfo(uint16(actionId), actionAddress);
   }
 }

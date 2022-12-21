@@ -5,6 +5,8 @@
 \usepackage{geometry}
 \usepackage{float}
 \usepackage[simplified]{pgf-umlcd}
+\usepackage{hyperref}
+
 \geometry{letterpaper, margin=1in}
 
 \begin{document}
@@ -232,10 +234,53 @@ As such, only one approval is needed from the user to execute all the steps in t
 In the Solana portion of the workflow, Workflow Engine redeems the \emph{fmp-yToken} which is now also wrapped by Wormhole (\emph{wh-fmp-yToken}).  
 In the next step this is deposited into Solend in exchange for Solend's \emph{cToken}.  In the final step the \emph{cToken} is transferred to the user's Solana wallet.
 
-\section*{Workflow Definition}
-There are two ways to think about a workflow.  One way is the "target state" that describes The workflow engine operates on a set of input parameters that encode the steps of the workflow.  
-The details of how workflow steps are encoded varies depending on the blockchain runtime, but the general structure
-follows the following psudocode: 
+\section*{Smart Contract Deployment}
+
+The following diagram provides an example of how FMP smart contracts are deployed on-chain.  Given that our target for or initial MVP release is EVM compatible blockchains, this diagram is specific to EVM.
+
+\begin{center}
+  \begin{tikzpicture}[outer sep=2]
+    \begin{class}[text width =3.3 cm]{FrontDoor}{0 ,0}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{WorkflowEngine}{5,0}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{EternalStorage}{5,-1.5}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{1inch}{10,1.5}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{Curve}{10,0}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{Stargate}{10,-1.5}
+    \end{class}
+    \begin{class}[text width =3.3 cm]{WETH}{10,-3}
+    \end{class}
+    \aggregation{FrontDoor}{}{}{WorkflowEngine}
+    \aggregation{WorkflowEngine}{}{}{1inch}
+    \aggregation{WorkflowEngine}{}{}{Curve}
+    \aggregation{WorkflowEngine}{}{}{Stargate}
+    \aggregation{WorkflowEngine}{}{}{WETH}
+    \aggregation{WorkflowEngine}{}{}{EternalStorage}
+  \end{tikzpicture}
+\end{center}
+
+\noindent Each box in the diagram represents a separatly deployed contract.
+\\
+\\
+\noindent \textbf{FrontDoor}:  This contract is the entry point for external callers.  It provides a stable address and is not upgradable.  
+It contains the address of the current version of the  WorkflowEngine and simply delegatecalls all transactions to it.
+\\
+\\
+\noindent \textbf{WorkflowEngine}:  Contains the logic for parsing workflow definitions and carrying out the on-chain invocations.
+\\
+\\
+\noindent \textbf{EternalStorage}:  Provides all data persistance for WorkflowEngine via the Eternal Storage pattern described here: \url{https://fravoll.github.io/solidity-patterns/eternal_storage.html}
+\\
+\\
+\noindent \textbf{Step Implementations}:  (1inch, Curve, Stargate, etc) Workflow steps are deployed as separate contracts.  
+This provides a great deal of modularity among the integrations and enables them to be upgraded independently upgradable. 
+
+
+
 
 \end{document}
 

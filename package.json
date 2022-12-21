@@ -28,5 +28,10 @@
     "./ui2/**/*.(js|ts|jsx|tsx)": [
       "./ui2/node_modules/.bin/prettier --write -u"
     ]
-  }
+  },
+  "workspaces": [
+    "evm",
+    "sdk",
+    "wfde"
+  ] 
 }

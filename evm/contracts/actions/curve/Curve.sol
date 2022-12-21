@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.13;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../thirdParty/CurveCryptoSwap.sol';
-import '../thirdParty/CurveStableSwap.sol';
-
-import '../thirdParty/USDT.sol';
-import '../TokenAmounts.sol';
+import './CurveCryptoSwap.sol';
+import './CurveStableSwap.sol';
+import '../../thirdParty/USDT.sol';
 
 library Curve {
   address constant curveTriCryptoAddress = address(0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5);

@@ -19,7 +19,7 @@ const ADDRESSES = {
     wormholeCoreBridge: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
     wormholeTokenBridge: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
   },
-}
+} as const
 
 export type EvmNetworkName = 'mainnet' | 'goerli' | 'testnet'
 

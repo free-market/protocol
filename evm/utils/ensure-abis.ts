@@ -59,6 +59,9 @@ function getAbiPathName(name: string) {
 async function main() {
   mkdir(ABI_DIR)
   mkdir('build/thirdparty')
+
+  fs.copyFileSync(`node_modules/@openzeppelin/contracts/build/contracts/IERC20.json`, 'build/thirdparty/IERC20.json')
+
   let needSleep = false
   for (const contract of CONTRACTS) {
     const abiPathName = getAbiPathName(contract.name)
