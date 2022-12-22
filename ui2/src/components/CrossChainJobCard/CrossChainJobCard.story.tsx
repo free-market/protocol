@@ -17,7 +17,7 @@ export default {
   },
 } as ComponentMeta<typeof Component>
 
-export const CrossChainJobCard: ComponentStory<typeof Component> = () => (
-  <Component />
+export const CrossChainJobCard: ComponentStory<typeof Component> = (props) => (
+  <Component {...props} />
 )
 CrossChainJobCard.args = {}
