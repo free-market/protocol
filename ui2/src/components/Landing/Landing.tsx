@@ -14,6 +14,7 @@ import cx from 'classnames'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import Logo from '@component/Logo'
 import CrossChainDepositLayout from '@component/CrossChainDepositLayout'
+import CrossChainJobCard from '@component/CrossChainJobCard'
 
 export const Landing = (): JSX.Element => {
   const [firstStepButtonActive, setFirstStepButtonActive] = useState(false)
@@ -589,10 +590,15 @@ export const Landing = (): JSX.Element => {
                     stiffness: 250,
                     damping: 100,
                   }}
-                  className="h-96 w-[calc(33%)] bg-stone-800 rounded-xl shadow-md flex items-center justify-center relative z-10 self-end text-stone-200"
+                  className="h-96 w-96 bg-stone-800 rounded-xl shadow-md flex items-start justify-stretch relative z-10 self-end text-stone-200"
                 >
-                  <p className="text-center font-medium">
-                    [INSERT CROSS-CHAIN WORKFLOW MINIVIEW HERE]
+                  <p className="text-center font-medium w-full my-10">
+                    <CrossChainJobCard
+                      status="sending"
+                      transactionView="compact"
+                      spinnerLocation="status"
+                      pulseBehavior="pulse"
+                    />
                   </p>
                 </motion.div>
               </div>
@@ -616,8 +622,10 @@ export const Landing = (): JSX.Element => {
             <div className="h-[70rem]">
               <div className="h-[30rem]">
                 <div className="max-w-3xl mx-auto pt-20 relative z-20 space-y-4">
-                  <div className="inline-block border border-stone-400/90 bg-stone-200/90 font-mono text-stone-600">
-                    <div className="flex p-2 gap-2">
+                  <div className="inline-block border border-stone-400/90 bg-stone-200/90 font-mono text-stone-600"></div>
+
+                  <div className="w-full max-w-2xl inline-block border border-stone-400/90 bg-stone-200/90 font-mono text-stone-600">
+                    <div className="flex p-5 gap-5">
                       <button className="inline-block border border-stone-400/90 p-2 min-w-[10rem] text-center font-bold underline bg-stone-400/75 hover:bg-stone-400/90 active:bg-stone-500/75">
                         chains
                       </button>
@@ -628,9 +636,6 @@ export const Landing = (): JSX.Element => {
                         triggers
                       </button>
                     </div>
-                  </div>
-
-                  <div className="w-full max-w-2xl inline-block border border-stone-400/90 bg-stone-200/90 font-mono text-stone-600">
                     <div className="flex justify-center">
                       <span className="flex gap-10 p-5">
                         <table className="table-fixed">
