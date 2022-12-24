@@ -1,7 +1,6 @@
 import { CatalogGroup } from 'config'
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import { catalog } from 'config'
-import cx from 'classnames'
 import { useCore } from '../CoreProvider'
 
 export const StepHeading = (props: {
