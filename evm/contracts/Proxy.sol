@@ -6,12 +6,12 @@ import './FreeMarketBase.sol';
 contract Proxy is FreeMarketBase, IHasUpstream {
   constructor(
     address owner,
-    address eternalStorage,
+    address storageAddress,
     address upstream,
     bool userProxy
-  ) FreeMarketBase(owner, eternalStorage, upstream, userProxy) {}
+  ) FreeMarketBase(owner, storageAddress, upstream, userProxy) {}
 
-  function getUpstream() external view returns (address) {
+  function getUpstream() external view virtual returns (address) {
     return upstreamAddress;
   }
 

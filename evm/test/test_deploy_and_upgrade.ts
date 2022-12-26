@@ -1,6 +1,5 @@
 import { ADDRESS_ZERO } from '../utils/ethers-utils'
 import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
-import { getEthConfig } from '../utils/contract-addresses'
 
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
@@ -25,7 +24,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
   async function ensureWorkflowRunnerDeployed() {
     const upstream = await frontDoor.getUpstream()
     if (upstream === ADDRESS_ZERO) {
-      const workflowRunner = await WorkflowRunner.new()
+      const workflowRunner = await WorkflowRunner.new(frontDoor.address)
       await frontDoor.setUpstream(workflowRunner.address)
     }
     return WorkflowRunner.at(frontDoor.address)
@@ -36,7 +35,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
   })
 
   it('change owners', async () => {
-    let currentOwner = await frontDoor.getOwner()
+    let currentOwner = await frontDoor.owner()
     expect(currentOwner).to.equal(OWNER)
 
     // non owner cannot change the owner
@@ -44,7 +43,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
 
     // change the owner to NOT_OWNER
     await frontDoor.setOwner(NOT_OWNER, { from: OWNER })
-    currentOwner = await frontDoor.getOwner()
+    currentOwner = await frontDoor.owner()
     expect(currentOwner).to.equal(NOT_OWNER)
 
     // now original owner cannot change owner
@@ -52,12 +51,12 @@ contract('deploy and upgrade', function (accounts: string[]) {
 
     // change owner back to the original owner
     await frontDoor.setOwner(OWNER, { from: NOT_OWNER })
-    currentOwner = await frontDoor.getOwner()
+    currentOwner = await frontDoor.owner()
     expect(currentOwner).to.equal(OWNER)
   })
 
   it('upgrades workflow runner', async () => {
-    const workflowRunner = await WorkflowRunner.new()
+    const workflowRunner = await WorkflowRunner.new(frontDoor.address)
 
     // non owner cannot change the upstream
     await expectRejection(frontDoor.setUpstream(workflowRunner.address, { from: NOT_OWNER }))
@@ -67,7 +66,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     expect(await frontDoor.getUpstream()).to.equal(workflowRunner.address)
 
     // upgrade
-    const newWorkflowRunner = await WorkflowRunner.new()
+    const newWorkflowRunner = await WorkflowRunner.new(frontDoor.address)
     await frontDoor.setUpstream(newWorkflowRunner.address)
     expect(await frontDoor.getUpstream()).to.equal(newWorkflowRunner.address)
   })

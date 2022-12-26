@@ -2,20 +2,18 @@
 pragma solidity ^0.8.13;
 import '../ActionBase.sol';
 import '../../IWorkflowStep.sol';
+import '../../EternalStorage.sol';
+import './Weth.sol';
 
-contract WrappedEtherBase is Ownable {
-  uint256 constant WRAPPED_ETHER_CONTRACT_ADDRESS_SLOT = 0x55e6829e8b6fbe8dc8eb835b4f9eadf07d1d40958a7ff920c846fdf43bcc359a; // keccak256('wrapped.ether.contract.address')
+contract WrappedEtherBase is ActionBase {
+  constructor(address storageAddress, address wethContractAddress) ActionBase(storageAddress, wethContractAddress) {}
 
-  constructor(address wethContractAddress) {
-    // stored immutably
-    assembly {
-      sstore(WRAPPED_ETHER_CONTRACT_ADDRESS_SLOT, wethContractAddress)
-    }
+  function getContractAddressConfigKey() internal pure override returns (string memory) {
+    return 'config.wrappedether.address';
   }
 
-  function getContractAddress() public view returns (address x) {
-    assembly {
-      x := sload(WRAPPED_ETHER_CONTRACT_ADDRESS_SLOT)
-    }
+  /// @dev convenience function to get the foreign contract
+  function getWeth() internal view returns (Weth) {
+    return Weth(getContractAddress());
   }
 }

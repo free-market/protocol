@@ -15,7 +15,7 @@ library Dictionary {
     uint8 end;
   }
 
-  function newInstance() external view returns (DictionaryInstance memory) {
+  function newInstance() external pure returns (DictionaryInstance memory) {
     DictionaryInstance memory dic;
     return dic;
   }

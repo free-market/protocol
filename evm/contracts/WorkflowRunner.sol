@@ -16,13 +16,14 @@ import './actions/wormhole/Wormhole.sol';
 
 /// @dev inheriting from FrontDoor so storage slots align
 contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
-  address public frontDoorAddress;
-
-  constructor() Proxy(msg.sender, address(new EternalStorage()), address(0x0), false) {}
-
-  constructor(address eternalStorage, address frontDoor) FreeMarketBase(msg.sender, eternalStorage, 0, false) {
-    frontDoorAddress = frontDoor;
-  }
+  constructor(address frontDoorAddress)
+    FreeMarketBase(
+      msg.sender, // owner
+      FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
+      address(0), // upstream (this doesn't have one)
+      false // isUserProxy
+    )
+  {}
 
   // mainnet
   address constant wethAddress = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
@@ -42,7 +43,9 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
     bytes32 key = getAddressKey('userProxies', msg.sender);
     address currentAddress = es.getAddress(key);
     require(currentAddress == address(0x0000000000000000), 'user proxy already exists');
-    UserProxy newUserProxy = new UserProxy(payable(msg.sender), getFrontDoorAddress());
+    key = keccak256(abi.encodePacked('frontDoor'));
+    address frontDoorAddress = es.getAddress(key);
+    UserProxy newUserProxy = new UserProxy(payable(msg.sender), eternalStorageAddress, frontDoorAddress);
     address userProxyAddress = address(newUserProxy);
     es.setAddress(key, userProxyAddress);
   }
@@ -50,23 +53,23 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
   event LogActionAddressSet(uint16 actionId, address actionAddress);
 
   function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
-    EternalStorage eternalStorage = EternalStorage(getEternalStorageAddress());
-    eternalStorage.setActionAddress(actionId, actionAddress);
+    // EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    // eternalStorage.setActionAddress(actionId, actionAddress);
     emit LogActionAddressSet(actionId, actionAddress);
   }
 
   function getActionAddress(uint16 actionId) external view returns (address) {
-    EternalStorage eternalStorage = EternalStorage(getEternalStorageAddress());
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getActionAddress(actionId);
   }
 
-  function getActionAddressCount() public view returns (uint256) {
-    EternalStorage eternalStorage = EternalStorage(getEternalStorageAddress());
+  function getActionAddressCount() external view returns (uint256) {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getActionAddressCount();
   }
 
   function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
-    EternalStorage eternalStorage = EternalStorage(getEternalStorageAddress());
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getActionInfoAt(index);
   }
 
@@ -75,7 +78,7 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
   }
 
   function getUserProxy() external view returns (address) {
-    EternalStorage eternalStorage = EternalStorage(getEternalStorageAddress());
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     bytes32 key = getAddressKey('userProxies', msg.sender);
     return eternalStorage.getAddress(key);
   }
@@ -114,11 +117,11 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
     // }
   }
 
-  event Foo(address sender);
+  // event Foo(address sender);
 
-  function foo(Workflow calldata workflow) external payable {
-    emit Foo(msg.sender);
-  }
+  // function foo(Workflow calldata workflow) external payable {
+  //   emit Foo(msg.sender);
+  // }
 
   // function executeWorkflow(uint256[] calldata args) external payable {
   //   // the first arg is the starting amount
@@ -131,20 +134,20 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
   //   }
   // }
 
-  function withdrawal(
-    address tokenAddress,
-    uint256 amount,
-    uint256[] calldata
-  ) public payable returns (address, uint256) {
-    address payable user = payable(getOwner());
-    if (tokenAddress == address(0x0)) {
-      (bool success, ) = user.call{value: amount}('');
-      require(success, 'withdraw eth failed');
-    } else {
-      IERC20 token = IERC20(tokenAddress);
-      SafeERC20.safeTransfer(token, user, amount);
-    }
-    // this has to be a terminal step, so returning 0 for amount
-    return (address(0), 0);
-  }
+  // function withdrawal(
+  //   address tokenAddress,
+  //   uint256 amount,
+  //   uint256[] calldata
+  // ) public payable returns (address, uint256) {
+  //   address payable user = payable(getOwner());
+  //   if (tokenAddress == address(0x0)) {
+  //     (bool success, ) = user.call{value: amount}('');
+  //     require(success, 'withdraw eth failed');
+  //   } else {
+  //     IERC20 token = IERC20(tokenAddress);
+  //     SafeERC20.safeTransfer(token, user, amount);
+  //   }
+  //   // this has to be a terminal step, so returning 0 for amount
+  //   return (address(0), 0);
+  // }
 }

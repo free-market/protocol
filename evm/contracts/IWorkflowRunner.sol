@@ -5,6 +5,4 @@ import './Workflow.sol';
 
 interface IWorkflowRunner {
   function executeWorkflow(Workflow calldata workflow, WorkflowParameter[] calldata params) external payable;
-
-  function foo(Workflow calldata workflow) external payable;
 }

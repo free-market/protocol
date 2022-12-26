@@ -10,9 +10,7 @@ struct ActionInfo {
 }
 
 contract EternalStorage is Ownable {
-  // owner will be front door
-  // address payable owner = msg.sender;
-  // address latestVersion;
+  constructor(address owner) Ownable(owner) {}
 
   mapping(bytes32 => uint256) uIntStorage;
   mapping(bytes32 => string) stringStorage;
@@ -20,11 +18,6 @@ contract EternalStorage is Ownable {
   mapping(bytes32 => bytes) bytesStorage;
   mapping(bytes32 => bool) boolStorage;
   mapping(bytes32 => int256) intStorage;
-
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
 
   // *** Getter Methods ***
   function getUint(bytes32 _key) external view returns (uint256) {
@@ -60,8 +53,11 @@ contract EternalStorage is Ownable {
     stringStorage[_key] = _value;
   }
 
-  function setAddress(bytes32 _key, address _value) external onlyOwner {
-    addressStorage[_key] = _value;
+  event Eraseme();
+
+  function setAddress(bytes32 _key, address _value) external {
+    emit Eraseme();
+    // addressStorage[_key] = _value;
   }
 
   function setBytes(bytes32 _key, bytes memory _value) external onlyOwner {

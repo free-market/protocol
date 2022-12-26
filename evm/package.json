@@ -9,7 +9,9 @@
     "ganache": "./start-ganache.sh",
     "clean": "ts-node utils/clean.ts",
     "build": "truffle compile && pnpm run generate-clients && tsc",
-    "generate-clients": "ts-node utils/ensure-abis.ts && typechain --target=ethers-v5  --glob=\"build/+(contracts|thirdparty)/*.json\" && typechain --target=truffle-v5  --glob=\"build/+(contracts|thirdparty)/*.json\" && typechain --target=web3-v1 --glob=\"build/+(contracts|thirdparty)/*.json\""
+    "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run   generate-clients:truffle",
+    "generate-clients:ethers": "typechain --target=ethers-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
+    "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads"
   },
   "keywords": [],
   "author": "",

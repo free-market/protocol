@@ -4,7 +4,14 @@ import './EternalStorage.sol';
 import './Proxy.sol';
 
 contract FrontDoor is Proxy {
-  constructor() Proxy(msg.sender, address(new EternalStorage()), address(0x0), false) {}
+  event ErasemeFrontDoorCtor(address es);
+
+  constructor() Proxy(msg.sender, address(new EternalStorage(address(this))), address(0x0), false) {
+    emit ErasemeFrontDoorCtor(eternalStorageAddress);
+    EternalStorage es = EternalStorage(eternalStorageAddress);
+    bytes32 key = keccak256(abi.encodePacked('frontDoor', msg.sender));
+    es.setAddress(key, address(this));
+  }
 
   event UpstreamChanged(address oldUpstream, address newUpstream);
 

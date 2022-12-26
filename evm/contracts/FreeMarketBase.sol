@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 import './Ownable.sol';
 
 contract FreeMarketBase is Ownable {
+  // TODO create getters
   address public eternalStorageAddress;
   address public upstreamAddress;
   bool public isUserProxy;

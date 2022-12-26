@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 library libAssetBalances {
-  uint8 constant MAX_ENTRIES = 20;
+  uint8 constant MAX_ENTRIES = 100;
 
   struct AssetBalance {
     uint256 asset;
