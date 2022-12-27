@@ -9,12 +9,13 @@ import './IWorkflowRunner.sol';
 import './Workflow.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
-import './libAssetBalances.sol';
+import './LibAssetBalances.sol';
+import './LibStorageWriter.sol';
+import './EternalStorage.sol';
 
 import './actions/curve/Curve.sol';
 import './actions/wormhole/Wormhole.sol';
 
-/// @dev inheriting from FrontDoor so storage slots align
 contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
   constructor(address frontDoorAddress)
     FreeMarketBase(
@@ -50,12 +51,12 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
     es.setAddress(key, userProxyAddress);
   }
 
-  event LogActionAddressSet(uint16 actionId, address actionAddress);
+  event LogActionAddressSet(uint16 actionId, uint16 actionId2, address actionAddress);
 
   function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
-    // EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    // eternalStorage.setActionAddress(actionId, actionAddress);
-    emit LogActionAddressSet(actionId, actionAddress);
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    eternalStorage.setActionAddress(actionId, actionAddress);
+    emit LogActionAddressSet(actionId, actionId, actionAddress);
   }
 
   function getActionAddress(uint16 actionId) external view returns (address) {
@@ -63,9 +64,9 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
     return eternalStorage.getActionAddress(actionId);
   }
 
-  function getActionAddressCount() external view returns (uint256) {
+  function getActionCount() external view returns (uint256) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getActionAddressCount();
+    return eternalStorage.getActionCount();
   }
 
   function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {

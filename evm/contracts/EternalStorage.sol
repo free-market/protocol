@@ -10,7 +10,25 @@ struct ActionInfo {
 }
 
 contract EternalStorage is Ownable {
+  address internal writer;
+
+  modifier onlyWriter() {
+    require(msg.sender == writer);
+    _;
+  }
+
   constructor(address owner) Ownable(owner) {}
+
+  event StorageWriterChanged(address oldWriter, address newWriter);
+
+  function getWriter() public view returns (address) {
+    return writer;
+  }
+
+  function setWriter(address newWriter) public onlyOwner {
+    emit StorageWriterChanged(writer, newWriter);
+    writer = newWriter;
+  }
 
   mapping(bytes32 => uint256) uIntStorage;
   mapping(bytes32 => string) stringStorage;
@@ -45,55 +63,52 @@ contract EternalStorage is Ownable {
   }
 
   // *** Setter Methods ***
-  function setUint(bytes32 _key, uint256 _value) external onlyOwner {
+  function setUint(bytes32 _key, uint256 _value) external onlyWriter {
     uIntStorage[_key] = _value;
   }
 
-  function setString(bytes32 _key, string memory _value) external onlyOwner {
+  function setString(bytes32 _key, string memory _value) external onlyWriter {
     stringStorage[_key] = _value;
   }
 
-  event Eraseme();
-
   function setAddress(bytes32 _key, address _value) external {
-    emit Eraseme();
-    // addressStorage[_key] = _value;
+    addressStorage[_key] = _value;
   }
 
-  function setBytes(bytes32 _key, bytes memory _value) external onlyOwner {
+  function setBytes(bytes32 _key, bytes memory _value) external onlyWriter {
     bytesStorage[_key] = _value;
   }
 
-  function setBool(bytes32 _key, bool _value) external onlyOwner {
+  function setBool(bytes32 _key, bool _value) external onlyWriter {
     boolStorage[_key] = _value;
   }
 
-  function setInt(bytes32 _key, int256 _value) external onlyOwner {
+  function setInt(bytes32 _key, int256 _value) external onlyWriter {
     intStorage[_key] = _value;
   }
 
   // *** Delete Methods ***
-  function deleteUint(bytes32 _key) external onlyOwner {
+  function deleteUint(bytes32 _key) external onlyWriter {
     delete uIntStorage[_key];
   }
 
-  function deleteString(bytes32 _key) external onlyOwner {
+  function deleteString(bytes32 _key) external onlyWriter {
     delete stringStorage[_key];
   }
 
-  function deleteAddress(bytes32 _key) external onlyOwner {
+  function deleteAddress(bytes32 _key) external onlyWriter {
     delete addressStorage[_key];
   }
 
-  function deleteBytes(bytes32 _key) external onlyOwner {
+  function deleteBytes(bytes32 _key) external onlyWriter {
     delete bytesStorage[_key];
   }
 
-  function deleteBool(bytes32 _key) external onlyOwner {
+  function deleteBool(bytes32 _key) external onlyWriter {
     delete boolStorage[_key];
   }
 
-  function deleteInt(bytes32 _key) external onlyOwner {
+  function deleteInt(bytes32 _key) external onlyWriter {
     delete intStorage[_key];
   }
 
@@ -101,15 +116,18 @@ contract EternalStorage is Ownable {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
   EnumerableMap.UintToAddressMap private mapActionIdToAddress;
 
-  function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
+  event LogSetActionAddress(uint16 actionId, uint16 actionId2, address actionAddress);
+
+  function setActionAddress(uint16 actionId, address actionAddress) external onlyWriter {
+    emit LogSetActionAddress(actionId, actionId, actionAddress);
     mapActionIdToAddress.set(uint256(actionId), actionAddress);
   }
 
-  function getActionAddress(uint16 actionId) external view onlyOwner returns (address) {
+  function getActionAddress(uint16 actionId) external view returns (address) {
     return mapActionIdToAddress.get(uint256(actionId));
   }
 
-  function getActionAddressCount() public view returns (uint256) {
+  function getActionCount() public view returns (uint256) {
     return mapActionIdToAddress.length();
   }
 
