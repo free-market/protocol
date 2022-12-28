@@ -3,11 +3,7 @@ pragma solidity ^0.8.13;
 import '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
 
 import './Ownable.sol';
-
-struct ActionInfo {
-  uint16 actionId;
-  address actionAddres;
-}
+import './ActionInfo.sol';
 
 contract EternalStorage is Ownable {
   address internal writer;

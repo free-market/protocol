@@ -6,6 +6,7 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
+import './IActionManager.sol';
 import './Workflow.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
@@ -16,7 +17,7 @@ import './EternalStorage.sol';
 import './actions/curve/Curve.sol';
 import './actions/wormhole/Wormhole.sol';
 
-contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager {
+contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager, IActionManager {
   constructor(address frontDoorAddress)
     FreeMarketBase(
       msg.sender, // owner

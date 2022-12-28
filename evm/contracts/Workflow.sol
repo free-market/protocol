@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 // Parameters for a workflow step
 struct WorkflowStep {
   uint16 actionId;
+  address actionAddress;
   uint256 fromAsset;
   uint256 amount;
   bool amountIsPercent;
