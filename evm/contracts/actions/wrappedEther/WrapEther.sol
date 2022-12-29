@@ -7,8 +7,8 @@ import './Weth.sol';
 contract WrapEther is IWorkflowStep {
   address public immutable wethContractAddress;
 
-  constructor(address contractAddress) {
-    wethContractAddress = contractAddress;
+  constructor(address wrappedEtherContractAddress) {
+    wethContractAddress = wrappedEtherContractAddress;
   }
 
   function execute(

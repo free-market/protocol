@@ -21,11 +21,9 @@ const ADDRESSES = {
   },
 } as const
 
-export type EvmNetworkName = 'mainnet' | 'goerli' | 'testnet'
+export type EvmNetworkName = 'mainnet' | 'goerli'
 
 /** @ignore */
 export function getEthConfig(network: EvmNetworkName) {
-  // default testnet to goerli
-  const n = network === 'testnet' ? 'goerli' : network
-  return ADDRESSES[n]
+  return ADDRESSES[network]
 }

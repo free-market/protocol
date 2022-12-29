@@ -13,7 +13,9 @@ contract EternalStorage is Ownable {
     _;
   }
 
-  constructor(address owner) Ownable(owner) {}
+  constructor(address owner, address initialWriter) Ownable(owner) {
+    writer = initialWriter;
+  }
 
   event StorageWriterChanged(address oldWriter, address newWriter);
 

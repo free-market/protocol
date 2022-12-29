@@ -4,6 +4,7 @@ import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-cont
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
+import { ActionIds } from '../utils/actionIds'
 
 function withRetries<T extends Object>(obj: T) {
   return new Proxy<T>(obj, {
@@ -56,7 +57,23 @@ contract('deploy and upgrade', function (accounts: string[]) {
     frontDoor = await FrontDoor.new()
   })
 
-  it('change owners', async () => {
+  it('bootstraps correctly', async () => {
+    // grab the deployed frontdoor
+    const frontDoor = await FrontDoor.deployed()
+    const storageAddress = await frontDoor.eternalStorageAddress()
+
+    // ensure that the 'writer' of storeage is the frontdoor
+    const storage = await EternalStorage.at(storageAddress)
+    const storageWriterAddress = await storage.getWriter()
+    expect(storageWriterAddress).equals(frontDoor.address)
+
+    // ensure that the upstream of frontdoor is the deployed workflowRunner
+    const frontDoorUpstreamAddress = await frontDoor.upstreamAddress()
+    const deployedWorkflowRunner = await WorkflowRunner.deployed()
+    expect(frontDoorUpstreamAddress).equals(deployedWorkflowRunner.address)
+  })
+
+  it('changes owners', async () => {
     let currentOwner = await frontDoor.owner()
     expect(currentOwner).to.equal(OWNER)
 
@@ -77,7 +94,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     expect(currentOwner).to.equal(OWNER)
   })
 
-  it('upgrades workflow runner', async () => {
+  it('upgrades the WorkflowRunner', async () => {
     const workflowRunner = await WorkflowRunner.new(frontDoor.address)
 
     // non owner cannot change the upstream
@@ -121,32 +138,31 @@ contract('deploy and upgrade', function (accounts: string[]) {
           break
         }
       }
-      expect(i).to.not.equal(numActions, `actionId ${WRAP_ETHER_ACTIONID} not found`)
+      expect(i).to.not.equal(numActions, `actionId ${ActionIds.wrapEther} not found`)
     }
 
     // deploy an action
     const WrapEther = artifacts.require('WrapEther')
     const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
     const wrapEther = await WrapEther.new(WETH_ADDRESS)
-    const WRAP_ETHER_ACTIONID = 1
 
     // non owner cannot add a workflow step
-    await expectRejection(workflowRunner.setActionAddress(WRAP_ETHER_ACTIONID, wrapEther.address, { from: NOT_OWNER }))
+    await expectRejection(workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEther.address, { from: NOT_OWNER }))
 
     //  owner adds the action
-    await workflowRunner.setActionAddress(WRAP_ETHER_ACTIONID, wrapEther.address)
-    await expectActionAddress(WRAP_ETHER_ACTIONID, wrapEther.address)
+    await workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEther.address)
+    await expectActionAddress(ActionIds.wrapEther, wrapEther.address)
 
     // owner upgrades the action
     const wrapEtherUpgraded = await WrapEther.new(WETH_ADDRESS)
-    await workflowRunner.setActionAddress(WRAP_ETHER_ACTIONID, wrapEtherUpgraded.address)
-    await expectActionAddress(WRAP_ETHER_ACTIONID, wrapEtherUpgraded.address)
+    await workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEtherUpgraded.address)
+    await expectActionAddress(ActionIds.wrapEther, wrapEtherUpgraded.address)
 
     // workflow actions are iterable
     const actionCount = await workflowRunner.getActionCount()
     expect(actionCount.toNumber()).to.equal(1)
     const actionInfo = await workflowRunner.getActionInfoAt(0)
-    expect(actionInfo.actionId.toString()).to.equal('' + WRAP_ETHER_ACTIONID)
+    expect(actionInfo.actionId.toString()).to.equal('' + ActionIds.wrapEther)
     expect(actionInfo.actionAddres).to.equal(wrapEtherUpgraded.address)
   })
 })

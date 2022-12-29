@@ -5,10 +5,7 @@ import './Proxy.sol';
 import './LibStorageWriter.sol';
 
 contract FrontDoor is Proxy {
-  event ErasemeFrontDoorCtor(address es);
-
-  constructor() Proxy(msg.sender, address(new EternalStorage(msg.sender)), address(0x0), false) {
-    emit ErasemeFrontDoorCtor(eternalStorageAddress);
+  constructor() Proxy(msg.sender, address(new EternalStorage(msg.sender, address(this))), address(0x0), false) {
     bytes32 key = keccak256(abi.encodePacked('frontDoor'));
     StorageWriter.setAddress(eternalStorageAddress, key, address(this));
   }

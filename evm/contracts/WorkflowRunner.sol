@@ -18,7 +18,7 @@ import './actions/curve/Curve.sol';
 import './actions/wormhole/Wormhole.sol';
 
 contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager, IActionManager {
-  constructor(address frontDoorAddress)
+  constructor(address payable frontDoorAddress)
     FreeMarketBase(
       msg.sender, // owner
       FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
@@ -86,20 +86,28 @@ contract WorkflowRunner is FreeMarketBase, IWorkflowRunner, IUserProxyManager, I
   }
 
   event WorkflowExecution(address sender);
+  event WorkflowStepExecution(uint16 stepIndex, WorkflowStep step);
 
   // event WorkflowStep()
 
-  function executeWorkflow(Workflow calldata workflow, WorkflowParameter[] calldata params) external payable {
+  function executeWorkflow(
+    Workflow calldata workflow,
+    WorkflowParameter[] calldata /*params*/
+  ) external payable {
     // IERC20 weth = IERC20(wethAddress);
     // uint256 wethBalance = weth.balanceOf(msg.sender);
     // uint256 beforeAmount = toToken.balanceOf(address(this));
     emit WorkflowExecution(msg.sender);
-    if (workflow.steps.length > 0) {
-      WorkflowStep calldata first = workflow.steps[0];
-      // fir
+    uint16 currentStepIndex = 0;
+    // LibAssetBalances.AssetBalances memory assetBalances;
+    while (true) {
+      WorkflowStep calldata currentStep = workflow.steps[currentStepIndex];
+      emit WorkflowStepExecution(currentStepIndex, currentStep);
+      if (currentStep.nextStepIndex == 0) {
+        break;
+      }
     }
 
-    // libAssetBalances.AssetBalances memory assetBalances;
     // for (uint8 stepIndex = 0; stepIndex < steps.length; ++stepIndex) {
     //   WorkflowStepDef calldata step = steps[stepIndex];
     //   // address fromToken = address(step.fromAsset);

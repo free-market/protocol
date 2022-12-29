@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-library libAssetBalances {
+library LibAssetBalances {
   uint8 constant MAX_ENTRIES = 100;
 
   struct AssetBalance {
