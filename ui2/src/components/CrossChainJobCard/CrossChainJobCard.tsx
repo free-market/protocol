@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from '@heroicons/react/20/solid'
+import { ArrowRightIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import cx from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useState } from 'react'
@@ -161,14 +161,45 @@ export const CrossChainJobCard = (props: {
 
   return (
     <>
-      <div
+      <motion.div
+        initial={{
+          ...({ '--fmp-scale': 0 } as Record<string, unknown>),
+        }}
+        whileHover={{
+          ...({ '--fmp-scale': 1 } as Record<string, unknown>),
+          transition: {
+            type: 'spring',
+            stiffness: 250,
+            damping: 15,
+          },
+        }}
+        whileTap={{
+          ...({ '--fmp-scale': 0.9 } as Record<string, unknown>),
+          transition: {
+            type: 'spring',
+            stiffness: 250,
+            damping: 15,
+          },
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 250,
+          damping: 15,
+        }}
         onClick={handleClick}
         className="w-full bg-stone-600 rounded-xl shadow-md text-stone-200 font-medium p-2 max-w-xs mx-auto space-y-2 overflow-hidden cursor-pointer group relative"
       >
         <div className="absolute inset-0 pointer-events-none group-hover:bg-stone-900/10 group-active:bg-stone-900/25 z-50"></div>
 
-        <div className="flex justify-between">
-          <div className="text-lg leading-none">Cross-chain bridge</div>
+        <div className="flex justify-between !my-2">
+          <div className="text-lg leading-none">Transfer</div>
+
+          <div className="w-6 h-6 rounded-full">
+            <ChevronUpDownIcon
+              style={{ transform: 'scale(var(--fmp-scale))' }}
+              className="text-stone-400 w-5 h-5"
+            />
+          </div>
         </div>
 
         <div className="!m-0">
@@ -182,16 +213,14 @@ export const CrossChainJobCard = (props: {
                   opacity: 1,
                   marginBottom: 0,
                   transition: {
-                    default: { ease: 'anticipate', duration: 0.5 },
-                    /*
+                    //default: { ease: 'anticipate', duration: 0.5 },
                     default: {
                       type: 'spring',
                       duration: 0.1,
                       stiffness: 200,
                       mass: 1,
-                      damping: 10,
+                      damping: 15,
                     },
-                     */
                     opacity: {
                       type: 'spring',
                       duration: 0.5,
@@ -308,7 +337,7 @@ export const CrossChainJobCard = (props: {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-stretch gap-2">
+        <div className="flex items-stretch gap-2 pt-2 !mt-0">
           <div className="basis-1/2 space-y-2 flex flex-col">
             <div className="text-xs font-light leading-none text-left">
               STATUS
@@ -408,7 +437,7 @@ export const CrossChainJobCard = (props: {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   )
 }
