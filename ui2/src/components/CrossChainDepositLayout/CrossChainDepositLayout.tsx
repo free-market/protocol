@@ -18,20 +18,13 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 import { useImmerReducer } from 'use-immer'
 
-import { Action } from './types'
+import { Action, EditingMode, State, WalletState } from './types'
 
 const MAX_SELECTOR_HEIGHT = 240
 
 // use this to debug the editing state
 // TODO: when this is 'true', the search button is not usable because the input becomes blurred
 const STOP_EDITING_ON_BLUR = true
-
-export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
-
-export type EditingMode = {
-  name: 'token' | 'chain'
-  recently?: 'opened' | 'closed'
-}
 
 export interface TokenSelectorMenuRef {
   getExpandedHeight: () => number
@@ -140,7 +133,7 @@ export const CrossChainDepositLayout = forwardRef(
 
     const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
-    const initialState = {
+    const initialState: State = {
       open: false,
       loading: false,
       formEditingMode: initialFormEditingMode,
@@ -204,7 +197,7 @@ export const CrossChainDepositLayout = forwardRef(
             name: action.selector.name as 'token' | 'chain',
             recently: 'closed',
           }
-
+          state.tokenSearchValue = ''
           break
         }
 
