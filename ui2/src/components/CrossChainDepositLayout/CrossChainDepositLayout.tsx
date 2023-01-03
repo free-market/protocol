@@ -16,6 +16,9 @@ import {
 } from 'framer-motion'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
+import { useImmerReducer } from 'use-immer'
+
+import { Action } from './types'
 
 const MAX_SELECTOR_HEIGHT = 240
 
@@ -51,9 +54,6 @@ export const CrossChainDepositLayout = forwardRef(
       initialFormEditingMode,
     } = props
 
-    const [open, setOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
-
     const depositButtonBackgroundControls = useAnimationControls()
     const depositButtonForegroundControls = useAnimationControls()
     const loadingBarControls = useAnimationControls()
@@ -68,8 +68,9 @@ export const CrossChainDepositLayout = forwardRef(
       })
     }, [])
     const handleDepositButtonClick = useCallback(async () => {
-      setOpen(true)
-      setLoading(true)
+      dispatch({ name: 'DepositButtonClicked' })
+      // setOpen(true)
+      // setLoading(true)
       await depositButtonBackgroundControls.start({
         borderRadius: '100%',
       })
@@ -116,7 +117,8 @@ export const CrossChainDepositLayout = forwardRef(
         ),
       ])
 
-      setLoading(false)
+      dispatch({ name: 'FormLoaded' })
+      // setLoading(false)
       await new Promise((resolve) => setTimeout(resolve, 1000))
       if (chainSelectorRef.current) {
         chainSelectorRef.current.focus()
@@ -132,17 +134,95 @@ export const CrossChainDepositLayout = forwardRef(
     }, [])
 
     const handleBackClick = useCallback(() => {
-      setOpen(false)
+      dispatch({ name: 'BackButtonClicked' })
+      // setOpen(false)
     }, [])
-
-    const [formEditingMode, setFormEditingMode] = useState(
-      initialFormEditingMode,
-    )
 
     const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
-    const [amountEditing, setAmountEditing] = useState(false)
-    const [tokenSearchValue, setTokenSearchValue] = useState('')
+    const initialState = {
+      open: false,
+      loading: false,
+      formEditingMode: initialFormEditingMode,
+      amountEditing: false,
+      tokenSearchValue: '',
+    }
+
+    const reducer = (state: typeof initialState, action: Action) => {
+      switch (action.name) {
+        case 'DepositButtonClicked': {
+          state.open = true
+          state.loading = true
+          break
+        }
+        case 'FormLoaded': {
+          state.loading = false
+          break
+        }
+        case 'BackButtonClicked': {
+          state.open = false
+          state.loading = false
+          break
+        }
+        // setOpen(false)
+        case 'EditingStarted': {
+          state.amountEditing = true
+          break
+        }
+        case 'EditingStopped': {
+          state.amountEditing = false
+          break
+        }
+        case 'SelectorRecentlyOpened': {
+          state.formEditingMode = {
+            name: action.selector.name as 'token' | 'chain',
+            recently: 'opened',
+          }
+
+          state.tokenSearchValue = ''
+
+          break
+        }
+
+        case 'SelectorOpened': {
+          state.formEditingMode = {
+            name: action.selector.name as 'token' | 'chain',
+            recently: undefined,
+          }
+
+          break
+        }
+
+        case 'SelectorClosed': {
+          state.formEditingMode = undefined
+          state.tokenSearchValue = ''
+          break
+        }
+
+        case 'SelectorRecentlyClosed': {
+          state.formEditingMode = {
+            name: action.selector.name as 'token' | 'chain',
+            recently: 'closed',
+          }
+
+          break
+        }
+
+        case 'SelectorInputChanged': {
+          state.tokenSearchValue = action.value
+          break
+        }
+
+        default:
+          return state
+      }
+    }
+
+    const [
+      { open, loading, formEditingMode, amountEditing, tokenSearchValue },
+      dispatch,
+    ] = useImmerReducer(reducer, initialState)
+
     const chainSelectorRef = useRef<HTMLButtonElement>(null)
     const tokenSelectorRef = useRef<HTMLButtonElement>(null)
     const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
@@ -174,8 +254,6 @@ export const CrossChainDepositLayout = forwardRef(
       }),
       [tokenSearchValue],
     )
-
-    // const [chainSearchValue , setChainSearchValue] = useState('')
 
     const [chainSelectorOverflow, setChainSelectorOverflow] = useState(
       tokenSelectorSearchResults.length > 5,
@@ -213,11 +291,11 @@ export const CrossChainDepositLayout = forwardRef(
     const tokenSelectorButtonControls = useAnimationControls()
 
     const startEditing = useCallback(() => {
-      setAmountEditing(true)
+      dispatch({ name: 'EditingStarted' })
     }, [])
 
     const onBlur = useCallback(() => {
-      setAmountEditing(false)
+      dispatch({ name: 'EditingStopped' })
     }, [])
 
     const baseCardDelay = 0.25
@@ -299,8 +377,12 @@ export const CrossChainDepositLayout = forwardRef(
         // await new Promise((resolve) => setTimeout(resolve, 300))
         // setFormEditingMode(undefined)
       } else if (formEditingMode === undefined) {
-        setFormEditingMode({ name: 'token', recently: 'opened' })
-        setTokenSearchValue('')
+        // setFormEditingMode({ name: 'token', recently: 'opened' })
+        // setTokenSearchValue('')
+        dispatch({
+          name: 'SelectorRecentlyOpened',
+          selector: { name: 'token' },
+        })
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -315,7 +397,8 @@ export const CrossChainDepositLayout = forwardRef(
           ),
         ])
 
-        setFormEditingMode({ name: 'token', recently: undefined })
+        dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
+        // setFormEditingMode({ name: 'token', recently: undefined })
 
         if (tokenSearchRef.current) {
           tokenSearchRef.current.focus()
@@ -336,8 +419,12 @@ export const CrossChainDepositLayout = forwardRef(
         formEditingMode === undefined ||
         formEditingMode.recently === 'closed'
       ) {
-        setFormEditingMode({ name: 'chain', recently: 'opened' })
-        setTokenSearchValue('')
+        dispatch({
+          name: 'SelectorRecentlyOpened',
+          selector: { name: 'chain' },
+        })
+        // setFormEditingMode({ name: 'chain', recently: 'opened' })
+        // setTokenSearchValue('')
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -352,7 +439,8 @@ export const CrossChainDepositLayout = forwardRef(
           ),
         ])
 
-        setFormEditingMode({ name: 'chain', recently: undefined })
+        dispatch({ name: 'SelectorOpened', selector: { name: 'chain' } })
+        // setFormEditingMode({ name: 'chain', recently: undefined })
 
         if (chainSearchRef.current) {
           chainSearchRef.current.focus()
@@ -362,7 +450,11 @@ export const CrossChainDepositLayout = forwardRef(
 
     const handleTokenSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
-        setFormEditingMode({ name: 'token', recently: 'closed' })
+        // setFormEditingMode({ name: 'token', recently: 'closed' })
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name: 'token' },
+        })
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -371,8 +463,9 @@ export const CrossChainDepositLayout = forwardRef(
           }),
         ])
 
-        setTokenSearchValue('')
-        setFormEditingMode(undefined)
+        dispatch({ name: 'SelectorClosed', selector: { name: 'token' } })
+        // setTokenSearchValue('')
+        // setFormEditingMode(undefined)
       }
     }
 
@@ -380,7 +473,11 @@ export const CrossChainDepositLayout = forwardRef(
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
-        setFormEditingMode({ name: 'token', recently: 'closed' })
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name: 'token' },
+        })
+        // setFormEditingMode({ name: 'token', recently: 'closed' })
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -389,8 +486,9 @@ export const CrossChainDepositLayout = forwardRef(
           }),
         ])
 
-        setFormEditingMode(undefined)
-        setTokenSearchValue('')
+        dispatch({ name: 'SelectorClosed', selector: { name: 'token' } })
+        // setFormEditingMode(undefined)
+        // setTokenSearchValue('')
         startEditing()
       }
     }
@@ -408,7 +506,12 @@ export const CrossChainDepositLayout = forwardRef(
       }
 
       if (oldValue !== newValue) {
-        setTokenSearchValue(newValue)
+        dispatch({
+          name: 'SelectorInputChanged',
+          selector: { name: 'token' },
+          value: newValue,
+        })
+        // setTokenSearchValue(newValue)
         await new Promise((resolve) => setTimeout(resolve, 10))
 
         await tokenSelectorButtonControls.start(
@@ -425,7 +528,11 @@ export const CrossChainDepositLayout = forwardRef(
 
     const handleChainSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
-        setFormEditingMode({ name: 'chain', recently: 'closed' })
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name: 'chain' },
+        })
+        // setFormEditingMode({ name: 'chain', recently: 'closed' })
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -434,8 +541,8 @@ export const CrossChainDepositLayout = forwardRef(
           }),
         ])
 
-        setTokenSearchValue('')
-        setFormEditingMode(undefined)
+        // setTokenSearchValue('')
+        // setFormEditingMode(undefined)
       }
     }
 
@@ -447,8 +554,12 @@ export const CrossChainDepositLayout = forwardRef(
           tokenSelectorRef.current.focus()
         }
 
-        setFormEditingMode({ name: 'chain', recently: 'closed' })
-        setTokenSearchValue('')
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name: 'chain' },
+        })
+        // setFormEditingMode({ name: 'chain', recently: 'closed' })
+        // setTokenSearchValue('')
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -458,7 +569,11 @@ export const CrossChainDepositLayout = forwardRef(
         ])
 
         await new Promise((resolve) => setTimeout(resolve, 300))
-        setFormEditingMode({ name: 'token', recently: 'opened' })
+        dispatch({
+          name: 'SelectorRecentlyOpened',
+          selector: { name: 'token' },
+        })
+        // setFormEditingMode({ name: 'token', recently: 'opened' })
 
         await Promise.all([
           new Promise((resolve) => setTimeout(resolve, 300)),
@@ -473,7 +588,8 @@ export const CrossChainDepositLayout = forwardRef(
           ),
         ])
 
-        setFormEditingMode({ name: 'token', recently: undefined })
+        dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
+        // setFormEditingMode({ name: 'token', recently: undefined })
 
         if (tokenSearchRef.current) {
           tokenSearchRef.current.focus()
@@ -493,7 +609,12 @@ export const CrossChainDepositLayout = forwardRef(
       }
 
       if (oldValue !== newValue) {
-        setTokenSearchValue(newValue)
+        dispatch({
+          name: 'SelectorInputChanged',
+          selector: { name: 'chain' },
+          value: newValue,
+        })
+        // setTokenSearchValue(newValue)
 
         // Maybe requestAnimationFrame?
         await new Promise((resolve) => setTimeout(resolve, 10))
