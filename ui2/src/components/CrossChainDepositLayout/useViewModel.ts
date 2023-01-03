@@ -6,7 +6,9 @@ export const useViewModel = (initialState: State): ViewModel => {
     switch (action.name) {
       case 'DepositButtonClicked': {
         state.open = true
-        state.loading = true
+        if (state.loadingAllowed) {
+          state.loading = true
+        }
         break
       }
       case 'FormLoaded': {
@@ -78,6 +80,7 @@ export const useViewModel = (initialState: State): ViewModel => {
 }
 
 export const initialState = {
+  loadingAllowed: false,
   open: false,
   loading: false,
   formEditingMode: undefined,

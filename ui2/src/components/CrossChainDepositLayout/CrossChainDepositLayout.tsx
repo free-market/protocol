@@ -19,6 +19,7 @@ import '../Layout/super-shadow.css'
 
 import { EditingMode, WalletState } from './types'
 import { initialState, useViewModel } from './useViewModel'
+import GenericExpandingSelector from '@component/GenericExpandingSelector'
 
 const MAX_SELECTOR_HEIGHT = 240
 
@@ -37,6 +38,8 @@ export const CrossChainDepositLayout = forwardRef(
       empty?: boolean
       walletState?: WalletState
       initialFormEditingMode?: EditingMode
+      initiallyOpen?: boolean
+      loadingAllowed?: boolean
     },
     ref: React.Ref<TokenSelectorMenuRef>,
   ): JSX.Element => {
@@ -45,12 +48,16 @@ export const CrossChainDepositLayout = forwardRef(
       empty = false,
       walletState = 'ready',
       initialFormEditingMode,
+      initiallyOpen = initialState.open,
+      loadingAllowed = initialState.loadingAllowed,
     } = props
 
     const depositButtonBackgroundControls = useAnimationControls()
     const depositButtonForegroundControls = useAnimationControls()
     const loadingBarControls = useAnimationControls()
     const loadingSpinnerControls = useAnimationControls()
+    const chainSelectorButtonControls = useAnimationControls()
+    const tokenSelectorButtonControls = useAnimationControls()
 
     const handleDepositButtonHoverStart = useCallback(() => {
       depositButtonBackgroundControls.start({
@@ -135,6 +142,8 @@ export const CrossChainDepositLayout = forwardRef(
 
     const vm = useViewModel({
       ...initialState,
+      loadingAllowed,
+      open: initiallyOpen,
       formEditingMode: initialFormEditingMode,
     })
 
@@ -151,6 +160,10 @@ export const CrossChainDepositLayout = forwardRef(
     const tokenSelectorRef = useRef<HTMLButtonElement>(null)
     const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
     const tokenSearchRef = useRef<HTMLInputElement>(null)
+    const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
+    const chainSearchRef = useRef<HTMLInputElement>(null)
+    const tokenSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
+    const chainSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
 
     const tokenSelectorSearchResults = [
       { symbol: 'ETH', title: 'Ether' },
@@ -179,14 +192,9 @@ export const CrossChainDepositLayout = forwardRef(
       [tokenSearchValue],
     )
 
-    const [chainSelectorOverflow, setChainSelectorOverflow] = useState(
+    const [tokenSelectorOverflow, setTokenSelectorOverflow] = useState(
       tokenSelectorSearchResults.length > 5,
     )
-    const [tokenSelectorOverflow /*, setTokenSelectorOverflow*/] = useState(
-      tokenSelectorSearchResults.length > 5,
-    )
-    const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
-    const chainSearchRef = useRef<HTMLInputElement>(null)
 
     const getExpandedHeightForChainSelector = () =>
       chainSelectorContainerRef.current?.scrollHeight ?? 0
@@ -198,9 +206,6 @@ export const CrossChainDepositLayout = forwardRef(
       [tokenSearchValue],
     )
 
-    const tokenSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
-    const chainSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
-
     const getExpandedHeightForChainSelectorResults = () =>
       chainSelectorResultsContainerRef.current?.scrollHeight ?? 0
     useImperativeHandle(
@@ -210,9 +215,6 @@ export const CrossChainDepositLayout = forwardRef(
       }),
       [tokenSearchValue],
     )
-
-    const chainSelectorButtonControls = useAnimationControls()
-    const tokenSelectorButtonControls = useAnimationControls()
 
     const startEditing = useCallback(() => {
       dispatch({ name: 'EditingStarted' })
@@ -330,48 +332,6 @@ export const CrossChainDepositLayout = forwardRef(
       }
     }
 
-    const handleChainSelectorClick = async () => {
-      if (
-        formEditingMode?.name === 'chain' &&
-        formEditingMode.recently !== 'opened'
-      ) {
-        // no-op
-        // setFormEditingMode({ name: 'chain', recently: 'closed' })
-        // await new Promise((resolve) => setTimeout(resolve, 300))
-        // setFormEditingMode(undefined)
-      } else if (
-        formEditingMode === undefined ||
-        formEditingMode.recently === 'closed'
-      ) {
-        dispatch({
-          name: 'SelectorRecentlyOpened',
-          selector: { name: 'chain' },
-        })
-        // setFormEditingMode({ name: 'chain', recently: 'opened' })
-        // setTokenSearchValue('')
-
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          chainSelectorButtonControls.start(
-            {
-              height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 68,
-                MAX_SELECTOR_HEIGHT,
-              ),
-            },
-            { ease: 'anticipate' },
-          ),
-        ])
-
-        dispatch({ name: 'SelectorOpened', selector: { name: 'chain' } })
-        // setFormEditingMode({ name: 'chain', recently: undefined })
-
-        if (chainSearchRef.current) {
-          chainSearchRef.current.focus()
-        }
-      }
-    }
-
     const handleTokenSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         // setFormEditingMode({ name: 'token', recently: 'closed' })
@@ -450,125 +410,16 @@ export const CrossChainDepositLayout = forwardRef(
       }
     }
 
-    const handleChainSelectorInputBlur = async () => {
-      if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
-        dispatch({
-          name: 'SelectorRecentlyClosed',
-          selector: { name: 'chain' },
-        })
-        // setFormEditingMode({ name: 'chain', recently: 'closed' })
-
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          await chainSelectorButtonControls.start({
-            height: 48,
-          }),
-        ])
-
-        // setTokenSearchValue('')
-        // setFormEditingMode(undefined)
-      }
-    }
-
-    const handleChainSelectorInputKeyPress = async (
-      event: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
-      if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
-        if (tokenSelectorRef.current) {
-          tokenSelectorRef.current.focus()
-        }
-
-        dispatch({
-          name: 'SelectorRecentlyClosed',
-          selector: { name: 'chain' },
-        })
-        // setFormEditingMode({ name: 'chain', recently: 'closed' })
-        // setTokenSearchValue('')
-
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          chainSelectorButtonControls.start({
-            height: 48,
-          }),
-        ])
-
-        await new Promise((resolve) => setTimeout(resolve, 300))
-        dispatch({
-          name: 'SelectorRecentlyOpened',
-          selector: { name: 'token' },
-        })
-        // setFormEditingMode({ name: 'token', recently: 'opened' })
-
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          tokenSelectorButtonControls.start(
-            {
-              height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 68,
-                MAX_SELECTOR_HEIGHT,
-              ),
-            },
-            { ease: 'anticipate' },
-          ),
-        ])
-
-        dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
-        // setFormEditingMode({ name: 'token', recently: undefined })
-
-        if (tokenSearchRef.current) {
-          tokenSearchRef.current.focus()
-        }
-      }
-    }
-
-    const handleChainSelectorInputChange = async (
-      event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-      const oldValue = tokenSearchValue
-      let newValue
-      if (event.target.value.trim() === '') {
-        newValue = ''
-      } else {
-        newValue = event.target.value
-      }
-
-      if (oldValue !== newValue) {
-        dispatch({
-          name: 'SelectorInputChanged',
-          selector: { name: 'chain' },
-          value: newValue,
-        })
-        // setTokenSearchValue(newValue)
-
-        // Maybe requestAnimationFrame?
-        await new Promise((resolve) => setTimeout(resolve, 10))
-
-        await chainSelectorButtonControls.start(
-          {
-            height: Math.min(
-              getExpandedHeightForChainSelectorResults() + 68,
-              MAX_SELECTOR_HEIGHT,
-            ),
-          },
-          { ease: 'anticipate' },
-        )
-      }
-    }
-
-    const focusChainSearch = useCallback(() => {
-      chainSearchRef.current?.focus()
-    }, [chainSearchRef])
-
     const focusTokenSearch = useCallback(() => {
       tokenSearchRef.current?.focus()
     }, [tokenSearchRef])
 
     const handleLastElementViewportEnter = useCallback(() => {
-      setChainSelectorOverflow(false)
+      setTokenSelectorOverflow(false)
     }, [])
 
     const handleLastElementViewportLeave = useCallback(() => {
-      setChainSelectorOverflow(true)
+      setTokenSelectorOverflow(true)
     }, [])
 
     const tokenSelectorSearchResultElements = tokenSelectorSearchResults.map(
@@ -632,202 +483,22 @@ export const CrossChainDepositLayout = forwardRef(
         </AnimatePresence>
         <AnimatePresence>
           <motion.div className="space-y-2">
-            <motion.div
-              initial={{ opacity: 0, scale: 0, y: 200 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{
-                ...baseCardTransition,
-                delay: baseCardDelay + baseCardStaggerSpeed,
+            <GenericExpandingSelector
+              {...{ formEditingMode, tokenSearchValue, dispatch }}
+              refs={{
+                chainSelector: chainSelectorRef,
+                tokenSelector: tokenSelectorRef,
+                tokenSelectorContainer: tokenSelectorContainerRef,
+                tokenSearch: tokenSearchRef,
+                chainSelectorContainer: chainSelectorContainerRef,
+                chainSearch: chainSearchRef,
+                chainSelectorResultsContainer: chainSelectorResultsContainerRef,
               }}
-              className={cx(
-                'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
-                {
-                  'super-shadow-2':
-                    formEditingMode?.name === 'chain' &&
-                    formEditingMode.recently !== 'closed' &&
-                    tokenSelectorSearchResults.length > 5 &&
-                    chainSelectorOverflow,
-                },
-              )}
-            >
-              <motion.button
-                ref={chainSelectorRef}
-                onClick={handleChainSelectorClick}
-                className={cx(
-                  'w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
-                  {
-                    'z-30': formEditingMode?.name === 'chain',
-                    'hover:bg-stone-500/75 active:bg-stone-500/50 cursor-pointer':
-                      formEditingMode?.name !== 'chain' ||
-                      formEditingMode.recently === 'closed',
-                  },
-                )}
-              >
-                <motion.div
-                  ref={chainSelectorContainerRef}
-                  initial={{ height: 48 }}
-                  animate={chainSelectorButtonControls}
-                  className={'w-full'}
-                >
-                  <div className="h-0 relative">
-                    <motion.div
-                      className={cx(
-                        'w-full absolute flex justify-between pointer-events-none',
-                        {
-                          'group-hover:pointer-events-auto': !(
-                            formEditingMode?.name === 'chain' &&
-                            formEditingMode.recently !== 'closed'
-                          ),
-                        },
-                      )}
-                      animate={{
-                        opacity:
-                          formEditingMode?.name === 'chain' &&
-                          formEditingMode.recently !== 'closed'
-                            ? 0
-                            : 1,
-                      }}
-                      transition={{
-                        duration: 0.1,
-                        delay:
-                          formEditingMode?.name === 'chain' &&
-                          formEditingMode.recently === 'closed'
-                            ? 0.1
-                            : 0,
-                      }}
-                    >
-                      <div className="space-y-2">
-                        <div className="text-xs text-stone-400 font-light group-hover:text-stone-300 group-active:text-stone-300/75">
-                          CHAIN
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-full overflow-hidden w-4 h-4 bg-stone-500 group-hover:bg-stone-400 group-active:bg-stone-400/75">
-                            <img
-                              className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
-                              src={url}
-                            />
-                          </div>
-
-                          <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium">
-                            Ethereum
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        className={cx(
-                          'invisible pointer-events-none group-hover:visible flex items-center gap-1',
-                          {
-                            'group-hover:pointer-events-auto': !(
-                              formEditingMode?.name === 'chain' &&
-                              formEditingMode.recently !== 'closed'
-                            ),
-                          },
-                        )}
-                      >
-                        <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75 user-select-none">
-                          click to edit
-                        </div>
-
-                        <PencilSquareIcon className="text-stone-300 group-active:text-stone-300/75 w-4 h-4" />
-                      </div>
-                    </motion.div>
-                  </div>
-
-                  <motion.div
-                    className=""
-                    animate={{
-                      opacity:
-                        formEditingMode?.name === 'chain' &&
-                        formEditingMode.recently !== 'closed'
-                          ? 1
-                          : 0,
-                    }}
-                    transition={{
-                      duration: 0.1,
-                      delay:
-                        formEditingMode?.name === 'chain' &&
-                        formEditingMode.recently === 'opened'
-                          ? 0.1
-                          : 0,
-                    }}
-                  >
-                    <div className="space-y-2 w-full mb-2">
-                      <div className="text-xs text-stone-200 font-light">
-                        SELECT CHAIN
-                      </div>
-
-                      <motion.div
-                        className="w-full flex items-stretch bg-stone-500/25 rounded-md overflow-hidden"
-                        onClick={focusChainSearch}
-                      >
-                        <motion.input
-                          ref={chainSearchRef}
-                          type="text"
-                          placeholder="Search chain..."
-                          className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-1 mx-1 rounded-md"
-                          onBlur={handleChainSelectorInputBlur}
-                          onKeyPress={handleChainSelectorInputKeyPress}
-                          onChange={handleChainSelectorInputChange}
-                          tabIndex={
-                            formEditingMode?.name !== 'chain' ? -1 : undefined
-                          }
-                          value={tokenSearchValue}
-                          transition={{ ease: 'anticipate' }}
-                        />
-
-                        <motion.button
-                          tabIndex={
-                            formEditingMode?.name === 'chain' &&
-                            formEditingMode.recently !== 'closed'
-                              ? undefined
-                              : -1
-                          }
-                          className={cx(
-                            'w-1/6 flex rounded bg-stone-500/50 mx-2 my-1 items-center justify-center hover:bg-stone-500/[0.4] active:opacity-75',
-                          )}
-                          animate={{
-                            scale: tokenSearchValue ? 0 : 1,
-                            marginRight: tokenSearchValue
-                              ? '-16.666667%'
-                              : '8px',
-                            marginLeft: tokenSearchValue ? 0 : '8px',
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="inline-block w-6 h-6 rounded-full bg-stone-500/25 text-stone-400/50"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </motion.button>
-                      </motion.div>
-                    </div>
-
-                    {/* TODO: move controls to bigger container */}
-                    {/* TODO: offset height to include height of search box and label */}
-                    <motion.div className="w-[calc(100%_+_2rem)] max-h-[192px] overflow-y-scroll pr-5 -mr-5">
-                      <motion.div className="box-content pl-2 pr-6 -mr-5 flex items-start w-[calc(100%-1.5rem)] pb-5">
-                        <div
-                          className="w-full"
-                          ref={chainSelectorResultsContainerRef}
-                        >
-                          {tokenSelectorSearchResultElements}
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              </motion.button>
-            </motion.div>
+              controls={{
+                chainSelectorButton: chainSelectorButtonControls,
+                tokenSelectorButton: tokenSelectorButtonControls,
+              }}
+            />
 
             <motion.div
               initial={{ opacity: 0, scale: 0, y: 200 }}

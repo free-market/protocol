@@ -18,6 +18,7 @@ export type EditingMode = {
 }
 
 export type State = {
+  loadingAllowed: boolean
   open: boolean
   loading: boolean
   formEditingMode?: EditingMode
