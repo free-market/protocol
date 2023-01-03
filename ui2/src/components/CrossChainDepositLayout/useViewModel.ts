@@ -76,3 +76,11 @@ export const useViewModel = (initialState: State): ViewModel => {
 
   return { ...state, dispatch }
 }
+
+export const initialState = {
+  open: false,
+  loading: false,
+  formEditingMode: undefined,
+  amountEditing: false,
+  tokenSearchValue: '',
+}

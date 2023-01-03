@@ -17,8 +17,8 @@ import {
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 
-import { EditingMode, State, WalletState } from './types'
-import { useViewModel } from './useViewModel'
+import { EditingMode, WalletState } from './types'
+import { initialState, useViewModel } from './useViewModel'
 
 const MAX_SELECTOR_HEIGHT = 240
 
@@ -133,15 +133,10 @@ export const CrossChainDepositLayout = forwardRef(
 
     const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
-    const initialState: State = {
-      open: false,
-      loading: false,
+    const vm = useViewModel({
+      ...initialState,
       formEditingMode: initialFormEditingMode,
-      amountEditing: false,
-      tokenSearchValue: '',
-    }
-
-    const vm = useViewModel(initialState)
+    })
 
     const {
       open,
