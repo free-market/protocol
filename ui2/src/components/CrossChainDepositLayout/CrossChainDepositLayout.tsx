@@ -16,9 +16,9 @@ import {
 } from 'framer-motion'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
-import { useImmerReducer } from 'use-immer'
 
-import { Action, EditingMode, State, WalletState } from './types'
+import { EditingMode, State, WalletState } from './types'
+import { useViewModel } from './useViewModel'
 
 const MAX_SELECTOR_HEIGHT = 240
 
@@ -141,80 +141,16 @@ export const CrossChainDepositLayout = forwardRef(
       tokenSearchValue: '',
     }
 
-    const reducer = (state: typeof initialState, action: Action) => {
-      switch (action.name) {
-        case 'DepositButtonClicked': {
-          state.open = true
-          state.loading = true
-          break
-        }
-        case 'FormLoaded': {
-          state.loading = false
-          break
-        }
-        case 'BackButtonClicked': {
-          state.open = false
-          state.loading = false
-          break
-        }
-        // setOpen(false)
-        case 'EditingStarted': {
-          state.amountEditing = true
-          break
-        }
-        case 'EditingStopped': {
-          state.amountEditing = false
-          break
-        }
-        case 'SelectorRecentlyOpened': {
-          state.formEditingMode = {
-            name: action.selector.name as 'token' | 'chain',
-            recently: 'opened',
-          }
+    const vm = useViewModel(initialState)
 
-          state.tokenSearchValue = ''
-
-          break
-        }
-
-        case 'SelectorOpened': {
-          state.formEditingMode = {
-            name: action.selector.name as 'token' | 'chain',
-            recently: undefined,
-          }
-
-          break
-        }
-
-        case 'SelectorClosed': {
-          state.formEditingMode = undefined
-          state.tokenSearchValue = ''
-          break
-        }
-
-        case 'SelectorRecentlyClosed': {
-          state.formEditingMode = {
-            name: action.selector.name as 'token' | 'chain',
-            recently: 'closed',
-          }
-          state.tokenSearchValue = ''
-          break
-        }
-
-        case 'SelectorInputChanged': {
-          state.tokenSearchValue = action.value
-          break
-        }
-
-        default:
-          return state
-      }
-    }
-
-    const [
-      { open, loading, formEditingMode, amountEditing, tokenSearchValue },
+    const {
+      open,
+      loading,
+      formEditingMode,
+      amountEditing,
+      tokenSearchValue,
       dispatch,
-    ] = useImmerReducer(reducer, initialState)
+    } = vm
 
     const chainSelectorRef = useRef<HTMLButtonElement>(null)
     const tokenSelectorRef = useRef<HTMLButtonElement>(null)

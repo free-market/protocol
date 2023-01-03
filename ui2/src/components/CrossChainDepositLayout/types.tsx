@@ -24,3 +24,5 @@ export type State = {
   amountEditing: boolean
   tokenSearchValue: string
 }
+
+export type ViewModel = State & { dispatch: (action: Action) => void }
