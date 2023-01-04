@@ -23,7 +23,6 @@ export const GenericExpandingSelector: ComponentStory<
 
   const chainSelectorRef = useRef<HTMLButtonElement>(null)
   const tokenSelectorRef = useRef<HTMLButtonElement>(null)
-  const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
   const tokenSearchRef = useRef<HTMLInputElement>(null)
   const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
   const chainSearchRef = useRef<HTMLInputElement>(null)
@@ -33,17 +32,21 @@ export const GenericExpandingSelector: ComponentStory<
     <Component
       {...{ formEditingMode, tokenSearchValue, dispatch }}
       refs={{
-        chainSelector: chainSelectorRef,
-        tokenSelector: tokenSelectorRef,
-        tokenSelectorContainer: tokenSelectorContainerRef,
-        tokenSearch: tokenSearchRef,
-        chainSelectorContainer: chainSelectorContainerRef,
-        chainSearch: chainSearchRef,
-        chainSelectorResultsContainer: chainSelectorResultsContainerRef,
+        clickableArea: chainSelectorRef,
+        nextClickableArea: tokenSelectorRef,
+        container: chainSelectorContainerRef,
+        input: chainSearchRef,
+        resultsContainer: chainSelectorResultsContainerRef,
       }}
       controls={{
-        chainSelectorButton: chainSelectorButtonControls,
-        tokenSelectorButton: tokenSelectorButtonControls,
+        selector: chainSelectorButtonControls,
+      }}
+      nextSelector={{
+        refs: {
+          clickableArea: tokenSelectorRef,
+          input: tokenSearchRef,
+        },
+        controls: tokenSelectorButtonControls,
       }}
     />
   )

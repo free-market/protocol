@@ -10,6 +10,7 @@
  * Thank you.
  */
 
+import delay from 'delay'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import {
   forwardRef,
@@ -21,20 +22,13 @@ import {
 import cx from 'classnames'
 import { AnimationControls, motion, Transition } from 'framer-motion'
 import '../Layout/super-shadow.css'
-import { Action } from '@component/CrossChainDepositLayout/types'
+import { Action, EditingMode } from '@component/CrossChainDepositLayout/types'
 
 const MAX_SELECTOR_HEIGHT = 240
 
 // use this to debug the editing state
 // TODO: when this is 'true', the search button is not usable because the input becomes blurred
 const STOP_EDITING_ON_BLUR = true
-
-export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
-
-export type EditingMode = {
-  name: 'token' | 'chain'
-  recently?: 'opened' | 'closed'
-}
 
 export interface TokenSelectorMenuRef {
   getExpandedHeight: () => number
@@ -43,27 +37,45 @@ export interface TokenSelectorMenuRef {
 export const GenericExpandingSelector = forwardRef(
   (
     props: {
+      label: string
+      name: EditingMode['name']
       refs: {
-        chainSelector: RefObject<HTMLButtonElement>
-        tokenSelector: RefObject<HTMLButtonElement>
-        tokenSelectorContainer: RefObject<HTMLDivElement>
-        tokenSearch: RefObject<HTMLInputElement>
-        chainSelectorContainer: RefObject<HTMLDivElement>
-        chainSearch: RefObject<HTMLInputElement>
-        chainSelectorResultsContainer: RefObject<HTMLDivElement>
+        clickableArea: RefObject<HTMLButtonElement>
+        input: RefObject<HTMLInputElement>
+        container: RefObject<HTMLDivElement>
+        resultsContainer: RefObject<HTMLDivElement>
       }
       controls: {
-        chainSelectorButton: AnimationControls
-        tokenSelectorButton: AnimationControls
+        selector: AnimationControls
       }
+      nextSelector?:
+        | {
+            type: 'controllable'
+            controls: AnimationControls
+            name: EditingMode['name']
+            refs: {
+              input: RefObject<HTMLInputElement>
+            }
+          }
+        | { type: 'focusable'; focus: () => void }
       formEditingMode?: EditingMode
       tokenSearchValue: string
       dispatch: (action: Action) => void
+      transition: Transition
     },
     ref: React.Ref<TokenSelectorMenuRef>,
   ): JSX.Element => {
-    const { formEditingMode, tokenSearchValue, dispatch, refs, controls } =
-      props
+    const {
+      label,
+      name,
+      formEditingMode,
+      tokenSearchValue,
+      dispatch,
+      refs,
+      controls,
+      nextSelector,
+      transition,
+    } = props
 
     const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
@@ -84,155 +96,152 @@ export const GenericExpandingSelector = forwardRef(
         title.toLowerCase().includes(tokenSearchValue.toLowerCase()),
     )
 
-    const getExpandedHeightForTokenSelector = () =>
-      refs.tokenSelectorContainer.current?.scrollHeight ?? 0
-    useImperativeHandle(
-      ref,
-      () => ({
-        getExpandedHeight: getExpandedHeightForTokenSelector,
-      }),
-      [tokenSearchValue],
-    )
-
-    const [chainSelectorOverflow, setChainSelectorOverflow] = useState(
+    const [selectorOverflow, setSelectorOverflow] = useState(
       tokenSelectorSearchResults.length > 5,
     )
 
-    const getExpandedHeightForChainSelector = () =>
-      refs.chainSelectorContainer.current?.scrollHeight ?? 0
+    const getExpandedHeightForSelector = () =>
+      refs.container.current?.scrollHeight ?? 0
     useImperativeHandle(
       ref,
       () => ({
-        getExpandedHeight: getExpandedHeightForChainSelector,
+        getExpandedHeight: getExpandedHeightForSelector,
       }),
       [tokenSearchValue],
     )
 
-    const getExpandedHeightForChainSelectorResults = () =>
-      refs.chainSelectorResultsContainer.current?.scrollHeight ?? 0
+    const getExpandedHeightForSelectorResults = () =>
+      refs.resultsContainer.current?.scrollHeight ?? 0
     useImperativeHandle(
       ref,
       () => ({
-        getExpandedHeight: getExpandedHeightForChainSelectorResults,
+        getExpandedHeight: getExpandedHeightForSelectorResults,
       }),
       [tokenSearchValue],
     )
 
-    const baseCardDelay = 0.25
-    const baseCardStaggerSpeed = 0.15
-    const baseCardTransition: Transition = {
-      type: 'spring',
-      damping: 20,
-      duration: 0.1,
-      stiffness: 150,
-      bounce: 1,
-    }
-
-    const handleChainSelectorClick = async () => {
+    const handleSelectorClick = async () => {
       if (
-        formEditingMode?.name === 'chain' &&
+        formEditingMode?.name === name &&
         formEditingMode.recently !== 'opened'
       ) {
         // no-op
-        // setFormEditingMode({ name: 'chain', recently: 'closed' })
-        // await new Promise((resolve) => setTimeout(resolve, 300))
-        // setFormEditingMode(undefined)
       } else if (
         formEditingMode === undefined ||
         formEditingMode.recently === 'closed'
       ) {
+        if (refs.input.current) {
+          refs.input.current.focus({ preventScroll: true })
+        }
+
         dispatch({
           name: 'SelectorRecentlyOpened',
-          selector: { name: 'chain' },
+          selector: { name },
         })
 
         await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          controls.chainSelectorButton.start(
+          controls.selector.start(
             {
               height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 68,
+                getExpandedHeightForSelectorResults() + 68,
                 MAX_SELECTOR_HEIGHT,
               ),
             },
-            { ease: 'anticipate' },
+            //{ type: 'spring', duration: 0.1, stiffness: 200, mass: 1, damping: 15,}
+            // { ease: 'anticipate' },
+            //{ type: 'spring', duration: 0.1, bounce: 0.75, damping: 5, stiffness: 300, mass: 0.2 }
+            {
+              type: 'inertia',
+              velocity: 1000,
+              bounceStiffness: 500,
+              max: MAX_SELECTOR_HEIGHT,
+              power: 1,
+              bounceDamping: 15,
+              restDelta: 0.5,
+            },
           ),
         ])
 
-        dispatch({ name: 'SelectorOpened', selector: { name: 'chain' } })
-
-        if (refs.chainSearch.current) {
-          refs.chainSearch.current.focus()
-        }
+        dispatch({ name: 'SelectorOpened', selector: { name } })
       }
     }
 
-    const handleChainSelectorInputBlur = async () => {
+    const handleSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
         dispatch({
           name: 'SelectorRecentlyClosed',
-          selector: { name: 'chain' },
+          selector: { name },
         })
 
         await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          await controls.chainSelectorButton.start({
+          delay(300),
+          await controls.selector.start({
             height: 48,
           }),
         ])
 
-        dispatch({ name: 'SelectorClosed', selector: { name: 'chain' } })
+        dispatch({ name: 'SelectorClosed', selector: { name } })
       }
     }
 
-    const handleChainSelectorInputKeyPress = async (
+    const handleSelectorInputKeyPress = async (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
-        if (refs.tokenSelector.current) {
-          refs.tokenSelector.current.focus()
-        }
+        if (nextSelector) {
+          if (nextSelector.type === 'focusable') {
+            nextSelector.focus()
+          } else if (nextSelector.type === 'controllable') {
+            if (nextSelector.refs.input?.current) {
+              nextSelector.refs.input.current.focus({ preventScroll: true })
+            }
 
-        dispatch({
-          name: 'SelectorRecentlyClosed',
-          selector: { name: 'chain' },
-        })
+            dispatch({
+              name: 'SelectorRecentlyClosed',
+              selector: { name },
+            })
 
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          controls.chainSelectorButton.start({
-            height: 48,
-          }),
-        ])
+            await Promise.all([
+              delay(300),
+              controls.selector.start({
+                height: 48,
+              }),
+            ])
 
-        await new Promise((resolve) => setTimeout(resolve, 300))
-        dispatch({
-          name: 'SelectorRecentlyOpened',
-          selector: { name: 'token' },
-        })
+            await delay(300)
+            dispatch({
+              name: 'SelectorRecentlyOpened',
+              selector: { name: nextSelector.name },
+            })
 
-        await Promise.all([
-          new Promise((resolve) => setTimeout(resolve, 300)),
-          controls.tokenSelectorButton.start(
-            {
-              height: Math.min(
-                getExpandedHeightForChainSelectorResults() + 68,
-                MAX_SELECTOR_HEIGHT,
+            await Promise.all([
+              delay(300),
+              nextSelector.controls?.start(
+                {
+                  height: Math.min(
+                    getExpandedHeightForSelectorResults() + 68,
+                    MAX_SELECTOR_HEIGHT,
+                  ),
+                },
+                {
+                  type: 'spring',
+                  duration: 0.1,
+                  stiffness: 200,
+                  mass: 1,
+                  damping: 15,
+                },
               ),
-            },
-            { ease: 'anticipate' },
-          ),
-        ])
+            ])
 
-        dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
-
-        if (refs.tokenSearch.current) {
-          refs.tokenSearch.current.focus()
+            dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
+          }
+        } else {
+          dispatch({ name: 'SelectorClosed', selector: { name } })
         }
       }
     }
 
-    const handleChainSelectorInputChange = async (
+    const handleSelectorInputChange = async (
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
       const oldValue = tokenSearchValue
@@ -246,17 +255,17 @@ export const GenericExpandingSelector = forwardRef(
       if (oldValue !== newValue) {
         dispatch({
           name: 'SelectorInputChanged',
-          selector: { name: 'chain' },
+          selector: { name },
           value: newValue,
         })
 
         // Maybe requestAnimationFrame?
-        await new Promise((resolve) => setTimeout(resolve, 10))
+        await delay(10)
 
-        await controls.chainSelectorButton.start(
+        await controls.selector.start(
           {
             height: Math.min(
-              getExpandedHeightForChainSelectorResults() + 68,
+              getExpandedHeightForSelectorResults() + 68,
               MAX_SELECTOR_HEIGHT,
             ),
           },
@@ -265,16 +274,16 @@ export const GenericExpandingSelector = forwardRef(
       }
     }
 
-    const focusChainSearch = useCallback(() => {
-      refs.chainSearch.current?.focus()
-    }, [refs.chainSearch])
+    const focusSearch = useCallback(() => {
+      refs.input.current?.focus({ preventScroll: true })
+    }, [refs.input])
 
     const handleLastElementViewportEnter = useCallback(() => {
-      setChainSelectorOverflow(false)
+      setSelectorOverflow(false)
     }, [])
 
     const handleLastElementViewportLeave = useCallback(() => {
-      setChainSelectorOverflow(true)
+      setSelectorOverflow(true)
     }, [])
 
     const tokenSelectorSearchResultElements = tokenSelectorSearchResults.map(
@@ -307,42 +316,40 @@ export const GenericExpandingSelector = forwardRef(
       ),
     )
 
-    const chainSelectorElement = (
+    const selectorElement = (
       <motion.div
         initial={{ opacity: 0, scale: 0, y: 200 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{
-          ...baseCardTransition,
-          delay: baseCardDelay + baseCardStaggerSpeed,
-        }}
+        transition={transition}
+        style={{ overscrollBehavior: 'none' }}
         className={cx(
           'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
           {
             'super-shadow-2':
-              formEditingMode?.name === 'chain' &&
+              formEditingMode?.name === name &&
               formEditingMode.recently !== 'closed' &&
               tokenSelectorSearchResults.length > 5 &&
-              chainSelectorOverflow,
+              selectorOverflow,
           },
         )}
       >
         <motion.button
-          ref={refs.chainSelector}
-          onClick={handleChainSelectorClick}
+          ref={refs.clickableArea}
+          onClick={handleSelectorClick}
           className={cx(
             'w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
             {
-              'z-30': formEditingMode?.name === 'chain',
+              'z-30': formEditingMode?.name === name,
               'hover:bg-stone-500/75 active:bg-stone-500/50 cursor-pointer':
-                formEditingMode?.name !== 'chain' ||
+                formEditingMode?.name !== name ||
                 formEditingMode.recently === 'closed',
             },
           )}
         >
           <motion.div
-            ref={refs.chainSelectorContainer}
+            ref={refs.container}
             initial={{ height: 48 }}
-            animate={controls.chainSelectorButton}
+            animate={controls.selector}
             className={'w-full'}
           >
             <div className="h-0 relative">
@@ -351,14 +358,14 @@ export const GenericExpandingSelector = forwardRef(
                   'w-full absolute flex justify-between pointer-events-none',
                   {
                     'group-hover:pointer-events-auto': !(
-                      formEditingMode?.name === 'chain' &&
+                      formEditingMode?.name === name &&
                       formEditingMode.recently !== 'closed'
                     ),
                   },
                 )}
                 animate={{
                   opacity:
-                    formEditingMode?.name === 'chain' &&
+                    formEditingMode?.name === name &&
                     formEditingMode.recently !== 'closed'
                       ? 0
                       : 1,
@@ -366,7 +373,7 @@ export const GenericExpandingSelector = forwardRef(
                 transition={{
                   duration: 0.1,
                   delay:
-                    formEditingMode?.name === 'chain' &&
+                    formEditingMode?.name === name &&
                     formEditingMode.recently === 'closed'
                       ? 0.1
                       : 0,
@@ -374,7 +381,7 @@ export const GenericExpandingSelector = forwardRef(
               >
                 <div className="space-y-2">
                   <div className="text-xs text-stone-400 font-light group-hover:text-stone-300 group-active:text-stone-300/75">
-                    CHAIN
+                    {label}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -396,7 +403,7 @@ export const GenericExpandingSelector = forwardRef(
                     'invisible pointer-events-none group-hover:visible flex items-center gap-1',
                     {
                       'group-hover:pointer-events-auto': !(
-                        formEditingMode?.name === 'chain' &&
+                        formEditingMode?.name === name &&
                         formEditingMode.recently !== 'closed'
                       ),
                     },
@@ -415,7 +422,7 @@ export const GenericExpandingSelector = forwardRef(
               className=""
               animate={{
                 opacity:
-                  formEditingMode?.name === 'chain' &&
+                  formEditingMode?.name === name &&
                   formEditingMode.recently !== 'closed'
                     ? 1
                     : 0,
@@ -423,7 +430,7 @@ export const GenericExpandingSelector = forwardRef(
               transition={{
                 duration: 0.1,
                 delay:
-                  formEditingMode?.name === 'chain' &&
+                  formEditingMode?.name === name &&
                   formEditingMode.recently === 'opened'
                     ? 0.1
                     : 0,
@@ -431,32 +438,32 @@ export const GenericExpandingSelector = forwardRef(
             >
               <div className="space-y-2 w-full mb-2">
                 <div className="text-xs text-stone-200 font-light">
-                  SELECT CHAIN
+                  SELECT {label}
                 </div>
 
                 <motion.div
                   className="w-full flex items-stretch bg-stone-500/25 rounded-md overflow-hidden"
-                  onClick={focusChainSearch}
+                  onClick={focusSearch}
                 >
                   <motion.input
-                    ref={refs.chainSearch}
+                    ref={refs.input}
                     type="text"
-                    placeholder="Search chain..."
+                    placeholder={`Search ${label.toLowerCase()}...`}
                     className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-1 mx-1 rounded-md"
-                    onBlur={handleChainSelectorInputBlur}
-                    onKeyPress={handleChainSelectorInputKeyPress}
-                    onChange={handleChainSelectorInputChange}
-                    tabIndex={
-                      formEditingMode?.name !== 'chain' ? -1 : undefined
-                    }
+                    onBlur={handleSelectorInputBlur}
+                    onKeyPress={handleSelectorInputKeyPress}
+                    onChange={handleSelectorInputChange}
+                    tabIndex={formEditingMode?.name !== name ? -1 : undefined}
                     value={tokenSearchValue}
                     transition={{ ease: 'anticipate' }}
                   />
 
                   <motion.button
                     tabIndex={
-                      formEditingMode?.name === 'chain' &&
-                      formEditingMode.recently !== 'closed'
+                      STOP_EDITING_ON_BLUR
+                        ? -1
+                        : formEditingMode?.name === name &&
+                          formEditingMode.recently !== 'closed'
                         ? undefined
                         : -1
                     }
@@ -490,10 +497,7 @@ export const GenericExpandingSelector = forwardRef(
               {/* TODO: offset height to include height of search box and label */}
               <motion.div className="w-[calc(100%_+_2rem)] max-h-[192px] overflow-y-scroll pr-5 -mr-5">
                 <motion.div className="box-content pl-2 pr-6 -mr-5 flex items-start w-[calc(100%-1.5rem)] pb-5">
-                  <div
-                    className="w-full"
-                    ref={refs.chainSelectorResultsContainer}
-                  >
+                  <div className="w-full" ref={refs.resultsContainer}>
                     {tokenSelectorSearchResultElements}
                   </div>
                 </motion.div>
@@ -504,6 +508,6 @@ export const GenericExpandingSelector = forwardRef(
       </motion.div>
     )
 
-    return chainSelectorElement
+    return selectorElement
   },
 )
