@@ -1,4 +1,3 @@
-import delay from 'delay'
 import Logo from '@component/Logo'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import { useCallback, useRef } from 'react'
@@ -550,4 +549,8 @@ export const CrossChainDepositLayout = (props: {
       </div>
     </div>
   )
+}
+
+function delay(d: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, d))
 }

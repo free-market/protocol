@@ -10,7 +10,6 @@
  * Thank you.
  */
 
-import delay from 'delay'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import {
   forwardRef,
@@ -174,7 +173,6 @@ export const GenericExpandingSelector = forwardRef(
         })
 
         await Promise.all([
-          delay(300),
           await controls.selector.start({
             height: 48,
           }),
@@ -511,3 +509,7 @@ export const GenericExpandingSelector = forwardRef(
     return selectorElement
   },
 )
+
+function delay(d: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, d))
+}
