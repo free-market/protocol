@@ -5,12 +5,10 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { <%= component_name %> as Component } from './<%= component_name %>'
 
-export const story = {
+export default {
   title: 'Example/<%= component_name %>',
   component: Component,
-}
-
-export default story as ComponentMeta<typeof Component>
+} as ComponentMeta<typeof Component>
 
 export const <%= component_name %>: ComponentStory<typeof Component> = () => (
   <Component />
