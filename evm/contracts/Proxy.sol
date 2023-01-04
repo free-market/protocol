@@ -15,8 +15,6 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     return upstreamAddress;
   }
 
-  event AsdfQwer(address upstr);
-
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
     // enforce owner authz in upstream
@@ -35,7 +33,6 @@ contract Proxy is FreeMarketBase, IHasUpstream {
    * It will return to the external caller whatever the implementation returns.
    */
   function _delegate(address upstr) internal {
-    emit AsdfQwer(upstr);
     assembly {
       // Copy msg.data. We take full control of memory in this inline assembly
       // block because it will not return to Solidity code. We overwrite the

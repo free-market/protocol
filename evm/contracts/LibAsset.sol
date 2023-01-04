@@ -1,21 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
+import './model/Asset.sol';
 
 library LibAsset {
-  enum AssetType {
-    Native,
-    Token,
-    Account
-  }
-
-  /// @def Represents any type of crypto asset
-  struct Asset {
-    AssetType assetType; // 0 for ETH, 1 for ERC20, > 1 for an account balance (e.g., an Aave debt)
-    address assetAddress; // 0x0 for ETH, the ERC20 address.  If it's an account balance, this represents the token of the balance
+  function encodeAsset(Asset memory asset) internal pure returns (uint256) {
+    return encodeAsset(asset.assetType, asset.assetAddress);
   }
 
   function encodeAsset(AssetType assetType, address assetAddress) internal pure returns (uint256) {
-    return (uint256(uint160(assetAddress)) << 16) & uint256(assetType);
+    uint160 a1 = uint160(assetAddress);
+    uint256 a2 = uint256(a1);
+    uint256 a3 = a2 << 16;
+    uint256 t1 = uint256(assetType);
+    uint256 a4 = a3 | t1;
+    return a4;
+    // return (uint256(uint160(assetAddress)) << 16) & uint256(assetType);
   }
 
   function decodeAsset(uint256 assetInt) internal pure returns (Asset memory) {

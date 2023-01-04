@@ -6,21 +6,6 @@ const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
 import { ActionIds } from '../utils/actionIds'
 
-function withRetries<T extends Object>(obj: T) {
-  return new Proxy<T>(obj, {
-    apply: (target, _thisArg, argumentsList) => {
-      // the typing for target looks wrong, casting to a function
-      const targetAsFunc = target as unknown as (...args: any[]) => any
-      try {
-        targetAsFunc(...argumentsList)
-      } catch (e) {
-        console.log('caught and rethrowing ', (e as Error).stack)
-        throw e
-      }
-    },
-  })
-}
-
 contract('deploy and upgrade', function (accounts: string[]) {
   const OWNER = accounts[0]
   const NOT_OWNER = accounts[1]
@@ -124,7 +109,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     await es.setWriter(oldWriter)
   })
 
-  it('adds and upgrades workflow actions', async () => {
+  it('adds and upgrades workflow action s', async () => {
     const workflowRunner = await ensureWorkflowRunnerDeployed()
 
     // helper function that loops through all actions and make sure that the contract for a given actionId  is pointing to the correct contract

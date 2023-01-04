@@ -49,6 +49,7 @@
     "ganache": "^7.5.0",
     "google-protobuf": "^3.21.2",
     "node-fetch": "^3.3.0",
+    "nodemon": "^2.0.20",
     "rimraf": "^3.0.2",
     "truffle": "^5.6.8",
     "ts-node": "^10.9.1",
