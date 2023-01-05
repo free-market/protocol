@@ -83,9 +83,7 @@ export const GenericExpandingSelector = forwardRef(
         title.toLowerCase().includes(tokenSearchValue.toLowerCase()),
     )
 
-    const [selectorOverflow, setSelectorOverflow] = useState(
-      tokenSelectorSearchResults.length > 5,
-    )
+    const [selectorOverflow, setSelectorOverflow] = useState(true)
 
     const getExpandedHeightForSelector = () =>
       refs.container.current?.scrollHeight ?? 0
@@ -328,7 +326,8 @@ export const GenericExpandingSelector = forwardRef(
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
       const oldValue = tokenSearchValue
-      let newValue
+      let newValue: string
+
       if (event.target.value.trim() === '') {
         newValue = ''
       } else {
@@ -344,6 +343,25 @@ export const GenericExpandingSelector = forwardRef(
 
         // Maybe requestAnimationFrame?
         await delay(10)
+
+        const tmpResults = [
+          { symbol: 'ETH', title: 'Ether' },
+          { symbol: 'WETH', title: 'Wrapped Ether' },
+          { symbol: 'USDC', title: 'USD Coin' },
+          { symbol: 'DAI', title: 'Dai Stablecoin' },
+          { symbol: 'USDT', title: 'Tether USD' },
+          { symbol: 'wBTC', title: 'WBTC' },
+          { symbol: 'YFI', title: 'yearn.finance' },
+          { symbol: 'AAVE', title: 'Aave Token' },
+          { symbol: 'GRT', title: 'Graph Token' },
+          { symbol: 'UNI', title: 'Uniswap' },
+        ].filter(
+          ({ symbol, title }) =>
+            symbol.toLowerCase().includes(newValue.toLowerCase()) ||
+            title.toLowerCase().includes(newValue.toLowerCase()),
+        )
+
+        setSelectorOverflow(tmpResults.length > 5)
 
         await controls.selector.start(
           {
