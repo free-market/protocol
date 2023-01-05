@@ -152,6 +152,10 @@ export const GenericExpandingSelector = forwardRef(
 
     const handleSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
+        if (refs.clickableArea.current) {
+          refs.clickableArea.current.focus({ preventScroll: true })
+        }
+
         dispatch({
           name: 'SelectorRecentlyClosed',
           selector: { name },
