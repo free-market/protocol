@@ -542,7 +542,7 @@ export const GenericExpandingSelector = forwardRef(
                     onKeyPress={handleSelectorInputKeyPress}
                     onKeyDown={handleSelectorInputKeyDown}
                     onChange={handleSelectorInputChange}
-                    tabIndex={formEditingMode?.name !== name ? -1 : undefined}
+                    tabIndex={-1}
                     value={tokenSearchValue}
                     transition={{ ease: 'anticipate' }}
                   />
