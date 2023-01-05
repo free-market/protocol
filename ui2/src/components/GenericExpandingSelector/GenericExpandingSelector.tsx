@@ -112,7 +112,49 @@ export const GenericExpandingSelector = forwardRef(
         formEditingMode?.name === name &&
         formEditingMode.recently !== 'opened'
       ) {
-        // no-op
+        if (refs.clickableArea.current) {
+          refs.clickableArea.current.focus({ preventScroll: true })
+        }
+
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name },
+        })
+
+        await Promise.all([
+          controls.selector.start({
+            height: 48,
+          }),
+        ])
+
+        dispatch({ name: 'SelectorClosed', selector: { name } })
+      } else if (
+        nextSelector?.type === 'controllable' &&
+        formEditingMode?.name === nextSelector.name
+      ) {
+        if (refs.input.current) {
+          refs.input.current.focus({ preventScroll: true })
+        }
+
+        dispatch({
+          name: 'SelectorRecentlyOpened',
+          selector: { name },
+        })
+
+        await Promise.all([
+          nextSelector.controls.start({
+            height: 48,
+          }),
+
+          controls.selector.start({
+            height: Math.min(
+              getExpandedHeightForSelectorResults() + 68,
+              MAX_SELECTOR_HEIGHT,
+            ),
+          }),
+
+          dispatch({ name: 'SelectorOpened', selector: { name } }),
+        ])
       } else if (
         formEditingMode === undefined ||
         formEditingMode.recently === 'closed'
@@ -152,6 +194,20 @@ export const GenericExpandingSelector = forwardRef(
 
     const handleSelectorInputBlur = async () => {
       if (STOP_EDITING_ON_BLUR && formEditingMode?.recently !== 'closed') {
+        if (nextSelector?.type === 'controllable') {
+          // TODO: stop using magic number here
+          await delay(10) // wait for the focus to change in case another element has been focused.
+
+          // If the focus has moved to the next selector,
+          // it is because the user pressed 'Enter'.
+          //
+          // There is no need to close the selector.
+          if (document.activeElement === nextSelector.refs.input.current) {
+            return
+          }
+        } else {
+        }
+
         if (refs.clickableArea.current) {
           refs.clickableArea.current.focus({ preventScroll: true })
         }
@@ -178,6 +234,23 @@ export const GenericExpandingSelector = forwardRef(
         if (nextSelector) {
           if (nextSelector.type === 'focusable') {
             nextSelector.focus()
+
+            dispatch({
+              name: 'SelectorRecentlyClosed',
+              selector: { name },
+            })
+
+            await Promise.all([
+              delay(300),
+              controls.selector.start({
+                height: 48,
+              }),
+            ])
+
+            dispatch({
+              name: 'SelectorClosed',
+              selector: { name },
+            })
           } else if (nextSelector.type === 'controllable') {
             if (nextSelector.refs.input?.current) {
               nextSelector.refs.input.current.focus({ preventScroll: true })
@@ -225,6 +298,30 @@ export const GenericExpandingSelector = forwardRef(
         } else {
           dispatch({ name: 'SelectorClosed', selector: { name } })
         }
+      }
+    }
+
+    const handleSelectorInputKeyDown = async (
+      event: React.KeyboardEvent<HTMLInputElement>,
+    ) => {
+      if (event.code === 'Escape') {
+        alert('escape')
+        if (refs.clickableArea.current) {
+          refs.clickableArea.current.focus({ preventScroll: true })
+        }
+
+        dispatch({
+          name: 'SelectorRecentlyClosed',
+          selector: { name },
+        })
+
+        await Promise.all([
+          await controls.selector.start({
+            height: 48,
+          }),
+        ])
+
+        dispatch({ name: 'SelectorClosed', selector: { name } })
       }
     }
 
@@ -337,13 +434,14 @@ export const GenericExpandingSelector = forwardRef(
             animate={controls.selector}
             className={'w-full'}
           >
-            <div className="h-0 relative">
+            <div className="absolute inset-0">
               <motion.button
                 ref={refs.clickableArea}
                 onClick={handleSelectorClick}
                 className={cx(
-                  'w-full absolute flex justify-between text-left cursor-pointer z-20 items-center',
+                  'w-full absolute flex justify-between text-left cursor-pointer z-30 items-center focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50 p-2 inset-0',
                   {
+                    '!z-10': formEditingMode?.name === name,
                     'group-hover:pointer-events-auto': !(
                       formEditingMode?.name === name &&
                       formEditingMode.recently !== 'closed'
@@ -406,7 +504,7 @@ export const GenericExpandingSelector = forwardRef(
             </div>
 
             <motion.div
-              className=""
+              className="relative z-20"
               animate={{
                 opacity:
                   formEditingMode?.name === name &&
@@ -439,6 +537,7 @@ export const GenericExpandingSelector = forwardRef(
                     className="relative font-bold border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-10/12 px-1 mx-1 rounded-md"
                     onBlur={handleSelectorInputBlur}
                     onKeyPress={handleSelectorInputKeyPress}
+                    onKeyDown={handleSelectorInputKeyDown}
                     onChange={handleSelectorInputChange}
                     tabIndex={formEditingMode?.name !== name ? -1 : undefined}
                     value={tokenSearchValue}
