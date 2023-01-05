@@ -103,9 +103,6 @@ export const CrossChainDepositLayout = (props: {
     ])
 
     dispatch({ name: 'FormLoaded' })
-    // setLoading(false)
-    await delay(1000)
-
     if (chainSelectorRef.current) {
       chainSelectorRef.current.focus({ preventScroll: true })
     }
