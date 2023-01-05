@@ -205,7 +205,6 @@ export const GenericExpandingSelector = forwardRef(
           if (document.activeElement === nextSelector.refs.input.current) {
             return
           }
-        } else {
         }
 
         if (refs.clickableArea.current) {
@@ -421,7 +420,10 @@ export const GenericExpandingSelector = forwardRef(
           className={cx(
             'absolute inset-0 w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
             {
-              'z-30': formEditingMode?.name === name,
+              'z-30':
+                formEditingMode?.name === name ||
+                (nextSelector?.type === 'controllable' &&
+                  formEditingMode?.name === nextSelector.name),
               'hover:bg-stone-500/75 active:bg-stone-500/50 cursor-pointer':
                 formEditingMode?.name !== name ||
                 formEditingMode.recently === 'closed',
@@ -439,9 +441,10 @@ export const GenericExpandingSelector = forwardRef(
                 ref={refs.clickableArea}
                 onClick={handleSelectorClick}
                 className={cx(
-                  'w-full absolute flex justify-between text-left cursor-pointer z-30 items-center focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50 p-2 inset-0',
+                  'w-full absolute flex justify-between text-left cursor-pointer items-center focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50 p-2 inset-0',
                   {
-                    '!z-10': formEditingMode?.name === name,
+                    'z-30': formEditingMode === undefined,
+                    'z-10': formEditingMode?.name === name,
                     'group-hover:pointer-events-auto': !(
                       formEditingMode?.name === name &&
                       formEditingMode.recently !== 'closed'
@@ -539,7 +542,7 @@ export const GenericExpandingSelector = forwardRef(
                     onKeyPress={handleSelectorInputKeyPress}
                     onKeyDown={handleSelectorInputKeyDown}
                     onChange={handleSelectorInputChange}
-                    tabIndex={formEditingMode?.name !== name ? -1 : undefined}
+                    tabIndex={-1}
                     value={tokenSearchValue}
                     transition={{ ease: 'anticipate' }}
                   />

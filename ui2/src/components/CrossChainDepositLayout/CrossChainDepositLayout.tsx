@@ -241,7 +241,8 @@ export const CrossChainDepositLayout = (props: {
       className="bg-stone-700 rounded-xl p-2 max-w-sm mx-auto shadow-md relative overflow-hidden"
     >
       <AnimatePresence>
-        {formEditingMode?.name === 'token' &&
+        {(formEditingMode?.name === 'token' ||
+          formEditingMode?.name === 'chain') &&
           formEditingMode.recently !== 'closed' && (
             <motion.div
               layout="position"
@@ -251,7 +252,7 @@ export const CrossChainDepositLayout = (props: {
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.1 }}
-              className="bg-stone-700/75 absolute top-0 right-0 left-0 bottom-0 p-2 group cursor-pointer"
+              className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-10"
             ></motion.div>
           )}
       </AnimatePresence>
