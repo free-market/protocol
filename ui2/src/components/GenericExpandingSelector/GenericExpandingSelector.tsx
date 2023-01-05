@@ -1,15 +1,3 @@
-/**
- * GenericExpandingSelector
- *
- * !!! DISCLAIMER !!!
- *
- * This is not actually a generic selector yet.
- * It is still only configured to be used as the
- * chain selector. This component is WORK IN PROGRESS.
- *
- * Thank you.
- */
-
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import {
   forwardRef,
@@ -146,9 +134,6 @@ export const GenericExpandingSelector = forwardRef(
                 MAX_SELECTOR_HEIGHT,
               ),
             },
-            //{ type: 'spring', duration: 0.1, stiffness: 200, mass: 1, damping: 15,}
-            // { ease: 'anticipate' },
-            //{ type: 'spring', duration: 0.1, bounce: 0.75, damping: 5, stiffness: 300, mass: 0.2 }
             {
               type: 'inertia',
               velocity: 1000,
@@ -331,11 +316,9 @@ export const GenericExpandingSelector = forwardRef(
           },
         )}
       >
-        <motion.button
-          ref={refs.clickableArea}
-          onClick={handleSelectorClick}
+        <motion.div
           className={cx(
-            'w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
+            'absolute inset-0 w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
             {
               'z-30': formEditingMode?.name === name,
               'hover:bg-stone-500/75 active:bg-stone-500/50 cursor-pointer':
@@ -351,9 +334,11 @@ export const GenericExpandingSelector = forwardRef(
             className={'w-full'}
           >
             <div className="h-0 relative">
-              <motion.div
+              <motion.button
+                ref={refs.clickableArea}
+                onClick={handleSelectorClick}
                 className={cx(
-                  'w-full absolute flex justify-between pointer-events-none',
+                  'w-full absolute flex justify-between text-left cursor-pointer z-20 items-center',
                   {
                     'group-hover:pointer-events-auto': !(
                       formEditingMode?.name === name &&
@@ -413,7 +398,7 @@ export const GenericExpandingSelector = forwardRef(
 
                   <PencilSquareIcon className="text-stone-300 group-active:text-stone-300/75 w-4 h-4" />
                 </div>
-              </motion.div>
+              </motion.button>
             </div>
 
             <motion.div
@@ -502,7 +487,7 @@ export const GenericExpandingSelector = forwardRef(
               </motion.div>
             </motion.div>
           </motion.div>
-        </motion.button>
+        </motion.div>
       </motion.div>
     )
 
