@@ -1,6 +1,6 @@
-require("ts-node").register({
+require('ts-node').register({
   files: true,
-});
+})
 
 require('dotenv').config()
 const HDWalletProvider = require('@truffle/hdwallet-provider')
@@ -15,13 +15,31 @@ module.exports = {
       network_id: '*',
       disableConfirmationListener: true,
     },
-    goerli: {
+    develop: {
+      host: '127.0.0.1',
+      port: 8545,
+      network_id: '*',
+      disableConfirmationListener: true,
+    },
+    test: {
+      host: '127.0.0.1',
+      port: 8545,
+      network_id: '*',
+      disableConfirmationListener: true,
+    },
+    goerliEthereum: {
       provider: () => {
-        return new HDWalletProvider(process.env.GOERLI_MNEMONIC, process.env.GOERLI_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.GOERLI_ETHEREUM_URL)
       },
       network_id: '5',
       // gas: 4465030,
       // gasPrice: 10000000000,
+    },
+    goerliArbitrum: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.GOERLI_ARBITRUM_URL)
+      },
+      network_id: '5',
     },
   },
   mocha: {},

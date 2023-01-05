@@ -1,0 +1,47 @@
+{
+  "5": {
+    "events": {
+      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LogNewOwner",
+        "type": "event"
+      },
+      "0x44046d68f1959a9a0df452473181c07837a948176bf1a8a05c24b69c58c806c5": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "oldUpstream",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newUpstream",
+            "type": "address"
+          }
+        ],
+        "name": "UpstreamChanged",
+        "type": "event"
+      }
+    },
+    "links": {},
+    "address": "0x48A47734214fB5A729670B5d1C55Fe9c64509aFc",
+    "transactionHash": "0x7bd394aafae7c16f8ee83f53815cdbf72ca1b1b61d453d935f8109db8d996803"
+  }
+}
