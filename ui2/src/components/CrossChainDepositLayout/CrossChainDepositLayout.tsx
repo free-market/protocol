@@ -26,6 +26,7 @@ export const CrossChainDepositLayout = (props: {
   initialFormEditingMode?: EditingMode
   initiallyOpen?: boolean
   loadingAllowed?: boolean
+  balanceState?: 'loading' | 'hidden' | 'displayed'
 }): JSX.Element => {
   const {
     submitting = false,
@@ -34,6 +35,7 @@ export const CrossChainDepositLayout = (props: {
     initialFormEditingMode,
     initiallyOpen = initialState.open,
     loadingAllowed = initialState.loadingAllowed,
+    balanceState = 'hidden',
   } = props
 
   const depositButtonBackgroundControls = useAnimationControls()
@@ -177,13 +179,16 @@ export const CrossChainDepositLayout = (props: {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-bold">
-            10.00
+          <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-bold leading-none py-1">
+            0.00
           </div>
         </div>
       </div>
 
-      <div className="invisible pointer-events-none group-hover:pointer-events-auto group-hover:visible flex items-center gap-1">
+      <div className="invisible relative pointer-events-none group-hover:pointer-events-auto group-hover:visible flex items-center gap-1">
+        <div className="visible group-hover:invisible absolute right-0 top-0 bottom-0 text-stone-400 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium text-xs leading-none flex items-end">
+          <span className="leading-none py-1">$0.00</span>
+        </div>
         <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75">
           click to edit
         </div>
@@ -286,6 +291,15 @@ export const CrossChainDepositLayout = (props: {
           />
 
           <GenericExpandingSelector
+            extraContent={
+              {
+                displayed: 'Balance: 0',
+                hidden: null,
+                loading: (
+                  <div className="rounded-full h-3 w-[60px] bg-stone-500/50 overflow-hidden shimmer relative after:absolute after:inset-0 after:translate-x-[-100%] after:animate-wave after:content-[''] after:bg-shimmer-gradient"></div>
+                ),
+              }[balanceState]
+            }
             transition={{
               ...baseCardTransition,
               delay: baseCardDelay + baseCardStaggerSpeed * 2,
@@ -547,8 +561,4 @@ export const CrossChainDepositLayout = (props: {
       </div>
     </div>
   )
-}
-
-function delay(d: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, d))
 }
