@@ -295,7 +295,9 @@ export const CrossChainDepositLayout = (props: {
               {
                 displayed: 'Balance: 0',
                 hidden: null,
-                loading: 'loading',
+                loading: (
+                  <div className="rounded-full h-3 w-[60px] bg-stone-500/50 overflow-hidden shimmer relative after:absolute after:inset-0 after:translate-x-[-100%] after:animate-wave after:content-[''] after:bg-shimmer-gradient"></div>
+                ),
               }[balanceState]
             }
             transition={{
