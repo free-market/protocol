@@ -24,6 +24,7 @@ export interface TokenSelectorMenuRef {
 export const GenericExpandingSelector = forwardRef(
   (
     props: {
+      extraContent?: string
       label: string
       name: EditingMode['name']
       refs: {
@@ -53,6 +54,7 @@ export const GenericExpandingSelector = forwardRef(
     ref: React.Ref<TokenSelectorMenuRef>,
   ): JSX.Element => {
     const {
+      extraContent,
       label,
       name,
       formEditingMode,
@@ -459,7 +461,7 @@ export const GenericExpandingSelector = forwardRef(
                 ref={refs.clickableArea}
                 onClick={handleSelectorClick}
                 className={cx(
-                  'w-full absolute flex justify-between text-left cursor-pointer items-center focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50 p-2 inset-0',
+                  'w-full absolute flex justify-between text-left cursor-pointer items-stretch focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50 p-2 inset-0',
                   {
                     'z-30': formEditingMode === undefined,
                     'z-10': formEditingMode?.name === name,
@@ -506,7 +508,7 @@ export const GenericExpandingSelector = forwardRef(
 
                 <div
                   className={cx(
-                    'invisible pointer-events-none group-hover:visible flex items-center gap-1',
+                    'invisible relative pointer-events-none group-hover:visible flex items-center gap-1',
                     {
                       'group-hover:pointer-events-auto': !(
                         formEditingMode?.name === name &&
@@ -515,6 +517,9 @@ export const GenericExpandingSelector = forwardRef(
                     },
                   )}
                 >
+                  <div className="visible group-hover:invisible absolute right-0 top-0 bottom-0 text-stone-400 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium text-xs leading-none flex items-end">
+                    <span className="leading-none py-1">{extraContent}</span>
+                  </div>
                   <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75 user-select-none">
                     click to edit
                   </div>
