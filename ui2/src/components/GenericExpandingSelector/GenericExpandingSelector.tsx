@@ -24,7 +24,7 @@ export interface TokenSelectorMenuRef {
 export const GenericExpandingSelector = forwardRef(
   (
     props: {
-      extraContent?: string
+      extraContent?: React.ReactNode
       label: string
       name: EditingMode['name']
       refs: {

@@ -26,6 +26,7 @@ export const CrossChainDepositLayout = (props: {
   initialFormEditingMode?: EditingMode
   initiallyOpen?: boolean
   loadingAllowed?: boolean
+  balanceState?: 'loading' | 'hidden' | 'displayed'
 }): JSX.Element => {
   const {
     submitting = false,
@@ -34,6 +35,7 @@ export const CrossChainDepositLayout = (props: {
     initialFormEditingMode,
     initiallyOpen = initialState.open,
     loadingAllowed = initialState.loadingAllowed,
+    balanceState = 'hidden',
   } = props
 
   const depositButtonBackgroundControls = useAnimationControls()
@@ -289,7 +291,13 @@ export const CrossChainDepositLayout = (props: {
           />
 
           <GenericExpandingSelector
-            extraContent="Balance: 0"
+            extraContent={
+              {
+                displayed: 'Balance: 0',
+                hidden: null,
+                loading: 'loading',
+              }[balanceState]
+            }
             transition={{
               ...baseCardTransition,
               delay: baseCardDelay + baseCardStaggerSpeed * 2,
