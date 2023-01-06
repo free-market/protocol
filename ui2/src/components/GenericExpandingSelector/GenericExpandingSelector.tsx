@@ -530,7 +530,9 @@ export const GenericExpandingSelector = forwardRef(
             </div>
 
             <motion.div
-              className="relative z-20"
+              className={cx('relative', {
+                'z-20': formEditingMode?.name === name,
+              })}
               animate={{
                 opacity:
                   formEditingMode?.name === name &&
