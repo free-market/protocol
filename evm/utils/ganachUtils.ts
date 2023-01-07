@@ -35,11 +35,11 @@ function getProvider(signerOrProvider: Signer | Provider): Provider {
 // }
 
 export function getTestWallet(testAccountIndex: number, provider: ethers.providers.Provider): ethers.Wallet {
-  const mnemonic = process.env['FMP_GANACHE_MNEMONIC']
+  const mnemonic = process.env['GANACHE_MNEMONIC']
   if (!mnemonic) {
-    throw new Error('FMP_GANACHE_MNEMONIC environment variable not')
+    throw new Error('GANACHE_MNEMONIC environment variable not')
   }
-  console.log('FMP_GANACHE_MNEMONIC', mnemonic)
+  console.log('GANACHE_MNEMONIC', mnemonic)
   const hdNode = ethers.utils.HDNode.fromMnemonic(mnemonic)
   const account = new ethers.Wallet(hdNode.derivePath(`m/44'/60'/0'/0/${testAccountIndex}`).privateKey, provider)
   account.connect(provider)

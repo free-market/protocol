@@ -8,6 +8,6 @@ interface IWorkflowStep {
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
     Asset[] calldata outputAssets,
-    uint256[] calldata args
+    bytes calldata args
   ) external payable returns (WorkflowStepResult memory);
 }

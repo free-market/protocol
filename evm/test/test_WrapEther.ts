@@ -110,7 +110,7 @@ contract('Wrapped Ether', function (accounts: string[]) {
       const gasInWei = gweiPerGasUnit.mul(gasUnits)
       const gasInGwei = formatEthereum(gasInWei.toString(), 'gwei')
       console.log(
-        `⛽ gas cost: ${gasInGwei} gwei =  ${commify(txResponse.receipt.gasUsed.toString())} gas units @ ${gasInGwei} gwei per unit`
+        `⛽ gas cost: ${gasInGwei} gwei =  ${commify(txResponse.receipt.gasUsed.toString())} gas units @ ${gweiPerGasUnit} gwei per unit`
       )
 
       // verify eth balances

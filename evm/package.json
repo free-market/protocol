@@ -5,9 +5,9 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--openssl-legacy-provider truffle test",
+    "test": "truffle test",
     "ganache": "./start-ganache.sh",
-    "clean": "ts-node utils/clean.ts",
+    "clean": "rimraf build types",
     "build": "truffle compile && pnpm run generate-clients && tsc",
     "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run   generate-clients:truffle",
     "generate-clients:ethers": "typechain --target=ethers-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",

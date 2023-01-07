@@ -17,9 +17,10 @@ contract WrapEther is IWorkflowStep {
 
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
-    Asset[] calldata outputAssets,
-    uint256[] calldata args
+    Asset[] calldata,
+    bytes calldata
   ) external payable returns (WorkflowStepResult memory) {
+    require(inputAssetAmounts.length == 1);
     uint256 amount = inputAssetAmounts[0].amount;
     emit EtherWrapped(address(this), amount);
     Weth weth = Weth(wethContractAddress);

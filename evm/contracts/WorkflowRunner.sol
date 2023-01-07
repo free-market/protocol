@@ -146,7 +146,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
         require(address(this).balance == ab.amount, 'computed token balance does not match actual balance');
         (bool sent, bytes memory data) = payable(msg.sender).call{value: ab.amount}('');
         require(sent, string(data));
-      } else if (asset.assetType == AssetType.Token) {
+      } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
         uint256 amount = token.balanceOf(address(this));
         require(ab.amount == amount, 'computed token balance does not match actual balance');

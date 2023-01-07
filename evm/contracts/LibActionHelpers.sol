@@ -16,6 +16,6 @@ library LibActionHelpers {
   }
 
   function singleTokenResult(address assetAddress, uint256 amount) internal pure returns (WorkflowStepResult memory) {
-    return singleAssetResult(AssetType.Token, assetAddress, amount);
+    return singleAssetResult(AssetType.ERC20, assetAddress, amount);
   }
 }

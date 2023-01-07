@@ -18,7 +18,7 @@ contract UnwrapEther is IWorkflowStep {
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
     Asset[] calldata,
-    uint256[] calldata
+    bytes calldata
   ) external payable returns (WorkflowStepResult memory) {
     uint256 amount = inputAssetAmounts[0].amount;
     emit EtherUnwrapped(address(this), amount);
