@@ -10,6 +10,7 @@ import {
 } from 'framer-motion'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
+import Confetti from 'react-confetti'
 
 import { EditingMode, WalletState } from './types'
 import { initialState, useViewModel } from './useViewModel'
@@ -21,7 +22,7 @@ export interface TokenSelectorMenuRef {
 
 export const CrossChainDepositLayout = (props: {
   submitting?: boolean
-  empty?: boolean
+  submitted?: boolean
   walletState?: WalletState
   initialFormEditingMode?: EditingMode
   initiallyOpen?: boolean
@@ -30,7 +31,7 @@ export const CrossChainDepositLayout = (props: {
 }): JSX.Element => {
   const {
     submitting = false,
-    empty = false,
+    submitted = false,
     walletState = 'ready',
     initialFormEditingMode,
     initiallyOpen = initialState.open,
@@ -260,6 +261,87 @@ export const CrossChainDepositLayout = (props: {
               className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-10"
             ></motion.div>
           )}
+        {submitted && (
+          <motion.div
+            layout="position"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-40 flex items-center justify-center"
+          >
+            <motion.span
+              initial={{ scale: 5 }}
+              animate={{
+                scale: 1,
+              }}
+              exit={{ scale: 5 }}
+              transition={{ duration: 0.1 }}
+              className="rounded-full"
+            >
+              <motion.div>
+                <motion.div
+                  className="flex flex-col items-center justify-center bg-stone-700"
+                  style={{
+                    boxShadow: 'rgb(68 64 60 / 75%) 0px 0px 20px 20px',
+                  }}
+                >
+                  <motion.svg
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    viewBox="0 0 50 50"
+                    className="stroke-emerald-400/90 w-16 h-16"
+                  >
+                    <motion.path
+                      className="stroke-emerald-400/90"
+                      fill="none"
+                      strokeWidth="3"
+                      d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+                      style={{ translateX: 5, translateY: 4 }}
+                    />
+                    <motion.path
+                      className="stroke-emerald-400/90"
+                      fill="none"
+                      strokeWidth="3"
+                      initial={{ pathLength: 0.2 }}
+                      animate={{
+                        pathLength: 1,
+                      }}
+                      transition={{ duration: 0.5 }}
+                      d="M14,26 L 22,33 L 35,16"
+                    />
+                  </motion.svg>
+                  <motion.div
+                    initial={{ y: '50%', opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        delay: 0.5,
+                        duration: 0.5,
+                        ease: 'easeOut',
+                      },
+                    }}
+                    className="text-emerald-400/90 font-medium text-xl"
+                  >
+                    Success!
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            </motion.span>
+
+            <Confetti
+              recycle={false}
+              width={384}
+              height={224}
+              drawShape={(context) => {
+                context.fillRect(-5 / 6, -4, 2.5, 8)
+              }}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
       <AnimatePresence>
         <motion.div className="space-y-2">
@@ -413,8 +495,8 @@ export const CrossChainDepositLayout = (props: {
                     className={cx(
                       'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
                       {
-                        'cursor-not-allowed': submitting || empty,
-                        'opacity-50': empty,
+                        'cursor-not-allowed': submitting || submitted,
+                        'opacity-50': submitted,
                       },
                     )}
                   >
