@@ -460,6 +460,7 @@ importers:
       prettier: ^2.7.1
       prismjs: 1.29.0
       react: ^18
+      react-confetti: 6.1.0
       react-dom: ^18
       react-final-form: 6.5.9
       react-refresh: ^0.10
@@ -507,6 +508,7 @@ importers:
       ladda: 2.0.3
       prismjs: 1.29.0
       react: 18.2.0
+      react-confetti: 6.1.0_react@18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-final-form: 6.5.9_b76tjmhm4bpbaoui6lan2hu4pm
       react-refresh: 0.10.0
@@ -24372,6 +24374,16 @@ packages:
       whatwg-fetch: 3.6.2
     dev: true
 
+  /react-confetti/6.1.0_react@18.2.0:
+    resolution: {integrity: sha512-7Ypx4vz0+g8ECVxr88W9zhcQpbeujJAVqL14ZnXJ3I23mOI9/oBVTQ3dkJhUmB0D6XOtCZEM6N0Gm9PMngkORw==}
+    engines: {node: '>=10.18'}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.1 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      tween-functions: 1.2.0
+    dev: false
+
   /react-dev-utils/12.0.1_7ii3rzddryeutys523nqivx2a4:
     resolution: {integrity: sha512-84Ivxmr17KjUupyqzFode6xKhjwuEJDROWKJy/BthkL7Wn6NJ8h4WE6k/exAv6ImS+0oZLRRW5j/aINMHyeGeQ==}
     engines: {node: '>=14'}
@@ -27795,6 +27807,10 @@ packages:
       turbo-windows-64: 1.5.4
       turbo-windows-arm64: 1.5.4
     dev: true
+
+  /tween-functions/1.2.0:
+    resolution: {integrity: sha512-PZBtLYcCLtEcjL14Fzb1gSxPBeL7nWvGhO5ZFPGqziCcr8uvHp0NDmdjBchp6KHL+tExcg0m3NISmKxhU394dA==}
+    dev: false
 
   /tweetnacl-util/0.15.1:
     resolution: {integrity: sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==}
