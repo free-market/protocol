@@ -35,6 +35,17 @@ contract EternalStorage is Ownable {
   mapping(bytes32 => bool) boolStorage;
   mapping(bytes32 => int256) intStorage;
 
+  using EnumerableMap for EnumerableMap.UintToAddressMap;
+  using EnumerableMap for EnumerableMap.AddressToUintMap;
+  using EnumerableMap for EnumerableMap.Bytes32ToBytes32Map;
+  using EnumerableMap for EnumerableMap.UintToUintMap;
+  using EnumerableMap for EnumerableMap.Bytes32ToUintMap;
+  mapping(bytes32 => EnumerableMap.UintToAddressMap) enumerableMapUintToAddressMapStorage;
+  mapping(bytes32 => EnumerableMap.AddressToUintMap) enumerableMapAddressToUintMapStorage;
+  mapping(bytes32 => EnumerableMap.Bytes32ToBytes32Map) enumerableMapBytes32ToBytes32MapStorage;
+  mapping(bytes32 => EnumerableMap.UintToUintMap) enumerableMapUintToUintMapStorage;
+  mapping(bytes32 => EnumerableMap.Bytes32ToUintMap) enumerableMapBytes32ToUintMapStorage;
+
   // *** Getter Methods ***
   function getUint(bytes32 _key) external view returns (uint256) {
     return uIntStorage[_key];
@@ -110,27 +121,177 @@ contract EternalStorage is Ownable {
     delete intStorage[_key];
   }
 
-  // this isn't part of the Eternal Storage pattern, but not sure where else it should go
-  using EnumerableMap for EnumerableMap.UintToAddressMap;
-  EnumerableMap.UintToAddressMap private mapActionIdToAddress;
+  // enumerable get
 
-  event LogSetActionAddress(uint16 actionId, uint16 actionId2, address actionAddress);
-
-  function setActionAddress(uint16 actionId, address actionAddress) external onlyWriter {
-    emit LogSetActionAddress(actionId, actionId, actionAddress);
-    mapActionIdToAddress.set(uint256(actionId), actionAddress);
+  function getEnumerableMapUintToAddress(bytes32 _key1, uint256 _key2) external view returns (address) {
+    return enumerableMapUintToAddressMapStorage[_key1].get(_key2);
   }
 
-  function getActionAddress(uint16 actionId) external view returns (address) {
-    return mapActionIdToAddress.get(uint256(actionId));
+  function getEnumerableMapAddressToUint(bytes32 _key1, address _key2) external view returns (uint256) {
+    return enumerableMapAddressToUintMapStorage[_key1].get(_key2);
   }
 
-  function getActionCount() public view returns (uint256) {
-    return mapActionIdToAddress.length();
+  function getEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bytes32) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].get(_key2);
   }
 
-  function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
-    (uint256 actionId, address actionAddress) = mapActionIdToAddress.at(index);
-    return ActionInfo(uint16(actionId), actionAddress);
+  function getEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (uint256) {
+    return enumerableMapUintToUintMapStorage[_key1].get(_key2);
+  }
+
+  function getEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (uint256) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].get(_key2);
+  }
+
+  // enumerable tryGet
+
+  function tryGetEnumerableMapUintToAddress(bytes32 _key1, uint256 _key2) external view returns (bool, address) {
+    return enumerableMapUintToAddressMapStorage[_key1].tryGet(_key2);
+  }
+
+  function tryGetEnumerableMapAddressToUint(bytes32 _key1, address _key2) external view returns (bool, uint256) {
+    return enumerableMapAddressToUintMapStorage[_key1].tryGet(_key2);
+  }
+
+  function tryGetEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bool, bytes32) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].tryGet(_key2);
+  }
+
+  function tryGetEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (bool, uint256) {
+    return enumerableMapUintToUintMapStorage[_key1].tryGet(_key2);
+  }
+
+  function tryGetEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (bool, uint256) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].tryGet(_key2);
+  }
+
+  // enumerable set
+
+  function setEnumerableMapUintToAddress(
+    bytes32 _key1,
+    uint256 _key2,
+    address _value
+  ) external onlyWriter returns (bool) {
+    return enumerableMapUintToAddressMapStorage[_key1].set(_key2, _value);
+  }
+
+  function setEnumerableMapAddressToUint(
+    bytes32 _key1,
+    address _key2,
+    uint256 _value
+  ) external onlyWriter returns (bool) {
+    return enumerableMapAddressToUintMapStorage[_key1].set(_key2, _value);
+  }
+
+  function setEnumerableMapBytes32ToBytes32Map(
+    bytes32 _key1,
+    bytes32 _key2,
+    bytes32 _value
+  ) external onlyWriter returns (bool) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].set(_key2, _value);
+  }
+
+  function setEnumerableMapUintToUintMap(
+    bytes32 _key1,
+    uint256 _key2,
+    uint256 _value
+  ) external onlyWriter returns (bool) {
+    return enumerableMapUintToUintMapStorage[_key1].set(_key2, _value);
+  }
+
+  function setEnumerableMapBytes32ToUintMap(
+    bytes32 _key1,
+    bytes32 _key2,
+    uint256 _value
+  ) external onlyWriter returns (bool) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].set(_key2, _value);
+  }
+
+  // enumerable remove
+
+  function removeEnumerableMapUintToAddress(bytes32 _key1, uint256 _key2) external onlyWriter {
+    enumerableMapUintToAddressMapStorage[_key1].remove(_key2);
+  }
+
+  function removeEnumerableMapAddressToUint(bytes32 _key1, address _key2) external onlyWriter {
+    enumerableMapAddressToUintMapStorage[_key1].remove(_key2);
+  }
+
+  function removeEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external onlyWriter {
+    enumerableMapBytes32ToBytes32MapStorage[_key1].remove(_key2);
+  }
+
+  function removeEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external onlyWriter {
+    enumerableMapUintToUintMapStorage[_key1].remove(_key2);
+  }
+
+  function removeEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external onlyWriter {
+    enumerableMapBytes32ToUintMapStorage[_key1].remove(_key2);
+  }
+
+  // enumerable contains
+
+  function containsEnumerableMapUintToAddress(bytes32 _key1, uint256 _key2) external view returns (bool) {
+    return enumerableMapUintToAddressMapStorage[_key1].contains(_key2);
+  }
+
+  function containsEnumerableMapAddressToUint(bytes32 _key1, address _key2) external view returns (bool) {
+    return enumerableMapAddressToUintMapStorage[_key1].contains(_key2);
+  }
+
+  function containsEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bool) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].contains(_key2);
+  }
+
+  function containsEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (bool) {
+    return enumerableMapUintToUintMapStorage[_key1].contains(_key2);
+  }
+
+  function containsEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (bool) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].contains(_key2);
+  }
+
+  // enumerable length
+
+  function lengthEnumerableMapUintToAddress(bytes32 _key1) external view returns (uint256) {
+    return enumerableMapUintToAddressMapStorage[_key1].length();
+  }
+
+  function lengthEnumerableMapAddressToUint(bytes32 _key1) external view returns (uint256) {
+    return enumerableMapAddressToUintMapStorage[_key1].length();
+  }
+
+  function lengthEnumerableMapBytes32ToBytes32Map(bytes32 _key1) external view returns (uint256) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].length();
+  }
+
+  function lengthEnumerableMapUintToUintMap(bytes32 _key1) external view returns (uint256) {
+    return enumerableMapUintToUintMapStorage[_key1].length();
+  }
+
+  function lengthEnumerableMapBytes32ToUintMap(bytes32 _key1) external view returns (uint256) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].length();
+  }
+
+  // enumerable at
+
+  function atEnumerableMapUintToAddress(bytes32 _key1, uint256 _index) external view returns (uint256, address) {
+    return enumerableMapUintToAddressMapStorage[_key1].at(_index);
+  }
+
+  function atEnumerableMapAddressToUint(bytes32 _key1, uint256 _index) external view returns (address, uint256) {
+    return enumerableMapAddressToUintMapStorage[_key1].at(_index);
+  }
+
+  function atEnumerableMapBytes32ToBytes32Map(bytes32 _key1, uint256 _index) external view returns (bytes32, bytes32) {
+    return enumerableMapBytes32ToBytes32MapStorage[_key1].at(_index);
+  }
+
+  function atEnumerableMapUintToUintMap(bytes32 _key1, uint256 _index) external view returns (uint256, uint256) {
+    return enumerableMapUintToUintMapStorage[_key1].at(_index);
+  }
+
+  function atEnumerableMapBytes32ToUintMap(bytes32 _key1, uint256 _index) external view returns (bytes32, uint256) {
+    return enumerableMapBytes32ToUintMapStorage[_key1].at(_index);
   }
 }

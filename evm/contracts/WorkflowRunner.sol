@@ -44,9 +44,9 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
   function createUserProxy() external {
     EternalStorage es = EternalStorage(eternalStorageAddress);
     // bytes32 key = keccak256(abi.encodePacked('userProxies', msg.sender));
-    bytes32 key = getAddressKey('userProxies', msg.sender);
+    bytes32 key = getUserProxyKey('userProxies', msg.sender);
     address currentAddress = es.getAddress(key);
-    require(currentAddress == address(0x0000000000000000), 'user proxy already exists');
+    require(currentAddress != address(0x0000000000000000), 'user proxy already exists');
     key = keccak256(abi.encodePacked('frontDoor'));
     address frontDoorAddress = es.getAddress(key);
     UserProxy newUserProxy = new UserProxy(payable(msg.sender), eternalStorageAddress, frontDoorAddress);
@@ -54,41 +54,82 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     es.setAddress(key, userProxyAddress);
   }
 
-  event LogActionAddressSet(uint16 actionId, uint16 actionId2, address actionAddress);
+  // latestActionAddresses maps actionId to latest and greatest version of that action
+  bytes32 constant latestActionAddresses = 0xc94d198e6194ea38dbd900920351d7f8e6c6d85b1d3b803fb93c54be008e11fd; // keccak256('latestActionAddresses')
+
+  event ActionAddressSetEvent(uint16 actionId, address actionAddress);
+
+  function getActionWhitelistKey(uint16 actionId) internal pure returns (bytes32) {
+    return keccak256(abi.encodePacked('actionWhiteList', actionId));
+  }
+
+  function getActionBlacklistKey(uint16 actionId) internal pure returns (bytes32) {
+    return keccak256(abi.encodePacked('actionBlackList', actionId));
+  }
 
   function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    eternalStorage.setActionAddress(actionId, actionAddress);
-    emit LogActionAddressSet(actionId, actionId, actionAddress);
+    eternalStorage.setEnumerableMapUintToAddress(latestActionAddresses, actionId, actionAddress);
+    // using the white list map like a set, we only care about the keys
+    eternalStorage.setEnumerableMapAddressToUint(getActionWhitelistKey(actionId), actionAddress, 0);
+    eternalStorage.removeEnumerableMapAddressToUint(getActionBlacklistKey(actionId), actionAddress);
+    emit ActionAddressSetEvent(actionId, actionAddress);
+  }
+
+  function removeActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    address latest = eternalStorage.getEnumerableMapUintToAddress(latestActionAddresses, actionId);
+    require(actionAddress != latest, 'cannot remove latest action address');
+    eternalStorage.setEnumerableMapAddressToUint(getActionBlacklistKey(actionId), actionAddress, 0);
+    eternalStorage.removeEnumerableMapAddressToUint(getActionWhitelistKey(actionId), actionAddress);
+    emit ActionAddressSetEvent(actionId, actionAddress);
   }
 
   function getActionAddress(uint16 actionId) external view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getActionAddress(actionId);
+    return eternalStorage.getEnumerableMapUintToAddress(latestActionAddresses, actionId);
   }
 
   function getActionAddressInternal(uint16 actionId) internal view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getActionAddress(actionId);
+    return eternalStorage.getEnumerableMapUintToAddress(latestActionAddresses, actionId);
   }
 
   function getActionCount() external view returns (uint256) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getActionCount();
+    return eternalStorage.lengthEnumerableMapUintToAddress(latestActionAddresses);
   }
 
   function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getActionInfoAt(index);
+    (uint256 actionId, address actionAddress) = eternalStorage.atEnumerableMapUintToAddress(latestActionAddresses, index);
+
+    bytes32 whitelistKey = getActionWhitelistKey(uint16(actionId));
+    uint256 whitelistCount = eternalStorage.lengthEnumerableMapAddressToUint(whitelistKey);
+    address[] memory whitelist = new address[](whitelistCount);
+    for (uint256 i = 0; i < whitelistCount; ++i) {
+      (address whitelistedAddress, ) = eternalStorage.atEnumerableMapAddressToUint(whitelistKey, i);
+      whitelist[i] = whitelistedAddress;
+    }
+
+    bytes32 blacklistKey = getActionBlacklistKey(uint16(actionId));
+    uint256 blacklistCount = eternalStorage.lengthEnumerableMapAddressToUint(blacklistKey);
+    address[] memory blacklist = new address[](blacklistCount);
+    for (uint256 i = 0; i < blacklistCount; ++i) {
+      (address blacklistedAddress, ) = eternalStorage.atEnumerableMapAddressToUint(blacklistKey, i);
+      blacklist[i] = blacklistedAddress;
+    }
+
+    return ActionInfo(uint16(actionId), actionAddress, whitelist, blacklist);
   }
 
-  function getAddressKey(string memory category, address addr) internal pure returns (bytes32) {
+  function getUserProxyKey(string memory category, address addr) internal pure returns (bytes32) {
     return keccak256(abi.encodePacked(category, addr));
   }
 
   function getUserProxy() external view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    bytes32 key = getAddressKey('userProxies', msg.sender);
+    bytes32 key = getUserProxyKey('userProxies', msg.sender);
     return eternalStorage.getAddress(key);
   }
 
@@ -150,7 +191,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
         IERC20 token = IERC20(asset.assetAddress);
         uint256 amount = token.balanceOf(address(this));
         require(ab.amount == amount, 'computed token balance does not match actual balance');
-        token.transfer(msg.sender, amount);
+        SafeERC20.safeTransfer(token, msg.sender, amount);
       } else {
         revert('unknown asset type in assetBalances');
       }
@@ -205,38 +246,4 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     }
     return rv;
   }
-
-  // event Foo(address sender);
-
-  // function foo(Workflow calldata workflow) external payable {
-  //   emit Foo(msg.sender);
-  // }
-
-  // function executeWorkflow(uint256[] calldata args) external payable {
-  //   // the first arg is the starting amount
-  //   uint256 nextAmount = args[0];
-  //   uint16 argsIndex = 1;
-  //   while (argsIndex < args.length) {
-  //     (uint256 argsConsumed, uint256 outcomeAmount) = getStepFunc(args[argsIndex])(nextAmount, args[argsIndex + 1:]);
-  //     argsIndex += 1 + uint16(argsConsumed);
-  //     nextAmount = outcomeAmount;
-  //   }
-  // }
-
-  // function withdrawal(
-  //   address tokenAddress,
-  //   uint256 amount,
-  //   uint256[] calldata
-  // ) public payable returns (address, uint256) {
-  //   address payable user = payable(getOwner());
-  //   if (tokenAddress == address(0x0)) {
-  //     (bool success, ) = user.call{value: amount}('');
-  //     require(success, 'withdraw eth failed');
-  //   } else {
-  //     IERC20 token = IERC20(tokenAddress);
-  //     SafeERC20.safeTransfer(token, user, amount);
-  //   }
-  //   // this has to be a terminal step, so returning 0 for amount
-  //   return (address(0), 0);
-  // }
 }
