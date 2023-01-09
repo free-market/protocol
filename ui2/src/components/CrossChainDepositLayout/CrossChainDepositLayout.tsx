@@ -333,6 +333,14 @@ export const CrossChainDepositLayout = (props: {
             </motion.span>
 
             <Confetti
+              colors={[
+                '#fb923c',
+                '#facc15',
+                '#a3e635',
+                '#38bdf8',
+                '#4ade80',
+                '#fbbf24',
+              ]}
               recycle={false}
               width={384}
               height={224}
@@ -466,8 +474,14 @@ export const CrossChainDepositLayout = (props: {
               <AnimatePresence>
                 <motion.h2
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: baseDelay + 0.2, duration: 2 }}
+                  animate={
+                    submitted
+                      ? { opacity: 0, transition: { duration: 0.5 } }
+                      : {
+                          opacity: 1,
+                          transition: { delay: baseDelay + 0.2, duration: 2 },
+                        }
+                  }
                   className="text-stone-600 text-2xl font-medium max-w-sm mx-auto my-0 text-center"
                 >
                   Start a deposit
@@ -475,8 +489,14 @@ export const CrossChainDepositLayout = (props: {
 
                 <motion.h4
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: baseDelay + 0.4, duration: 2 }}
+                  animate={
+                    submitted
+                      ? { opacity: 0, transition: { duration: 0.5 } }
+                      : {
+                          opacity: 1,
+                          transition: { delay: baseDelay + 0.4, duration: 2 },
+                        }
+                  }
                   className="text-stone-500 text-sm max-w-sm mx-auto my-0 text-center font-medium"
                 >
                   When you start a deposit, Free Market will move your funds
@@ -487,16 +507,21 @@ export const CrossChainDepositLayout = (props: {
 
                 <motion.div
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: baseDelay + 0.6, duration: 1 }}
+                  animate={
+                    submitted
+                      ? { opacity: 0, transition: { duration: 0.5 } }
+                      : {
+                          opacity: 1,
+                          transition: { delay: baseDelay + 0.6, duration: 1 },
+                        }
+                  }
                   className="px-2 max-w-xs mx-auto relative"
                 >
                   <button
                     className={cx(
                       'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
                       {
-                        'cursor-not-allowed': submitting || submitted,
-                        'opacity-50': submitted,
+                        'cursor-not-allowed opacity-50': submitting,
                       },
                     )}
                   >
