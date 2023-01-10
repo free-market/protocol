@@ -1,7 +1,7 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { CrossChainDepositLayout as Component } from './CrossChainDepositLayout'
+import { DepositFlow as Component } from './DepositFlow'
 import ErrorDialog from '@component/ErrorDialog'
 
 class ErrorBoundaryFoo extends React.Component {
@@ -43,15 +43,13 @@ export default {
       values: [{ name: 'light', value: '#f4f4f5' }],
     },
   },
-  title: 'Example/CrossChainDepositLayout',
+  title: 'Example/DepositFlow',
   component: Component,
 } as ComponentMeta<typeof Component>
 
-export const CrossChainDepositLayout: ComponentStory<typeof Component> = (
-  props,
-) => (
+export const DepositFlow: ComponentStory<typeof Component> = (props) => (
   <ErrorBoundaryFoo>
     <Component {...props} />
   </ErrorBoundaryFoo>
 )
-CrossChainDepositLayout.args = {}
+DepositFlow.args = {}

@@ -1,7 +1,4 @@
-import {
-  initialState,
-  useViewModel,
-} from '@component/CrossChainDepositLayout/useViewModel'
+import { initialState, useViewModel } from '@component/DepositFlow/useViewModel'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { useAnimationControls } from 'framer-motion'
 import { useRef } from 'react'

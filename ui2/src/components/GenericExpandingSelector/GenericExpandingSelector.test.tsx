@@ -1,7 +1,4 @@
-import {
-  initialState,
-  useViewModel,
-} from '@component/CrossChainDepositLayout/useViewModel'
+import { initialState, useViewModel } from '@component/DepositFlow/useViewModel'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { useAnimationControls } from 'framer-motion'
