@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import CrossChainDepositLayout from './'
+import DepositFlow from './'
 
 describe('Component: CrossChainDepositLayout', () => {
   it('should render children', () => {
-    const { asFragment } = render(<CrossChainDepositLayout />)
+    const { asFragment } = render(<DepositFlow />)
 
     expect(asFragment()).toMatchInlineSnapshot()
   })

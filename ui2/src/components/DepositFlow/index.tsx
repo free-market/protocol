@@ -1,1 +1,1 @@
-export { DepositFlow as default } from './CrossChainDepositLayout'
+export { DepositFlow as default } from './DepositFlow'
