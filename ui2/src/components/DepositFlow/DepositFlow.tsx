@@ -20,7 +20,7 @@ export interface TokenSelectorMenuRef {
   getExpandedHeight: () => number
 }
 
-export const DepositFlow = (props: {
+export type DepostiFlowProps = {
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState
@@ -28,7 +28,9 @@ export const DepositFlow = (props: {
   initiallyOpen?: boolean
   loadingAllowed?: boolean
   balanceState?: 'loading' | 'hidden' | 'displayed'
-}): JSX.Element => {
+}
+
+export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
   const {
     submitting = false,
     submitted = false,
