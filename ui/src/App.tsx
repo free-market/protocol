@@ -61,6 +61,17 @@ function App(): JSX.Element {
     setWorkflow(newWorkflow)
   }
 
+  const workflowAssetSymbols = new Set([
+    ...workflow.steps.map(({inputAsset}) => `${inputAsset.blockChain}.${inputAsset.symbol}`),
+    ...workflow.steps.map(({outputAsset}) => `${outputAsset.blockChain}.${outputAsset.symbol}`)
+  ])
+
+  const balances: Record<string, string> = {}
+
+  for (const chainAssetSymbol of workflowAssetSymbols) {
+    balances[chainAssetSymbol] = '0'
+  }
+
   return (
     <WorkflowProvider
       onWorkflowTextChange={onSniptChanged}

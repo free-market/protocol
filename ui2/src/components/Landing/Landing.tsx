@@ -13,8 +13,8 @@ import { useCallback, useState } from 'react'
 import cx from 'classnames'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import Logo from '@component/Logo'
-import CrossChainDepositLayout from '@component/CrossChainDepositLayout'
 import CrossChainJobCard from '@component/CrossChainJobCard'
+import DepositFlow from '@component/DepositFlow'
 
 export const Landing = (): JSX.Element => {
   const [firstStepButtonActive, setFirstStepButtonActive] = useState(false)
@@ -919,7 +919,7 @@ export const Landing = (): JSX.Element => {
                   className="h-[45rem] bg-stone-100 rounded-xl shadow-md flex items-center justify-center relative z-10 -translate-y-32 w-full basis-1/2 pt-5 m-10"
                 >
                   {/* TODO(FMP-345): animate cross chain deposit demo */}
-                  <CrossChainDepositLayout></CrossChainDepositLayout>
+                  <DepositFlow />
                 </motion.div>
 
                 <motion.div className="grow flex flex-col items-stretch">
