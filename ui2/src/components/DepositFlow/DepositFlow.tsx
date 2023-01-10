@@ -20,7 +20,7 @@ export interface TokenSelectorMenuRef {
   getExpandedHeight: () => number
 }
 
-export const CrossChainDepositLayout = (props: {
+export const DepositFlow = (props: {
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState

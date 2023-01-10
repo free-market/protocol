@@ -1,7 +1,7 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { CrossChainDepositLayout as Component } from './CrossChainDepositLayout'
+import { DepositFlow as Component } from './CrossChainDepositLayout'
 import ErrorDialog from '@component/ErrorDialog'
 
 class ErrorBoundaryFoo extends React.Component {
