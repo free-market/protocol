@@ -28,6 +28,7 @@ export type DepostiFlowProps = {
   initiallyOpen?: boolean
   loadingAllowed?: boolean
   balanceState?: 'loading' | 'hidden' | 'displayed'
+  onClick?: () => void
 }
 
 export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
@@ -39,6 +40,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     initiallyOpen = initialState.open,
     loadingAllowed = initialState.loadingAllowed,
     balanceState = 'hidden',
+    onClick,
   } = props
 
   const depositButtonBackgroundControls = useAnimationControls()
@@ -356,6 +358,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
       <AnimatePresence>
         <motion.div className="space-y-2">
           <GenericExpandingSelector
+            key="chain"
             transition={{
               ...baseCardTransition,
               delay: baseCardDelay + baseCardStaggerSpeed,
@@ -383,6 +386,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
           />
 
           <GenericExpandingSelector
+            key="token"
             extraContent={
               {
                 displayed: 'Balance: 0',
@@ -415,6 +419,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
           />
 
           <motion.div
+            key="amount"
             initial={{ opacity: 0, scale: 0, y: 200 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{
@@ -448,6 +453,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
           <AnimatePresence>
             <motion.button
+              key="button"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{
@@ -475,6 +481,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             <div className="space-y-4 mt-16">
               <AnimatePresence>
                 <motion.h2
+                  key={0}
                   initial={{ opacity: 0 }}
                   animate={
                     submitted
@@ -490,6 +497,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
                 </motion.h2>
 
                 <motion.h4
+                  key={1}
                   initial={{ opacity: 0 }}
                   animate={
                     submitted
@@ -508,6 +516,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
                 {formCard}
 
                 <motion.div
+                  key={2}
                   initial={{ opacity: 0 }}
                   animate={
                     submitted
@@ -520,6 +529,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
                   className="px-2 max-w-xs mx-auto relative"
                 >
                   <button
+                    onClick={onClick}
                     className={cx(
                       'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
                       {
@@ -572,8 +582,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             preserveAspectRatio="xMidYMid meet"
           />
         </motion.a>
-
-        <AnimatePresence />
       </motion.div>
       <div className="min-h-[512px] flex items-center justify-center">
         <motion.button
@@ -592,6 +600,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             <AnimatePresence mode="wait" initial>
               {loading && (
                 <motion.div
+                  key="loading"
                   initial={{ opacity: 0, scale: 0, y: 50 }}
                   animate={loadingBarControls}
                   transition={{
@@ -616,6 +625,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
               {!loading && (
                 <motion.span
+                  key="deposit"
                   className="user-select-none"
                   key="deposit"
                   layout="position"
