@@ -1,7 +1,7 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { DepositFlow as Component } from './DepositFlow'
+import { DepositFlow as Component, DepostiFlowProps } from './DepositFlow'
 import ErrorDialog from '@component/ErrorDialog'
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 
@@ -46,18 +46,29 @@ export default {
   },
   title: 'Example/DepositFlow',
   component: Component,
-  decorators: [
-    (Story) => (
-      <DepositFlowStateProvider>
-        <Story />
-      </DepositFlowStateProvider>
-    ),
-  ],
+  argTypes: {
+    loadingAllowed: { control: 'boolean' },
+    initiallyOpen: { control: 'boolean' },
+  },
 } as ComponentMeta<typeof Component>
 
-export const DepositFlow: ComponentStory<typeof Component> = (props) => (
-  <ErrorBoundaryFoo>
-    <Component {...props} />
-  </ErrorBoundaryFoo>
-)
+export const DepositFlow: ComponentStory<typeof Component> = (props) => {
+  const { loadingAllowed, initiallyOpen, ...rest } =
+    props as DepostiFlowProps & {
+      loadingAllowed: boolean
+      initiallyOpen: boolean
+    }
+
+  return (
+    <ErrorBoundaryFoo>
+      <DepositFlowStateProvider
+        initiallyLoadingAllowed={loadingAllowed}
+        initiallyOpen={initiallyOpen}
+      >
+        <Component {...rest} />
+      </DepositFlowStateProvider>
+    </ErrorBoundaryFoo>
+  )
+}
+
 DepositFlow.args = {}

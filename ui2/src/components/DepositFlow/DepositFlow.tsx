@@ -27,9 +27,6 @@ export type DepostiFlowProps = {
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState
-  initialFormEditingMode?: EditingMode
-  initiallyOpen?: boolean
-  loadingAllowed?: boolean
   balanceState?: 'loading' | 'hidden' | 'displayed'
   onClick?: () => void
 }
@@ -128,15 +125,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     dispatch({ name: 'BackButtonClicked' })
   }, [])
 
-  // TODO: move these props to the provider
-  // TODO: keep these props controllable from storybook
-  //
-  // initialState = {
-  //   ...initialState,
-  //   loadingAllowed,
-  //   open: initiallyOpen,
-  //   formEditingMode: initialFormEditingMode,
-  // }
   const vm = useDepositFlowState()
 
   const {
