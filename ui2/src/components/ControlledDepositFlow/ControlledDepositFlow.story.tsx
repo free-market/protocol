@@ -12,6 +12,7 @@ const { chains, provider, webSocketProvider } = configureChains(
 )
 
 const client = createClient({
+  autoConnect: true,
   provider,
   connectors: [new MetaMaskConnector({ chains })],
   webSocketProvider,
@@ -23,15 +24,30 @@ export default {
   decorators: [
     (Story) => (
       <WagmiConfig client={client}>
-        <DepositFlowStateProvider>
-          <Story />
-        </DepositFlowStateProvider>
+        <Story />
       </WagmiConfig>
     ),
   ],
+
+  parameters: {
+    backgrounds: {
+      default: 'light',
+      values: [{ name: 'light', value: '#f4f4f5' }],
+    },
+  },
+
+  argTypes: {
+    initiallyOpen: { control: 'boolean', defaultValue: true },
+  },
 } as ComponentMeta<typeof Component>
 
 export const ControlledDepositFlow: ComponentStory<typeof Component> = (
   props,
-) => <Component {...props} />
+) => (
+  <DepositFlowStateProvider
+    initiallyOpen={(props as { initiallyOpen: boolean }).initiallyOpen}
+  >
+    <Component {...props} />
+  </DepositFlowStateProvider>
+)
 ControlledDepositFlow.args = {}
