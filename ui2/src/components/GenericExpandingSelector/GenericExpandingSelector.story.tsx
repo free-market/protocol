@@ -1,4 +1,4 @@
-import { initialState, useViewModel } from '@component/DepositFlow/useViewModel'
+import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { useAnimationControls } from 'framer-motion'
 import { useRef } from 'react'
@@ -13,7 +13,7 @@ export default {
 export const GenericExpandingSelector: ComponentStory<
   typeof Component
 > = () => {
-  const vm = useViewModel(initialState)
+  const vm = useDepositFlowState()
   const { formEditingMode, tokenSearchValue, dispatch } = vm
   const chainSelectorButtonControls = useAnimationControls()
 

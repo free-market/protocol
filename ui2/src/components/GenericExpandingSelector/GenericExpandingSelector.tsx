@@ -9,7 +9,7 @@ import {
 import cx from 'classnames'
 import { AnimationControls, motion, Transition } from 'framer-motion'
 import '../Layout/super-shadow.css'
-import { Action, EditingMode } from '@component/DepositFlow/types'
+import { Action, EditingMode } from '@component/DepositFlowStateProvider/types'
 
 const MAX_SELECTOR_HEIGHT = 240
 
