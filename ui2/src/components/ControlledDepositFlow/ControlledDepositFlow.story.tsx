@@ -1,13 +1,13 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react'
-import { publicProvider } from 'wagmi/providers/public'
 import { configureChains, createClient, WagmiConfig, mainnet } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { infuraProvider } from 'wagmi/providers/infura'
 
 import { ControlledDepositFlow as Component } from './ControlledDepositFlow'
 
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet],
-  [publicProvider()],
+  [infuraProvider({ apiKey: '1483a287d2f74587b8039f17a94a2416' })],
 )
 
 const client = createClient({
