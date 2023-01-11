@@ -616,7 +616,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
               {!loading && (
                 <motion.span
-                  className="user-select-none"
                   key="deposit"
                   className="user-select-none"
                   layout="position"
