@@ -1,7 +1,27 @@
+import { createContext } from 'react'
 import { useImmerReducer } from 'use-immer'
+
 import { Action, State, ViewModel } from './types'
 
-export const useViewModel = (initialState: State): ViewModel => {
+export const initialState: State = {
+  loadingAllowed: false,
+  open: false,
+  loading: false,
+  formEditingMode: undefined,
+  amountEditing: false,
+  tokenSearchValue: '',
+}
+
+export const DepositFlowStateContext = createContext<ViewModel>({
+  ...initialState,
+  dispatch() {
+    // no-op
+  },
+})
+
+export const DepositFlowStateProvider = (props: {
+  children?: React.ReactNode
+}): JSX.Element => {
   const reducer = (state: State, action: Action) => {
     switch (action.name) {
       case 'DepositButtonClicked': {
@@ -76,14 +96,11 @@ export const useViewModel = (initialState: State): ViewModel => {
 
   const [state, dispatch] = useImmerReducer(reducer, initialState)
 
-  return { ...state, dispatch }
-}
+  const viewModel: ViewModel = { ...state, dispatch }
 
-export const initialState = {
-  loadingAllowed: false,
-  open: false,
-  loading: false,
-  formEditingMode: undefined,
-  amountEditing: false,
-  tokenSearchValue: '',
+  return (
+    <DepositFlowStateContext.Provider value={viewModel}>
+      {props.children}
+    </DepositFlowStateContext.Provider>
+  )
 }

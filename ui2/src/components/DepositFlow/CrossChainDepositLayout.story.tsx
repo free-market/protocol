@@ -3,6 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { DepositFlow as Component } from './DepositFlow'
 import ErrorDialog from '@component/ErrorDialog'
+import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 
 class ErrorBoundaryFoo extends React.Component {
   state = { hasError: false }
@@ -45,6 +46,13 @@ export default {
   },
   title: 'Example/DepositFlow',
   component: Component,
+  decorators: [
+    (Story) => (
+      <DepositFlowStateProvider>
+        <Story />
+      </DepositFlowStateProvider>
+    ),
+  ],
 } as ComponentMeta<typeof Component>
 
 export const DepositFlow: ComponentStory<typeof Component> = (props) => (

@@ -12,8 +12,11 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 import Confetti from 'react-confetti'
 
-import { EditingMode, WalletState } from './types'
-import { initialState, useViewModel } from './useViewModel'
+import {
+  EditingMode,
+  WalletState,
+} from '@component/DepositFlowStateProvider/types'
+import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import GenericExpandingSelector from '@component/GenericExpandingSelector'
 
 export interface TokenSelectorMenuRef {
@@ -36,9 +39,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     submitting = false,
     submitted = false,
     walletState = 'ready',
-    initialFormEditingMode,
-    initiallyOpen = initialState.open,
-    loadingAllowed = initialState.loadingAllowed,
     balanceState = 'hidden',
     onClick,
   } = props
@@ -126,15 +126,18 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
   const handleBackClick = useCallback(() => {
     dispatch({ name: 'BackButtonClicked' })
-    // setOpen(false)
   }, [])
 
-  const vm = useViewModel({
-    ...initialState,
-    loadingAllowed,
-    open: initiallyOpen,
-    formEditingMode: initialFormEditingMode,
-  })
+  // TODO: move these props to the provider
+  // TODO: keep these props controllable from storybook
+  //
+  // initialState = {
+  //   ...initialState,
+  //   loadingAllowed,
+  //   open: initiallyOpen,
+  //   formEditingMode: initialFormEditingMode,
+  // }
+  const vm = useDepositFlowState()
 
   const {
     open,
@@ -627,7 +630,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
                 <motion.span
                   key="deposit"
                   className="user-select-none"
-                  key="deposit"
                   layout="position"
                   initial={{ opacity: 0, scale: 1, y: 30 }}
                   animate={{
