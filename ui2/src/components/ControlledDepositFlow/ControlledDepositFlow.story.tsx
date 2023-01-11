@@ -1,3 +1,4 @@
+import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { configureChains, createClient, WagmiConfig, mainnet } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
@@ -22,7 +23,9 @@ export default {
   decorators: [
     (Story) => (
       <WagmiConfig client={client}>
-        <Story />
+        <DepositFlowStateProvider>
+          <Story />
+        </DepositFlowStateProvider>
       </WagmiConfig>
     ),
   ],

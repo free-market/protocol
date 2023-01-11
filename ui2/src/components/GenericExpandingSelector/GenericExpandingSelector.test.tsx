@@ -1,4 +1,4 @@
-import { initialState, useViewModel } from '@component/DepositFlow/useViewModel'
+import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { useAnimationControls } from 'framer-motion'
@@ -7,7 +7,7 @@ import GenericExpandingSelector from './'
 
 describe('Component: GenericExpandingSelector', () => {
   it('should render children', () => {
-    const vm = useViewModel(initialState)
+    const vm = useDepositFlowState()
     const { formEditingMode, tokenSearchValue, dispatch } = vm
     const chainSelectorButtonControls = useAnimationControls()
 

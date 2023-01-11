@@ -1,7 +1,36 @@
+import { createContext } from 'react'
 import { useImmerReducer } from 'use-immer'
-import { Action, State, ViewModel } from './types'
 
-export const useViewModel = (initialState: State): ViewModel => {
+import { Action, EditingMode, State, ViewModel } from './types'
+
+export const initialState: State = {
+  loadingAllowed: false,
+  open: false,
+  loading: false,
+  formEditingMode: undefined,
+  amountEditing: false,
+  tokenSearchValue: '',
+}
+
+export const DepositFlowStateContext = createContext<ViewModel>({
+  ...initialState,
+  dispatch() {
+    // no-op
+  },
+})
+
+export const DepositFlowStateProvider = (props: {
+  initiallyLoadingAllowed?: boolean
+  initiallyOpen?: boolean
+  initialFormEditingMode?: EditingMode
+  children?: React.ReactNode
+}): JSX.Element => {
+  const {
+    initiallyLoadingAllowed = initialState.loadingAllowed,
+    initiallyOpen = initialState.open,
+    initialFormEditingMode = initialState.formEditingMode,
+  } = props
+
   const reducer = (state: State, action: Action) => {
     switch (action.name) {
       case 'DepositButtonClicked': {
@@ -74,16 +103,18 @@ export const useViewModel = (initialState: State): ViewModel => {
     }
   }
 
-  const [state, dispatch] = useImmerReducer(reducer, initialState)
+  const [state, dispatch] = useImmerReducer<State>(reducer, {
+    ...initialState,
+    loadingAllowed: initiallyLoadingAllowed,
+    open: initiallyOpen,
+    formEditingMode: initialFormEditingMode,
+  })
 
-  return { ...state, dispatch }
-}
+  const viewModel: ViewModel = { ...state, dispatch }
 
-export const initialState = {
-  loadingAllowed: false,
-  open: false,
-  loading: false,
-  formEditingMode: undefined,
-  amountEditing: false,
-  tokenSearchValue: '',
+  return (
+    <DepositFlowStateContext.Provider value={viewModel}>
+      {props.children}
+    </DepositFlowStateContext.Provider>
+  )
 }
