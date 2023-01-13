@@ -19,8 +19,8 @@ const MAX_SELECTOR_HEIGHT = 240
 // TODO: when this is 'true', the search button is not usable because the input becomes blurred
 const STOP_EDITING_ON_BLUR = false
 
-export interface TokenSelectorMenuRef {
-  getExpandedHeight: () => number
+export interface GenericExpandingSelectorRef {
+  close: () => Promise<void>
 }
 
 const url = 'https://app.aave.com/icons/tokens/eth.svg'
@@ -143,7 +143,7 @@ export const GenericExpandingSelector = forwardRef(
       selectedChoice?: { address: string }
       choices?: { address: string; symbol: string; title: string }[]
     },
-    ref: React.Ref<TokenSelectorMenuRef>,
+    ref: React.Ref<GenericExpandingSelectorRef>,
   ): JSX.Element => {
     const {
       extraContent,
@@ -183,25 +183,8 @@ export const GenericExpandingSelector = forwardRef(
 
     const [selectorOverflow, setSelectorOverflow] = useState(true)
 
-    const getExpandedHeightForSelector = () =>
-      refs.container.current?.scrollHeight ?? 0
-    useImperativeHandle(
-      ref,
-      () => ({
-        getExpandedHeight: getExpandedHeightForSelector,
-      }),
-      [searchValue],
-    )
-
     const getExpandedHeightForSelectorResults = () =>
       refs.resultsContainer.current?.scrollHeight ?? 0
-    useImperativeHandle(
-      ref,
-      () => ({
-        getExpandedHeight: getExpandedHeightForSelectorResults,
-      }),
-      [searchValue],
-    )
 
     const scrollableRef = useRef<HTMLDivElement>(null)
 
@@ -379,6 +362,14 @@ export const GenericExpandingSelector = forwardRef(
       }
     }
 
+    useImperativeHandle(
+      ref,
+      () => ({
+        close: makeSelection,
+      }),
+      [dispatch, nextSelector],
+    )
+
     const handleSelectorInputKeyPress = async (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
@@ -449,9 +440,11 @@ export const GenericExpandingSelector = forwardRef(
           })
 
           await delay(200)
+
           const highlight: HTMLDivElement | null = document.querySelector(
             '#fmp-selector-highlight',
           )
+
           const scrollable = scrollableRef.current
 
           if (highlight == null || scrollable == null) {
@@ -592,7 +585,13 @@ export const GenericExpandingSelector = forwardRef(
             animate={controls.selector}
             className={'w-full'}
           >
-            <div className="absolute inset-0">
+            <div
+              className={cx('absolute inset-0', {
+                'z-30':
+                  nextSelector?.type === 'controllable' &&
+                  formEditingMode?.name === nextSelector.name,
+              })}
+            >
               <motion.button
                 ref={refs.clickableArea}
                 onClick={handleSelectorClick}

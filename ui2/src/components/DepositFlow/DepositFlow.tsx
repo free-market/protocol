@@ -15,10 +15,7 @@ import Confetti from 'react-confetti'
 import { WalletState } from '@component/DepositFlowStateProvider/types'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import GenericExpandingSelector from '@component/GenericExpandingSelector'
-
-export interface TokenSelectorMenuRef {
-  getExpandedHeight: () => number
-}
+import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
 
 export type DepostiFlowProps = {
   submitting?: boolean
@@ -43,6 +40,18 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
   const loadingSpinnerControls = useAnimationControls()
   const chainSelectorButtonControls = useAnimationControls()
   const tokenSelectorButtonControls = useAnimationControls()
+
+  const amountInputRef = useRef<HTMLInputElement>(null)
+  const chainSelectorRef = useRef<GenericExpandingSelectorRef>(null)
+  const chainSelectorClickableAreaRef = useRef<HTMLButtonElement>(null)
+  const tokenSelectorRef = useRef<GenericExpandingSelectorRef>(null)
+  const tokenSelectorClickableAreaRef = useRef<HTMLButtonElement>(null)
+  const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
+  const tokenSearchRef = useRef<HTMLInputElement>(null)
+  const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
+  const chainSearchRef = useRef<HTMLInputElement>(null)
+  const tokenSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
+  const chainSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
 
   const handleDepositButtonHoverStart = useCallback(() => {
     depositButtonBackgroundControls.start({
@@ -104,8 +113,8 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     ])
 
     dispatch({ name: 'FormLoaded' })
-    if (chainSelectorRef.current) {
-      chainSelectorRef.current.focus({ preventScroll: true })
+    if (chainSelectorClickableAreaRef.current) {
+      chainSelectorClickableAreaRef.current.focus({ preventScroll: true })
     }
   }, [])
 
@@ -116,20 +125,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     depositButtonForegroundControls.start({
       scale: 1,
     })
-  }, [])
-
-  const handleBackClick = useCallback(() => {
-    dispatch({ name: 'BackButtonClicked' })
-  }, [])
-
-  const handleSelectorShadowClick = useCallback(() => {
-    // TODO(FMP-365):
-    // - acquire ref to selector
-    // - expose "closeSelector" with useImperativeHandle
-    // - check if either token or chain selectors are open
-    // - close them with closeSelector instead of emitting
-    //   this action
-    dispatch({ name: 'SelectorShadowClicked' })
   }, [])
 
   const vm = useDepositFlowState()
@@ -143,15 +138,27 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     dispatch,
   } = vm
 
-  const amountInputRef = useRef<HTMLInputElement>(null)
-  const chainSelectorRef = useRef<HTMLButtonElement>(null)
-  const tokenSelectorRef = useRef<HTMLButtonElement>(null)
-  const tokenSelectorContainerRef = useRef<HTMLDivElement>(null)
-  const tokenSearchRef = useRef<HTMLInputElement>(null)
-  const chainSelectorContainerRef = useRef<HTMLDivElement>(null)
-  const chainSearchRef = useRef<HTMLInputElement>(null)
-  const tokenSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
-  const chainSelectorResultsContainerRef = useRef<HTMLDivElement>(null)
+  const handleSelectorShadowClick = useCallback(async () => {
+    // TODO(FMP-365):
+    // - acquire ref to selector
+    // - expose "closeSelector" with useImperativeHandle
+    // - check if either token or chain selectors are open
+    // - close them with closeSelector instead of emitting
+    //   this action
+    if (formEditingMode?.name === 'chain') {
+      await chainSelectorRef.current?.close()
+      dispatch({ name: 'SelectorShadowClicked' })
+    }
+
+    if (formEditingMode?.name === 'token') {
+      await tokenSelectorRef.current?.close()
+      dispatch({ name: 'SelectorShadowClicked' })
+    }
+  }, [formEditingMode, chainSearchRef, tokenSearchRef])
+
+  const handleBackClick = useCallback(() => {
+    dispatch({ name: 'BackButtonClicked' })
+  }, [])
 
   const startEditing = useCallback(() => {
     dispatch({ name: 'EditingStarted' })
@@ -364,8 +371,9 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             label="CHAIN"
             name="chain"
             {...{ formEditingMode, searchValue: tokenSearchValue, dispatch }}
+            ref={chainSelectorRef}
             refs={{
-              clickableArea: chainSelectorRef,
+              clickableArea: chainSelectorClickableAreaRef,
               container: chainSelectorContainerRef,
               input: chainSearchRef,
               resultsContainer: chainSelectorResultsContainerRef,
@@ -378,7 +386,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
               name: 'token',
               refs: {
                 input: tokenSearchRef,
-                clickableArea: tokenSelectorRef,
+                clickableArea: tokenSelectorClickableAreaRef,
               },
               controls: tokenSelectorButtonControls,
             }}
@@ -420,8 +428,9 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             label="TOKEN"
             name="token"
             {...{ formEditingMode, searchValue: tokenSearchValue, dispatch }}
+            ref={tokenSelectorRef}
             refs={{
-              clickableArea: tokenSelectorRef,
+              clickableArea: tokenSelectorClickableAreaRef,
               container: tokenSelectorContainerRef,
               input: tokenSearchRef,
               resultsContainer: tokenSelectorResultsContainerRef,
