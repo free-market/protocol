@@ -27,10 +27,10 @@ const url = 'https://app.aave.com/icons/tokens/eth.svg'
 
 const SearchResult = (props: {
   closeParent: () => Promise<void>
-  results: { address: string; symbol: string; title: string }[]
+  results: { address: string | number; symbol: string; title: string }[]
   selector: { name: string }
   index: number
-  address: string
+  address: string | number
 }): JSX.Element => {
   const {
     dispatch,
@@ -141,8 +141,8 @@ export const GenericExpandingSelector = forwardRef(
       searchValue: string
       dispatch: (action: Action) => void
       transition: Transition
-      selectedChoice?: { address: string }
-      choices?: { address: string; symbol: string; title: string }[]
+      selectedChoice?: { address: string | number }
+      choices?: { address: string | number; symbol: string; title: string }[]
     },
     ref: React.Ref<GenericExpandingSelectorRef>,
   ): JSX.Element => {
@@ -424,7 +424,7 @@ export const GenericExpandingSelector = forwardRef(
           (r) => r.address === highlightedChoice?.address,
         )
 
-        let nextResult: { address: string } | undefined
+        let nextResult: { address: string | number } | undefined
 
         if (!event.shiftKey) {
           nextResult = tmpResults[currentHighlightIndex + 1]

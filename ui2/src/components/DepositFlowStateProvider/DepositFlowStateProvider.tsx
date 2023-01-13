@@ -10,7 +10,7 @@ export const initialState: State = {
   formEditingMode: undefined,
   amountEditing: false,
   tokenSearchValue: '',
-  selectedChain: { address: '0' },
+  selectedChain: { address: 1 },
   selectedToken: { address: '0' },
   selectorRecentlyChanged: false,
 }

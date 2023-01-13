@@ -392,19 +392,39 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             }}
             choices={[
               {
-                address: '0',
+                address: 1,
                 symbol: 'Ethereum',
                 title: 'Ethereum',
               },
               {
-                address: '1',
+                address: 0x38, // 56 in decimal
+                symbol: 'BNB Smart Chain',
+                title: 'BNB Smart Chain',
+              },
+              {
+                address: 43114,
+                symbol: 'Avalanche',
+                title: 'Avalanche',
+              },
+              {
+                address: 137,
+                symbol: 'Polygon Matic',
+                title: 'Polygon Matic',
+              },
+              {
+                address: 42161,
                 symbol: 'Arbitrum One',
                 title: 'Arbitrum One',
               },
               {
-                address: '2',
-                symbol: 'Polygon',
-                title: 'Polygon / Matic',
+                address: 10,
+                symbol: 'Optimism',
+                title: 'Optimism',
+              },
+              {
+                address: 250,
+                symbol: 'Fantom Opera',
+                title: 'Fantom Opera',
               },
             ]}
             selectedChoice={vm.selectedChain}
