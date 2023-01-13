@@ -76,7 +76,7 @@ const SearchResult = (props: {
             ? highlightedChoice.address === address
             : index === 0) && (
             <motion.div
-              layout
+              layout="position"
               layoutId={`${selector.name}-highlight`}
               transition={{ duration: 0.1 }}
               id="fmp-selector-highlight"
