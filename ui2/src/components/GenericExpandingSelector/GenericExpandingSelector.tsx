@@ -409,6 +409,7 @@ export const GenericExpandingSelector = forwardRef(
         dispatch({ name: 'SelectorClosed', selector: { name } })
       }
 
+      // TODO(FMP-368): check for up arrow and down arrow
       if (event.code === 'Tab') {
         event.preventDefault()
 
@@ -489,6 +490,9 @@ export const GenericExpandingSelector = forwardRef(
           (r) => r.address === highlightedChoice?.address,
         )
 
+        // TODO(FMP-369): track before and after change to prevent the
+        //                highlight from animating until after the selector
+        //                resizes
         dispatch({
           name: 'SelectorInputChanged',
           selector: {
