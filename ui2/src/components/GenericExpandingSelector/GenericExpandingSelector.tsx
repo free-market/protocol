@@ -36,6 +36,7 @@ const SearchResult = (props: {
     dispatch,
     highlightedSelectorResult: highlightedChoice,
     formEditingMode,
+    selectorRecentlyChanged,
   } = useDepositFlowState()
   const { closeParent, index, address, selector, results } = props
 
@@ -73,7 +74,7 @@ const SearchResult = (props: {
         )}
         key={`${symbol}${index}`}
       >
-        {formEditingMode?.recently === undefined
+        {formEditingMode?.recently === undefined || !selectorRecentlyChanged
           ? formEditingMode?.name === selector.name &&
             (highlightedChoice
               ? highlightedChoice.address === address
@@ -490,11 +491,8 @@ export const GenericExpandingSelector = forwardRef(
           (r) => r.address === highlightedChoice?.address,
         )
 
-        // TODO(FMP-369): track before and after change to prevent the
-        //                highlight from animating until after the selector
-        //                resizes
         dispatch({
-          name: 'SelectorInputChanged',
+          name: 'SelectorInputRecentlyChanged',
           selector: {
             name,
             highlightedResult: highlightChanges ? tmpResults[0] : undefined,
@@ -516,6 +514,10 @@ export const GenericExpandingSelector = forwardRef(
           },
           { ease: 'anticipate' },
         )
+
+        dispatch({
+          name: 'SelectorInputChanged',
+        })
       }
     }
 

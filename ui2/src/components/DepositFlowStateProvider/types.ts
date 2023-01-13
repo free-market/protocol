@@ -16,6 +16,9 @@ export type Action =
   | { name: 'SelectorClosed'; selector: { name: string } }
   | {
       name: 'SelectorInputChanged'
+    }
+  | {
+      name: 'SelectorInputRecentlyChanged'
       selector: { name: string; highlightedResult?: { address: string } }
       value: string
     }
@@ -55,6 +58,7 @@ export type State = {
   highlightedSelectorResult?: { address: string }
   selectedChain: { address: string }
   selectedToken: { address: string }
+  selectorRecentlyChanged: boolean
 }
 
 export type ViewModel = State & { dispatch: (action: Action) => void }

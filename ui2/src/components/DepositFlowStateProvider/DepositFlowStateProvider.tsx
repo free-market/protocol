@@ -12,6 +12,7 @@ export const initialState: State = {
   tokenSearchValue: '',
   selectedChain: { address: '0' },
   selectedToken: { address: '0' },
+  selectorRecentlyChanged: false,
 }
 
 export const DepositFlowStateContext = createContext<ViewModel>({
@@ -114,11 +115,17 @@ export const DepositFlowStateProvider = (props: {
         break
       }
 
-      case 'SelectorInputChanged': {
+      case 'SelectorInputRecentlyChanged': {
+        state.selectorRecentlyChanged = true
         state.tokenSearchValue = action.value
         if (action.selector.highlightedResult) {
           state.highlightedSelectorResult = action.selector.highlightedResult
         }
+        break
+      }
+
+      case 'SelectorInputChanged': {
+        state.selectorRecentlyChanged = false
         break
       }
 
