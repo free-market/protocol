@@ -10,6 +10,8 @@ export const initialState: State = {
   formEditingMode: undefined,
   amountEditing: false,
   tokenSearchValue: '',
+  selectedChain: { address: '0' },
+  selectedToken: { address: '0' },
 }
 
 export const DepositFlowStateContext = createContext<ViewModel>({
@@ -47,9 +49,25 @@ export const DepositFlowStateProvider = (props: {
       case 'BackButtonClicked': {
         state.open = false
         state.loading = false
+        state.formEditingMode = undefined
         break
       }
-      // setOpen(false)
+      case 'SelectorShadowClicked': {
+        state.formEditingMode = undefined
+        break
+      }
+      case 'SelectorResultHoverStarted': {
+        state.highlightedSelectorResult = { address: action.result.address }
+        break
+      }
+      case 'SelectorResultClicked': {
+        if (action.selector.name === 'chain') {
+          state.selectedChain = action.result
+        } else if (action.selector.name === 'token') {
+          state.selectedToken = action.result
+        }
+        break
+      }
       case 'EditingStarted': {
         state.amountEditing = true
         break
@@ -65,6 +83,7 @@ export const DepositFlowStateProvider = (props: {
         }
 
         state.tokenSearchValue = ''
+        state.highlightedSelectorResult = action.selector.highlightedResult
 
         break
       }
@@ -81,6 +100,7 @@ export const DepositFlowStateProvider = (props: {
       case 'SelectorClosed': {
         state.formEditingMode = undefined
         state.tokenSearchValue = ''
+        state.highlightedSelectorResult = undefined
         break
       }
 
@@ -90,11 +110,20 @@ export const DepositFlowStateProvider = (props: {
           recently: 'closed',
         }
         state.tokenSearchValue = ''
+        state.highlightedSelectorResult = undefined
         break
       }
 
       case 'SelectorInputChanged': {
         state.tokenSearchValue = action.value
+        if (action.selector.highlightedResult) {
+          state.highlightedSelectorResult = action.selector.highlightedResult
+        }
+        break
+      }
+
+      case 'HighlightMoved': {
+        state.highlightedSelectorResult = action.selector.highlightedResult
         break
       }
 
