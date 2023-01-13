@@ -73,20 +73,29 @@ const SearchResult = (props: {
         )}
         key={`${symbol}${index}`}
       >
-        {formEditingMode?.name === selector.name &&
-          (highlightedChoice
-            ? highlightedChoice.address === address
-            : index === 0) && (
-            <motion.div
-              layout={
-                formEditingMode.recently === undefined ? 'position' : undefined
-              }
-              layoutId={`${selector.name}-highlight`}
-              transition={{ duration: 0.1 }}
-              id="fmp-selector-highlight"
-              className="absolute inset-0 rounded-full bg-stone-500 group-active:bg-stone-500/50"
-            />
-          )}
+        {formEditingMode?.recently === undefined
+          ? formEditingMode?.name === selector.name &&
+            (highlightedChoice
+              ? highlightedChoice.address === address
+              : index === 0) && (
+              <motion.div
+                layout={
+                  formEditingMode.recently === undefined
+                    ? 'position'
+                    : undefined
+                }
+                layoutId={`${selector.name}-highlight`}
+                transition={{ duration: 0.1 }}
+                id="fmp-selector-highlight"
+                className="absolute inset-0 rounded-full bg-stone-500 group-active:bg-stone-500/50"
+              />
+            )
+          : formEditingMode?.name === selector.name &&
+            (highlightedChoice
+              ? highlightedChoice.address === address
+              : index === 0) && (
+              <div className="absolute inset-0 rounded-full bg-stone-500 group-active:bg-stone-500/50" />
+            )}
         <div className="rounded-full overflow-hidden w-4 h-4 bg-stone-500 relative z-20">
           <img className="w-full h-full" src={url} />
         </div>
