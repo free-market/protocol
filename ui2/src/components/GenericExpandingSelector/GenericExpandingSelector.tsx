@@ -43,12 +43,14 @@ const SearchResult = (props: {
   const { symbol, title } = results.find((r) => r.address === address)!
 
   const handleHoverStart = useCallback(() => {
-    dispatch({
-      name: 'SelectorResultHoverStarted',
-      selector,
-      result: { address },
-    })
-  }, [dispatch])
+    if (formEditingMode?.recently === undefined) {
+      dispatch({
+        name: 'SelectorResultHoverStarted',
+        selector,
+        result: { address },
+      })
+    }
+  }, [dispatch, formEditingMode?.recently])
 
   const handleClick = useCallback(async () => {
     dispatch({
@@ -76,7 +78,9 @@ const SearchResult = (props: {
             ? highlightedChoice.address === address
             : index === 0) && (
             <motion.div
-              layout="position"
+              layout={
+                formEditingMode.recently === undefined ? 'position' : undefined
+              }
               layoutId={`${selector.name}-highlight`}
               transition={{ duration: 0.1 }}
               id="fmp-selector-highlight"

@@ -236,7 +236,6 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
   const formCard = (
     <motion.div
-      layout="position"
       layoutId="foo"
       transition={{
         ease: 'anticipate',
