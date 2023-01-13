@@ -21,7 +21,7 @@ describe('Component: GenericExpandingSelector', () => {
         label="CHAIN"
         name="chain"
         transition={{}}
-        {...{ formEditingMode, tokenSearchValue, dispatch }}
+        {...{ formEditingMode, searchValue: tokenSearchValue, dispatch }}
         refs={{
           clickableArea: chainSelectorRef,
           container: chainSelectorContainerRef,

@@ -12,10 +12,7 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import '../Layout/super-shadow.css'
 import Confetti from 'react-confetti'
 
-import {
-  EditingMode,
-  WalletState,
-} from '@component/DepositFlowStateProvider/types'
+import { WalletState } from '@component/DepositFlowStateProvider/types'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import GenericExpandingSelector from '@component/GenericExpandingSelector'
 
@@ -123,6 +120,16 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
 
   const handleBackClick = useCallback(() => {
     dispatch({ name: 'BackButtonClicked' })
+  }, [])
+
+  const handleSelectorShadowClick = useCallback(() => {
+    // TODO(FMP-365):
+    // - acquire ref to selector
+    // - expose "closeSelector" with useImperativeHandle
+    // - check if either token or chain selectors are open
+    // - close them with closeSelector instead of emitting
+    //   this action
+    dispatch({ name: 'SelectorShadowClicked' })
   }, [])
 
   const vm = useDepositFlowState()
@@ -246,6 +253,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
           formEditingMode?.name === 'chain') &&
           formEditingMode.recently !== 'closed' && (
             <motion.div
+              onClick={handleSelectorShadowClick}
               layout="position"
               initial={{ opacity: 0 }}
               animate={{
@@ -356,7 +364,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             }}
             label="CHAIN"
             name="chain"
-            {...{ formEditingMode, tokenSearchValue, dispatch }}
+            {...{ formEditingMode, searchValue: tokenSearchValue, dispatch }}
             refs={{
               clickableArea: chainSelectorRef,
               container: chainSelectorContainerRef,
@@ -371,9 +379,28 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
               name: 'token',
               refs: {
                 input: tokenSearchRef,
+                clickableArea: tokenSelectorRef,
               },
               controls: tokenSelectorButtonControls,
             }}
+            choices={[
+              {
+                address: '0',
+                symbol: 'Ethereum',
+                title: 'Ethereum',
+              },
+              {
+                address: '1',
+                symbol: 'Arbitrum One',
+                title: 'Arbitrum One',
+              },
+              {
+                address: '2',
+                symbol: 'Polygon',
+                title: 'Polygon / Matic',
+              },
+            ]}
+            selectedChoice={vm.selectedChain}
           />
 
           <GenericExpandingSelector
@@ -393,7 +420,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
             }}
             label="TOKEN"
             name="token"
-            {...{ formEditingMode, tokenSearchValue, dispatch }}
+            {...{ formEditingMode, searchValue: tokenSearchValue, dispatch }}
             refs={{
               clickableArea: tokenSelectorRef,
               container: tokenSelectorContainerRef,
@@ -407,6 +434,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
               type: 'focusable',
               focus: startEditing,
             }}
+            selectedChoice={vm.selectedToken}
           />
 
           <motion.div

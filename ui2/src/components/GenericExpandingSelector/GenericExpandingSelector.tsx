@@ -4,21 +4,97 @@ import {
   RefObject,
   useCallback,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react'
 import cx from 'classnames'
 import { AnimationControls, motion, Transition } from 'framer-motion'
 import '../Layout/super-shadow.css'
 import { Action, EditingMode } from '@component/DepositFlowStateProvider/types'
+import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 
 const MAX_SELECTOR_HEIGHT = 240
 
 // use this to debug the editing state
 // TODO: when this is 'true', the search button is not usable because the input becomes blurred
-const STOP_EDITING_ON_BLUR = true
+const STOP_EDITING_ON_BLUR = false
 
 export interface TokenSelectorMenuRef {
   getExpandedHeight: () => number
+}
+
+const url = 'https://app.aave.com/icons/tokens/eth.svg'
+
+const SearchResult = (props: {
+  closeParent: () => Promise<void>
+  results: { address: string; symbol: string; title: string }[]
+  selector: { name: string }
+  index: number
+  address: string
+}): JSX.Element => {
+  const {
+    dispatch,
+    highlightedSelectorResult: highlightedChoice,
+    formEditingMode,
+  } = useDepositFlowState()
+  const { closeParent, index, address, selector, results } = props
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { symbol, title } = results.find((r) => r.address === address)!
+
+  const handleHoverStart = useCallback(() => {
+    dispatch({
+      name: 'SelectorResultHoverStarted',
+      selector,
+      result: { address },
+    })
+  }, [dispatch])
+
+  const handleClick = useCallback(async () => {
+    dispatch({
+      name: 'SelectorResultClicked',
+      selector,
+      result: { address },
+    })
+
+    await closeParent()
+  }, [dispatch, closeParent])
+
+  return (
+    <>
+      <motion.button
+        tabIndex={-1}
+        onHoverStart={handleHoverStart}
+        onClick={handleClick}
+        className={cx(
+          'flex items-center gap-2 rounded-xl px-2 w-full relative hover:bg-stone-400/25 group',
+        )}
+        key={`${symbol}${index}`}
+      >
+        {formEditingMode?.name === selector.name &&
+          (highlightedChoice
+            ? highlightedChoice.address === address
+            : index === 0) && (
+            <motion.div
+              layout
+              layoutId={`${selector.name}-highlight`}
+              transition={{ duration: 0.1 }}
+              id="fmp-selector-highlight"
+              className="absolute inset-0 rounded-full bg-stone-500 group-active:bg-stone-500/50"
+            />
+          )}
+        <div className="rounded-full overflow-hidden w-4 h-4 bg-stone-500 relative z-20">
+          <img className="w-full h-full" src={url} />
+        </div>
+        <div className="text-stone-300 relative z-20">
+          <span className="font-medium">{symbol}</span>{' '}
+          <span className="text-stone-400">
+            <span className="text-sm">{title}</span>
+          </span>
+        </div>
+      </motion.button>
+    </>
+  )
 }
 
 export const GenericExpandingSelector = forwardRef(
@@ -43,13 +119,16 @@ export const GenericExpandingSelector = forwardRef(
             name: EditingMode['name']
             refs: {
               input: RefObject<HTMLInputElement>
+              clickableArea: RefObject<HTMLButtonElement>
             }
           }
         | { type: 'focusable'; focus: () => void }
       formEditingMode?: EditingMode
-      tokenSearchValue: string
+      searchValue: string
       dispatch: (action: Action) => void
       transition: Transition
+      selectedChoice?: { address: string }
+      choices?: { address: string; symbol: string; title: string }[]
     },
     ref: React.Ref<TokenSelectorMenuRef>,
   ): JSX.Element => {
@@ -58,31 +137,35 @@ export const GenericExpandingSelector = forwardRef(
       label,
       name,
       formEditingMode,
-      tokenSearchValue,
+      searchValue,
       dispatch,
       refs,
       controls,
       nextSelector,
       transition,
+      choices = [
+        { address: '0', symbol: 'ETH', title: 'Ether' },
+        { address: '1', symbol: 'WETH', title: 'Wrapped Ether' },
+        { address: '2', symbol: 'USDC', title: 'USD Coin' },
+        { address: '3', symbol: 'DAI', title: 'Dai Stablecoin' },
+        { address: '4', symbol: 'USDT', title: 'Tether USD' },
+        { address: '5', symbol: 'wBTC', title: 'WBTC' },
+      ],
+      selectedChoice = { address: choices[0].address },
     } = props
 
-    const url = 'https://app.aave.com/icons/tokens/eth.svg'
+    const { highlightedSelectorResult: highlightedChoice } =
+      useDepositFlowState()
 
-    const tokenSelectorSearchResults = [
-      { symbol: 'ETH', title: 'Ether' },
-      { symbol: 'WETH', title: 'Wrapped Ether' },
-      { symbol: 'USDC', title: 'USD Coin' },
-      { symbol: 'DAI', title: 'Dai Stablecoin' },
-      { symbol: 'USDT', title: 'Tether USD' },
-      { symbol: 'wBTC', title: 'WBTC' },
-      { symbol: 'YFI', title: 'yearn.finance' },
-      { symbol: 'AAVE', title: 'Aave Token' },
-      { symbol: 'GRT', title: 'Graph Token' },
-      { symbol: 'UNI', title: 'Uniswap' },
-    ].filter(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const expandedSelectedChoice = choices.find(
+      (c) => c.address === selectedChoice.address,
+    )!
+
+    const selectorSearchResults = choices.filter(
       ({ symbol, title }) =>
-        symbol.toLowerCase().includes(tokenSearchValue.toLowerCase()) ||
-        title.toLowerCase().includes(tokenSearchValue.toLowerCase()),
+        symbol.toLowerCase().includes(searchValue.toLowerCase()) ||
+        title.toLowerCase().includes(searchValue.toLowerCase()),
     )
 
     const [selectorOverflow, setSelectorOverflow] = useState(true)
@@ -94,7 +177,7 @@ export const GenericExpandingSelector = forwardRef(
       () => ({
         getExpandedHeight: getExpandedHeightForSelector,
       }),
-      [tokenSearchValue],
+      [searchValue],
     )
 
     const getExpandedHeightForSelectorResults = () =>
@@ -104,8 +187,10 @@ export const GenericExpandingSelector = forwardRef(
       () => ({
         getExpandedHeight: getExpandedHeightForSelectorResults,
       }),
-      [tokenSearchValue],
+      [searchValue],
     )
+
+    const scrollableRef = useRef<HTMLDivElement>(null)
 
     const handleSelectorClick = async () => {
       if (
@@ -138,7 +223,7 @@ export const GenericExpandingSelector = forwardRef(
 
         dispatch({
           name: 'SelectorRecentlyOpened',
-          selector: { name },
+          selector: { name, highlightedResult: choices[0] },
         })
 
         await Promise.all([
@@ -163,9 +248,13 @@ export const GenericExpandingSelector = forwardRef(
           refs.input.current.focus({ preventScroll: true })
         }
 
+        if (scrollableRef.current) {
+          scrollableRef.current.scrollTop = 0
+        }
+
         dispatch({
           name: 'SelectorRecentlyOpened',
-          selector: { name },
+          selector: { name, highlightedResult: choices[0] },
         })
 
         await Promise.all([
@@ -177,13 +266,18 @@ export const GenericExpandingSelector = forwardRef(
               ),
             },
             {
-              type: 'inertia',
-              velocity: 1000,
-              bounceStiffness: 500,
-              max: MAX_SELECTOR_HEIGHT,
-              power: 1,
-              bounceDamping: 15,
-              restDelta: 0.5,
+              type: 'spring',
+              duration: 0.1,
+              stiffness: 200,
+              mass: 1,
+              damping: 15,
+              // type: 'inertia',
+              // velocity: 1000,
+              // bounceStiffness: 500,
+              // power: 1,
+              // bounceDamping: 15,
+              // restDelta: 0.5,
+              // max: MAX_SELECTOR_HEIGHT,
             },
           ),
         ])
@@ -226,77 +320,65 @@ export const GenericExpandingSelector = forwardRef(
       }
     }
 
+    const makeSelection = async () => {
+      if (nextSelector) {
+        if (nextSelector.type === 'focusable') {
+          nextSelector.focus()
+
+          dispatch({
+            name: 'SelectorRecentlyClosed',
+            selector: { name },
+          })
+
+          await Promise.all([
+            delay(300),
+            controls.selector.start({
+              height: 48,
+            }),
+          ])
+
+          dispatch({
+            name: 'SelectorClosed',
+            selector: { name },
+          })
+        } else if (nextSelector.type === 'controllable') {
+          if (nextSelector.refs.clickableArea?.current) {
+            nextSelector.refs.clickableArea.current.focus({
+              preventScroll: true,
+            })
+          }
+
+          dispatch({
+            name: 'SelectorRecentlyClosed',
+            selector: { name },
+          })
+
+          await Promise.all([
+            delay(300),
+            controls.selector.start({
+              height: 48,
+            }),
+          ])
+          dispatch({ name: 'SelectorClosed', selector: { name } })
+        }
+      } else {
+        dispatch({ name: 'SelectorClosed', selector: { name } })
+      }
+    }
+
     const handleSelectorInputKeyPress = async (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.code === 'Enter' && formEditingMode?.recently !== 'closed') {
-        if (nextSelector) {
-          if (nextSelector.type === 'focusable') {
-            nextSelector.focus()
-
-            dispatch({
-              name: 'SelectorRecentlyClosed',
-              selector: { name },
-            })
-
-            await Promise.all([
-              delay(300),
-              controls.selector.start({
-                height: 48,
-              }),
-            ])
-
-            dispatch({
-              name: 'SelectorClosed',
-              selector: { name },
-            })
-          } else if (nextSelector.type === 'controllable') {
-            if (nextSelector.refs.input?.current) {
-              nextSelector.refs.input.current.focus({ preventScroll: true })
-            }
-
-            dispatch({
-              name: 'SelectorRecentlyClosed',
-              selector: { name },
-            })
-
-            await Promise.all([
-              delay(300),
-              controls.selector.start({
-                height: 48,
-              }),
-            ])
-
-            await delay(300)
-            dispatch({
-              name: 'SelectorRecentlyOpened',
-              selector: { name: nextSelector.name },
-            })
-
-            await Promise.all([
-              delay(300),
-              nextSelector.controls?.start(
-                {
-                  height: Math.min(
-                    getExpandedHeightForSelectorResults() + 68,
-                    MAX_SELECTOR_HEIGHT,
-                  ),
-                },
-                {
-                  type: 'spring',
-                  duration: 0.1,
-                  stiffness: 200,
-                  mass: 1,
-                  damping: 15,
-                },
-              ),
-            ])
-
-            dispatch({ name: 'SelectorOpened', selector: { name: 'token' } })
-          }
-        } else {
-          dispatch({ name: 'SelectorClosed', selector: { name } })
+        if (highlightedChoice) {
+          dispatch({
+            name: 'SelectorResultClicked',
+            selector: { name },
+            result: highlightedChoice,
+          })
         }
+
+        await makeSelection()
       }
     }
 
@@ -322,12 +404,66 @@ export const GenericExpandingSelector = forwardRef(
 
         dispatch({ name: 'SelectorClosed', selector: { name } })
       }
+
+      if (event.code === 'Tab') {
+        event.preventDefault()
+
+        const tmpResults = choices.filter(
+          ({ symbol, title }) =>
+            symbol.toLowerCase().includes(searchValue.toLowerCase()) ||
+            title.toLowerCase().includes(searchValue.toLowerCase()),
+        )
+
+        const currentHighlightIndex = tmpResults.findIndex(
+          (r) => r.address === highlightedChoice?.address,
+        )
+
+        let nextResult: { address: string } | undefined
+
+        if (!event.shiftKey) {
+          nextResult = tmpResults[currentHighlightIndex + 1]
+        } else {
+          nextResult = tmpResults[currentHighlightIndex - 1]
+        }
+
+        if (nextResult) {
+          dispatch({
+            name: 'HighlightMoved',
+            selector: {
+              name,
+              highlightedResult: { address: nextResult.address },
+            },
+          })
+
+          await delay(200)
+          const highlight: HTMLDivElement | null = document.querySelector(
+            '#fmp-selector-highlight',
+          )
+          const scrollable = scrollableRef.current
+
+          if (highlight == null || scrollable == null) {
+            return
+          }
+
+          const offset = (highlight?.parentElement?.offsetTop ?? 0) - 72
+
+          const scrollTop = scrollable.scrollTop ?? 0
+
+          if (
+            event.shiftKey
+              ? offset < scrollable.scrollHeight - 200
+              : offset > 100 && scrollTop < scrollable.scrollHeight - 200
+          ) {
+            scrollable.scrollTop = offset
+          }
+        }
+      }
     }
 
     const handleSelectorInputChange = async (
       event: React.ChangeEvent<HTMLInputElement>,
     ) => {
-      const oldValue = tokenSearchValue
+      const oldValue = searchValue
       let newValue: string
 
       if (event.target.value.trim() === '') {
@@ -337,31 +473,27 @@ export const GenericExpandingSelector = forwardRef(
       }
 
       if (oldValue !== newValue) {
+        const tmpResults = choices.filter(
+          ({ symbol, title }) =>
+            symbol.toLowerCase().includes(newValue.toLowerCase()) ||
+            title.toLowerCase().includes(newValue.toLowerCase()),
+        )
+
+        const highlightChanges = !tmpResults.some(
+          (r) => r.address === highlightedChoice?.address,
+        )
+
         dispatch({
           name: 'SelectorInputChanged',
-          selector: { name },
+          selector: {
+            name,
+            highlightedResult: highlightChanges ? tmpResults[0] : undefined,
+          },
           value: newValue,
         })
 
         // Maybe requestAnimationFrame?
         await delay(10)
-
-        const tmpResults = [
-          { symbol: 'ETH', title: 'Ether' },
-          { symbol: 'WETH', title: 'Wrapped Ether' },
-          { symbol: 'USDC', title: 'USD Coin' },
-          { symbol: 'DAI', title: 'Dai Stablecoin' },
-          { symbol: 'USDT', title: 'Tether USD' },
-          { symbol: 'wBTC', title: 'WBTC' },
-          { symbol: 'YFI', title: 'yearn.finance' },
-          { symbol: 'AAVE', title: 'Aave Token' },
-          { symbol: 'GRT', title: 'Graph Token' },
-          { symbol: 'UNI', title: 'Uniswap' },
-        ].filter(
-          ({ symbol, title }) =>
-            symbol.toLowerCase().includes(newValue.toLowerCase()) ||
-            title.toLowerCase().includes(newValue.toLowerCase()),
-        )
 
         setSelectorOverflow(tmpResults.length > 5)
 
@@ -389,26 +521,17 @@ export const GenericExpandingSelector = forwardRef(
       setSelectorOverflow(true)
     }, [])
 
-    const tokenSelectorSearchResultElements = tokenSelectorSearchResults.map(
-      ({ symbol, title }, index) => (
+    const tokenSelectorSearchResultElements = selectorSearchResults.map(
+      ({ symbol, title, address }, index) => (
         <>
-          <motion.div
-            className={cx('flex items-center gap-2 rounded-xl px-2', {
-              'bg-stone-500': index === 0,
-            })}
-            key={`${symbol}${index}`}
-          >
-            <div className="rounded-full overflow-hidden w-4 h-4 bg-stone-500">
-              <img className="w-full h-full" src={url} />
-            </div>
-            <div className="text-stone-300">
-              <span className="font-medium">{symbol}</span>{' '}
-              <span className="text-stone-400">
-                <span className="text-sm">{title}</span>
-              </span>
-            </div>
-          </motion.div>
-          {index === tokenSelectorSearchResults.length - 1 && (
+          <SearchResult
+            closeParent={makeSelection}
+            key={address}
+            selector={{ name }}
+            results={selectorSearchResults}
+            {...{ symbol, title, index, address }}
+          />
+          {index === selectorSearchResults.length - 1 && (
             <motion.div
               key="foo"
               onViewportEnter={handleLastElementViewportEnter}
@@ -431,7 +554,7 @@ export const GenericExpandingSelector = forwardRef(
             'super-shadow-2':
               formEditingMode?.name === name &&
               formEditingMode.recently !== 'closed' &&
-              tokenSelectorSearchResults.length > 5 &&
+              selectorSearchResults.length > 5 &&
               selectorOverflow,
           },
         )}
@@ -501,7 +624,7 @@ export const GenericExpandingSelector = forwardRef(
                     </div>
 
                     <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium">
-                      Ethereum
+                      {expandedSelectedChoice.title}
                     </div>
                   </div>
                 </div>
@@ -568,7 +691,7 @@ export const GenericExpandingSelector = forwardRef(
                     onKeyDown={handleSelectorInputKeyDown}
                     onChange={handleSelectorInputChange}
                     tabIndex={-1}
-                    value={tokenSearchValue}
+                    value={searchValue}
                     transition={{ ease: 'anticipate' }}
                   />
 
@@ -585,9 +708,9 @@ export const GenericExpandingSelector = forwardRef(
                       'w-1/6 flex rounded bg-stone-500/50 mx-2 my-1 items-center justify-center hover:bg-stone-500/[0.4] active:opacity-75',
                     )}
                     animate={{
-                      scale: tokenSearchValue ? 0 : 1,
-                      marginRight: tokenSearchValue ? '-16.666667%' : '8px',
-                      marginLeft: tokenSearchValue ? 0 : '8px',
+                      scale: searchValue ? 0 : 1,
+                      marginRight: searchValue ? '-16.666667%' : '8px',
+                      marginLeft: searchValue ? 0 : '8px',
                     }}
                   >
                     <svg
@@ -609,7 +732,11 @@ export const GenericExpandingSelector = forwardRef(
 
               {/* TODO: move controls to bigger container */}
               {/* TODO: offset height to include height of search box and label */}
-              <motion.div className="w-[calc(100%_+_2rem)] max-h-[192px] overflow-y-scroll pr-5 -mr-5">
+              <motion.div
+                ref={scrollableRef}
+                id={`fmp-selector-scrollable-${name}`}
+                className="w-[calc(100%_+_2rem)] max-h-[192px] overflow-y-scroll pr-5 -mr-5"
+              >
                 <motion.div className="box-content pl-2 pr-6 -mr-5 flex items-start w-[calc(100%-1.5rem)] pb-5">
                   <div className="w-full" ref={refs.resultsContainer}>
                     {tokenSelectorSearchResultElements}
