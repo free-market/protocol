@@ -17,56 +17,24 @@ export const ControlledDepositFlow = (
     }
   }
 
-  const nativeAssetBalance = useBalance({
+  const { data: balanceData } = useBalance({
     chainId: Number(vm.selectedChain.address),
     address,
+    token: (vm.selectedToken.address === '0x0'
+      ? undefined
+      : vm.selectedToken.address) as `0x${string}`,
   })
-
-  const tokenBalance = useBalance(
-    vm.selectedToken.address !== '0x0'
-      ? {
-          address,
-          token: vm.selectedToken.address as `0x${string}`,
-        }
-      : {},
-  )
 
   let balanceState: DepositFlowProps['balanceState'] = 'hidden'
   let balance = ''
 
   // Ethereum mainnet
-  if (vm.selectedChain.address === 1) {
+  if (vm.selectedChain.address === 1 || vm.selectedChain.address === 5) {
     balanceState = 'loading'
 
-    // Ether
-    if (vm.selectedToken.address === '0x0') {
-      if (nativeAssetBalance.data) {
-        balanceState = 'displayed'
-        balance = nativeAssetBalance.data.formatted
-      }
-    } else {
-      if (tokenBalance.data) {
-        balanceState = 'displayed'
-        balance = tokenBalance.data.formatted
-      }
-    }
-  }
-
-  // Ethereum Goerli
-  if (vm.selectedChain.address === 5) {
-    balanceState = 'loading'
-
-    // Ether
-    if (vm.selectedToken.address === '0x0') {
-      if (nativeAssetBalance.data) {
-        balanceState = 'displayed'
-        balance = nativeAssetBalance.data.formatted
-      }
-    } else {
-      if (tokenBalance.data) {
-        balanceState = 'displayed'
-        balance = tokenBalance.data.formatted
-      }
+    if (balanceData) {
+      balanceState = 'displayed'
+      balance = balanceData.formatted
     }
   }
 
