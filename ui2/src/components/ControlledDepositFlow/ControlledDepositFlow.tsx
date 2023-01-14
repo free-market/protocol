@@ -34,7 +34,10 @@ export const ControlledDepositFlow = (
 
     if (balanceData) {
       balanceState = 'displayed'
-      balance = balanceData.formatted
+      balance = balanceData.formatted.replace(
+        /\.(\d{7}).*$/,
+        (_, lastSeven) => `.${lastSeven}`,
+      )
     }
   }
 
