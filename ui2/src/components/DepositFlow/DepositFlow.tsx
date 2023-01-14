@@ -14,16 +14,73 @@ import Confetti from 'react-confetti'
 
 import { WalletState } from '@component/DepositFlowStateProvider/types'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
-import GenericExpandingSelector from '@component/GenericExpandingSelector'
+import GenericExpandingSelector, {
+  SelectorChoice,
+} from '@component/GenericExpandingSelector'
 import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
 
 export type DepositFlowProps = {
+  networkChoices?: SelectorChoice[]
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState
   balanceState?: 'loading' | 'hidden' | 'displayed'
+  balance?: string
   onClick?: () => void
 }
+
+export const defaultNetworkChoices: SelectorChoice[] = [
+  {
+    address: 1,
+    symbol: 'Ethereum',
+    title: 'Ethereum',
+    icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+  },
+  {
+    address: 0x38, // 56 in decimal
+    symbol: 'BNB Smart Chain',
+    title: 'BNB Smart Chain',
+    icon: { url: 'https://app.aave.com/icons/tokens/busd.svg' },
+  },
+  {
+    address: 43114,
+    symbol: 'Avalanche',
+    title: 'Avalanche',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/avalanche.svg',
+    },
+  },
+  {
+    address: 137,
+    symbol: 'Polygon Matic',
+    title: 'Polygon Matic',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/polygon.svg',
+    },
+  },
+  {
+    address: 42161,
+    symbol: 'Arbitrum One',
+    title: 'Arbitrum One',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/arbitrum.svg',
+    },
+  },
+  {
+    address: 10,
+    symbol: 'Optimism',
+    title: 'Optimism',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/optimism.svg',
+    },
+  },
+  {
+    address: 250,
+    symbol: 'Fantom Opera',
+    title: 'Fantom Opera',
+    icon: { url: 'https://app.aave.com/icons/networks/fantom.svg' },
+  },
+]
 
 export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   const {
@@ -31,6 +88,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     submitted = false,
     walletState = 'ready',
     balanceState = 'hidden',
+    balance,
     onClick,
   } = props
 
@@ -242,6 +300,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     'network-mismatch': 'Switch Network',
   }
 
+  const networkChoices = props.networkChoices ?? defaultNetworkChoices
+
   const formCard = (
     <motion.div
       layoutId="foo"
@@ -391,58 +451,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               },
               controls: tokenSelectorButtonControls,
             }}
-            choices={[
-              {
-                address: 1,
-                symbol: 'Ethereum',
-                title: 'Ethereum',
-                icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
-              },
-              {
-                address: 0x38, // 56 in decimal
-                symbol: 'BNB Smart Chain',
-                title: 'BNB Smart Chain',
-                icon: { url: 'https://app.aave.com/icons/tokens/busd.svg' },
-              },
-              {
-                address: 43114,
-                symbol: 'Avalanche',
-                title: 'Avalanche',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/avalanche.svg',
-                },
-              },
-              {
-                address: 137,
-                symbol: 'Polygon Matic',
-                title: 'Polygon Matic',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/polygon.svg',
-                },
-              },
-              {
-                address: 42161,
-                symbol: 'Arbitrum One',
-                title: 'Arbitrum One',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/arbitrum.svg',
-                },
-              },
-              {
-                address: 10,
-                symbol: 'Optimism',
-                title: 'Optimism',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/optimism.svg',
-                },
-              },
-              {
-                address: 250,
-                symbol: 'Fantom Opera',
-                title: 'Fantom Opera',
-                icon: { url: 'https://app.aave.com/icons/networks/fantom.svg' },
-              },
-            ]}
+            choices={networkChoices}
             selectedChoice={vm.selectedChain}
           />
 
@@ -450,7 +459,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
             key="token"
             extraContent={
               {
-                displayed: 'Balance: 0',
+                displayed: `Balance: ${balance}`,
                 hidden: null,
                 loading: (
                   <div className="rounded-full h-3 w-[60px] bg-stone-500/50 overflow-hidden shimmer relative after:absolute after:inset-0 after:translate-x-[-100%] after:animate-wave after:content-[''] after:bg-shimmer-gradient"></div>
@@ -479,6 +488,60 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               focus: startEditing,
             }}
             selectedChoice={vm.selectedToken}
+            choices={
+              vm.selectedChain.address !== 5
+                ? undefined
+                : [
+                    {
+                      address: '0x0',
+                      symbol: 'ETH',
+                      title: 'Ether',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/eth.svg',
+                      },
+                    },
+                    {
+                      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                      symbol: 'WETH',
+                      title: 'Wrapped Ether',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/weth.svg',
+                      },
+                    },
+                    {
+                      address: '0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43',
+                      symbol: 'USDC',
+                      title: 'USD Coin',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/usdc.svg',
+                      },
+                    },
+                    {
+                      address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                      symbol: 'DAI',
+                      title: 'Dai Stablecoin',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/dai.svg',
+                      },
+                    },
+                    {
+                      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                      symbol: 'USDT',
+                      title: 'Tether USD',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/usdt.svg',
+                      },
+                    },
+                    {
+                      address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                      symbol: 'wBTC',
+                      title: 'Wrapped BTC',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/wbtc.svg',
+                      },
+                    },
+                  ]
+            }
           />
 
           <motion.div

@@ -179,31 +179,31 @@ export const GenericExpandingSelector = forwardRef(
           address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
           symbol: 'WETH',
           title: 'Wrapped Ether',
-          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+          icon: { url: 'https://app.aave.com/icons/tokens/weth.svg' },
         },
         {
           address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
           symbol: 'USDC',
           title: 'USD Coin',
-          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+          icon: { url: 'https://app.aave.com/icons/tokens/usdc.svg' },
         },
         {
           address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
           symbol: 'DAI',
           title: 'Dai Stablecoin',
-          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+          icon: { url: 'https://app.aave.com/icons/tokens/dai.svg' },
         },
         {
           address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
           symbol: 'USDT',
           title: 'Tether USD',
-          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+          icon: { url: 'https://app.aave.com/icons/tokens/usdt.svg' },
         },
         {
           address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
           symbol: 'wBTC',
           title: 'Wrapped BTC',
-          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+          icon: { url: 'https://app.aave.com/icons/tokens/wbtc.svg' },
         },
       ],
       selectedChoice = { address: choices[0].address },
@@ -700,7 +700,9 @@ export const GenericExpandingSelector = forwardRef(
                   )}
                 >
                   <div className="visible group-hover:invisible absolute right-0 top-0 bottom-0 text-stone-400 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium text-xs leading-none flex items-end">
-                    <span className="leading-none py-1">{extraContent}</span>
+                    <span className="leading-none py-1 min-w-[10em] text-right">
+                      {extraContent}
+                    </span>
                   </div>
                   <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75 user-select-none">
                     click to edit
