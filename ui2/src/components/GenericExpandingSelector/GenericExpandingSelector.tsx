@@ -23,14 +23,21 @@ export interface GenericExpandingSelectorRef {
   close: () => Promise<void>
 }
 
-const url = 'https://app.aave.com/icons/tokens/eth.svg'
+export type SelectorChoice = {
+  address: string | number
+  symbol: string
+  title: string
+  icon: {
+    url: string
+  }
+}
 
 const SearchResult = (props: {
   closeParent: () => Promise<void>
-  results: { address: string; symbol: string; title: string }[]
+  results: SelectorChoice[]
   selector: { name: string }
   index: number
-  address: string
+  address: string | number
 }): JSX.Element => {
   const {
     dispatch,
@@ -40,8 +47,12 @@ const SearchResult = (props: {
   } = useDepositFlowState()
   const { closeParent, index, address, selector, results } = props
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { symbol, title } = results.find((r) => r.address === address)!
+  const {
+    symbol,
+    title,
+    icon: { url },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  } = results.find((r) => r.address === address)!
 
   const handleHoverStart = useCallback(() => {
     if (formEditingMode?.recently === undefined) {
@@ -141,8 +152,8 @@ export const GenericExpandingSelector = forwardRef(
       searchValue: string
       dispatch: (action: Action) => void
       transition: Transition
-      selectedChoice?: { address: string }
-      choices?: { address: string; symbol: string; title: string }[]
+      selectedChoice?: { address: string | number }
+      choices?: SelectorChoice[]
     },
     ref: React.Ref<GenericExpandingSelectorRef>,
   ): JSX.Element => {
@@ -158,12 +169,42 @@ export const GenericExpandingSelector = forwardRef(
       nextSelector,
       transition,
       choices = [
-        { address: '0', symbol: 'ETH', title: 'Ether' },
-        { address: '1', symbol: 'WETH', title: 'Wrapped Ether' },
-        { address: '2', symbol: 'USDC', title: 'USD Coin' },
-        { address: '3', symbol: 'DAI', title: 'Dai Stablecoin' },
-        { address: '4', symbol: 'USDT', title: 'Tether USD' },
-        { address: '5', symbol: 'wBTC', title: 'WBTC' },
+        {
+          address: '0',
+          symbol: 'ETH',
+          title: 'Ether',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
+        {
+          address: '1',
+          symbol: 'WETH',
+          title: 'Wrapped Ether',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
+        {
+          address: '2',
+          symbol: 'USDC',
+          title: 'USD Coin',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
+        {
+          address: '3',
+          symbol: 'DAI',
+          title: 'Dai Stablecoin',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
+        {
+          address: '4',
+          symbol: 'USDT',
+          title: 'Tether USD',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
+        {
+          address: '5',
+          symbol: 'wBTC',
+          title: 'WBTC',
+          icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+        },
       ],
       selectedChoice = { address: choices[0].address },
     } = props
@@ -424,7 +465,7 @@ export const GenericExpandingSelector = forwardRef(
           (r) => r.address === highlightedChoice?.address,
         )
 
-        let nextResult: { address: string } | undefined
+        let nextResult: { address: string | number } | undefined
 
         if (!event.shiftKey) {
           nextResult = tmpResults[currentHighlightIndex + 1]
@@ -637,7 +678,7 @@ export const GenericExpandingSelector = forwardRef(
                     <div className="rounded-full overflow-hidden w-4 h-4 bg-stone-500 group-hover:bg-stone-400 group-active:bg-stone-400/75">
                       <img
                         className="w-full h-full group-hover:opacity-[0.95] group-active:opacity-75"
-                        src={url}
+                        src={expandedSelectedChoice.icon.url}
                       />
                     </div>
 
