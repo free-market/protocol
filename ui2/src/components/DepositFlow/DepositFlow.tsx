@@ -22,6 +22,7 @@ export type DepositFlowProps = {
   submitted?: boolean
   walletState?: WalletState
   balanceState?: 'loading' | 'hidden' | 'displayed'
+  balance?: string
   onClick?: () => void
 }
 
@@ -31,6 +32,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     submitted = false,
     walletState = 'ready',
     balanceState = 'hidden',
+    balance,
     onClick,
   } = props
 
@@ -399,6 +401,12 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                 icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
               },
               {
+                address: 5,
+                symbol: 'Ethereum Goerli',
+                title: 'Ethereum Goerli',
+                icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+              },
+              {
                 address: 0x38, // 56 in decimal
                 symbol: 'BNB Smart Chain',
                 title: 'BNB Smart Chain',
@@ -450,7 +458,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
             key="token"
             extraContent={
               {
-                displayed: 'Balance: 0',
+                displayed: `Balance: ${balance}`,
                 hidden: null,
                 loading: (
                   <div className="rounded-full h-3 w-[60px] bg-stone-500/50 overflow-hidden shimmer relative after:absolute after:inset-0 after:translate-x-[-100%] after:animate-wave after:content-[''] after:bg-shimmer-gradient"></div>
