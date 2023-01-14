@@ -11,7 +11,7 @@ export const initialState: State = {
   amountEditing: false,
   tokenSearchValue: '',
   selectedChain: { address: 1 },
-  selectedToken: { address: '0' },
+  selectedToken: { address: '0x0' },
   selectorRecentlyChanged: false,
 }
 
