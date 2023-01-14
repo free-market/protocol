@@ -47,7 +47,11 @@ export type Action =
       result: { address: string | number }
     }
 
-export type WalletState = 'ready' | 'insufficient-balance' | 'unconnected'
+export type WalletState =
+  | 'ready'
+  | 'insufficient-balance'
+  | 'unconnected'
+  | 'network-mismatch'
 
 export type EditingMode = {
   name: 'token' | 'chain'

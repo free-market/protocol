@@ -1,7 +1,7 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { DepositFlow as Component, DepostiFlowProps } from './DepositFlow'
+import { DepositFlow as Component, DepositFlowProps } from './DepositFlow'
 import ErrorDialog from '@component/ErrorDialog'
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 
@@ -54,7 +54,7 @@ export default {
 
 export const DepositFlow: ComponentStory<typeof Component> = (props) => {
   const { loadingAllowed, initiallyOpen, ...rest } =
-    props as DepostiFlowProps & {
+    props as DepositFlowProps & {
       loadingAllowed: boolean
       initiallyOpen: boolean
     }

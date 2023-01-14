@@ -17,7 +17,7 @@ import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepo
 import GenericExpandingSelector from '@component/GenericExpandingSelector'
 import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
 
-export type DepostiFlowProps = {
+export type DepositFlowProps = {
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState
@@ -25,7 +25,7 @@ export type DepostiFlowProps = {
   onClick?: () => void
 }
 
-export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
+export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   const {
     submitting = false,
     submitted = false,
@@ -239,6 +239,7 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
     'ready': 'Start',
     'insufficient-balance': 'Insufficient Balance',
     'unconnected': 'Connect Wallet',
+    'network-mismatch': 'Switch Network',
   }
 
   const formCard = (
