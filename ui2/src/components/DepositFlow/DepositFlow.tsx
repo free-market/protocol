@@ -487,6 +487,60 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               focus: startEditing,
             }}
             selectedChoice={vm.selectedToken}
+            choices={
+              vm.selectedChain.address !== 5
+                ? undefined
+                : [
+                    {
+                      address: '0x0',
+                      symbol: 'ETH',
+                      title: 'Ether',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/eth.svg',
+                      },
+                    },
+                    {
+                      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                      symbol: 'WETH',
+                      title: 'Wrapped Ether',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/weth.svg',
+                      },
+                    },
+                    {
+                      address: '0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43',
+                      symbol: 'USDC',
+                      title: 'USD Coin',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/usdc.svg',
+                      },
+                    },
+                    {
+                      address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                      symbol: 'DAI',
+                      title: 'Dai Stablecoin',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/dai.svg',
+                      },
+                    },
+                    {
+                      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                      symbol: 'USDT',
+                      title: 'Tether USD',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/usdt.svg',
+                      },
+                    },
+                    {
+                      address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                      symbol: 'wBTC',
+                      title: 'Wrapped BTC',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/wbtc.svg',
+                      },
+                    },
+                  ]
+            }
           />
 
           <motion.div

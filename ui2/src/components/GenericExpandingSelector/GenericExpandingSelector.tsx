@@ -700,7 +700,9 @@ export const GenericExpandingSelector = forwardRef(
                   )}
                 >
                   <div className="visible group-hover:invisible absolute right-0 top-0 bottom-0 text-stone-400 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium text-xs leading-none flex items-end">
-                    <span className="leading-none py-1">{extraContent}</span>
+                    <span className="leading-none py-1 min-w-[10em] text-right">
+                      {extraContent}
+                    </span>
                   </div>
                   <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75 user-select-none">
                     click to edit
