@@ -1,10 +1,15 @@
 import DepositFlow from '@component/DepositFlow'
-import { DepositFlowProps } from '@component/DepositFlow/DepositFlow'
+import {
+  defaultNetworkChoices,
+  DepositFlowProps,
+} from '@component/DepositFlow/DepositFlow'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import { useAccount, useBalance, useConnect, useNetwork } from 'wagmi'
 
 export const ControlledDepositFlow = (
-  props: Omit<DepositFlowProps, 'walletState'>,
+  props: Omit<DepositFlowProps, 'walletState' | 'networkChoices'> & {
+    includeDeveloperNetworks?: boolean
+  },
 ): JSX.Element => {
   const { chain } = useNetwork()
   const { address, isConnected: connected } = useAccount()
@@ -41,10 +46,12 @@ export const ControlledDepositFlow = (
     }
   }
 
+  const { includeDeveloperNetworks = false, ...rest } = props
+
   return (
     <>
       <DepositFlow
-        {...props}
+        {...rest}
         balanceState={balanceState}
         balance={balance}
         walletState={
@@ -55,6 +62,19 @@ export const ControlledDepositFlow = (
             : 'unconnected'
         }
         onClick={handleClick}
+        networkChoices={
+          includeDeveloperNetworks
+            ? [
+                {
+                  address: 5,
+                  symbol: 'Ethereum Goerli',
+                  title: 'Ethereum Goerli',
+                  icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+                },
+                ...defaultNetworkChoices,
+              ]
+            : undefined
+        }
       />
     </>
   )

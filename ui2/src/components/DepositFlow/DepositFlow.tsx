@@ -14,10 +14,13 @@ import Confetti from 'react-confetti'
 
 import { WalletState } from '@component/DepositFlowStateProvider/types'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
-import GenericExpandingSelector from '@component/GenericExpandingSelector'
+import GenericExpandingSelector, {
+  SelectorChoice,
+} from '@component/GenericExpandingSelector'
 import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
 
 export type DepositFlowProps = {
+  networkChoices?: SelectorChoice[]
   submitting?: boolean
   submitted?: boolean
   walletState?: WalletState
@@ -25,6 +28,59 @@ export type DepositFlowProps = {
   balance?: string
   onClick?: () => void
 }
+
+export const defaultNetworkChoices: SelectorChoice[] = [
+  {
+    address: 1,
+    symbol: 'Ethereum',
+    title: 'Ethereum',
+    icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
+  },
+  {
+    address: 0x38, // 56 in decimal
+    symbol: 'BNB Smart Chain',
+    title: 'BNB Smart Chain',
+    icon: { url: 'https://app.aave.com/icons/tokens/busd.svg' },
+  },
+  {
+    address: 43114,
+    symbol: 'Avalanche',
+    title: 'Avalanche',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/avalanche.svg',
+    },
+  },
+  {
+    address: 137,
+    symbol: 'Polygon Matic',
+    title: 'Polygon Matic',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/polygon.svg',
+    },
+  },
+  {
+    address: 42161,
+    symbol: 'Arbitrum One',
+    title: 'Arbitrum One',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/arbitrum.svg',
+    },
+  },
+  {
+    address: 10,
+    symbol: 'Optimism',
+    title: 'Optimism',
+    icon: {
+      url: 'https://app.aave.com/icons/networks/optimism.svg',
+    },
+  },
+  {
+    address: 250,
+    symbol: 'Fantom Opera',
+    title: 'Fantom Opera',
+    icon: { url: 'https://app.aave.com/icons/networks/fantom.svg' },
+  },
+]
 
 export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   const {
@@ -244,6 +300,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     'network-mismatch': 'Switch Network',
   }
 
+  const networkChoices = props.networkChoices ?? defaultNetworkChoices
+
   const formCard = (
     <motion.div
       layoutId="foo"
@@ -393,64 +451,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               },
               controls: tokenSelectorButtonControls,
             }}
-            choices={[
-              {
-                address: 1,
-                symbol: 'Ethereum',
-                title: 'Ethereum',
-                icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
-              },
-              {
-                address: 5,
-                symbol: 'Ethereum Goerli',
-                title: 'Ethereum Goerli',
-                icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
-              },
-              {
-                address: 0x38, // 56 in decimal
-                symbol: 'BNB Smart Chain',
-                title: 'BNB Smart Chain',
-                icon: { url: 'https://app.aave.com/icons/tokens/busd.svg' },
-              },
-              {
-                address: 43114,
-                symbol: 'Avalanche',
-                title: 'Avalanche',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/avalanche.svg',
-                },
-              },
-              {
-                address: 137,
-                symbol: 'Polygon Matic',
-                title: 'Polygon Matic',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/polygon.svg',
-                },
-              },
-              {
-                address: 42161,
-                symbol: 'Arbitrum One',
-                title: 'Arbitrum One',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/arbitrum.svg',
-                },
-              },
-              {
-                address: 10,
-                symbol: 'Optimism',
-                title: 'Optimism',
-                icon: {
-                  url: 'https://app.aave.com/icons/networks/optimism.svg',
-                },
-              },
-              {
-                address: 250,
-                symbol: 'Fantom Opera',
-                title: 'Fantom Opera',
-                icon: { url: 'https://app.aave.com/icons/networks/fantom.svg' },
-              },
-            ]}
+            choices={networkChoices}
             selectedChoice={vm.selectedChain}
           />
 
