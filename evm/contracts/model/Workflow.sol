@@ -15,7 +15,7 @@ struct WorkflowStep {
   address actionAddress;
   WorkflowStepInputAsset[] inputAssets;
   Asset[] outputAssets;
-  uint256[] args;
+  bytes args;
   uint16 nextStepIndex;
 }
 

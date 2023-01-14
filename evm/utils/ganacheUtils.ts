@@ -4,7 +4,6 @@ import BN from 'bn.js'
 import dotenv from 'dotenv'
 import { FrontDoor__factory } from '../types/ethers-contracts'
 import fs from 'fs'
-import { EvmNetworkName, getEthConfig } from './contract-addresses'
 import Web3 from 'web3'
 
 dotenv.config()

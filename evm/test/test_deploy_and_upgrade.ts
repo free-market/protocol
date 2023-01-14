@@ -109,7 +109,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     await es.setWriter(oldWriter)
   })
 
-  it('adds and upgrades workflow action s', async () => {
+  it('adds and upgrades workflow actions', async () => {
     const workflowRunner = await ensureWorkflowRunnerDeployed()
 
     // helper function that loops through all actions and make sure that the contract for a given actionId  is pointing to the correct contract
@@ -119,7 +119,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
       for (; i < numActions; ++i) {
         const actionInfo = await workflowRunner.getActionInfoAt(i)
         if (actionInfo.actionId.toString() === actionId.toString()) {
-          expect(actionInfo.actionAddres).to.equal(expectedAddress)
+          expect(actionInfo.whitelist.includes(expectedAddress)).to.be.true
           break
         }
       }
@@ -148,6 +148,6 @@ contract('deploy and upgrade', function (accounts: string[]) {
     expect(actionCount.toNumber()).to.equal(1)
     const actionInfo = await workflowRunner.getActionInfoAt(0)
     expect(actionInfo.actionId.toString()).to.equal('' + ActionIds.wrapEther)
-    expect(actionInfo.actionAddres).to.equal(wrapEtherUpgraded.address)
+    expect(actionInfo.whitelist.includes(wrapEtherUpgraded.address)).to.be.true
   })
 })

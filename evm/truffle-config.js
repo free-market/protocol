@@ -27,25 +27,45 @@ module.exports = {
       network_id: '*',
       disableConfirmationListener: true,
     },
-    goerliEthereum: {
+
+    ///////////// MAINNETS
+
+    arbitrum: {
       provider: () => {
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.GOERLI_ETHEREUM_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_MAINNET_URL)
+      },
+      network_id: '42161',
+      disableConfirmationListener: true,
+    },
+    avalanche: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCHE_MAINNET_URL)
+      },
+      network_id: '43114',
+      disableConfirmationListener: true,
+    },
+
+    ///////////// GOERLIES
+
+    ethereumGoerli: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ETHEREUM_GOERLI_URL)
       },
       network_id: '5',
       disableConfirmationListener: true,
       // gas: 4465030,
       // gasPrice: 10000000000,
     },
-    goerliArbitrum: {
+    arbitrumGoerli: {
       provider: () => {
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.GOERLI_ARBITRUM_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
       },
       network_id: '421613',
       disableConfirmationListener: true,
     },
-    goerliAvalanche: {
+    avalancheGoerli: {
       provider: () => {
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.GOERLI_AVALANCHE_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCH_GOERLIE_URL)
       },
       network_id: '43113',
       disableConfirmationListener: true,

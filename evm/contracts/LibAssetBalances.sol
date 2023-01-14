@@ -33,36 +33,40 @@ library LibAssetBalances {
     AssetBalances memory entrySet,
     uint256 assetAsInt,
     uint256 amount
-  ) internal pure returns (uint256) {
-    uint256 index = getAssetIndex(entrySet, assetAsInt);
-    uint256 newBalance = SafeMath.add(entrySet.entries[index].balance, amount);
-    return updateBalance(entrySet, index, newBalance);
+  ) internal pure {
+    if (amount > 0) {
+      uint256 index = getAssetIndex(entrySet, assetAsInt);
+      uint256 newBalance = SafeMath.add(entrySet.entries[index].balance, amount);
+      updateBalance(entrySet, index, newBalance);
+    }
   }
 
   function debit(
     AssetBalances memory entrySet,
     uint256 assetAsInt,
     uint256 amount
-  ) internal pure returns (uint256) {
-    uint256 index = getAssetIndex(entrySet, assetAsInt);
-    uint256 newBalance = SafeMath.sub(entrySet.entries[index].balance, amount);
-    return updateBalance(entrySet, index, newBalance);
+  ) internal pure {
+    if (amount > 0) {
+      uint256 index = getAssetIndex(entrySet, assetAsInt);
+      uint256 newBalance = SafeMath.sub(entrySet.entries[index].balance, amount);
+      updateBalance(entrySet, index, newBalance);
+    }
   }
 
   function credit(
     AssetBalances memory entrySet,
     Asset memory asset,
     uint256 amount
-  ) internal pure returns (uint256) {
-    return credit(entrySet, LibAsset.encodeAsset(asset), amount);
+  ) internal pure {
+    credit(entrySet, LibAsset.encodeAsset(asset), amount);
   }
 
   function debit(
     AssetBalances memory entrySet,
     Asset memory asset,
     uint256 amount
-  ) internal pure returns (uint256) {
-    return debit(entrySet, LibAsset.encodeAsset(asset), amount);
+  ) internal pure {
+    debit(entrySet, LibAsset.encodeAsset(asset), amount);
   }
 
   function updateBalance(

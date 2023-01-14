@@ -41,7 +41,7 @@ export async function validateAction(actionId: number, actionAddress: string) {
   for (let i = 0; i < actionCount; ++i) {
     const actionInfo = await runner.getActionInfoAt(i)
     if (Number(actionInfo.actionId) === actionId) {
-      expect(actionInfo.actionAddres).to.equal(actionAddress)
+      expect(actionInfo.whitelist.includes(actionAddress)).to.be.true
       found = true
       break
     }
@@ -74,4 +74,11 @@ export function encodeAsset(assetType: AssetType, assetAddress: string) {
   const addr = new BN(assetAddress.substring(2), 'hex').mul(twoToTheSixteen)
   const type: number = assetType
   return addr.add(new BN(type))
+}
+
+export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
+
+export const ETH_ASSET = {
+  assetType: AssetType.Native,
+  assetAddress: ADDRESS_ZERO,
 }

@@ -1,5 +1,5 @@
 export enum AssetType {
   Native = 0,
-  Token = 1,
-  Account = 2,
+  ERC20 = 1,
+  ERC721 = 2,
 }

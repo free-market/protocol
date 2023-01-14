@@ -6,8 +6,11 @@ import './model/WorkflowStepResult.sol';
 
 interface IWorkflowStep {
   function execute(
+    // input assets paired with amounts of each
     AssetAmount[] calldata inputAssetAmounts,
+    // expected output assets (amounts not known yet)
     Asset[] calldata outputAssets,
+    // additional arguments specific to this step
     bytes calldata args
   ) external payable returns (WorkflowStepResult memory);
 }

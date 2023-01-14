@@ -3,5 +3,5 @@ export const ActionIds = {
   unwrapEther: 11,
   addToken: 12,
   sushiSwap: 13,
-  starGate: 14,
+  stargateBridge: 14,
 }

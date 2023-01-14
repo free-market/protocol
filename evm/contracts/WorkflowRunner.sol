@@ -5,18 +5,18 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
+import './model/Workflow.sol';
+import './actions/curve/Curve.sol';
+import './actions/wormhole/Wormhole.sol';
 import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
 import './IActionManager.sol';
-import './model/Workflow.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
 import './LibAssetBalances.sol';
 import './LibStorageWriter.sol';
 import './EternalStorage.sol';
 import './IWorkflowStep.sol';
-import './actions/curve/Curve.sol';
-import './actions/wormhole/Wormhole.sol';
 import './LibAsset.sol';
 
 contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUserProxyManager, IActionManager {
@@ -163,6 +163,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
       emit WorkflowStepExecution(currentStepIndex, currentStep, actionAddress, inputAssetAmounts);
       WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.args);
       emit WorkflowStepResultEvent(stepResult);
+
       // debit input assets
       for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
         assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
@@ -184,7 +185,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
       Asset memory asset = ab.asset;
       emit RemainingAsset(asset, ab.amount);
       if (asset.assetType == AssetType.Native) {
-        require(address(this).balance == ab.amount, 'computed token balance does not match actual balance');
+        require(address(this).balance == ab.amount, 'computed native balance does not match actual balance');
         (bool sent, bytes memory data) = payable(msg.sender).call{value: ab.amount}('');
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {
@@ -202,14 +203,9 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     address actionAddress,
     AssetAmount[] memory inputAssetAmounts,
     Asset[] memory outputAssets,
-    uint256[] calldata args
+    bytes calldata args
   ) internal returns (WorkflowStepResult memory) {
-    // AssetAmount[] calldata inputAssetAmounts,
-    // Asset[] calldata outputAssets,
-    // uint256[] calldata args
-
     (bool success, bytes memory returnData) = actionAddress.delegatecall(
-      // abi.encodeWithSignature('execute(AssetAmount[],Asset[],uint256[])', inputAssetAmounts, outputAssets, args)
       abi.encodeWithSelector(IWorkflowStep.execute.selector, inputAssetAmounts, outputAssets, args)
     );
     require(success, string(returnData));
@@ -233,14 +229,13 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     AssetAmount[] memory rv = new AssetAmount[](inputAssets.length);
     for (uint256 i = 0; i < inputAssets.length; ++i) {
       WorkflowStepInputAsset memory stepInputAsset = inputAssets[i];
-      // uint256 inputAsset = LibAsset.encodeAsset(stepInputAsset.assetType, stepInputAsset.assetAddress);
       rv[i].asset = stepInputAsset.asset;
       uint256 currentWorkflowAssetBalance = assetBalances.getAssetBalance(stepInputAsset.asset);
       if (stepInputAsset.amountIsPercent) {
-        require(0 > stepInputAsset.amount && stepInputAsset.amount <= 100, 'percent must be between 1 and 100');
-        rv[i].amount = (uint256(currentWorkflowAssetBalance) * stepInputAsset.amount) / 100;
+        require(0 < stepInputAsset.amount && stepInputAsset.amount <= 100_000, 'percent must be between 1 and 100_000');
+        rv[i].amount = (uint256(currentWorkflowAssetBalance) * stepInputAsset.amount) / 100_000;
       } else {
-        require(currentWorkflowAssetBalance <= uint256(stepInputAsset.amount), 'absolute amount exceeds workflow asset balance');
+        require(currentWorkflowAssetBalance <= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
         rv[i].amount = stepInputAsset.amount;
       }
     }
