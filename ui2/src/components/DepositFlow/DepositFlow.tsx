@@ -395,36 +395,51 @@ export const DepositFlow = (props: DepostiFlowProps): JSX.Element => {
                 address: 1,
                 symbol: 'Ethereum',
                 title: 'Ethereum',
+                icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
               },
               {
                 address: 0x38, // 56 in decimal
                 symbol: 'BNB Smart Chain',
                 title: 'BNB Smart Chain',
+                icon: { url: 'https://app.aave.com/icons/tokens/busd.svg' },
               },
               {
                 address: 43114,
                 symbol: 'Avalanche',
                 title: 'Avalanche',
+                icon: {
+                  url: 'https://app.aave.com/icons/networks/avalanche.svg',
+                },
               },
               {
                 address: 137,
                 symbol: 'Polygon Matic',
                 title: 'Polygon Matic',
+                icon: {
+                  url: 'https://app.aave.com/icons/networks/polygon.svg',
+                },
               },
               {
                 address: 42161,
                 symbol: 'Arbitrum One',
                 title: 'Arbitrum One',
+                icon: {
+                  url: 'https://app.aave.com/icons/networks/arbitrum.svg',
+                },
               },
               {
                 address: 10,
                 symbol: 'Optimism',
                 title: 'Optimism',
+                icon: {
+                  url: 'https://app.aave.com/icons/networks/optimism.svg',
+                },
               },
               {
                 address: 250,
                 symbol: 'Fantom Opera',
                 title: 'Fantom Opera',
+                icon: { url: 'https://app.aave.com/icons/networks/fantom.svg' },
               },
             ]}
             selectedChoice={vm.selectedChain}
