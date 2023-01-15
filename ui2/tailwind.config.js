@@ -5,6 +5,10 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      backgroundImage: () => ({
+        'shimmer-gradient':
+          'linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.03) 30%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.03) 70%, rgba(255, 255, 255, 0) 100%)',
+      }),
       colors: {
         's-base03': '#002b36',
         's-base02': '#073642',
@@ -23,12 +27,24 @@ module.exports = {
         's-cyan': '#2aa198',
         's-green': '#859900',
       },
+      animation: {
+        wave: 'shimmer 1.25s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
     },
   },
   plugins: [
     require('@tailwindcss/forms'),
     plugin(function ({ addVariant }) {
       addVariant('poppy', '.fmp-poppy &')
+      addVariant('force-hover', '&[data-force-hover="true"]')
+      addVariant('group-force-hover', '.group[data-force-hover="true"] &')
+      addVariant('force-active', '&[data-force-active="true"]')
+      addVariant('group-force-active', '.group[data-force-hover="true"] &')
     }),
   ],
 }

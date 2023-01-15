@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if which -s gtm; then
+  gtm commit --yes
+elif [ -f /opt/homebrew/bin/gtm commit --yes ]; then
+  /opt/homebrew/bin/gtm commit --yes
+fi
