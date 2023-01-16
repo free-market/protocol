@@ -10,7 +10,7 @@ module.exports = async (deployer) => {
   const networkConfig = getNetworkConfig(networkId)
   const stargateAddr = networkConfig.stargateRouter
   if (stargateAddr) {
-    console.log(`deploying StargateBridgeAction on network=${networkId}  addr=${stargateAddr}`)
+    console.log(`deploying StargateBridgeAction on network=${networkId}  stargateRouter=${stargateAddr}`)
     await deployer.deploy(StargateBridgeAction, stargateAddr)
     const frontDoor = await FrontDoor.deployed()
     const stargateBridge = await StargateBridgeAction.deployed()

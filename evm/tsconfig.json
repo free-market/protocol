@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": ["ES2018", "DOM"],
     "module": "CommonJS",
-    "target": "ES5",
+    "target": "ES2015",
     "strict": true,
     "esModuleInterop": true,
     "types": ["@types/node", "@types/chai", "@types/mocha"],

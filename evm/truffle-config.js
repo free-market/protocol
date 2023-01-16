@@ -71,7 +71,9 @@ module.exports = {
       disableConfirmationListener: true,
     },
   },
-  mocha: {},
+  mocha: {
+    useColors: true,
+  },
   compilers: {
     solc: {
       version: '0.8.13',
