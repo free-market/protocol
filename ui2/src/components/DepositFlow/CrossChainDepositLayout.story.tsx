@@ -48,23 +48,18 @@ export default {
   component: Component,
   argTypes: {
     loadingAllowed: { control: 'boolean' },
-    initiallyOpen: { control: 'boolean' },
+    // TODO: switch between possible flowSteps
   },
 } as ComponentMeta<typeof Component>
 
 export const DepositFlow: ComponentStory<typeof Component> = (props) => {
-  const { loadingAllowed, initiallyOpen, ...rest } =
-    props as DepositFlowProps & {
-      loadingAllowed: boolean
-      initiallyOpen: boolean
-    }
+  const { loadingAllowed, ...rest } = props as DepositFlowProps & {
+    loadingAllowed: boolean
+  }
 
   return (
     <ErrorBoundaryFoo>
-      <DepositFlowStateProvider
-        initiallyLoadingAllowed={loadingAllowed}
-        initiallyOpen={initiallyOpen}
-      >
+      <DepositFlowStateProvider initiallyLoadingAllowed={loadingAllowed}>
         <Component {...rest} />
       </DepositFlowStateProvider>
     </ErrorBoundaryFoo>

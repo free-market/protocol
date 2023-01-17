@@ -46,6 +46,10 @@ export type Action =
       selector: { name: string }
       result: { address: string | number }
     }
+  | { name: 'AmountChanged'; value?: string }
+  | { name: 'WorkflowSubmissionStarted' }
+  | { name: 'WorkflowSubmissionFinished' }
+  | { name: 'WorkflowStarted'; value?: string }
 
 export type WalletState =
   | 'ready'
@@ -60,10 +64,16 @@ export type EditingMode = {
 
 export type State = {
   loadingAllowed: boolean
-  open: boolean
-  loading: boolean
+  flowStep:
+    | 'closed'
+    | 'loading'
+    | 'open'
+    | 'submitting'
+    | 'submitted'
+    | 'started'
   formEditingMode?: EditingMode
   amountEditing: boolean
+  amount?: string
   tokenSearchValue: string
   highlightedSelectorResult?: { address: string | number }
   selectedChain: { address: string | number }

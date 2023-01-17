@@ -16,13 +16,19 @@ export const ControlledDepositFlow = (
   const { connect, connectors } = useConnect()
   const vm = useDepositFlowState()
 
-  const handleClick = (): void => {
+  const handleClick = async (): Promise<void> => {
     if (!connected) {
       connect({ connector: connectors[0] })
+    } else if (vm.flowStep === 'open') {
+      vm.dispatch({ name: 'WorkflowSubmissionStarted' })
+      await delay(2000)
+      vm.dispatch({ name: 'WorkflowSubmissionFinished' })
+      await delay(3000)
+      vm.dispatch({ name: 'WorkflowStarted' })
     }
   }
 
-  const { data: balanceData } = useBalance({
+  const result = useBalance({
     chainId: Number(vm.selectedChain.address),
     address,
     token: (vm.selectedToken.address === '0x0'
@@ -30,11 +36,19 @@ export const ControlledDepositFlow = (
       : vm.selectedToken.address) as `0x${string}`,
   })
 
+  const { data: balanceData } = result
+
   let balanceState: DepositFlowProps['balanceState'] = 'hidden'
   let balance = ''
 
-  // Ethereum mainnet
-  if (vm.selectedChain.address === 1 || vm.selectedChain.address === 5) {
+  const networkMatches = Number(vm.selectedChain.address) === chain?.id
+
+  // Ethereum mainnet, Ethereum Goerli, and Avalanche Fuji
+  if (
+    [1, 5, 43113].includes(vm.selectedChain.address as number) &&
+    connected &&
+    networkMatches
+  ) {
     balanceState = 'loading'
 
     if (balanceData) {
@@ -56,8 +70,10 @@ export const ControlledDepositFlow = (
         balance={balance}
         walletState={
           connected
-            ? Number(vm.selectedChain.address) === chain?.id
-              ? 'insufficient-balance'
+            ? networkMatches
+              ? balance === '0.00'
+                ? 'insufficient-balance'
+                : 'ready'
               : 'network-mismatch'
             : 'unconnected'
         }
@@ -71,6 +87,15 @@ export const ControlledDepositFlow = (
                   title: 'Ethereum Goerli',
                   icon: { url: 'https://app.aave.com/icons/tokens/eth.svg' },
                 },
+                {
+                  // rpc url: https://api.avax-test.network/ext/bc/C/rpc
+                  address: 43113,
+                  symbol: 'Avalanche Fuji',
+                  title: 'Avalanche Fuji C-Chain',
+                  icon: {
+                    url: 'https://app.aave.com/icons/networks/avalanche.svg',
+                  },
+                },
                 ...defaultNetworkChoices,
               ]
             : undefined
@@ -78,4 +103,8 @@ export const ControlledDepositFlow = (
       />
     </>
   )
+}
+
+function delay(time: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, time))
 }

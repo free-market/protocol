@@ -18,11 +18,10 @@ import GenericExpandingSelector, {
   SelectorChoice,
 } from '@component/GenericExpandingSelector'
 import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
+import CrossChainJobCard from '@component/CrossChainJobCard'
 
 export type DepositFlowProps = {
   networkChoices?: SelectorChoice[]
-  submitting?: boolean
-  submitted?: boolean
   walletState?: WalletState
   balanceState?: 'loading' | 'hidden' | 'displayed'
   balance?: string
@@ -84,8 +83,6 @@ export const defaultNetworkChoices: SelectorChoice[] = [
 
 export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   const {
-    submitting = false,
-    submitted = false,
     walletState = 'ready',
     balanceState = 'hidden',
     balance,
@@ -187,14 +184,10 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const vm = useDepositFlowState()
 
-  const {
-    open,
-    loading,
-    formEditingMode,
-    amountEditing,
-    tokenSearchValue,
-    dispatch,
-  } = vm
+  const { formEditingMode, amountEditing, tokenSearchValue, dispatch } = vm
+
+  const open = ['open', 'submitting', 'submitted'].includes(vm.flowStep)
+  const loading = vm.flowStep === 'loading'
 
   const handleSelectorShadowClick = useCallback(async () => {
     // TODO(FMP-365):
@@ -248,14 +241,14 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
         <div className="flex items-center gap-2">
           <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-bold leading-none py-1">
-            0.00
+            {vm.amount ?? '0.00'}
           </div>
         </div>
       </div>
 
       <div className="invisible relative pointer-events-none group-hover:pointer-events-auto group-hover:visible flex items-center gap-1">
         <div className="visible group-hover:invisible absolute right-0 top-0 bottom-0 text-stone-400 group-hover:text-stone-200 group-active:text-stone-200/75 font-medium text-xs leading-none flex items-end">
-          <span className="leading-none py-1">$0.00</span>
+          <span className="leading-none py-1">${vm.amount ?? '0.00'}</span>
         </div>
         <div className="text-sm font-light text-stone-300 group-active:text-stone-300/75">
           click to edit
@@ -265,6 +258,11 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
       </div>
     </motion.button>
   )
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
+    dispatch({ name: 'AmountChanged', value })
+  }
 
   const amountInput = (
     <div className="bg-stone-600 pt-2 rounded-xl group hover:bg-stone-500/75">
@@ -289,6 +287,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
         autoFocus
         className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
         onBlur={onBlur}
+        onChange={handleAmountChange}
       />
     </div>
   )
@@ -315,7 +314,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
       animate={{ borderRadius: '12px' }}
       className="bg-stone-700 rounded-xl p-2 max-w-sm mx-auto shadow-md relative overflow-hidden"
     >
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {(formEditingMode?.name === 'token' ||
           formEditingMode?.name === 'chain') &&
           formEditingMode.recently !== 'closed' && (
@@ -331,8 +330,9 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-10"
             ></motion.div>
           )}
-        {submitted && (
+        {vm.flowStep === 'submitted' ? (
           <motion.div
+            key="submitted"
             layout="position"
             initial={{ opacity: 0 }}
             animate={{
@@ -419,7 +419,19 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               }}
             />
           </motion.div>
-        )}
+        ) : vm.flowStep === 'submitting' ? (
+          <motion.div
+            key="submitting"
+            layout="position"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="bg-stone-700/50 absolute inset-0 p-2 group cursor-pointer z-40 flex items-center justify-center"
+          ></motion.div>
+        ) : null}
       </AnimatePresence>
       <AnimatePresence>
         <motion.div className="space-y-2">
@@ -562,7 +574,12 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const baseDelay = 1
 
-  if (open && !loading) {
+  const buttonDisabled =
+    vm.flowStep === 'submitting' ||
+    walletState === 'insufficient-balance' ||
+    (walletState === 'ready' && vm.amount == null)
+
+  if (vm.flowStep === 'started' || (open && !loading)) {
     return (
       <div className="h-full relative">
         <motion.div className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between">
@@ -578,115 +595,151 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
           </motion.a>
 
           <AnimatePresence>
-            <motion.button
-              key="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-                y: -20,
-                transition: {
-                  ease: 'anticipate',
-                  bounce: 1,
-                  stiffness: 500,
-                  velocity: 500,
-                },
-              }}
-              transition={{ delay: baseDelay }}
-              className="font-medium text-sm text-stone-500 flex items-center rounded hover:bg-stone-800/[0.1] active:bg-stone-800/[0.15] px-3 cursor-pointer h-8 user-select-none"
-              onClick={handleBackClick}
-            >
-              <ChevronLeftIcon className="w-5 h-5" />
-              <span>Back</span>
-            </motion.button>
+            {open && !loading && (
+              <motion.button
+                key="button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  y: -20,
+                  transition: {
+                    ease: 'anticipate',
+                    bounce: 1,
+                    stiffness: 500,
+                    velocity: 500,
+                  },
+                }}
+                transition={{ delay: baseDelay }}
+                className="font-medium text-sm text-stone-500 flex items-center rounded hover:bg-stone-800/[0.1] active:bg-stone-800/[0.15] px-3 cursor-pointer h-8 user-select-none"
+                onClick={handleBackClick}
+              >
+                <ChevronLeftIcon className="w-5 h-5" />
+                <span>Back</span>
+              </motion.button>
+            )}
           </AnimatePresence>
         </motion.div>
 
         <div className="min-h-[512px] pb-8">
-          <div className="h-full flex items-start justify-center">
-            <div className="space-y-4 mt-16">
-              <AnimatePresence>
-                <motion.h2
-                  key={0}
-                  initial={{ opacity: 0 }}
-                  animate={
-                    submitted
-                      ? { opacity: 0, transition: { duration: 0.5 } }
-                      : {
-                          opacity: 1,
-                          transition: { delay: baseDelay + 0.2, duration: 2 },
-                        }
-                  }
-                  className="text-stone-600 text-2xl font-medium max-w-sm mx-auto my-0 text-center"
-                >
-                  Start a deposit
-                </motion.h2>
+          <AnimatePresence mode="wait">
+            {vm.flowStep === 'started' ? (
+              <motion.div
+                key="foo"
+                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: -20 }}
+                className="h-full flex items-center justify-center"
+              >
+                <div className="mt-32">
+                  <CrossChainJobCard
+                    spinnerLocation="status"
+                    status="sending"
+                    cardTitle="Deposit"
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="bar"
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="h-full flex items-start justify-center"
+              >
+                <div className="space-y-4 mt-16">
+                  <AnimatePresence>
+                    <motion.h2
+                      key={0}
+                      initial={{ opacity: 0 }}
+                      animate={
+                        vm.flowStep === 'submitted'
+                          ? { opacity: 0, transition: { duration: 0.5 } }
+                          : {
+                              opacity: 1,
+                              transition: {
+                                delay: baseDelay + 0.2,
+                                duration: 2,
+                              },
+                            }
+                      }
+                      className="text-stone-600 text-2xl font-medium max-w-sm mx-auto my-0 text-center"
+                    >
+                      Start a deposit
+                    </motion.h2>
 
-                <motion.h4
-                  key={1}
-                  initial={{ opacity: 0 }}
-                  animate={
-                    submitted
-                      ? { opacity: 0, transition: { duration: 0.5 } }
-                      : {
-                          opacity: 1,
-                          transition: { delay: baseDelay + 0.4, duration: 2 },
-                        }
-                  }
-                  className="text-stone-500 text-sm max-w-sm mx-auto my-0 text-center font-medium"
-                >
-                  When you start a deposit, Free Market will move your funds
-                  across chains automatically.
-                </motion.h4>
+                    <motion.h4
+                      key={1}
+                      initial={{ opacity: 0 }}
+                      animate={
+                        vm.flowStep === 'submitted'
+                          ? { opacity: 0, transition: { duration: 0.5 } }
+                          : {
+                              opacity: 1,
+                              transition: {
+                                delay: baseDelay + 0.4,
+                                duration: 2,
+                              },
+                            }
+                      }
+                      className="text-stone-500 text-sm max-w-sm mx-auto my-0 text-center font-medium"
+                    >
+                      When you start a deposit, Free Market will move your funds
+                      across chains automatically.
+                    </motion.h4>
 
-                {formCard}
+                    {formCard}
 
-                <motion.div
-                  key={2}
-                  initial={{ opacity: 0 }}
-                  animate={
-                    submitted
-                      ? { opacity: 0, transition: { duration: 0.5 } }
-                      : {
-                          opacity: 1,
-                          transition: { delay: baseDelay + 0.6, duration: 1 },
-                        }
-                  }
-                  className="px-2 max-w-xs mx-auto relative"
-                >
-                  <button
-                    onClick={onClick}
-                    className={cx(
-                      'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
-                      {
-                        'cursor-not-allowed opacity-50': submitting,
-                      },
-                    )}
-                  >
-                    <div className="h-8">
-                      <div
-                        className="transition-all h-8"
-                        style={{
-                          marginTop: submitting ? -77 : 2,
-                          height: 'max-content',
-                        }}
+                    <motion.div
+                      key={2}
+                      initial={{ opacity: 0 }}
+                      animate={
+                        vm.flowStep === 'submitted'
+                          ? { opacity: 0, transition: { duration: 0.5 } }
+                          : {
+                              opacity: 1,
+                              transition: {
+                                delay: baseDelay + 0.6,
+                                duration: 1,
+                              },
+                            }
+                      }
+                      className="px-2 max-w-xs mx-auto relative"
+                    >
+                      <button
+                        onClick={onClick}
+                        className={cx(
+                          'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+                          {
+                            'cursor-not-allowed opacity-50': buttonDisabled,
+                          },
+                        )}
                       >
-                        <div className="flex items-center">
-                          {buttonNames[walletState]}
+                        <div className="h-8">
+                          <div
+                            className="transition-all h-8"
+                            style={{
+                              marginTop: vm.flowStep === 'submitting' ? -77 : 2,
+                              height: 'max-content',
+                            }}
+                          >
+                            <div className="flex items-center">
+                              {buttonNames[walletState]}
+                            </div>
+                          </div>
+
+                          <div className="transition-all h-8 mt-12">
+                            <span
+                              className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                              style={{ borderLeftColor: 'rgb(231 229 228)' }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="transition-all h-8 mt-12">
-                        <span
-                          className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
-                          style={{ borderLeftColor: 'rgb(231 229 228)' }}
-                        />
-                      </div>
-                    </div>
-                  </button>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
+                      </button>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     )

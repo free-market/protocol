@@ -8,12 +8,15 @@ export const CrossChainJobCard = (props: {
   transactionView?: 'tall' | 'compact'
   spinnerLocation?: 'status' | 'transaction'
   pulseBehavior?: 'gradient' | 'pulse'
+  layoutId?: string
+  cardTitle?: string
 }): JSX.Element => {
   const {
     status = 'completed',
     transactionView = 'compact',
     spinnerLocation = 'transaction',
     pulseBehavior = 'pulse',
+    cardTitle = 'Transfer',
   } = props
 
   const [clicked, setClicked] = useState(false)
@@ -162,8 +165,11 @@ export const CrossChainJobCard = (props: {
   return (
     <>
       <motion.div
+        layout={props.layoutId != null}
         initial={{
-          ...({ '--fmp-scale': 0 } as Record<string, unknown>),
+          ...({
+            '--fmp-scale': 0,
+          } as Record<string, unknown>),
         }}
         whileHover={{
           ...({ '--fmp-scale': 1 } as Record<string, unknown>),
@@ -181,18 +187,23 @@ export const CrossChainJobCard = (props: {
             damping: 15,
           },
         }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
           type: 'spring',
           stiffness: 250,
           damping: 15,
         }}
         onClick={handleClick}
-        className="w-full bg-stone-600 rounded-xl shadow-md text-stone-200 font-medium p-2 max-w-xs mx-auto space-y-2 overflow-hidden cursor-pointer group relative"
+        className="min-w-[512px] w-full !rounded-xl shadow-md text-stone-200 font-medium p-2 max-w-xs mx-auto space-y-2 overflow-hidden cursor-pointer group relative"
       >
         <div className="absolute inset-0 pointer-events-none group-hover:bg-stone-900/10 group-active:bg-stone-900/25 z-50"></div>
+        <motion.div
+          layoutId={props.layoutId}
+          className="absolute inset-0 -top-2 pointer-events-none bg-stone-600 z-10"
+        ></motion.div>
 
-        <div className="flex justify-between !my-2">
-          <div className="text-lg leading-none">Transfer</div>
+        <div className="relative flex justify-between !my-2 z-20">
+          <div className="text-lg leading-none">{cardTitle}</div>
 
           <div className="w-6 h-6 rounded-full">
             <ChevronUpDownIcon
@@ -202,7 +213,7 @@ export const CrossChainJobCard = (props: {
           </div>
         </div>
 
-        <div className="!m-0">
+        <div className="!m-0 relative z-20">
           <AnimatePresence>
             {clicked && (
               <motion.div
@@ -337,7 +348,7 @@ export const CrossChainJobCard = (props: {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-stretch gap-2 pt-2 !mt-0">
+        <div className="flex items-stretch gap-2 pt-2 !mt-0 relative z-20">
           <div className="basis-1/2 space-y-2 flex flex-col">
             <div className="text-xs font-light leading-none text-left">
               STATUS

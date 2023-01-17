@@ -5,10 +5,10 @@ import { Action, EditingMode, State, ViewModel } from './types'
 
 export const initialState: State = {
   loadingAllowed: false,
-  open: false,
-  loading: false,
+  flowStep: 'closed',
   formEditingMode: undefined,
   amountEditing: false,
+  amount: undefined,
   tokenSearchValue: '',
   selectedChain: { address: 1 },
   selectedToken: { address: '0x0' },
@@ -24,32 +24,46 @@ export const DepositFlowStateContext = createContext<ViewModel>({
 
 export const DepositFlowStateProvider = (props: {
   initiallyLoadingAllowed?: boolean
-  initiallyOpen?: boolean
+  initialStep?: State['flowStep']
   initialFormEditingMode?: EditingMode
   children?: React.ReactNode
 }): JSX.Element => {
   const {
     initiallyLoadingAllowed = initialState.loadingAllowed,
-    initiallyOpen = initialState.open,
+    initialStep = initialState.flowStep,
     initialFormEditingMode = initialState.formEditingMode,
   } = props
 
   const reducer = (state: State, action: Action) => {
     switch (action.name) {
       case 'DepositButtonClicked': {
-        state.open = true
+        state.flowStep = 'open'
         if (state.loadingAllowed) {
-          state.loading = true
+          state.flowStep = 'loading'
         }
         break
       }
       case 'FormLoaded': {
-        state.loading = false
+        state.flowStep = 'open'
         break
       }
       case 'BackButtonClicked': {
-        state.open = false
-        state.loading = false
+        state.flowStep = 'closed'
+        state.formEditingMode = undefined
+        break
+      }
+      case 'WorkflowSubmissionStarted': {
+        state.flowStep = 'submitting'
+        state.formEditingMode = undefined
+        break
+      }
+      case 'WorkflowSubmissionFinished': {
+        state.flowStep = 'submitted'
+        state.formEditingMode = undefined
+        break
+      }
+      case 'WorkflowStarted': {
+        state.flowStep = 'started'
         state.formEditingMode = undefined
         break
       }
@@ -134,6 +148,11 @@ export const DepositFlowStateProvider = (props: {
         break
       }
 
+      case 'AmountChanged': {
+        state.amount = action.value
+        break
+      }
+
       default:
         return state
     }
@@ -142,7 +161,7 @@ export const DepositFlowStateProvider = (props: {
   const [state, dispatch] = useImmerReducer<State>(reducer, {
     ...initialState,
     loadingAllowed: initiallyLoadingAllowed,
-    open: initiallyOpen,
+    flowStep: initialStep,
     formEditingMode: initialFormEditingMode,
   })
 
