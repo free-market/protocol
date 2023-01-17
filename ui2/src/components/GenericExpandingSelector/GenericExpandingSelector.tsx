@@ -157,6 +157,9 @@ export const GenericExpandingSelector = forwardRef(
     },
     ref: React.Ref<GenericExpandingSelectorRef>,
   ): JSX.Element => {
+    const { highlightedSelectorResult: highlightedChoice, selectedChain } =
+      useDepositFlowState()
+
     const {
       extraContent,
       label,
@@ -182,7 +185,10 @@ export const GenericExpandingSelector = forwardRef(
           icon: { url: 'https://app.aave.com/icons/tokens/weth.svg' },
         },
         {
-          address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+          address:
+            selectedChain.address === 43113
+              ? '0x4A0D1092E9df255cf95D72834Ea9255132782318'
+              : '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
           symbol: 'USDC',
           title: 'USD Coin',
           icon: { url: 'https://app.aave.com/icons/tokens/usdc.svg' },
@@ -209,13 +215,14 @@ export const GenericExpandingSelector = forwardRef(
       selectedChoice = { address: choices[0].address },
     } = props
 
-    const { highlightedSelectorResult: highlightedChoice } =
-      useDepositFlowState()
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const expandedSelectedChoice = choices.find(
+    let expandedSelectedChoice = choices.find(
       (c) => c.address === selectedChoice.address,
-    )!
+    )
+
+    if (expandedSelectedChoice == null) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expandedSelectedChoice = choices[0]!
+    }
 
     const selectorSearchResults = choices.filter(
       ({ symbol, title }) =>
