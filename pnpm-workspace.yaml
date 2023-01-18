@@ -6,3 +6,4 @@ packages:
   - 'sdk'
   - 'examples-sdk'
   - 'ui2'
+  - 'e2e'

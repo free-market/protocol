@@ -1,0 +1,17 @@
+{
+  "name": "@fmp/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@fmp/evm": "workspace:*",
+    "ethers": "^5.7.2",
+    "jest": "^28.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "27.0.3",
+    "ts-jest": "^28"
+  }
+}

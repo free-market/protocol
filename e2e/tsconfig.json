@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "@asset/*": ["assets/*"],
+      "@component/*": ["components/*"],
+      "@app/*": ["/*"]
+    },
+    "typeRoots":  ["./node_modules/@types", "./typings"],
+    "downlevelIteration": true
+  },
+  "include": [
+    "src",
+    "src/setupTests.ts",
+    "*.js",
+    ".storybook/*.js",
+    ".eslintrc.js"
+, "typings/react-flip-numbers.d.ts"  ]
+}
