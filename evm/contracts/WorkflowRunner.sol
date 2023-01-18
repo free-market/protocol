@@ -6,8 +6,6 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 import './model/Workflow.sol';
-import './actions/curve/Curve.sol';
-import './actions/wormhole/Wormhole.sol';
 import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
 import './IActionManager.sol';
