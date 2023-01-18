@@ -1,10 +1,7 @@
 packages:
-  - 'ui'
   - 'apps/**'
   - 'types/**'
   - 'evm'
-  - 'contracts-spec'
-  - 'wormhole'
   - 'wfde'
   - 'sdk'
   - 'examples-sdk'

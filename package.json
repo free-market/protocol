@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "turbo build test --filter=!@fmp/codeless-builder",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -33,5 +33,5 @@
     "evm",
     "sdk",
     "wfde"
-  ] 
+  ]
 }
