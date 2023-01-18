@@ -31,7 +31,7 @@ export const Workflow = (): JSX.Element => {
     const inputPill = (
       <AssetPill
         network="not-included"
-        className="inline-flex items-center rounded-full bg-zinc-700/75 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-zinc-600/75"
+        className="inline-flex items-center rounded-full bg-stone-700/75 text-stone-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-stone-600/75"
         asset={action.input.asset}
       />
     )
@@ -39,7 +39,7 @@ export const Workflow = (): JSX.Element => {
     const outputPill = (
       <AssetPill
         network="not-included"
-        className="inline-flex items-center rounded-full bg-zinc-700/75 text-zinc-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-zinc-600/75"
+        className="inline-flex items-center rounded-full bg-stone-700/75 text-stone-300 py-1 px-2 space-x-2 font-medium text-lg group-hover:bg-stone-600/75"
         asset={action.output.asset}
       />
     )
@@ -47,7 +47,7 @@ export const Workflow = (): JSX.Element => {
     return (
       <motion.div
         layoutId={step.id}
-        className="bg-zinc-700/25 w-full p-2 hover:bg-zinc-700/50 cursor-pointer group"
+        className="bg-stone-700/25 w-full p-2 hover:bg-stone-700/50 cursor-pointer group"
         onMouseMove={handleMouseEnter}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -61,14 +61,16 @@ export const Workflow = (): JSX.Element => {
           )}
         >
           <div className="inline-flex items-center gap-2">
-            <div className="text-zinc-400">#{index + 2}</div>
+            <div className="text-stone-400">
+              #{index + 1 + Number(core.triggerStep === 'visible')}
+            </div>
             <img
               src={catalog[step.actionGroup.name].icon.url}
               className="w-5 h-5"
             />
-            <div className="text-zinc-400">{action.title}</div>
+            <div className="text-stone-400">{action.title}</div>
           </div>
-          <div className="flex items-center text-zinc-600 group-hover:text-zinc-500/50">
+          <div className="flex items-center text-stone-600 group-hover:text-stone-500/50">
             {inputPill}
             &nbsp;&nbsp;&nbsp;&rarr;&nbsp;&nbsp;&nbsp; {outputPill}
           </div>
@@ -78,12 +80,12 @@ export const Workflow = (): JSX.Element => {
   })
 
   const triggerStep = (
-    <motion.div className="rounded-xl bg-zinc-700/25 w-full p-2 group">
+    <motion.div className="rounded-xl bg-stone-700/25 w-full p-2 group">
       <div className="inline-flex items-center gap-2 justify-between w-full">
         <div className="inline-flex items-center gap-2">
-          <div className="text-zinc-400">#1</div>
-          <BellIcon className="w-5 w-5 text-zinc-400" />
-          <div className="text-zinc-400">User Trigger</div>
+          <div className="text-stone-400">#1</div>
+          <BellIcon className="w-5 w-5 text-stone-400" />
+          <div className="text-stone-400">User Trigger</div>
         </div>
       </div>
     </motion.div>
@@ -92,7 +94,7 @@ export const Workflow = (): JSX.Element => {
   return (
     <>
       <div className="rounded-xl overflow-hidden">
-        {triggerStep}
+        {core.triggerStep === 'visible' && triggerStep}
         {steps}
       </div>
     </>

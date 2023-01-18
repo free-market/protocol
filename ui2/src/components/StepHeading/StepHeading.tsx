@@ -4,9 +4,16 @@ import { catalog } from 'config'
 import { useCore } from '../CoreProvider'
 
 export const StepHeading = (props: {
+  forceHover?: boolean
+  forceActive?: boolean
   actionGroupName?: CatalogGroup['name']
+  collapsed?: boolean
 }): JSX.Element => {
-  const { actionGroupName = 'curve' } = props
+  const {
+    actionGroupName = 'curve',
+    forceHover = false,
+    forceActive = false,
+  } = props
   const core = useCore()
 
   const click = () => {
@@ -16,16 +23,18 @@ export const StepHeading = (props: {
   return (
     <div className="relative flex items-stretch cursor-pointer group">
       <button
-        className="block w-full bg-zinc-700 p-2 rounded-xl cursor-pointer hover:bg-zinc-600 active:opacity-75 select-none flex items-center justify-between group"
+        data-force-hover={forceHover}
+        data-force-active={forceActive}
+        className="block w-full bg-stone-700 p-2 rounded-xl cursor-pointer hover:bg-stone-600 force-hover:bg-stone-600 force-active:opacity-75 active:opacity-75 select-none flex items-center justify-between group"
         onClick={click}
       >
         <div className="flex items-center">
           <img src={catalog[actionGroupName].icon.url} className="w-8 h-8" />
-          <div className="text-zinc-300 text-lg px-2 font-extralight">
+          <div className="text-stone-300 text-lg px-2 font-extralight user-select-none">
             {catalog[actionGroupName].title}
           </div>
         </div>
-        <ChevronRightIcon className="text-zinc-500 w-8 h-8 group-hover:text-zinc-400/50 transform translate-x-2" />
+        <ChevronRightIcon className="text-stone-500 w-8 h-8 group-hover:text-stone-400/50 group-force-hover:text-stone-400/50 transform translate-x-2" />
       </button>
     </div>
   )

@@ -1,8 +1,9 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { CrossChainDepositLayout as Component } from './CrossChainDepositLayout'
+import { DepositFlow as Component, DepositFlowProps } from './DepositFlow'
 import ErrorDialog from '@component/ErrorDialog'
+import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 
 class ErrorBoundaryFoo extends React.Component {
   state = { hasError: false }
@@ -43,15 +44,26 @@ export default {
       values: [{ name: 'light', value: '#f4f4f5' }],
     },
   },
-  title: 'Example/CrossChainDepositLayout',
+  title: 'Example/DepositFlow',
   component: Component,
+  argTypes: {
+    loadingAllowed: { control: 'boolean' },
+    // TODO: switch between possible flowSteps
+  },
 } as ComponentMeta<typeof Component>
 
-export const CrossChainDepositLayout: ComponentStory<typeof Component> = (
-  props,
-) => (
-  <ErrorBoundaryFoo>
-    <Component {...props} />
-  </ErrorBoundaryFoo>
-)
-CrossChainDepositLayout.args = {}
+export const DepositFlow: ComponentStory<typeof Component> = (props) => {
+  const { loadingAllowed, ...rest } = props as DepositFlowProps & {
+    loadingAllowed: boolean
+  }
+
+  return (
+    <ErrorBoundaryFoo>
+      <DepositFlowStateProvider initiallyLoadingAllowed={loadingAllowed}>
+        <Component {...rest} />
+      </DepositFlowStateProvider>
+    </ErrorBoundaryFoo>
+  )
+}
+
+DepositFlow.args = {}

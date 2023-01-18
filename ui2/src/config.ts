@@ -146,7 +146,7 @@ export const catalog: Catalog = {
     icon: { url: 'https://app.aave.com/icons/tokens/aave.svg' },
     actions: [
       {
-        title: 'Stake',
+        title: 'Supply',
         input: {
           asset: {
             label: 'USDC',

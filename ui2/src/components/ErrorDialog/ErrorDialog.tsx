@@ -38,7 +38,7 @@ export const ErrorDialog = (props: {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-zinc-100 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-stone-100 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -76,19 +76,19 @@ export const ErrorDialog = (props: {
                         <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                           <Dialog.Title
                             as="h3"
-                            className="text-lg font-medium leading-6 text-zinc-900"
+                            className="text-lg font-medium leading-6 text-stone-900"
                           >
                             An error occurred
                           </Dialog.Title>
                           <div className="mt-2">
-                            <p className="text-sm text-zinc-500">
+                            <p className="text-sm text-stone-500">
                               Something went wrong. Refresh to try again.
                             </p>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-zinc-50 px-4 py-3 sm:flex sm:flex-row sm:px-6 justify-end">
+                    <div className="bg-stone-50 px-4 py-3 sm:flex sm:flex-row sm:px-6 justify-end">
                       <button
                         type="button"
                         className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
@@ -100,7 +100,7 @@ export const ErrorDialog = (props: {
                       <button
                         autoFocus={false}
                         type="button"
-                        className="mt-3 inline-flex w-full justify-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-base font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        className="mt-3 inline-flex w-full justify-center rounded-md border border-stone-300 bg-white px-4 py-2 text-base font-medium text-stone-700 shadow-sm hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         onClick={onClose}
                       >
                         Close

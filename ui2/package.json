@@ -18,6 +18,7 @@
     "@types/testing-library__jest-dom": "5.14.5",
     "@usedapp/core": "1.1.5",
     "@usedapp/siwe": "1.0.0",
+    "@wagmi/core": "0.8.14",
     "@zumper/react-ladda": "7.2.4",
     "babel-loader": "^8.0.0",
     "classnames": "2.3.1",
@@ -30,6 +31,7 @@
     "ladda": "2.0.3",
     "prismjs": "1.29.0",
     "react": "^18",
+    "react-confetti": "6.1.0",
     "react-dom": "^18",
     "react-final-form": "6.5.9",
     "react-refresh": "^0.10",
@@ -39,6 +41,7 @@
     "tss-react": "4.2.0",
     "typestyle": "2.4.0",
     "use-immer": "0.7.0",
+    "wagmi": "0.10.8",
     "web-vitals": "2.1.2"
   },
   "scripts": {

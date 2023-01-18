@@ -46,3 +46,4 @@ npm-debug.log
 !.env/test
 *.tsbuildinfo
 deployment-artifacts
+/.gtm/
