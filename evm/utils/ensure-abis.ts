@@ -65,7 +65,7 @@ async function main() {
   mkdirs(ABI_DIR)
   mkdirs(OUT_DIR)
 
-  cp(`node_modules/@openzeppelin/contracts/build/contracts/IERC20.json`, `${OUT_DIR}/IERC20.json`)
+  // cp(`node_modules/@openzeppelin/contracts/build/contracts/IERC20.json`, `${OUT_DIR}/IERC20.json`)
   // fs.copyFileSync(`node_modules/@openzeppelin/contracts/build/contracts/IERC20.json`, `${OUT_DIR}/IERC20.json`)
 
   let needSleep = false

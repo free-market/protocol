@@ -16,7 +16,7 @@ function go() {
       const content = fs.readFileSync(sourcePath)
       const json = JSON.parse(content.toString())
       // console.log(json.networks)
-      if (Object.keys(json.networks).length > 0) {
+      if (json.networks && Object.keys(json.networks).length > 0) {
         fs.mkdirSync(archivePath, { recursive: true })
         const destPath = `${archivePath}/${dirEnt.name}`
         fs.writeFileSync(destPath, JSON.stringify(json.networks, null, 2))

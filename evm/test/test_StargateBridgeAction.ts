@@ -28,7 +28,6 @@ interface StargateBridgeActionArgs {
 }
 
 // TODO move to SDK
-// TODO how to encapsulate client side logic, client side action framework needed
 function encodeStargateBridgeParams(params: StargateBridgeActionArgs) {
   const stargateSwapParams = web3.eth.abi.encodeParameters(
     ['address', 'address', 'uint16', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bool'],

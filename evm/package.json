@@ -11,15 +11,19 @@
     "build": "truffle compile && pnpm run generate-clients && tsc",
     "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run   generate-clients:truffle",
     "generate-clients:ethers": "typechain --target=ethers-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
-    "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads"
+    "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
+    "import-truffle-networks": "ts-node utils/import-truffle-networks.ts",
+    "export-truffle-networks": "ts-node utils/import-truffle-networks.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@ava/typescript": "^3.0.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@openzeppelin/contracts": "^4.8.0",
+    "@truffle/contract": "^4.6.12",
     "@truffle/deployer": "^3.2.106",
     "@truffle/resolver": "^9.0.25",
     "@typechain/ethers-v5": "^10.1.1",
@@ -40,6 +44,7 @@
     "bn.js": "^5.2.1",
     "chai": "^4.3.6",
     "concurrently": "^7.6.0",
+    "contract": "link:@types/truffle/contract",
     "cross-env": "^7.0.3",
     "cross-var": "^1.1.0",
     "dotenv": "^16.0.3",

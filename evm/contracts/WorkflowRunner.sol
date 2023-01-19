@@ -239,4 +239,10 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     }
     return rv;
   }
+
+  event WorkflowContinuation(uint256 nonce, address userAddress);
+
+  function continueWorkflow(uint256 nonce, address userAddress) external {
+    emit WorkflowContinuation(nonce, userAddress);
+  }
 }
