@@ -9,9 +9,10 @@
     "ganache": "./start-ganache.sh",
     "clean": "rimraf build types",
     "build": "truffle compile && pnpm run generate-clients && tsc",
-    "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run   generate-clients:truffle",
+    "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run generate-clients:truffle && pnpm run generate-clients:web3",
     "generate-clients:ethers": "typechain --target=ethers-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
     "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
+    "generate-clients:web3": "typechain --target=web3-v1 --glob=\"build/contracts/*.json\" --always-generate-overloads",
     "import-truffle-networks": "ts-node utils/import-truffle-networks.ts",
     "export-truffle-networks": "ts-node utils/import-truffle-networks.ts"
   },
@@ -70,6 +71,8 @@
     "@truffle/hdwallet-provider": "^2.1.2",
     "big.js": "^6.2.1",
     "bs58": "^5.0.0",
-    "glob": "^8.0.3"
+    "eip1193-provider": "^1.0.1",
+    "glob": "^8.0.3",
+    "loglevel": "^1.8.0"
   }
 }

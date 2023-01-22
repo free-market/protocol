@@ -1,19 +1,5 @@
 lockfileVersion: 5.4
 
-patchedDependencies:
-  '@craco/craco@6.4.5':
-    hash: ueurirdp5d5gvhc5oxw3q6fc7a
-    path: patches/@craco__craco@6.4.5.patch
-  react-simple-code-editor@0.13.0:
-    hash: 5j6ti7usv4vm5kvbysyprdovd4
-    path: patches/react-simple-code-editor@0.13.0.patch
-  react-scripts@5.0.1:
-    hash: jwu4wglwaxyvasdxzlfntulxdq
-    path: patches/react-scripts@5.0.1.patch
-  '@storybook/preset-create-react-app@4.1.2':
-    hash: fpnro3lbqetefviyk6hhac3buu
-    path: patches/@storybook__preset-create-react-app@4.1.2.patch
-
 importers:
 
   .:
@@ -77,11 +63,13 @@ importers:
       cross-var: ^1.1.0
       dotenv: ^16.0.3
       dotenv-cli: ^6.0.0
+      eip1193-provider: ^1.0.1
       eth-revert-reason: ^1.0.3
       ethers: ^5.7.2
       ganache: ^7.5.0
       glob: ^8.0.3
       google-protobuf: ^3.21.2
+      loglevel: ^1.8.0
       node-fetch: ^3.3.0
       nodemon: ^2.0.20
       rimraf: ^3.0.2
@@ -98,7 +86,9 @@ importers:
       '@truffle/hdwallet-provider': 2.1.2_@babel+core@7.19.1
       big.js: 6.2.1
       bs58: 5.0.0
+      eip1193-provider: 1.0.1
       glob: 8.0.3
+      loglevel: 1.8.0
     devDependencies:
       '@ava/typescript': 3.0.1
       '@ethersproject/abi': 5.7.0
@@ -145,6 +135,72 @@ importers:
       web3-core: 1.8.1
       web3-eth-contract: 1.8.1
       web3-utils: 1.8.1
+
+  node_modules/.pnpm/ethers@5.7.1/node_modules/ethers:
+    specifiers:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/address': 5.7.0
+      '@ethersproject/base64': 5.7.0
+      '@ethersproject/basex': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/constants': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/hash': 5.7.0
+      '@ethersproject/hdnode': 5.7.0
+      '@ethersproject/json-wallets': 5.7.0
+      '@ethersproject/keccak256': 5.7.0
+      '@ethersproject/logger': 5.7.0
+      '@ethersproject/networks': 5.7.1
+      '@ethersproject/pbkdf2': 5.7.0
+      '@ethersproject/properties': 5.7.0
+      '@ethersproject/providers': 5.7.1
+      '@ethersproject/random': 5.7.0
+      '@ethersproject/rlp': 5.7.0
+      '@ethersproject/sha2': 5.7.0
+      '@ethersproject/signing-key': 5.7.0
+      '@ethersproject/solidity': 5.7.0
+      '@ethersproject/strings': 5.7.0
+      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/units': 5.7.0
+      '@ethersproject/wallet': 5.7.0
+      '@ethersproject/web': 5.7.1
+      '@ethersproject/wordlists': 5.7.0
+      eip1193-provider: ^1.0.1
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/address': 5.7.0
+      '@ethersproject/base64': 5.7.0
+      '@ethersproject/basex': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/constants': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/hash': 5.7.0
+      '@ethersproject/hdnode': 5.7.0
+      '@ethersproject/json-wallets': 5.7.0
+      '@ethersproject/keccak256': 5.7.0
+      '@ethersproject/logger': 5.7.0
+      '@ethersproject/networks': 5.7.1
+      '@ethersproject/pbkdf2': 5.7.0
+      '@ethersproject/properties': 5.7.0
+      '@ethersproject/providers': 5.7.1
+      '@ethersproject/random': 5.7.0
+      '@ethersproject/rlp': 5.7.0
+      '@ethersproject/sha2': 5.7.0
+      '@ethersproject/signing-key': 5.7.0
+      '@ethersproject/solidity': 5.7.0
+      '@ethersproject/strings': 5.7.0
+      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/units': 5.7.0
+      '@ethersproject/wallet': 5.7.0
+      '@ethersproject/web': 5.7.1
+      '@ethersproject/wordlists': 5.7.0
+      eip1193-provider: 1.0.1
 
   sdk:
     specifiers:
@@ -611,7 +667,7 @@ packages:
       convert-source-map: 1.8.0
       debug: 4.3.4
       gensync: 1.0.0-beta.2
-      json5: 2.2.1
+      json5: 2.2.3
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -19977,7 +20033,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: true
 
   /jsonc-parser/3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}

@@ -8,11 +8,13 @@ const Weth = artifacts.require('Weth')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const MockStargateRouter = artifacts.require('MockStargateRouter')
 const StargateBridgeAction = artifacts.require('StargateBridgeAction')
+const FrontDoor = artifacts.require('FrontDoor')
 
 import { AssetType } from '../utils/AssetType'
 import { ADDRESS_ZERO } from './utilities'
 import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
 import { hexByteLength, concatHex } from './hexStringUtils'
+import { ActionIds } from '../utils/actionIds'
 
 interface StargateBridgeActionArgs {
   dstActionAddress: string
@@ -62,8 +64,28 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     weth = await Weth.at(networkConfig.WETH)
   })
 
-  it.skip('deployed correctly during migrate', async () => {
-    // TODO implement me
+  it('deployed correctly during migrate', async () => {
+    const frontDoor = await FrontDoor.deployed()
+    const upstream = await frontDoor.getUpstream()
+    const workflowRunner = await WorkflowRunner.deployed()
+    expect(workflowRunner.address).to.equal(upstream)
+
+    const fmp = await WorkflowRunner.at(frontDoor.address)
+    // const actionCount = (await fmp.getActionCount()).toNumber()
+    // expect(actionCount).to.be.greaterThan(0)
+    // t.log(`${actionCount} actions are registered`)
+    // for (let i = 0; i < actionCount; ++i) {
+    //   const ai = await fmp.getActionInfoAt(i)
+    //   t.log(formatStep(ai))
+    // }
+    const stargateBridgeActionAddress = await fmp.getActionAddress(ActionIds.stargateBridge)
+    const stargateBridgeAction = await StargateBridgeAction.deployed()
+    expect(stargateBridgeAction.address).to.equal(stargateBridgeActionAddress)
+
+    const srcContractAddresses = getNetworkConfig(networkId as any)
+
+    const stargateRouterAddress = await stargateBridgeAction.stargateContractAddress()
+    expect(srcContractAddresses.stargateRouter, stargateRouterAddress)
   })
 
   const srcChain = 'ethereumGoerli'
