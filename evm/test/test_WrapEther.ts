@@ -7,19 +7,21 @@ const IWorkflowStep = artifacts.require('IWorkflowStep')
 
 import { ActionIds } from '../utils/actionIds'
 import { AssetType } from '../utils/AssetType'
-import { commify, encodeAsset, formatEvent, formatEthereum, getWorkflowRunner, validateAction, ADDRESS_ZERO, ETH_ASSET } from './utilities'
+import {
+  commify,
+  encodeAsset,
+  formatEvent,
+  formatEthereum,
+  getWorkflowRunner,
+  validateAction,
+  ADDRESS_ZERO,
+  ETH_ASSET,
+  verbose,
+} from './utilities'
 import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
 import { IERC20Instance } from '../types/truffle-contracts/IERC20'
 import BN from 'bn.js'
 import { AllEvents } from '../types/truffle-contracts/WorkflowRunner'
-
-const verboseLog = false
-
-function verbose(...s: string[]) {
-  if (verboseLog) {
-    console.log(...s)
-  }
-}
 
 contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
   let wrapEther: WrapEtherInstance

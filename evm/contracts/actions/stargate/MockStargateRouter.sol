@@ -105,7 +105,7 @@ contract MockStargateRouter is IStargateRouter {
     return (0, 0);
   }
 
-  function factory() external view returns (address) {
+  function factory() external pure returns (address) {
     return address(0);
   }
 }

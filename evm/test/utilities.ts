@@ -1,5 +1,6 @@
 import BN from 'bn.js'
 import { Unit } from 'web3-utils'
+import { AllEvents } from '../types/truffle-contracts/FrontDoor'
 import { AssetType } from '../utils/AssetType'
 
 const FrontDoor = artifacts.require('FrontDoor')
@@ -81,4 +82,35 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const ETH_ASSET = {
   assetType: AssetType.Native,
   assetAddress: ADDRESS_ZERO,
+}
+
+const verboseLog = false
+
+export function verbose(...s: string[]) {
+  if (verboseLog) {
+    console.log(...s)
+  }
+}
+
+export function logEvents(txResponse: Truffle.TransactionResponse<any>) {
+  verbose('Events:')
+  for (const log of txResponse.logs) {
+    verbose('  📌 ' + formatEvent(log))
+  }
+}
+
+export function toBN(x: BN | string | number) {
+  if (typeof x !== 'object') {
+    return new BN(x)
+  }
+  return x
+}
+
+export async function expectRejection(promise: Promise<any>) {
+  try {
+    await promise
+    assert.fail('promise did not reject')
+  } catch (_) {
+    // no op
+  }
 }

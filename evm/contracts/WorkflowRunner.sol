@@ -41,7 +41,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
 
   function createUserProxy() external {
     EternalStorage es = EternalStorage(eternalStorageAddress);
-    // bytes32 key = keccak256(abi.encodePacked('userProxies', msg.sender));
     bytes32 key = getUserProxyKey('userProxies', msg.sender);
     address currentAddress = es.getAddress(key);
     require(currentAddress != address(0x0000000000000000), 'user proxy already exists');
@@ -143,7 +142,11 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
     Workflow calldata workflow,
     WorkflowParameter[] calldata /*params*/
   ) external payable nonReentrant {
-    emit WorkflowExecution(msg.sender);
+    executeWorkflow(msg.sender, workflow);
+  }
+
+  function executeWorkflow(address userAddress, Workflow calldata workflow) internal {
+    emit WorkflowExecution(userAddress);
     // workflow starts on the step with index 0
     uint16 currentStepIndex = 0;
     // used to keep track of asset balances
@@ -174,23 +177,23 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, IUs
         break;
       }
     }
-    refundCaller(assetBalances);
+    refundUser(userAddress, assetBalances);
   }
 
-  function refundCaller(LibAssetBalances.AssetBalances memory assetBalances) internal {
+  function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
       emit RemainingAsset(asset, ab.amount);
       if (asset.assetType == AssetType.Native) {
         require(address(this).balance == ab.amount, 'computed native balance does not match actual balance');
-        (bool sent, bytes memory data) = payable(msg.sender).call{value: ab.amount}('');
+        (bool sent, bytes memory data) = payable(userAddress).call{value: ab.amount}('');
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
         uint256 amount = token.balanceOf(address(this));
         require(ab.amount == amount, 'computed token balance does not match actual balance');
-        SafeERC20.safeTransfer(token, msg.sender, amount);
+        SafeERC20.safeTransfer(token, userAddress, amount);
       } else {
         revert('unknown asset type in assetBalances');
       }
