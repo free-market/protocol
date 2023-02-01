@@ -62,13 +62,13 @@ export const FeePreview = (props: {
           damping: 15,
         }}
         onClick={handleClick}
-        className="max-w-xs mx-auto rounded-xl text-stone-800 overflow-hidden cursor-pointer group relative"
+        className="max-w-xs mx-auto rounded-xl overflow-hidden cursor-pointer group relative"
       >
         <div className="max-w-xs mx-auto">
           <div className="absolute inset-0 pointer-events-none group-hover:bg-stone-900/10 group-active:bg-stone-900/25 z-50"></div>
-          <div className="text-stone-800 m-2 leading-none flex items-center justify-between">
+          <div className="m-2 leading-none flex items-center justify-between">
             <div className="p-2 leading-none flex items-center justify-between w-full group relative cursor-pointer">
-              <div className="flex items-center space-x-1 text-sm">
+              <div className="flex items-center space-x-1 text-sm text-stone-500">
                 <span>You will deposit</span>
                 {showImage && (
                   <span>
