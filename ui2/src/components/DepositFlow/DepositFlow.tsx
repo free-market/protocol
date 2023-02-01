@@ -111,10 +111,10 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const handleDepositButtonHoverStart = useCallback(() => {
     depositButtonBackgroundControls.start({
-      scale: 1.2,
+      scale: 1,
     })
     depositButtonForegroundControls.start({
-      scale: 1.2,
+      scale: 1,
     })
   }, [])
 
@@ -176,10 +176,10 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const handleDepositButtonHoverEnd = useCallback(() => {
     depositButtonBackgroundControls.start({
-      scale: 1,
+      scale: 0.8,
     })
     depositButtonForegroundControls.start({
-      scale: 1,
+      scale: 0.8,
     })
   }, [])
 
@@ -788,99 +788,106 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
           />
         </motion.a>
       </motion.div>
-      <div className="min-h-[512px] flex items-center justify-center">
-        <motion.button
-          layout
-          onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
-          onHoverEnd={loading ? undefined : handleDepositButtonHoverEnd}
-          whileTap={{ scale: loading ? 0.9 : 0.8 }}
-          onClick={handleDepositButtonClick}
-          className="w-24 h-24 relative rounded-full"
-          tabIndex={-1}
-        >
-          <motion.div
-            animate={depositButtonForegroundControls}
-            className="absolute font-medium text-stone-300 w-24 h-24 flex items-center justify-center z-10 pointer-events-none user-select-none overflow-hidden rounded-full"
-          >
-            <AnimatePresence mode="wait" initial>
-              {loading && (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0, scale: 0, y: 50 }}
-                  animate={loadingBarControls}
-                  transition={{
-                    type: 'spring',
-                    damping: 20,
-                    duration: 0.1,
-                    stiffness: 150,
-                    bounce: 1,
-                  }}
-                >
-                  <div className="w-[5.25rem] h-[5.25rem] rounded-full bg-stone-500 flex items-center justify-center rotate-45">
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ rotate: 0 }}
-                        animate={loadingSpinnerControls}
-                        className="border-2 border-transparent inline-block w-[4.5rem] h-[4.5rem] border-[6px] rounded-full border-l-stone-400"
-                      />
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-              )}
-
-              {!loading && (
-                <motion.span
-                  key="deposit"
-                  className="user-select-none"
-                  layout="position"
-                  initial={{ opacity: 0, scale: 1, y: 30 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    transition: { delay: 0.3 },
-                  }}
-                  exit={{ opacity: 0, scale: 0, y: 30 }}
-                  transition={{ ease: 'anticipate' }}
-                >
-                  Deposit
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.div>
+      <div style={{ transform: 'scale(1.25)' }}>
+        <div className="min-h-[512px] flex items-center justify-center">
           <motion.button
             layout
-            layoutId="foo"
-            className={cx(
-              'bg-stone-600 h-24 w-24 text-stone-300 font-medium shadow-md',
-              loading ? 'cursor-progress' : 'cursor-pointer',
-            )}
-            whileHover={
-              loading
-                ? undefined
-                : {
-                    // scale: 1.2,
-                    rotate: 90,
-                  }
-            }
+            onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
+            onHoverEnd={loading ? undefined : handleDepositButtonHoverEnd}
             whileTap={
-              loading
-                ? undefined
-                : {
-                    // scale: 0.8,
-                    rotate: -90,
-                    borderRadius: '100%',
-                  }
+              { '--fmp-extra-scale': loading ? 0.9 : 0.8 } as Record<
+                `--${string}`,
+                string | number
+              >
             }
-            initial={{ borderRadius: loading ? '100%' : '24%' }}
-            animate={depositButtonBackgroundControls}
-            transition={{
-              type: 'spring',
-              stiffness: 260,
-              damping: 20,
-            }}
-          ></motion.button>
-        </motion.button>
+            onClick={handleDepositButtonClick}
+            className="w-24 h-24 relative rounded-full"
+            tabIndex={-1}
+          >
+            <motion.div
+              animate={depositButtonForegroundControls}
+              className="absolute font-medium text-stone-300 w-24 h-24 flex items-center justify-center z-10 pointer-events-none user-select-none overflow-hidden rounded-full"
+            >
+              <AnimatePresence mode="wait" initial>
+                {loading && (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0, scale: 0, y: 50 }}
+                    animate={loadingBarControls}
+                    transition={{
+                      type: 'spring',
+                      damping: 20,
+                      duration: 0.1,
+                      stiffness: 150,
+                      bounce: 1,
+                    }}
+                  >
+                    <div className="w-[5.25rem] h-[5.25rem] rounded-full bg-stone-500 flex items-center justify-center rotate-45">
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          animate={loadingSpinnerControls}
+                          className="border-2 border-transparent inline-block w-[4.5rem] h-[4.5rem] border-[6px] rounded-full border-l-stone-400"
+                        />
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+
+                {!loading && (
+                  <motion.span
+                    key="deposit"
+                    className="user-select-none"
+                    layout="position"
+                    initial={{ opacity: 0, scale: 1, y: 30 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      y: 0,
+                      transition: { delay: 0.3 },
+                    }}
+                    exit={{ opacity: 0, scale: 0, y: 30 }}
+                    transition={{ ease: 'anticipate' }}
+                  >
+                    Deposit
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            <motion.button
+              layout
+              layoutId="foo"
+              className={cx(
+                'bg-stone-600 h-24 w-24 text-stone-300 font-medium shadow-md',
+                loading ? 'cursor-progress' : 'cursor-pointer',
+              )}
+              whileHover={
+                loading
+                  ? undefined
+                  : {
+                      // scale: 1.2,
+                      rotate: 90,
+                    }
+              }
+              whileTap={
+                loading
+                  ? undefined
+                  : {
+                      // scale: 0.8,
+                      rotate: -90,
+                      borderRadius: '100%',
+                    }
+              }
+              initial={{ borderRadius: loading ? '100%' : '24%' }}
+              animate={depositButtonBackgroundControls}
+              transition={{
+                type: 'spring',
+                stiffness: 260,
+                damping: 20,
+              }}
+            ></motion.button>
+          </motion.button>
+        </div>
       </div>
     </div>
   )
