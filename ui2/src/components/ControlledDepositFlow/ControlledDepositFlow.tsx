@@ -4,7 +4,13 @@ import {
   DepositFlowProps,
 } from '@component/DepositFlow/DepositFlow'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
-import { useAccount, useBalance, useConnect, useNetwork } from 'wagmi'
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useNetwork,
+  useSwitchNetwork,
+} from 'wagmi'
 
 export const ControlledDepositFlow = (
   props: Omit<DepositFlowProps, 'walletState' | 'networkChoices'> & {
@@ -15,16 +21,21 @@ export const ControlledDepositFlow = (
   const { address, isConnected: connected } = useAccount()
   const { connect, connectors } = useConnect()
   const vm = useDepositFlowState()
+  const { switchNetwork } = useSwitchNetwork()
 
   const handleClick = async (): Promise<void> => {
     if (!connected) {
       connect({ connector: connectors[0] })
     } else if (vm.flowStep === 'open') {
-      vm.dispatch({ name: 'WorkflowSubmissionStarted' })
-      await delay(2000)
-      vm.dispatch({ name: 'WorkflowSubmissionFinished' })
-      await delay(3000)
-      vm.dispatch({ name: 'WorkflowStarted' })
+      if (networkMatches) {
+        vm.dispatch({ name: 'WorkflowSubmissionStarted' })
+        await delay(2000)
+        vm.dispatch({ name: 'WorkflowSubmissionFinished' })
+        await delay(3000)
+        vm.dispatch({ name: 'WorkflowStarted' })
+      } else if (vm.selectedChain.address != null) {
+        switchNetwork?.(Number(vm.selectedChain.address))
+      }
     }
   }
 
