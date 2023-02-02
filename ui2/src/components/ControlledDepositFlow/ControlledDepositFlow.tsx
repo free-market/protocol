@@ -28,11 +28,13 @@ export const ControlledDepositFlow = (
       connect({ connector: connectors[0] })
     } else if (vm.flowStep === 'open') {
       if (networkMatches) {
-        vm.dispatch({ name: 'WorkflowSubmissionStarted' })
-        await delay(2000)
-        vm.dispatch({ name: 'WorkflowSubmissionFinished' })
-        await delay(3000)
-        vm.dispatch({ name: 'WorkflowStarted' })
+        if (walletState === 'ready' && vm.amount != null) {
+          vm.dispatch({ name: 'WorkflowSubmissionStarted' })
+          await delay(2000)
+          vm.dispatch({ name: 'WorkflowSubmissionFinished' })
+          await delay(3000)
+          vm.dispatch({ name: 'WorkflowStarted' })
+        }
       } else if (vm.selectedChain.address != null) {
         switchNetwork?.(Number(vm.selectedChain.address))
       }
@@ -73,21 +75,21 @@ export const ControlledDepositFlow = (
 
   const { includeDeveloperNetworks = false, ...rest } = props
 
+  const walletState = connected
+    ? networkMatches
+      ? balance === '0.00'
+        ? 'insufficient-balance'
+        : 'ready'
+      : 'network-mismatch'
+    : 'unconnected'
+
   return (
     <>
       <DepositFlow
         {...rest}
         balanceState={balanceState}
         balance={balance}
-        walletState={
-          connected
-            ? networkMatches
-              ? balance === '0.00'
-                ? 'insufficient-balance'
-                : 'ready'
-              : 'network-mismatch'
-            : 'unconnected'
-        }
+        walletState={walletState}
         onClick={handleClick}
         networkChoices={
           includeDeveloperNetworks
