@@ -29,6 +29,16 @@ export const ControlledDepositFlow = (
     } else if (vm.flowStep === 'open') {
       if (networkMatches) {
         if (walletState === 'ready' && vm.amount != null) {
+          // TODO(FMP-381): prevent user from starting deposit until after gas balance is fetched
+          if (destGasBalance?.data?.value.toHexString() === '0x00') {
+            const choice = window.confirm(
+              `You have no gas on Ethereum. Are you sure you want to deposit to ${address}?`,
+            )
+
+            if (!choice) {
+              return
+            }
+          }
           vm.dispatch({ name: 'WorkflowSubmissionStarted' })
           await delay(2000)
           vm.dispatch({ name: 'WorkflowSubmissionFinished' })
@@ -47,6 +57,12 @@ export const ControlledDepositFlow = (
     token: (vm.selectedToken.address === '0x0'
       ? undefined
       : vm.selectedToken.address) as `0x${string}`,
+  })
+
+  const destGasBalance = useBalance({
+    // TODO(FMP-380): track the destination details somewhere
+    chainId: 1,
+    address,
   })
 
   const { data: balanceData } = result

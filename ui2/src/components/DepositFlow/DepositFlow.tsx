@@ -321,14 +321,13 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
           formEditingMode.recently !== 'closed' && (
             <motion.div
               onClick={handleSelectorShadowClick}
-              layout="position"
               initial={{ opacity: 0 }}
               animate={{
                 opacity: 1,
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.1 }}
-              className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-10"
+              className="bg-stone-700/75 absolute inset-0 p-2 group cursor-pointer z-10 !transform-none"
             ></motion.div>
           )}
         {vm.flowStep === 'submitted' ? (
