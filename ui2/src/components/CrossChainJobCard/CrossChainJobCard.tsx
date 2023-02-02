@@ -194,7 +194,7 @@ export const CrossChainJobCard = (props: {
           damping: 15,
         }}
         onClick={handleClick}
-        className="min-w-[512px] w-full !rounded-xl shadow-md text-stone-200 font-medium p-2 max-w-xs mx-auto space-y-2 overflow-hidden cursor-pointer group relative"
+        className="min-w-[20rem] w-full !rounded-xl shadow-md text-stone-200 font-medium p-2 max-w-xs mx-auto space-y-2 overflow-hidden cursor-pointer group relative"
       >
         <div className="absolute inset-0 pointer-events-none group-hover:bg-stone-900/10 group-active:bg-stone-900/25 z-50"></div>
         <motion.div

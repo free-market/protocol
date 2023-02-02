@@ -19,6 +19,7 @@ import GenericExpandingSelector, {
 } from '@component/GenericExpandingSelector'
 import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector/GenericExpandingSelector'
 import CrossChainJobCard from '@component/CrossChainJobCard'
+import FeePreview from '@component/FeePreview'
 
 export type DepositFlowProps = {
   networkChoices?: SelectorChoice[]
@@ -579,6 +580,75 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     walletState === 'insufficient-balance' ||
     (walletState === 'ready' && vm.amount == null)
 
+  const feePreview = (
+    <motion.div
+      key={2}
+      initial={{ opacity: 0 }}
+      animate={
+        vm.flowStep === 'submitted'
+          ? { opacity: 0, transition: { duration: 0.5 } }
+          : {
+              opacity: 1,
+              transition: {
+                delay: baseDelay + 0.6,
+                duration: 1,
+              },
+            }
+      }
+      className="px-2 max-w-xs mx-auto relative"
+    >
+      <FeePreview />
+    </motion.div>
+  )
+
+  const cta = (
+    <motion.div
+      key={2}
+      initial={{ opacity: 0 }}
+      animate={
+        vm.flowStep === 'submitted'
+          ? { opacity: 0, transition: { duration: 0.5 } }
+          : {
+              opacity: 1,
+              transition: {
+                delay: baseDelay + 0.75,
+                duration: 1,
+              },
+            }
+      }
+      className="px-2 max-w-xs mx-auto relative"
+    >
+      <button
+        onClick={onClick}
+        className={cx(
+          'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+          {
+            'cursor-not-allowed opacity-50': buttonDisabled,
+          },
+        )}
+      >
+        <div className="h-8">
+          <div
+            className="transition-all h-8"
+            style={{
+              marginTop: vm.flowStep === 'submitting' ? -77 : 2,
+              height: 'max-content',
+            }}
+          >
+            <div className="flex items-center">{buttonNames[walletState]}</div>
+          </div>
+
+          <div className="transition-all h-8 mt-12">
+            <span
+              className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
+              style={{ borderLeftColor: 'rgb(231 229 228)' }}
+            />
+          </div>
+        </div>
+      </button>
+    </motion.div>
+  )
+
   if (vm.flowStep === 'started' || (open && !loading)) {
     return (
       <div className="h-full relative">
@@ -688,53 +758,9 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
                     {formCard}
 
-                    <motion.div
-                      key={2}
-                      initial={{ opacity: 0 }}
-                      animate={
-                        vm.flowStep === 'submitted'
-                          ? { opacity: 0, transition: { duration: 0.5 } }
-                          : {
-                              opacity: 1,
-                              transition: {
-                                delay: baseDelay + 0.6,
-                                duration: 1,
-                              },
-                            }
-                      }
-                      className="px-2 max-w-xs mx-auto relative"
-                    >
-                      <button
-                        onClick={onClick}
-                        className={cx(
-                          'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
-                          {
-                            'cursor-not-allowed opacity-50': buttonDisabled,
-                          },
-                        )}
-                      >
-                        <div className="h-8">
-                          <div
-                            className="transition-all h-8"
-                            style={{
-                              marginTop: vm.flowStep === 'submitting' ? -77 : 2,
-                              height: 'max-content',
-                            }}
-                          >
-                            <div className="flex items-center">
-                              {buttonNames[walletState]}
-                            </div>
-                          </div>
+                    {feePreview}
 
-                          <div className="transition-all h-8 mt-12">
-                            <span
-                              className="border-2 border-transparent animate-spin inline-block w-8 h-8 border-4 rounded-full"
-                              style={{ borderLeftColor: 'rgb(231 229 228)' }}
-                            />
-                          </div>
-                        </div>
-                      </button>
-                    </motion.div>
+                    {cta}
                   </AnimatePresence>
                 </div>
               </motion.div>
