@@ -6,7 +6,7 @@ const IERC20 = artifacts.require('IERC20')
 const IWorkflowStep = artifacts.require('IWorkflowStep')
 
 import { ActionIds } from '../utils/actionIds'
-import { AssetType } from '../utils/AssetType'
+import { AssetType } from '../tslib/AssetType'
 import {
   commify,
   encodeAsset,
@@ -17,7 +17,7 @@ import {
   ADDRESS_ZERO,
   ETH_ASSET,
   verbose,
-} from './utilities'
+} from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
 import { IERC20Instance } from '../types/truffle-contracts/IERC20'
 import BN from 'bn.js'
@@ -76,12 +76,15 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
               },
             ],
             outputAssets: [WETH_ASSET],
-            args: '0x',
+            data: '0x',
             nextStepIndex: 0,
           },
         ],
+        trustSettings: {
+          allowUnknown: false,
+          allowBlacklisted: false,
+        },
       },
-      [],
       { value: testAmount, from: userAccount }
     )
     // verbose('back', JSON.stringify(txResponse.logs, null, 2))

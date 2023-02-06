@@ -4,4 +4,5 @@ export const ActionIds = {
   addAsset: 12,
   sushiSwap: 13,
   stargateBridge: 14,
+  aaveSupply: 15,
 }

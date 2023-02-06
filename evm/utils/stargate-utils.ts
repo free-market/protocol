@@ -23,6 +23,7 @@ import { IStargateRouter } from '../types/web3-v1-contracts/IStargateRouter'
 import { IStargateFactory } from '../types/web3-v1-contracts/IStargateFactory'
 import { IStargatePool } from '../types/web3-v1-contracts/IStargatePool'
 import { IStargateFeeLibrary } from '../types/web3-v1-contracts/IStargateFeeLibrary'
+import { WorkflowRunner__factory } from '../types/ethers-contracts'
 
 export const StargateChainIds = {
   Ethereum: 101,
@@ -79,7 +80,7 @@ export async function getStargateRouterAddress(frontDoorAddress: string, provide
     const sgBridgeActionAddr = await runner.methods.getActionAddress(ActionIds.stargateBridge).call()
     log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
     const sgBridgeAction = createWeb3Contract<StargateBridgeAction>(StargateBridgeActionArtifact.abi, sgBridgeActionAddr, provider)
-    sgRouterAddr = await sgBridgeAction.methods.stargateContractAddress().call()
+    sgRouterAddr = await sgBridgeAction.methods.stargateRouterAddress().call()
     log.debug(`IStargateRouter address=${sgRouterAddr}`)
     sgRouterCache.set(frontDoorAddress, sgRouterAddr)
   }
@@ -143,7 +144,7 @@ export interface StargateFeeArgs {
   payload: string
   dstChainId: number
 }
-export async function getStargateFee(args: StargateFeeArgs): Promise<string> {
+export async function getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
   const sgRouterAddress = await getStargateRouterAddress(args.frontDoorAddress, args.provider)
   const sgRouter = createWeb3Contract<IStargateRouter>(IStargateRouterArtifact.abi, sgRouterAddress, args.provider)
   const quoteResult = await sgRouter.methods

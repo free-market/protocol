@@ -2,8 +2,11 @@
 pragma solidity ^0.8.13;
 
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import './model/AssetAmount.sol';
 import './LibAsset.sol';
+
+using Strings for uint256;
 
 library LibAssetBalances {
   uint8 constant MAX_ENTRIES = 10;
@@ -36,7 +39,10 @@ library LibAssetBalances {
   ) internal pure {
     if (amount > 0) {
       uint256 index = getAssetIndex(entrySet, assetAsInt);
-      uint256 newBalance = SafeMath.add(entrySet.entries[index].balance, amount);
+      (bool success, uint256 newBalance) = SafeMath.tryAdd(entrySet.entries[index].balance, amount);
+      if (!success) {
+        revertArithmetic('credit', assetAsInt, entrySet.entries[index].balance, amount);
+      }
       updateBalance(entrySet, index, newBalance);
     }
   }
@@ -48,9 +54,26 @@ library LibAssetBalances {
   ) internal pure {
     if (amount > 0) {
       uint256 index = getAssetIndex(entrySet, assetAsInt);
-      uint256 newBalance = SafeMath.sub(entrySet.entries[index].balance, amount);
+      (bool success, uint256 newBalance) = SafeMath.trySub(entrySet.entries[index].balance, amount);
+      if (!success) {
+        revertArithmetic('debit', assetAsInt, entrySet.entries[index].balance, amount);
+      }
       updateBalance(entrySet, index, newBalance);
     }
+  }
+
+  function revertArithmetic(string memory op, uint256 assetAsInt, uint256 a, uint256 b) internal pure {
+    Asset memory asset = LibAsset.decodeAsset(assetAsInt);       
+    revert(string.concat(
+      op,
+      ' assetType=', 
+      uint256(asset.assetType).toString(),
+      ' assetAddress=', 
+      uint256(uint160(asset.assetAddress)).toHexString(),
+      ' values ',
+      a.toString(), 
+      ', ', 
+      b.toString()));
   }
 
   function credit(

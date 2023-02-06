@@ -7,6 +7,10 @@ const sleep = promisify(setTimeout)
 
 const CONTRACTS: any = [
   // {
+  //   name: 'CurveTriCrypto2',
+  //   address: '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
+  // },
+  // {
   //   name: 'Weth',
   //   address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   // },

@@ -1,0 +1,1169 @@
+{
+  "contractName": "LibActionHelpers",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/LibActionHelpers.sol\":\"LibActionHelpers\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/LibActionHelpers.sol\":{\"keccak256\":\"0x7d3a6419994ccf80074e0207b0ac29efb5ff62328107dd6b0bf63f2cef6031d3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b1ea02398a4326b216e7ab77ecd6941624c64b5258e6dc95bbc64aa151898e72\",\"dweb:/ipfs/Qmf2jihzu2woYujMLC8YLdr5sgovqb8EAUak5xvTzWj22W\"]},\"project:/contracts/model/Asset.sol\":{\"keccak256\":\"0xac7144606c56f85fa77f79e9241c8763920dc22dde6e1a1d364e23e2aa12774c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://77ab3f50338f2b7a53402b367863531ae0e4e6c00813f0613251fbc33c06dfc2\",\"dweb:/ipfs/QmarFoJKKDWzJk6k37q6mNaAhqn4TJpX24zkyi8FfPsgsp\"]},\"project:/contracts/model/AssetAmount.sol\":{\"keccak256\":\"0x4f57b823b38d6e8727dfa94708f63573854b74e44553f6f609bca64cc718ff0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://42389d34460b4c78b2826d2ef3d8f1d81644c024f473d69bed33ac1223957031\",\"dweb:/ipfs/QmW8g6JtG3SvCy6HSwShPn19pUkRfBCYry7Dk2D7UXwE2r\"]},\"project:/contracts/model/AssetType.sol\":{\"keccak256\":\"0xef1a8995bff29f738329c9e25a773338627fc6b462d81a09cdf488397e21d09a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5731c1771f0b5012fc3b08d382f18f21c1d20bfa910cf941080f8fe7d0c75f63\",\"dweb:/ipfs/QmYhbXqbUJKqQfkqPWdW5fF1Lm6FjPYzp3u95DCCE6mXMY\"]},\"project:/contracts/model/WorkflowStepResult.sol\":{\"keccak256\":\"0x4066607f801a0aef8b5b7dbe46497ba0d3cf5ff6705553b5e9ca77164f240b5e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ab681a33a9c1be05149541a4897754e4570bb32bd0ee78c9a9a31c0f8391695a\",\"dweb:/ipfs/QmR5HefwfmmYPueryVLLFx6CXiBWbAmjGqS3hHDsKETCfQ\"]}},\"version\":1}",
+  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ec0a0e21345cd1c1bc252716f34b320287625b0e8366199d991ecfb7d8d8598164736f6c634300080d0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ec0a0e21345cd1c1bc252716f34b320287625b0e8366199d991ecfb7d8d8598164736f6c634300080d0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "131:776:21:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "131:776:21:-:0;;;;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\nimport './model/AssetType.sol';\nimport './model/WorkflowStepResult.sol';\n\nlibrary LibActionHelpers {\n  function singleAssetResult(\n    AssetType assetType,\n    address assetAddress,\n    uint256 amount\n  ) internal pure returns (WorkflowStepResult memory) {\n    Asset memory wethAsset = Asset(assetType, assetAddress);\n    AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](1);\n    ouputAssetAmounts[0] = AssetAmount(wethAsset, amount);\n    return WorkflowStepResult(ouputAssetAmounts, -1);\n  }\n\n  function singleTokenResult(address assetAddress, uint256 amount) internal pure returns (WorkflowStepResult memory) {\n    return singleAssetResult(AssetType.ERC20, assetAddress, amount);\n  }\n\n  function noOutputAssetsResult() internal pure returns (WorkflowStepResult memory) {\n    return singleAssetResult(AssetType.Native, address(0), 0);\n  }\n}\n",
+  "sourcePath": "/home/asdf/fmp3/platform/evm/contracts/LibActionHelpers.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/LibActionHelpers.sol",
+    "exportedSymbols": {
+      "Asset": [
+        9946
+      ],
+      "AssetAmount": [
+        9955
+      ],
+      "AssetType": [
+        9961
+      ],
+      "LibActionHelpers": [
+        4995
+      ],
+      "WorkflowStepResult": [
+        10020
+      ]
+    },
+    "id": 4996,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4908,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:21"
+      },
+      {
+        "absolutePath": "project:/contracts/model/AssetType.sol",
+        "file": "./model/AssetType.sol",
+        "id": 4909,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4996,
+        "sourceUnit": 9962,
+        "src": "57:31:21",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/model/WorkflowStepResult.sol",
+        "file": "./model/WorkflowStepResult.sol",
+        "id": 4910,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4996,
+        "sourceUnit": 10021,
+        "src": "89:40:21",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LibActionHelpers",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "id": 4995,
+        "linearizedBaseContracts": [
+          4995
+        ],
+        "name": "LibActionHelpers",
+        "nameLocation": "139:16:21",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 4958,
+              "nodeType": "Block",
+              "src": "312:246:21",
+              "statements": [
+                {
+                  "assignments": [
+                    4925
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 4925,
+                      "mutability": "mutable",
+                      "name": "wethAsset",
+                      "nameLocation": "331:9:21",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 4958,
+                      "src": "318:22:21",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Asset_$9946_memory_ptr",
+                        "typeString": "struct Asset"
+                      },
+                      "typeName": {
+                        "id": 4924,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 4923,
+                          "name": "Asset",
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 9946,
+                          "src": "318:5:21"
+                        },
+                        "referencedDeclaration": 9946,
+                        "src": "318:5:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Asset_$9946_storage_ptr",
+                          "typeString": "struct Asset"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 4930,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 4927,
+                        "name": "assetType",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4913,
+                        "src": "349:9:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        }
+                      },
+                      {
+                        "id": 4928,
+                        "name": "assetAddress",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4915,
+                        "src": "360:12:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "id": 4926,
+                      "name": "Asset",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 9946,
+                      "src": "343:5:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_struct$_Asset_$9946_storage_ptr_$",
+                        "typeString": "type(struct Asset storage pointer)"
+                      }
+                    },
+                    "id": 4929,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "structConstructorCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "343:30:21",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Asset_$9946_memory_ptr",
+                      "typeString": "struct Asset memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "318:55:21"
+                },
+                {
+                  "assignments": [
+                    4935
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 4935,
+                      "mutability": "mutable",
+                      "name": "ouputAssetAmounts",
+                      "nameLocation": "400:17:21",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 4958,
+                      "src": "379:38:21",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr",
+                        "typeString": "struct AssetAmount[]"
+                      },
+                      "typeName": {
+                        "baseType": {
+                          "id": 4933,
+                          "nodeType": "UserDefinedTypeName",
+                          "pathNode": {
+                            "id": 4932,
+                            "name": "AssetAmount",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 9955,
+                            "src": "379:11:21"
+                          },
+                          "referencedDeclaration": 9955,
+                          "src": "379:11:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_AssetAmount_$9955_storage_ptr",
+                            "typeString": "struct AssetAmount"
+                          }
+                        },
+                        "id": 4934,
+                        "nodeType": "ArrayTypeName",
+                        "src": "379:13:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_storage_$dyn_storage_ptr",
+                          "typeString": "struct AssetAmount[]"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 4942,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "hexValue": "31",
+                        "id": 4940,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "438:1:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_1_by_1",
+                          "typeString": "int_const 1"
+                        },
+                        "value": "1"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_rational_1_by_1",
+                          "typeString": "int_const 1"
+                        }
+                      ],
+                      "id": 4939,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "NewExpression",
+                      "src": "420:17:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr_$",
+                        "typeString": "function (uint256) pure returns (struct AssetAmount memory[] memory)"
+                      },
+                      "typeName": {
+                        "baseType": {
+                          "id": 4937,
+                          "nodeType": "UserDefinedTypeName",
+                          "pathNode": {
+                            "id": 4936,
+                            "name": "AssetAmount",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 9955,
+                            "src": "424:11:21"
+                          },
+                          "referencedDeclaration": 9955,
+                          "src": "424:11:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_AssetAmount_$9955_storage_ptr",
+                            "typeString": "struct AssetAmount"
+                          }
+                        },
+                        "id": 4938,
+                        "nodeType": "ArrayTypeName",
+                        "src": "424:13:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_storage_$dyn_storage_ptr",
+                          "typeString": "struct AssetAmount[]"
+                        }
+                      }
+                    },
+                    "id": 4941,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "420:20:21",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr",
+                      "typeString": "struct AssetAmount memory[] memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "379:61:21"
+                },
+                {
+                  "expression": {
+                    "id": 4950,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "baseExpression": {
+                        "id": 4943,
+                        "name": "ouputAssetAmounts",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4935,
+                        "src": "446:17:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr",
+                          "typeString": "struct AssetAmount memory[] memory"
+                        }
+                      },
+                      "id": 4945,
+                      "indexExpression": {
+                        "hexValue": "30",
+                        "id": 4944,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "464:1:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        },
+                        "value": "0"
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "IndexAccess",
+                      "src": "446:20:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_AssetAmount_$9955_memory_ptr",
+                        "typeString": "struct AssetAmount memory"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "id": 4947,
+                          "name": "wethAsset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4925,
+                          "src": "481:9:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Asset_$9946_memory_ptr",
+                            "typeString": "struct Asset memory"
+                          }
+                        },
+                        {
+                          "id": 4948,
+                          "name": "amount",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4917,
+                          "src": "492:6:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_struct$_Asset_$9946_memory_ptr",
+                            "typeString": "struct Asset memory"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 4946,
+                        "name": "AssetAmount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 9955,
+                        "src": "469:11:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_struct$_AssetAmount_$9955_storage_ptr_$",
+                          "typeString": "type(struct AssetAmount storage pointer)"
+                        }
+                      },
+                      "id": 4949,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "structConstructorCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "469:30:21",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_AssetAmount_$9955_memory_ptr",
+                        "typeString": "struct AssetAmount memory"
+                      }
+                    },
+                    "src": "446:53:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_AssetAmount_$9955_memory_ptr",
+                      "typeString": "struct AssetAmount memory"
+                    }
+                  },
+                  "id": 4951,
+                  "nodeType": "ExpressionStatement",
+                  "src": "446:53:21"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 4953,
+                        "name": "ouputAssetAmounts",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4935,
+                        "src": "531:17:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr",
+                          "typeString": "struct AssetAmount memory[] memory"
+                        }
+                      },
+                      {
+                        "id": 4955,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "UnaryOperation",
+                        "operator": "-",
+                        "prefix": true,
+                        "src": "550:2:21",
+                        "subExpression": {
+                          "hexValue": "31",
+                          "id": 4954,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "number",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "551:1:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_rational_1_by_1",
+                            "typeString": "int_const 1"
+                          },
+                          "value": "1"
+                        },
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_minus_1_by_1",
+                          "typeString": "int_const -1"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_memory_ptr_$dyn_memory_ptr",
+                          "typeString": "struct AssetAmount memory[] memory"
+                        },
+                        {
+                          "typeIdentifier": "t_rational_minus_1_by_1",
+                          "typeString": "int_const -1"
+                        }
+                      ],
+                      "id": 4952,
+                      "name": "WorkflowStepResult",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 10020,
+                      "src": "512:18:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_struct$_WorkflowStepResult_$10020_storage_ptr_$",
+                        "typeString": "type(struct WorkflowStepResult storage pointer)"
+                      }
+                    },
+                    "id": 4956,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "structConstructorCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "512:41:21",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                      "typeString": "struct WorkflowStepResult memory"
+                    }
+                  },
+                  "functionReturnParameters": 4922,
+                  "id": 4957,
+                  "nodeType": "Return",
+                  "src": "505:48:21"
+                }
+              ]
+            },
+            "id": 4959,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "singleAssetResult",
+            "nameLocation": "169:17:21",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4918,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4913,
+                  "mutability": "mutable",
+                  "name": "assetType",
+                  "nameLocation": "202:9:21",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4959,
+                  "src": "192:19:21",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_AssetType_$9961",
+                    "typeString": "enum AssetType"
+                  },
+                  "typeName": {
+                    "id": 4912,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4911,
+                      "name": "AssetType",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 9961,
+                      "src": "192:9:21"
+                    },
+                    "referencedDeclaration": 9961,
+                    "src": "192:9:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_AssetType_$9961",
+                      "typeString": "enum AssetType"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4915,
+                  "mutability": "mutable",
+                  "name": "assetAddress",
+                  "nameLocation": "225:12:21",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4959,
+                  "src": "217:20:21",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4914,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "217:7:21",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4917,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "251:6:21",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4959,
+                  "src": "243:14:21",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4916,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "243:7:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:75:21"
+            },
+            "returnParameters": {
+              "id": 4922,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4921,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4959,
+                  "src": "285:25:21",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                    "typeString": "struct WorkflowStepResult"
+                  },
+                  "typeName": {
+                    "id": 4920,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4919,
+                      "name": "WorkflowStepResult",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10020,
+                      "src": "285:18:21"
+                    },
+                    "referencedDeclaration": 10020,
+                    "src": "285:18:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_storage_ptr",
+                      "typeString": "struct WorkflowStepResult"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "284:27:21"
+            },
+            "scope": 4995,
+            "src": "160:398:21",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 4976,
+              "nodeType": "Block",
+              "src": "677:74:21",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "expression": {
+                          "id": 4970,
+                          "name": "AssetType",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 9961,
+                          "src": "708:9:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_enum$_AssetType_$9961_$",
+                            "typeString": "type(enum AssetType)"
+                          }
+                        },
+                        "id": 4971,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "ERC20",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 9959,
+                        "src": "708:15:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        }
+                      },
+                      {
+                        "id": 4972,
+                        "name": "assetAddress",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4961,
+                        "src": "725:12:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "id": 4973,
+                        "name": "amount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4963,
+                        "src": "739:6:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 4969,
+                      "name": "singleAssetResult",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4959,
+                      "src": "690:17:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_enum$_AssetType_$9961_$_t_address_$_t_uint256_$returns$_t_struct$_WorkflowStepResult_$10020_memory_ptr_$",
+                        "typeString": "function (enum AssetType,address,uint256) pure returns (struct WorkflowStepResult memory)"
+                      }
+                    },
+                    "id": 4974,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "690:56:21",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                      "typeString": "struct WorkflowStepResult memory"
+                    }
+                  },
+                  "functionReturnParameters": 4968,
+                  "id": 4975,
+                  "nodeType": "Return",
+                  "src": "683:63:21"
+                }
+              ]
+            },
+            "id": 4977,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "singleTokenResult",
+            "nameLocation": "571:17:21",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4964,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4961,
+                  "mutability": "mutable",
+                  "name": "assetAddress",
+                  "nameLocation": "597:12:21",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4977,
+                  "src": "589:20:21",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4960,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "589:7:21",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4963,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "619:6:21",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4977,
+                  "src": "611:14:21",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4962,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "611:7:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "588:38:21"
+            },
+            "returnParameters": {
+              "id": 4968,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4967,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4977,
+                  "src": "650:25:21",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                    "typeString": "struct WorkflowStepResult"
+                  },
+                  "typeName": {
+                    "id": 4966,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4965,
+                      "name": "WorkflowStepResult",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10020,
+                      "src": "650:18:21"
+                    },
+                    "referencedDeclaration": 10020,
+                    "src": "650:18:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_storage_ptr",
+                      "typeString": "struct WorkflowStepResult"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "649:27:21"
+            },
+            "scope": 4995,
+            "src": "562:189:21",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 4993,
+              "nodeType": "Block",
+              "src": "837:68:21",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "expression": {
+                          "id": 4984,
+                          "name": "AssetType",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 9961,
+                          "src": "868:9:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_enum$_AssetType_$9961_$",
+                            "typeString": "type(enum AssetType)"
+                          }
+                        },
+                        "id": 4985,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "Native",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 9958,
+                        "src": "868:16:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        }
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "hexValue": "30",
+                            "id": 4988,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "894:1:21",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            },
+                            "value": "0"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            }
+                          ],
+                          "id": 4987,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "ElementaryTypeNameExpression",
+                          "src": "886:7:21",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_address_$",
+                            "typeString": "type(address)"
+                          },
+                          "typeName": {
+                            "id": 4986,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "886:7:21",
+                            "typeDescriptions": {}
+                          }
+                        },
+                        "id": 4989,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "886:10:21",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "hexValue": "30",
+                        "id": 4990,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "898:1:21",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        },
+                        "value": "0"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_enum$_AssetType_$9961",
+                          "typeString": "enum AssetType"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        }
+                      ],
+                      "id": 4983,
+                      "name": "singleAssetResult",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4959,
+                      "src": "850:17:21",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_enum$_AssetType_$9961_$_t_address_$_t_uint256_$returns$_t_struct$_WorkflowStepResult_$10020_memory_ptr_$",
+                        "typeString": "function (enum AssetType,address,uint256) pure returns (struct WorkflowStepResult memory)"
+                      }
+                    },
+                    "id": 4991,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "850:50:21",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                      "typeString": "struct WorkflowStepResult memory"
+                    }
+                  },
+                  "functionReturnParameters": 4982,
+                  "id": 4992,
+                  "nodeType": "Return",
+                  "src": "843:57:21"
+                }
+              ]
+            },
+            "id": 4994,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "noOutputAssetsResult",
+            "nameLocation": "764:20:21",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4978,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "784:2:21"
+            },
+            "returnParameters": {
+              "id": 4982,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4981,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4994,
+                  "src": "810:25:21",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                    "typeString": "struct WorkflowStepResult"
+                  },
+                  "typeName": {
+                    "id": 4980,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4979,
+                      "name": "WorkflowStepResult",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10020,
+                      "src": "810:18:21"
+                    },
+                    "referencedDeclaration": 10020,
+                    "src": "810:18:21",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_storage_ptr",
+                      "typeString": "struct WorkflowStepResult"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "809:27:21"
+            },
+            "scope": 4995,
+            "src": "755:150:21",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 4996,
+        "src": "131:776:21",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:876:21"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-05T18:33:19.005Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

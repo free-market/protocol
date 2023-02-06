@@ -9,46 +9,16 @@ const WorkflowRunner = artifacts.require('WorkflowRunner')
 const MockStargateRouter = artifacts.require('MockStargateRouter')
 const StargateBridgeAction = artifacts.require('StargateBridgeAction')
 const FrontDoor = artifacts.require('FrontDoor')
+const MockWorkflowRunner = artifacts.require('MockWorkflowRunner')
 
-import { AssetType } from '../utils/AssetType'
-import { ADDRESS_ZERO } from './utilities'
+import { AssetType } from '../tslib/AssetType'
+import { ADDRESS_ZERO, toChecksumAddress } from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
-import { hexByteLength, concatHex } from './hexStringUtils'
+import { hexByteLength, concatHex } from '../e2e/hexStringUtils'
 import { ActionIds } from '../utils/actionIds'
-
-interface StargateBridgeActionArgs {
-  dstActionAddress: string
-  dstUserAddress: string
-  dstChainId: string
-  srcPoolId: string
-  dstPoolId: string
-  dstGasForCall: string
-  dstNativeAmount: string
-  minAmountOut: string
-  minAmountOutIsPercent: boolean
-  dstWorkflow: string
-}
-
-// TODO move to SDK
-function encodeStargateBridgeParams(params: StargateBridgeActionArgs) {
-  const stargateSwapParams = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'uint16', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bool'],
-    [
-      params.dstActionAddress,
-      params.dstUserAddress,
-      params.dstChainId,
-      params.srcPoolId,
-      params.dstPoolId,
-      params.dstGasForCall,
-      params.dstNativeAmount,
-      params.minAmountOut,
-      params.minAmountOutIsPercent,
-    ]
-  )
-
-  const lengthPrefix = web3.eth.abi.encodeParameters(['uint256'], [hexByteLength(stargateSwapParams)])
-  return concatHex(lengthPrefix, concatHex(stargateSwapParams, params.dstWorkflow))
-}
+import { encodeStargateBridgeArgs, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
+import { EvmWorkflow } from '../tslib/Workflow'
+import { getBridgePayload } from '../tslib/encode-workflow'
 
 contract('StargateBridgeAction', function (accounts: string[]) {
   let networkId!: number
@@ -84,7 +54,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
 
     const srcContractAddresses = getNetworkConfig(networkId as any)
 
-    const stargateRouterAddress = await stargateBridgeAction.stargateContractAddress()
+    const stargateRouterAddress = await stargateBridgeAction.stargateRouterAddress()
     expect(srcContractAddresses.stargateRouter, stargateRouterAddress)
   })
 
@@ -94,7 +64,8 @@ contract('StargateBridgeAction', function (accounts: string[]) {
   it('calls mock stargate', async () => {
     // const srcProvider = truffleConfig.networks[srcChain].provider() as HDWalletProvider
     const [mockToken, mockStargateRouter] = await Promise.all([MockToken.new(), MockStargateRouter.new()])
-    const stargateBridgeAction = await StargateBridgeAction.new(mockStargateRouter.address)
+    const dummyFrontDoorAddr = toChecksumAddress(1)
+    const stargateBridgeAction = await StargateBridgeAction.new(dummyFrontDoorAddr, mockStargateRouter.address)
     await mockToken.mint(userAccount, '1')
     const inputAssetAmount = {
       asset: { assetType: AssetType.ERC20, assetAddress: mockToken.address },
@@ -113,7 +84,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
       minAmountOutIsPercent: true,
       dstWorkflow: '0xdeadbeef',
     }
-    const params = encodeStargateBridgeParams(sgbParams)
+    const params = encodeStargateBridgeArgs(sgbParams)
 
     const txResponse = await stargateBridgeAction.execute([inputAssetAmount], [outputAsset], params)
     // console.log('tx', txResponse)
@@ -131,5 +102,48 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     expect(invos[0].minAmountOut).to.equal('1')
     expect(invos[0].lzTxParams.dstNativeAmount).to.equal(sgbParams.dstNativeAmount)
     expect(invos[0].payload).to.equal(sgbParams.dstWorkflow)
+  })
+
+  it.only('can be invoked by stargate', async () => {
+    const mockWorkflowRunner = await MockWorkflowRunner.new()
+    const dummyStargateRouterAddr = accounts[0] // use the default account as the router so the require won't fail
+    const dummyStargateRemoteBridgeAddr = toChecksumAddress(2)
+    const dummyDstTokenAddr = toChecksumAddress(3)
+    const stargateBridgeAction = await StargateBridgeAction.new(mockWorkflowRunner.address, dummyStargateRouterAddr)
+
+    // give some token to the
+    const inputAmount = 100_000
+    const inputAsset = await MockToken.new()
+    await inputAsset.mint(stargateBridgeAction.address, inputAmount)
+
+    const dummyWorkflow: EvmWorkflow = {
+      steps: [
+        {
+          actionId: 1,
+          actionAddress: ADDRESS_ZERO,
+          inputAssets: [
+            { asset: { assetType: AssetType.ERC20, assetAddress: inputAsset.address }, amount: inputAmount, amountIsPercent: true },
+          ],
+          outputAssets: [],
+          data: '0xdeadbeef',
+          nextStepIndex: -1,
+        },
+      ],
+      trustSettings: {
+        allowUnknown: false,
+        allowBlacklisted: false,
+      },
+    }
+    const { encodedWorkflow, nonce } = getBridgePayload(accounts[0], dummyWorkflow)
+
+    const txResult = await stargateBridgeAction.sgReceive(
+      1, // the remote chainId sending the tokens
+      dummyStargateRemoteBridgeAddr, // the remote Bridge address
+      22, // stargate nonce
+      inputAsset.address, // the token contract on the local chain
+      inputAmount, // the qty of local _token contract tokens
+      encodedWorkflow
+    )
+    console.log('txResult', JSON.stringify(txResult, null, 4))
   })
 })

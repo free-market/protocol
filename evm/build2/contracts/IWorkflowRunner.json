@@ -1,0 +1,560 @@
+{
+  "contractName": "IWorkflowRunner",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "uint16",
+                  "name": "actionId",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "address",
+                  "name": "actionAddress",
+                  "type": "address"
+                },
+                {
+                  "components": [
+                    {
+                      "components": [
+                        {
+                          "internalType": "enum AssetType",
+                          "name": "assetType",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "assetAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "internalType": "struct Asset",
+                      "name": "asset",
+                      "type": "tuple"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "amount",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "amountIsPercent",
+                      "type": "bool"
+                    }
+                  ],
+                  "internalType": "struct WorkflowStepInputAsset[]",
+                  "name": "inputAssets",
+                  "type": "tuple[]"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "enum AssetType",
+                      "name": "assetType",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "assetAddress",
+                      "type": "address"
+                    }
+                  ],
+                  "internalType": "struct Asset[]",
+                  "name": "outputAssets",
+                  "type": "tuple[]"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "data",
+                  "type": "bytes"
+                },
+                {
+                  "internalType": "int16",
+                  "name": "nextStepIndex",
+                  "type": "int16"
+                }
+              ],
+              "internalType": "struct WorkflowStep[]",
+              "name": "steps",
+              "type": "tuple[]"
+            }
+          ],
+          "internalType": "struct Workflow",
+          "name": "workflow",
+          "type": "tuple"
+        }
+      ],
+      "name": "executeWorkflow",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "userAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nonce",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "uint16",
+                  "name": "actionId",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "address",
+                  "name": "actionAddress",
+                  "type": "address"
+                },
+                {
+                  "components": [
+                    {
+                      "components": [
+                        {
+                          "internalType": "enum AssetType",
+                          "name": "assetType",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "assetAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "internalType": "struct Asset",
+                      "name": "asset",
+                      "type": "tuple"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "amount",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "amountIsPercent",
+                      "type": "bool"
+                    }
+                  ],
+                  "internalType": "struct WorkflowStepInputAsset[]",
+                  "name": "inputAssets",
+                  "type": "tuple[]"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "enum AssetType",
+                      "name": "assetType",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "assetAddress",
+                      "type": "address"
+                    }
+                  ],
+                  "internalType": "struct Asset[]",
+                  "name": "outputAssets",
+                  "type": "tuple[]"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "data",
+                  "type": "bytes"
+                },
+                {
+                  "internalType": "int16",
+                  "name": "nextStepIndex",
+                  "type": "int16"
+                }
+              ],
+              "internalType": "struct WorkflowStep[]",
+              "name": "steps",
+              "type": "tuple[]"
+            }
+          ],
+          "internalType": "struct Workflow",
+          "name": "workflow",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "enum AssetType",
+                  "name": "assetType",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "address",
+                  "name": "assetAddress",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct Asset",
+              "name": "asset",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct AssetAmount",
+          "name": "startingAsset",
+          "type": "tuple"
+        }
+      ],
+      "name": "continueWorkflow",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"components\":[{\"components\":[{\"internalType\":\"uint16\",\"name\":\"actionId\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"actionAddress\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset\",\"name\":\"asset\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"amountIsPercent\",\"type\":\"bool\"}],\"internalType\":\"struct WorkflowStepInputAsset[]\",\"name\":\"inputAssets\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset[]\",\"name\":\"outputAssets\",\"type\":\"tuple[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"int16\",\"name\":\"nextStepIndex\",\"type\":\"int16\"}],\"internalType\":\"struct WorkflowStep[]\",\"name\":\"steps\",\"type\":\"tuple[]\"}],\"internalType\":\"struct Workflow\",\"name\":\"workflow\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset\",\"name\":\"asset\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct AssetAmount\",\"name\":\"startingAsset\",\"type\":\"tuple\"}],\"name\":\"continueWorkflow\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"uint16\",\"name\":\"actionId\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"actionAddress\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset\",\"name\":\"asset\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"amountIsPercent\",\"type\":\"bool\"}],\"internalType\":\"struct WorkflowStepInputAsset[]\",\"name\":\"inputAssets\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset[]\",\"name\":\"outputAssets\",\"type\":\"tuple[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"int16\",\"name\":\"nextStepIndex\",\"type\":\"int16\"}],\"internalType\":\"struct WorkflowStep[]\",\"name\":\"steps\",\"type\":\"tuple[]\"}],\"internalType\":\"struct Workflow\",\"name\":\"workflow\",\"type\":\"tuple\"}],\"name\":\"executeWorkflow\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/IWorkflowRunner.sol\":\"IWorkflowRunner\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/IWorkflowRunner.sol\":{\"keccak256\":\"0x37ed68701d8e15a7dd764666c23d89b21cb55e9330dc0d312b03436ae2cbf721\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://64d5eec80f33e72966b2405fa54c16008895691194b837f872e92f87e217ce8f\",\"dweb:/ipfs/QmXC3zBkPcEvCHzn13RaHr6uAbt2AqihWNQk9ZjtmoeupM\"]},\"project:/contracts/model/Asset.sol\":{\"keccak256\":\"0xac7144606c56f85fa77f79e9241c8763920dc22dde6e1a1d364e23e2aa12774c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://77ab3f50338f2b7a53402b367863531ae0e4e6c00813f0613251fbc33c06dfc2\",\"dweb:/ipfs/QmarFoJKKDWzJk6k37q6mNaAhqn4TJpX24zkyi8FfPsgsp\"]},\"project:/contracts/model/AssetAmount.sol\":{\"keccak256\":\"0x4f57b823b38d6e8727dfa94708f63573854b74e44553f6f609bca64cc718ff0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://42389d34460b4c78b2826d2ef3d8f1d81644c024f473d69bed33ac1223957031\",\"dweb:/ipfs/QmW8g6JtG3SvCy6HSwShPn19pUkRfBCYry7Dk2D7UXwE2r\"]},\"project:/contracts/model/AssetType.sol\":{\"keccak256\":\"0xef1a8995bff29f738329c9e25a773338627fc6b462d81a09cdf488397e21d09a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5731c1771f0b5012fc3b08d382f18f21c1d20bfa910cf941080f8fe7d0c75f63\",\"dweb:/ipfs/QmYhbXqbUJKqQfkqPWdW5fF1Lm6FjPYzp3u95DCCE6mXMY\"]},\"project:/contracts/model/Workflow.sol\":{\"keccak256\":\"0xbb57194dab92a8014a18935ad77d69d640a6e809b81e2cd774b45da242083610\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f385bda5e781e20d6c37f4cf80704dc15c46baa6c4e1780ea875db6a6f87a634\",\"dweb:/ipfs/QmZ8UdqZTY3K7gJ8vCk8QHzgtMsHfvetDYw2K1Tv7zLkSt\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport './model/AssetAmount.sol';\nimport './model/Workflow.sol';\n\ninterface IWorkflowRunner {\n  function executeWorkflow(Workflow calldata workflow) external payable;\n\n  function continueWorkflow(\n    address userAddress,\n    uint256 nonce,\n    Workflow memory workflow,\n    AssetAmount memory startingAsset\n  ) external;\n}\n",
+  "sourcePath": "/home/asdf/fmp3/platform/evm/contracts/IWorkflowRunner.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/IWorkflowRunner.sol",
+    "exportedSymbols": {
+      "Asset": [
+        9946
+      ],
+      "AssetAmount": [
+        9955
+      ],
+      "AssetType": [
+        9961
+      ],
+      "IWorkflowRunner": [
+        4884
+      ],
+      "Workflow": [
+        10010
+      ],
+      "WorkflowParameter": [
+        10005
+      ],
+      "WorkflowStep": [
+        10000
+      ],
+      "WorkflowStepInputAsset": [
+        9983
+      ]
+    },
+    "id": 4885,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4862,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:19"
+      },
+      {
+        "absolutePath": "project:/contracts/model/AssetAmount.sol",
+        "file": "./model/AssetAmount.sol",
+        "id": 4863,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4885,
+        "sourceUnit": 9956,
+        "src": "58:33:19",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/model/Workflow.sol",
+        "file": "./model/Workflow.sol",
+        "id": 4864,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4885,
+        "sourceUnit": 10011,
+        "src": "92:30:19",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWorkflowRunner",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4884,
+        "linearizedBaseContracts": [
+          4884
+        ],
+        "name": "IWorkflowRunner",
+        "nameLocation": "134:15:19",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "7bb0be87",
+            "id": 4870,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "executeWorkflow",
+            "nameLocation": "163:15:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4868,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4867,
+                  "mutability": "mutable",
+                  "name": "workflow",
+                  "nameLocation": "197:8:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4870,
+                  "src": "179:26:19",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Workflow_$10010_calldata_ptr",
+                    "typeString": "struct Workflow"
+                  },
+                  "typeName": {
+                    "id": 4866,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4865,
+                      "name": "Workflow",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10010,
+                      "src": "179:8:19"
+                    },
+                    "referencedDeclaration": 10010,
+                    "src": "179:8:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Workflow_$10010_storage_ptr",
+                      "typeString": "struct Workflow"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "178:28:19"
+            },
+            "returnParameters": {
+              "id": 4869,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "223:0:19"
+            },
+            "scope": 4884,
+            "src": "154:70:19",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "a2af321d",
+            "id": 4883,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "continueWorkflow",
+            "nameLocation": "237:16:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4881,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4872,
+                  "mutability": "mutable",
+                  "name": "userAddress",
+                  "nameLocation": "267:11:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4883,
+                  "src": "259:19:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4871,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "259:7:19",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4874,
+                  "mutability": "mutable",
+                  "name": "nonce",
+                  "nameLocation": "292:5:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4883,
+                  "src": "284:13:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4873,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "284:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4877,
+                  "mutability": "mutable",
+                  "name": "workflow",
+                  "nameLocation": "319:8:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4883,
+                  "src": "303:24:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Workflow_$10010_memory_ptr",
+                    "typeString": "struct Workflow"
+                  },
+                  "typeName": {
+                    "id": 4876,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4875,
+                      "name": "Workflow",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10010,
+                      "src": "303:8:19"
+                    },
+                    "referencedDeclaration": 10010,
+                    "src": "303:8:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Workflow_$10010_storage_ptr",
+                      "typeString": "struct Workflow"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4880,
+                  "mutability": "mutable",
+                  "name": "startingAsset",
+                  "nameLocation": "352:13:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4883,
+                  "src": "333:32:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_AssetAmount_$9955_memory_ptr",
+                    "typeString": "struct AssetAmount"
+                  },
+                  "typeName": {
+                    "id": 4879,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4878,
+                      "name": "AssetAmount",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 9955,
+                      "src": "333:11:19"
+                    },
+                    "referencedDeclaration": 9955,
+                    "src": "333:11:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_AssetAmount_$9955_storage_ptr",
+                      "typeString": "struct AssetAmount"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "253:116:19"
+            },
+            "returnParameters": {
+              "id": 4882,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "378:0:19"
+            },
+            "scope": 4884,
+            "src": "228:151:19",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4885,
+        "src": "124:257:19",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:350:19"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-05T18:33:19.004Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

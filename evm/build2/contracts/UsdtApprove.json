@@ -1,0 +1,178 @@
+{
+  "contractName": "UsdtApprove",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/thirdParty/USDT.sol\":\"UsdtApprove\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/thirdParty/USDT.sol\":{\"keccak256\":\"0x6d056e3ddd9e422e45a51d3e90d67610292d452a94cc25b5dff31706a8d5e03f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d7933eb6f2a6fa2a88dac120d0d9815599edff390647c0a58becb5534f276446\",\"dweb:/ipfs/QmbEiAEAuWD1XtMoJNBVuFHLCK94cG9BLrA8pM3tNetjwg\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\n// USDT has a slightly non-standard signature for approve\ninterface UsdtApprove {\n  function approve(address _spender, uint256 _value) external;\n}\n",
+  "sourcePath": "/home/asdf/fmp3/platform/evm/contracts/thirdParty/USDT.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/thirdParty/USDT.sol",
+    "exportedSymbols": {
+      "UsdtApprove": [
+        10030
+      ]
+    },
+    "id": 10031,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 10022,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:55"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "UsdtApprove",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 10030,
+        "linearizedBaseContracts": [
+          10030
+        ],
+        "name": "UsdtApprove",
+        "nameLocation": "126:11:55",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "095ea7b3",
+            "id": 10029,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approve",
+            "nameLocation": "151:7:55",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 10027,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 10024,
+                  "mutability": "mutable",
+                  "name": "_spender",
+                  "nameLocation": "167:8:55",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10029,
+                  "src": "159:16:55",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 10023,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "159:7:55",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 10026,
+                  "mutability": "mutable",
+                  "name": "_value",
+                  "nameLocation": "185:6:55",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10029,
+                  "src": "177:14:55",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 10025,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "177:7:55",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "158:34:55"
+            },
+            "returnParameters": {
+              "id": 10028,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "201:0:55"
+            },
+            "scope": 10030,
+            "src": "142:60:55",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 10031,
+        "src": "116:88:55",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:173:55"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-05T18:33:19.061Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

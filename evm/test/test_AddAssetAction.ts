@@ -1,7 +1,8 @@
 import BN from 'bn.js'
+import { AddAssetActionArgs } from '../tslib/AddAssetAction'
 import { AddAssetActionInstance, WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
 import { ActionIds } from '../utils/actionIds'
-import { AssetType } from '../utils/AssetType'
+import { AssetType } from '../tslib/AssetType'
 import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
 import {
   ADDRESS_ZERO,
@@ -13,15 +14,10 @@ import {
   toBN,
   validateAction,
   verbose,
-} from './utilities'
+} from './test-utilities'
 
 const AddAssetAction = artifacts.require('AddAssetAction')
 const Weth = artifacts.require('Weth')
-
-interface AddAssetActionArgs {
-  userAddress: string
-  amount: BN | string | number
-}
 
 contract('AddAssetAction', function (accounts: string[]) {
   let addAssetAction!: AddAssetActionInstance
@@ -51,10 +47,10 @@ contract('AddAssetAction', function (accounts: string[]) {
 
   function getAddAssetArgs(address: string, amount: BN | string | number) {
     const args: AddAssetActionArgs = {
-      userAddress,
+      fromAddress: userAddress,
       amount: inputAmount,
     }
-    return web3.eth.abi.encodeParameters(['address', 'uint256'], [args.userAddress, toBN(args.amount)])
+    return web3.eth.abi.encodeParameters(['address', 'uint256'], [args.fromAddress, toBN(args.amount)])
   }
 
   before(async () => {
@@ -66,7 +62,7 @@ contract('AddAssetAction', function (accounts: string[]) {
   })
 
   it('deployed correctly during migrate', async () => {
-    validateAction(ActionIds.addAsset, addAssetAction.address)
+    await validateAction(ActionIds.addAsset, addAssetAction.address)
   })
 
   async function unitTestCommon() {
@@ -128,11 +124,11 @@ contract('AddAssetAction', function (accounts: string[]) {
 
     // invoke workflow
     const args: AddAssetActionArgs = {
-      userAddress,
+      fromAddress: userAddress,
       amount: inputAmount,
     }
 
-    const addAssetArgs = web3.eth.abi.encodeParameters(['address', 'uint256'], [args.userAddress, args.amount])
+    const addAssetArgs = web3.eth.abi.encodeParameters(['address', 'uint256'], [args.fromAddress, args.amount])
     const txResponse = await runner.executeWorkflow(
       {
         steps: [
@@ -141,12 +137,15 @@ contract('AddAssetAction', function (accounts: string[]) {
             actionAddress: ADDRESS_ZERO,
             inputAssets: [], // no input assets
             outputAssets: [getWethAsset()],
-            args: addAssetArgs,
+            data: addAssetArgs,
             nextStepIndex: 0,
           },
         ],
+        trustSettings: {
+          allowUnknown: false,
+          allowBlacklisted: false,
+        },
       },
-      [],
       { from: userAddress }
     )
 

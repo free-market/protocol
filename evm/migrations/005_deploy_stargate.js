@@ -8,15 +8,15 @@ var { ActionIds } = require('../build/utils/actionIds')
 module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()
   const networkConfig = getNetworkConfig(networkId)
-  const stargateAddr = networkConfig.stargateRouter
-  if (stargateAddr) {
-    console.log(`deploying StargateBridgeAction on network=${networkId}  stargateRouter=${stargateAddr}`)
-    await deployer.deploy(StargateBridgeAction, stargateAddr)
+
+  if (networkConfig.stargateRouter) {
+    console.log(`deploying StargateBridgeAction on network=${networkId}  stargateRouter=${networkConfig.stargateRouter}`)
     const frontDoor = await FrontDoor.deployed()
+    await deployer.deploy(StargateBridgeAction, frontDoor.address, networkConfig.stargateRouter)
     const stargateBridge = await StargateBridgeAction.deployed()
     const workflowRunner = await WorkflowRunner.at(frontDoor.address)
     await workflowRunner.setActionAddress(ActionIds.stargateBridge, stargateBridge.address)
   } else {
-    console.log(`WETH not available on network=${networkId}`)
+    console.log(`Stargate not available on network=${networkId}`)
   }
 }

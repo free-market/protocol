@@ -5,7 +5,7 @@ const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
 import { ActionIds } from '../utils/actionIds'
-import { expectRejection } from './utilities'
+import { expectRejection } from './test-utilities'
 
 contract('deploy and upgrade', function (accounts: string[]) {
   const OWNER = accounts[0]
