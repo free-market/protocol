@@ -266,6 +266,6 @@ contract WorkflowRunner is
     AssetAmount memory startingAsset
   ) external payable {
     emit WorkflowContinuation(nonce, userAddress, startingAsset);
-    // executeWorkflow(userAddress, workflow, startingAsset);
+    executeWorkflow(userAddress, workflow, startingAsset);
   }
 }

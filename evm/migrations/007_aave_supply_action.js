@@ -16,7 +16,7 @@ module.exports = async (deployer) => {
   let aTokenAddr, poolAddr
   if (!networkConfig.aavePool) {
     console.log(`deploying mock Aave Pool for networkId=${networkId}`)
-    const pool = await MockAavePool.new(aTokenAddr)
+    const pool = await MockAavePool.new()
     await sleep(SLEEPMS)
     aTokenAddr = await pool.mockAToken()
     await sleep(SLEEPMS)

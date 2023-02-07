@@ -16,11 +16,11 @@ struct AaveSupplyActionArgs {
 }
 
 contract AaveSupplyAction is IWorkflowStep {
-  IAaveV3Pool public immutable pool;
+  address public immutable poolAddress;
   address public immutable aTokenAddress;
 
   constructor(address _aavePoolAddress, address _aTokenAddress) {
-    pool = IAaveV3Pool(_aavePoolAddress);
+    poolAddress = _aavePoolAddress;
     // TODO maybe waffle can help mock the full IPool interface, which would be need to replace IAaveV3Pool with the full IPool from @aave/core-v3
     // which would allow us to use it here to look up the aToken address at deploy time based on the pool address
     aTokenAddress = _aTokenAddress;
@@ -39,11 +39,10 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // decode the args
     AaveSupplyActionArgs memory args = abi.decode(data, (AaveSupplyActionArgs));
-
     emit AaveSupplyActionEvent(inputAssetAmounts, args.onBehalfOf);
 
     // approve aave to take the asset
-    IERC20(inputAssetAmounts[0].asset.assetAddress).approve(address(pool), inputAssetAmounts[0].amount);
+    IERC20(inputAssetAmounts[0].asset.assetAddress).approve(poolAddress, inputAssetAmounts[0].amount);
 
     if (args.onBehalfOf == address(0)) {
       // keep the aToken in the engine
@@ -57,8 +56,8 @@ contract AaveSupplyAction is IWorkflowStep {
     // sending the aToken to the user directly
     require(outputAssets.length == 0, 'there should be no output assets when sending the aTokens to the user directly');
 
-    // send the output directly to the end user (or whomever)
-    pool.supply(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount, args.onBehalfOf, 0);
+    // // send the output directly to the end user (or whomever)
+    IAaveV3Pool(poolAddress).supply(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount, args.onBehalfOf, 0);
     return LibActionHelpers.noOutputAssetsResult();
   }
 }

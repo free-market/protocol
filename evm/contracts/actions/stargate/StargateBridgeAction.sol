@@ -39,7 +39,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
   address public immutable stargateRouterAddress;
 
   event Wtf(uint256 x);
-  event SgReceiveCalled(BridgePayload bridgePayload);
+  event SgReceiveCalled(address tokenAddress, uint256 amount, BridgePayload bridgePayload);
 
   event StargateBridgeParamsEvent(
     uint256 nativeAmount,
@@ -151,23 +151,23 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
   function sgReceive(
     uint16, // the remote chainId sending the tokens
     bytes memory, // the remote Bridge address
-    uint256,
+    uint256, // stargate nonce, use unknown
     address tokenAddress, // the token contract on the local chain
     uint256 amount, // the qty of local token contract tokens
     bytes memory payload
   ) external {
     require(msg.sender == stargateRouterAddress, 'only Stargate is permitted to call sgReceive');
     emit Wtf(99);
-    // BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
-    // // TODO eraseme we don't need this event after everything is debugged
-    // emit SgReceiveCalled(bridgePayload);
+    BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
+    // TODO eraseme we don't need this event after everything is debugged
+    emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
 
     // TODO maybe we do delegateProxy here instead to avoid having this xfer
-    // IERC20 startingToken = IERC20(tokenAddress);
-    // SafeERC20.safeTransfer(startingToken, frontDoorAddress, amount);
+    IERC20 startingToken = IERC20(tokenAddress);
+    SafeERC20.safeTransfer(startingToken, frontDoorAddress, amount);
 
-    // AssetAmount memory startingAsset = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
-    // IWorkflowRunner runner = IWorkflowRunner(frontDoorAddress);
-    // runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAsset);
+    AssetAmount memory startingAsset = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
+    IWorkflowRunner runner = IWorkflowRunner(frontDoorAddress);
+    runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAsset);
   }
 }

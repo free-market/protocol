@@ -170,7 +170,7 @@ test('does a stargate swap in a workflow', async (t) => {
   //   dstEncodedWorkflow,
   //   { from: dstStargateRouterAddr } // claim we are sg router as required by our sgReceive implementation
   // )
-  const dstGasEstimate = 200_000
+  const dstGasEstimate = 1_000_000
 
   // TODO this needs to be on chain because 'inputAmount' is not known in general
   const minAmountOut = await getStargateMinAmountOut({
@@ -354,7 +354,16 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const dstProviderUrl = process.env['ARBITRUM_GOERLI_WS_URL']!
   await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 5)
-  // await waitForNonce(dstProviderUrl, dstFrontDoor.address, nonce, 60_000 * 5)
+  // await waitForNonce(
+  //   dstProviderUrl,
+  //   dstFrontDoor.address,
+  //   nonce,
+  //   60_000 * 5,
+  //   dstContractAddresses.sgUSDC,
+  //   dstMockATokenAddr,
+  //   dstUserAddress,
+  //   dstStargateActionAddr
+  // )
   const endMillis = Date.now()
   const seconds = Math.round((endMillis - startMillis) / 1000)
   console.log(console.log(`continuation workflow completed in ${seconds} seconds`))

@@ -13,6 +13,7 @@ import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
 import { IERC20__factory, StargateBridgeAction__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { BigNumber } from 'ethers'
 import log from 'loglevel'
+import { BridgePayloadStructOutput, WorkflowStepStructOutput } from '../types/ethers-contracts/StargateBridgeAction'
 
 export interface StargateBridgeActionArgs {
   dstActionAddress: string
@@ -102,9 +103,21 @@ export function waitForNonceOld(
     //     resolve()
     //   }
     // })
-    const filter = sba.filters.Wtf(null)
-    const asdf = sba.on(filter, (x, _event) => {
-      console.log('omg')
+    const filter = sba.filters.SgReceiveCalled(null)
+    const asdf = sba.on(filter, (tokenAddr, amount, x: BridgePayloadStructOutput, _event) => {
+      const steps: WorkflowStepStructOutput[] = x.workflow.steps
+
+      console.log('omg workflow', tokenAddr, amount, JSON.stringify(steps.length))
+      for (const step of steps) {
+        console.log(`step:  
+  actionId=${step.actionId}
+  actionAddress=${step.actionAddress}
+  inputAssets=${JSON.stringify(step.inputAssets)}
+  inputAssets=${JSON.stringify(step.outputAssets)}
+  data=${step.data}
+  nextStepIndex=${step.nextStepIndex}        
+        `)
+      }
       sba.removeAllListeners()
       clearTimeout(timeout)
       clearInterval(updaterInterval)
@@ -116,7 +129,11 @@ export function waitForNonce(
   webSocketProviderUrl: string,
   frontDoorAddress: string,
   nonce: string,
-  timeoutMillis: number
+  timeoutMillis: number,
+  dstUsdcAddr: string,
+  dstATokenAddr: string,
+  dstUserAddr: string,
+  dstActionAddr: string
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const provider = new WebSocketProvider(webSocketProviderUrl)
@@ -124,11 +141,20 @@ export function waitForNonce(
     const expectedNonce = BigNumber.from(nonce)
     const filter = runner.filters.WorkflowContinuation(null, null, null)
 
+    const dstUsdc = IERC20__factory.connect(dstUsdcAddr, provider)
+    const dstAToken = IERC20__factory.connect(dstATokenAddr, provider)
+
     let x = 0
-    const updaterInterval = setInterval(() => {
+    const updaterInterval = setInterval(async () => {
       x += 10
-      log.debug('elapsed: ' + x)
-      console.log('elapsed: ' + x)
+      // log.debug('elapsed: ' + x)
+      const [actionUsdc, userUsdc, userAToken] = await Promise.all([
+        dstUsdc.balanceOf(dstActionAddr),
+        dstUsdc.balanceOf(dstUserAddr),
+        dstAToken.balanceOf(dstUserAddr),
+      ])
+
+      console.log(`elapsed=${x} | action usdc=${actionUsdc} | user usdc=${userUsdc} | user aToken=${userAToken}`)
     }, 10_000)
 
     const timeout = setTimeout(() => {
