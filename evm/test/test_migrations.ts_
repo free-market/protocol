@@ -1,0 +1,20 @@
+// import { IWorkflowRunner__factory, IERC20__factory, IWorkflowRunner } from '../types/ethers-contracts'
+// import { ethers, Wallet, BigNumber } from 'ethers'
+
+// import { ADDRESS_ZERO } from '../utils/ethers-utils'
+
+// import BN from 'bn.js'
+
+// import { promisify } from 'util'
+// import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
+// import { getTestWallet } from '../utils/ganachUtils'
+// import { WorkflowStruct } from '../types/ethers-contracts/contracts/IWorkflowRunner'
+// const sleep = promisify(setTimeout)
+
+const FrontDoor = artifacts.require('FrontDoor')
+const WorkflowRunner = artifacts.require('WorkflowRunner')
+const EternalStorage = artifacts.require('EternalStorage')
+
+contract('deployment', function (accounts: string[]) {
+  const OWNER = accounts[0]
+})

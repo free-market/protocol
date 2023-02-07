@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.13;
 
-import './WorkflowStep.sol';
+import './model/Workflow.sol';
 
 interface IWorkflowRunner {
-  function executeWorkflow(WorkflowStep[] calldata steps) external payable;
+  function executeWorkflow(Workflow calldata workflow, WorkflowParameter[] calldata params) external payable;
 }

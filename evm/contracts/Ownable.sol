@@ -2,21 +2,22 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Ownable {
-    address public owner;
+  address payable public owner;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
+  constructor(address initialOwner) {
+    owner = payable(initialOwner);
+  }
 
-    event LogNewOwner(address sender, address newOwner);
+  modifier onlyOwner() {
+    require(msg.sender == owner);
+    _;
+  }
 
-    constructor() {
-        owner = msg.sender;
-    }
+  event LogNewOwner(address sender, address newOwner);
 
-    function changeOwner(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
-        emit LogNewOwner(msg.sender, newOwner);
-    }
+  function setOwner(address payable newOwner) external onlyOwner {
+    require(newOwner != address(0));
+    owner = newOwner;
+    emit LogNewOwner(msg.sender, newOwner);
+  }
 }

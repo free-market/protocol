@@ -1,11 +1,9 @@
 packages:
-  - 'ui'
   - 'apps/**'
   - 'types/**'
   - 'evm'
-  - 'contracts-spec'
-  - 'wormhole'
-  # - 'solana'
+  - 'wfde'
   - 'sdk'
   - 'examples-sdk'
   - 'ui2'
+  - 'e2e'

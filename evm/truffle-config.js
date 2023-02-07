@@ -1,6 +1,6 @@
-require("ts-node").register({
+require('ts-node').register({
   files: true,
-});
+})
 
 require('dotenv').config()
 const HDWalletProvider = require('@truffle/hdwallet-provider')
@@ -15,16 +15,65 @@ module.exports = {
       network_id: '*',
       disableConfirmationListener: true,
     },
-    goerli: {
+    develop: {
+      host: '127.0.0.1',
+      port: 8545,
+      network_id: '*',
+      disableConfirmationListener: true,
+    },
+    test: {
+      host: '127.0.0.1',
+      port: 8545,
+      network_id: '*',
+      disableConfirmationListener: true,
+    },
+
+    ///////////// MAINNETS
+
+    arbitrum: {
       provider: () => {
-        return new HDWalletProvider(process.env.GOERLI_MNEMONIC, process.env.GOERLI_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_MAINNET_URL)
+      },
+      network_id: '42161',
+      disableConfirmationListener: true,
+    },
+    avalanche: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCHE_MAINNET_URL)
+      },
+      network_id: '43114',
+      disableConfirmationListener: true,
+    },
+
+    ///////////// GOERLIES
+
+    ethereumGoerli: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ETHEREUM_GOERLI_URL)
       },
       network_id: '5',
+      disableConfirmationListener: true,
       // gas: 4465030,
       // gasPrice: 10000000000,
     },
+    arbitrumGoerli: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
+      },
+      network_id: '421613',
+      disableConfirmationListener: true,
+    },
+    avalancheGoerli: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCH_GOERLIE_URL)
+      },
+      network_id: '43113',
+      disableConfirmationListener: true,
+    },
   },
-  mocha: {},
+  mocha: {
+    useColors: true,
+  },
   compilers: {
     solc: {
       version: '0.8.13',

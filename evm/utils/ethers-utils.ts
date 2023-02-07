@@ -1,5 +1,6 @@
 import { ethers, BigNumberish, BigNumber, Signer, Wallet } from 'ethers'
-import { IUserProxyManager__factory, IERC20__factory, Weth__factory } from '../types/ethers-contracts'
+import { IUserProxyManager__factory, Weth__factory } from '../types/ethers-contracts'
+// import { IERC20__factory } from '../types/ethers-contracts/factories/IERC20__factory'
 import type { Provider } from '@ethersproject/providers'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
@@ -9,14 +10,14 @@ const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
 const CURVE_THREEPOOL_LPTOKEN_ADDRESS = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 
-export function getMainNetContracts(signerOrProvider: Signer | Provider) {
-  return {
-    weth: Weth__factory.connect(WETH_ADDRESS, signerOrProvider),
-    curve3PoolLp: IERC20__factory.connect(CURVE_THREEPOOL_LPTOKEN_ADDRESS, signerOrProvider),
-    usdt: IERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
-    usdc: IERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
-  }
-}
+// export function getMainNetContracts(signerOrProvider: Signer | Provider) {
+//   return {
+//     weth: Weth__factory.connect(WETH_ADDRESS, signerOrProvider),
+//     curve3PoolLp: IERC20__factory.connect(CURVE_THREEPOOL_LPTOKEN_ADDRESS, signerOrProvider),
+//     usdt: IERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
+//     usdc: IERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
+//   }
+// }
 
 export async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
   // obtain the user's proxy address via UserProxyManager
