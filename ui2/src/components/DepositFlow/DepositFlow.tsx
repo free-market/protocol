@@ -232,7 +232,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const amountButton = (
     <motion.button
-      className="w-full text-left bg-stone-600 p-2 rounded-xl group hover:bg-stone-500/75 flex justify-between items-stretch active:bg-stone-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
+      className="w-full text-left bg-stone-600 p-2 rounded group hover:bg-stone-500/75 flex justify-between items-stretch active:bg-stone-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
       onClick={startEditing}
     >
       <div className="space-y-2">
@@ -266,7 +266,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   }
 
   const amountInput = (
-    <div className="bg-stone-600 pt-2 rounded-xl group hover:bg-stone-500/75">
+    <div className="bg-stone-600 pt-2 rounded group hover:bg-stone-500/75">
       <div className="text-xs text-stone-200 font-light ml-2 group-hover:text-stone-300">
         AMOUNT
       </div>
@@ -286,7 +286,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
         maxLength={79}
         spellCheck={false}
         autoFocus
-        className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded-xl px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
+        className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
         onBlur={onBlur}
         onChange={handleAmountChange}
       />
@@ -620,7 +620,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
       <button
         onClick={onClick}
         className={cx(
-          'w-full text-stone-100 font-bold bg-sky-600 rounded-xl p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
+          'w-full text-stone-100 font-bold bg-sky-600 rounded p-2 text-xl flex justify-center items-center overflow-hidden hover:bg-sky-500/75 active:bg-sky-500/[.55] focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-400/25 shadow-md',
           {
             'cursor-not-allowed opacity-50': buttonDisabled,
           },

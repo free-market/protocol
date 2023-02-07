@@ -81,7 +81,7 @@ const SearchResult = (props: {
         onHoverStart={handleHoverStart}
         onClick={handleClick}
         className={cx(
-          'flex items-center gap-2 rounded-xl px-2 w-full relative hover:bg-stone-400/25 group',
+          'flex items-center gap-2 rounded-full px-2 w-full relative hover:bg-stone-400/25 group',
         )}
         key={`${symbol}${index}`}
       >
@@ -609,7 +609,7 @@ export const GenericExpandingSelector = forwardRef(
         transition={transition}
         style={{ overscrollBehavior: 'none' }}
         className={cx(
-          'relative max-h-64 overflow-hidden rounded-xl transition-shadow',
+          'relative max-h-64 overflow-hidden rounded transition-shadow',
           {
             'super-shadow-2':
               formEditingMode?.name === name &&
@@ -621,7 +621,7 @@ export const GenericExpandingSelector = forwardRef(
       >
         <motion.div
           className={cx(
-            'absolute inset-0 w-full text-left bg-stone-600 p-2 rounded-xl group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
+            'absolute inset-0 w-full text-left bg-stone-600 p-2 rounded group relative flex flex-col focus:outline focus:outline-offset-[-4px] focus:outline-2 focus:outline-sky-600/50',
             {
               'z-30':
                 formEditingMode?.name === name ||
