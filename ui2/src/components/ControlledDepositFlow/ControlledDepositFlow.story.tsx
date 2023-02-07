@@ -1,37 +1,18 @@
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
-import { configureChains, createClient, WagmiConfig } from 'wagmi'
-import { mainnet, goerli, avalancheFuji } from '@wagmi/core/chains'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { infuraProvider } from 'wagmi/providers/infura'
-import { publicProvider } from 'wagmi/providers/public'
 
 import { ControlledDepositFlow as Component } from './ControlledDepositFlow'
 import { State } from '@component/DepositFlowStateProvider/types'
-
-const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, goerli, avalancheFuji],
-  [
-    infuraProvider({ apiKey: '1483a287d2f74587b8039f17a94a2416' }),
-    publicProvider(),
-  ],
-)
-
-const client = createClient({
-  autoConnect: true,
-  provider,
-  connectors: [new MetaMaskConnector({ chains })],
-  webSocketProvider,
-})
+import SharedWagmiConfig from '@component/SharedWagmiConfig'
 
 export default {
   title: 'Example/ControlledDepositFlow',
   component: Component,
   decorators: [
     (Story) => (
-      <WagmiConfig client={client}>
+      <SharedWagmiConfig>
         <Story />
-      </WagmiConfig>
+      </SharedWagmiConfig>
     ),
   ],
 
