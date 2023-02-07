@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2018", "DOM"],
+    "module": "CommonJS",
+    "target": "ES2015",
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["@types/node", "@types/chai", "@types/mocha"],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "rootDir": ".",
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "declaration": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "build", "cache", "artifacts", "dist"]
+}

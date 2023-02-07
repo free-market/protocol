@@ -1,6 +1,8 @@
 import BN from 'bn.js'
 import { Unit } from 'web3-utils'
-import { AssetType } from '../utils/AssetType'
+import { AllEvents } from '../types/truffle-contracts/FrontDoor'
+import { AssetType } from '../tslib/AssetType'
+import createKeccakHash from 'keccak'
 
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
@@ -81,4 +83,52 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const ETH_ASSET = {
   assetType: AssetType.Native,
   assetAddress: ADDRESS_ZERO,
+}
+
+const verboseLog = false
+
+export function verbose(...s: string[]) {
+  if (verboseLog) {
+    console.log(...s)
+  }
+}
+
+export function logEvents(txResponse: Truffle.TransactionResponse<any>) {
+  verbose('Events:')
+  for (const log of txResponse.logs) {
+    verbose('  📌 ' + formatEvent(log))
+  }
+}
+
+export function toBN(x: BN | string | number) {
+  if (typeof x !== 'object') {
+    return new BN(x)
+  }
+  return x
+}
+
+export async function expectRejection(promise: Promise<any>) {
+  try {
+    await promise
+    assert.fail('promise did not reject')
+  } catch (_) {
+    // no op
+  }
+}
+
+export function toChecksumAddress(address: number | string) {
+  let addr = typeof address === 'number' ? address.toString(16) : address.toLowerCase().replace('0x', '')
+  addr = addr.padStart(40, '0')
+  var hash = createKeccakHash('keccak256').update(addr).digest('hex')
+  var ret = '0x'
+
+  for (var i = 0; i < addr.length; i++) {
+    if (parseInt(hash[i], 16) >= 8) {
+      ret += addr[i].toUpperCase()
+    } else {
+      ret += addr[i]
+    }
+  }
+
+  return ret
 }

@@ -5,6 +5,7 @@ const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
 import { ActionIds } from '../utils/actionIds'
+import { expectRejection } from './test-utilities'
 
 contract('deploy and upgrade', function (accounts: string[]) {
   const OWNER = accounts[0]
@@ -13,15 +14,6 @@ contract('deploy and upgrade', function (accounts: string[]) {
 
   // console.log('OWNER ' + OWNER)
   // console.log('NOT_OWNER ' + NOT_OWNER)
-
-  async function expectRejection(promise: Promise<any>) {
-    try {
-      await promise
-      assert.fail('promise did not reject')
-    } catch (_) {
-      // no op
-    }
-  }
 
   async function ensureWorkflowRunnerDeployed() {
     let workflowRunnerAddress = await frontDoor.getUpstream()

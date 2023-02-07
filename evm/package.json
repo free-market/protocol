@@ -9,17 +9,22 @@
     "ganache": "./start-ganache.sh",
     "clean": "rimraf build types",
     "build": "truffle compile && pnpm run generate-clients && tsc",
-    "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run   generate-clients:truffle",
+    "generate-clients": "ts-node utils/ensure-abis.ts && pnpm run generate-clients:ethers && pnpm run generate-clients:truffle && pnpm run generate-clients:web3",
     "generate-clients:ethers": "typechain --target=ethers-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
-    "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads"
+    "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
+    "generate-clients:web3": "typechain --target=web3-v1 --glob=\"build/contracts/*.json\" --always-generate-overloads",
+    "import-truffle-networks": "ts-node utils/import-truffle-networks.ts",
+    "export-truffle-networks": "ts-node utils/import-truffle-networks.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@ava/typescript": "^3.0.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@openzeppelin/contracts": "^4.8.0",
+    "@truffle/contract": "^4.6.12",
     "@truffle/deployer": "^3.2.106",
     "@truffle/resolver": "^9.0.25",
     "@typechain/ethers-v5": "^10.1.1",
@@ -29,6 +34,7 @@
     "@types/bn.js": "^5.1.1",
     "@types/chai": "^4.3.3",
     "@types/glob": "^8.0.0",
+    "@types/keccak": "^3.0.1",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.11",
@@ -40,14 +46,17 @@
     "bn.js": "^5.2.1",
     "chai": "^4.3.6",
     "concurrently": "^7.6.0",
+    "contract": "link:@types/truffle/contract",
     "cross-env": "^7.0.3",
     "cross-var": "^1.1.0",
     "dotenv": "^16.0.3",
     "dotenv-cli": "^6.0.0",
     "eth-revert-reason": "^1.0.3",
+    "ethereum-waffle": "^4.0.9",
     "ethers": "^5.7.2",
     "ganache": "^7.5.0",
     "google-protobuf": "^3.21.2",
+    "keccak": "^3.0.3",
     "node-fetch": "^3.3.0",
     "nodemon": "^2.0.20",
     "rimraf": "^3.0.2",
@@ -61,10 +70,13 @@
     "web3-utils": "^1.8.1"
   },
   "dependencies": {
+    "@aave/core-v3": "^1.17.2",
     "@truffle/config": "^1.3.45",
     "@truffle/hdwallet-provider": "^2.1.2",
     "big.js": "^6.2.1",
     "bs58": "^5.0.0",
-    "glob": "^8.0.3"
+    "eip1193-provider": "^1.0.1",
+    "glob": "^8.0.3",
+    "loglevel": "^1.8.0"
   }
 }

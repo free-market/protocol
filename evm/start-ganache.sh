@@ -6,4 +6,4 @@ if [ -f .env ]; then
   source .env
 fi
 
-./node_modules/.bin/ganache --fork  $MAINNET_ETHEREUM --verbose --mnemonic "$GANACHE_MNEMONIC"
+./node_modules/.bin/ganache --fork  $ETHEREUM_MAINNET_URL --verbose --mnemonic "$GANACHE_MNEMONIC"

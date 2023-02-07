@@ -1,0 +1,402 @@
+{
+  "contractName": "IWorkflowStep",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "enum AssetType",
+                  "name": "assetType",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "address",
+                  "name": "assetAddress",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct Asset",
+              "name": "asset",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct AssetAmount[]",
+          "name": "inputAssetAmounts",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "enum AssetType",
+              "name": "assetType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "assetAddress",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct Asset[]",
+          "name": "outputAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "components": [
+                    {
+                      "internalType": "enum AssetType",
+                      "name": "assetType",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "assetAddress",
+                      "type": "address"
+                    }
+                  ],
+                  "internalType": "struct Asset",
+                  "name": "asset",
+                  "type": "tuple"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct AssetAmount[]",
+              "name": "outputAssetAmounts",
+              "type": "tuple[]"
+            },
+            {
+              "internalType": "int16",
+              "name": "nextStepIndex",
+              "type": "int16"
+            }
+          ],
+          "internalType": "struct WorkflowStepResult",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset\",\"name\":\"asset\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct AssetAmount[]\",\"name\":\"inputAssetAmounts\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset[]\",\"name\":\"outputAssets\",\"type\":\"tuple[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[{\"components\":[{\"components\":[{\"components\":[{\"internalType\":\"enum AssetType\",\"name\":\"assetType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"assetAddress\",\"type\":\"address\"}],\"internalType\":\"struct Asset\",\"name\":\"asset\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct AssetAmount[]\",\"name\":\"outputAssetAmounts\",\"type\":\"tuple[]\"},{\"internalType\":\"int16\",\"name\":\"nextStepIndex\",\"type\":\"int16\"}],\"internalType\":\"struct WorkflowStepResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/IWorkflowStep.sol\":\"IWorkflowStep\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/IWorkflowStep.sol\":{\"keccak256\":\"0x53b58fac525aec076ad1de6039ba1cb7606d9fb3aca85cf3179d70f203386e16\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9ae904ba9230c7c655102f86b084d8d63c4d4724f10f07499845dc2f74c7ba67\",\"dweb:/ipfs/QmYivpfRkYRTM2pYXL1juzeHFk7RqaE4N9HY71rF5FYKUa\"]},\"project:/contracts/model/Asset.sol\":{\"keccak256\":\"0xac7144606c56f85fa77f79e9241c8763920dc22dde6e1a1d364e23e2aa12774c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://77ab3f50338f2b7a53402b367863531ae0e4e6c00813f0613251fbc33c06dfc2\",\"dweb:/ipfs/QmarFoJKKDWzJk6k37q6mNaAhqn4TJpX24zkyi8FfPsgsp\"]},\"project:/contracts/model/AssetAmount.sol\":{\"keccak256\":\"0x4f57b823b38d6e8727dfa94708f63573854b74e44553f6f609bca64cc718ff0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://42389d34460b4c78b2826d2ef3d8f1d81644c024f473d69bed33ac1223957031\",\"dweb:/ipfs/QmW8g6JtG3SvCy6HSwShPn19pUkRfBCYry7Dk2D7UXwE2r\"]},\"project:/contracts/model/AssetType.sol\":{\"keccak256\":\"0xef1a8995bff29f738329c9e25a773338627fc6b462d81a09cdf488397e21d09a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5731c1771f0b5012fc3b08d382f18f21c1d20bfa910cf941080f8fe7d0c75f63\",\"dweb:/ipfs/QmYhbXqbUJKqQfkqPWdW5fF1Lm6FjPYzp3u95DCCE6mXMY\"]},\"project:/contracts/model/WorkflowStepResult.sol\":{\"keccak256\":\"0x4066607f801a0aef8b5b7dbe46497ba0d3cf5ff6705553b5e9ca77164f240b5e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ab681a33a9c1be05149541a4897754e4570bb32bd0ee78c9a9a31c0f8391695a\",\"dweb:/ipfs/QmR5HefwfmmYPueryVLLFx6CXiBWbAmjGqS3hHDsKETCfQ\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\nimport './model/Asset.sol';\nimport './model/AssetAmount.sol';\nimport './model/WorkflowStepResult.sol';\n\ninterface IWorkflowStep {\n  function execute(\n    // input assets paired with amounts of each\n    AssetAmount[] calldata inputAssetAmounts,\n    // expected output assets (amounts not known yet)\n    Asset[] calldata outputAssets,\n    // additional arguments specific to this step\n    bytes calldata data\n  ) external payable returns (WorkflowStepResult memory);\n}\n",
+  "sourcePath": "/home/asdf/fmp3/platform/evm/contracts/IWorkflowStep.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/IWorkflowStep.sol",
+    "exportedSymbols": {
+      "Asset": [
+        9946
+      ],
+      "AssetAmount": [
+        9955
+      ],
+      "AssetType": [
+        9961
+      ],
+      "IWorkflowStep": [
+        4906
+      ],
+      "WorkflowStepResult": [
+        10020
+      ]
+    },
+    "id": 4907,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4886,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:20"
+      },
+      {
+        "absolutePath": "project:/contracts/model/Asset.sol",
+        "file": "./model/Asset.sol",
+        "id": 4887,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4907,
+        "sourceUnit": 9947,
+        "src": "57:27:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/model/AssetAmount.sol",
+        "file": "./model/AssetAmount.sol",
+        "id": 4888,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4907,
+        "sourceUnit": 9956,
+        "src": "85:33:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/model/WorkflowStepResult.sol",
+        "file": "./model/WorkflowStepResult.sol",
+        "id": 4889,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4907,
+        "sourceUnit": 10021,
+        "src": "119:40:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWorkflowStep",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4906,
+        "linearizedBaseContracts": [
+          4906
+        ],
+        "name": "IWorkflowStep",
+        "nameLocation": "171:13:20",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "2b535013",
+            "id": 4905,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "198:7:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4900,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4893,
+                  "mutability": "mutable",
+                  "name": "inputAssetAmounts",
+                  "nameLocation": "282:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4905,
+                  "src": "259:40:20",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "struct AssetAmount[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4891,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 4890,
+                        "name": "AssetAmount",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 9955,
+                        "src": "259:11:20"
+                      },
+                      "referencedDeclaration": 9955,
+                      "src": "259:11:20",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_AssetAmount_$9955_storage_ptr",
+                        "typeString": "struct AssetAmount"
+                      }
+                    },
+                    "id": 4892,
+                    "nodeType": "ArrayTypeName",
+                    "src": "259:13:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_AssetAmount_$9955_storage_$dyn_storage_ptr",
+                      "typeString": "struct AssetAmount[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4897,
+                  "mutability": "mutable",
+                  "name": "outputAssets",
+                  "nameLocation": "376:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4905,
+                  "src": "359:29:20",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_Asset_$9946_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "struct Asset[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4895,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 4894,
+                        "name": "Asset",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 9946,
+                        "src": "359:5:20"
+                      },
+                      "referencedDeclaration": 9946,
+                      "src": "359:5:20",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Asset_$9946_storage_ptr",
+                        "typeString": "struct Asset"
+                      }
+                    },
+                    "id": 4896,
+                    "nodeType": "ArrayTypeName",
+                    "src": "359:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_Asset_$9946_storage_$dyn_storage_ptr",
+                      "typeString": "struct Asset[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4899,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "459:4:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4905,
+                  "src": "444:19:20",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4898,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "444:5:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "205:262:20"
+            },
+            "returnParameters": {
+              "id": 4904,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4903,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4905,
+                  "src": "494:25:20",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_memory_ptr",
+                    "typeString": "struct WorkflowStepResult"
+                  },
+                  "typeName": {
+                    "id": 4902,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4901,
+                      "name": "WorkflowStepResult",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10020,
+                      "src": "494:18:20"
+                    },
+                    "referencedDeclaration": 10020,
+                    "src": "494:18:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_WorkflowStepResult_$10020_storage_ptr",
+                      "typeString": "struct WorkflowStepResult"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "493:27:20"
+            },
+            "scope": 4906,
+            "src": "189:332:20",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4907,
+        "src": "161:362:20",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:492:20"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-05T18:33:19.005Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

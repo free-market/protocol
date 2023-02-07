@@ -13,7 +13,6 @@ module.exports = {
       host: '127.0.0.1',
       port: 8545,
       network_id: '*',
-      disableConfirmationListener: true,
     },
     develop: {
       host: '127.0.0.1',
@@ -29,7 +28,13 @@ module.exports = {
     },
 
     ///////////// MAINNETS
-
+    ethereum: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ETHEREUM_MAINNET_URL)
+      },
+      network_id: '1',
+      disableConfirmationListener: true,
+    },
     arbitrum: {
       provider: () => {
         return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_MAINNET_URL)
@@ -58,7 +63,8 @@ module.exports = {
     },
     arbitrumGoerli: {
       provider: () => {
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
+        // return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, ' https://goerli-rollup.arbitrum.io/rpc')
       },
       network_id: '421613',
       disableConfirmationListener: true,

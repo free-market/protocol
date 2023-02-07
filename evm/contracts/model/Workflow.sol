@@ -15,8 +15,8 @@ struct WorkflowStep {
   address actionAddress;
   WorkflowStepInputAsset[] inputAssets;
   Asset[] outputAssets;
-  bytes args;
-  uint16 nextStepIndex;
+  bytes data;
+  int16 nextStepIndex;
 }
 
 struct WorkflowParameter {
@@ -24,6 +24,12 @@ struct WorkflowParameter {
   uint256 value;
 }
 
+struct TrustSettings {
+  bool allowUnknown;
+  bool allowBlacklisted;
+}
+
 struct Workflow {
   WorkflowStep[] steps;
+  TrustSettings trustSettings;
 }

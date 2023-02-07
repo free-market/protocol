@@ -11,6 +11,7 @@ var sleep = promisify(setTimeout)
 
 module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()
+  console.log(`networkId=${networkId}`)
   const networkConfig = getNetworkConfig(networkId)
   const wethAddr = networkConfig.WETH
   if (wethAddr) {

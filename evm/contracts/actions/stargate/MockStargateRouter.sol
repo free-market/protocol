@@ -104,4 +104,8 @@ contract MockStargateRouter is IStargateRouter {
   ) external pure returns (uint256, uint256) {
     return (0, 0);
   }
+
+  function factory() external pure returns (address) {
+    return address(0);
+  }
 }

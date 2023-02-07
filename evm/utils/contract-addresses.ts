@@ -20,6 +20,8 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     stargateRouter: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
   },
   ethereumGoerli: {
+    sgUSDC: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
+    sgUSDT: '0x5BCc22abEC37337630C0E0dd41D64fd86CaeE951',
     WETH: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     USDC: '0x07865c6E87B9F70255377e024ace6630C1Eaa37F',
     USDT: '0x509Ee0d083DdF8AC028f2a56731412edD63223B9',
@@ -27,6 +29,7 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     wormholeCoreBridge: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
     wormholeTokenBridge: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
     stargateRouter: '0x7612aE2a34E5A363E137De748801FB4c86499152',
+    aaveUSDC: '0x65aFADD39029741B3b8f0756952C74678c9cEC93',
   },
   avalanche: {
     stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
@@ -39,6 +42,9 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   },
   arbitrumGoerli: {
     stargateRouter: '0xb850873f4c993Ac2405A1AdD71F6ca5D4d4d6b4f',
+    sgUSDC: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
+    sgUSDT: '0x533046F316590C19d99c74eE661c6d541b64471C',
+    aaveUSDC: '0x72A9c57cD5E2Ff20450e409cF6A542f1E6c710fc',
   },
 }
 

@@ -6,6 +6,8 @@ pragma solidity ^0.8.13;
 // pragma abicoder v2;
 
 interface IStargateRouter {
+  function factory() external view returns (address);
+
   struct lzTxObj {
     uint256 dstGasForCall;
     uint256 dstNativeAmount;

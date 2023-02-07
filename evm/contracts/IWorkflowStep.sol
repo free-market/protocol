@@ -11,6 +11,6 @@ interface IWorkflowStep {
     // expected output assets (amounts not known yet)
     Asset[] calldata outputAssets,
     // additional arguments specific to this step
-    bytes calldata args
+    bytes calldata data
   ) external payable returns (WorkflowStepResult memory);
 }
