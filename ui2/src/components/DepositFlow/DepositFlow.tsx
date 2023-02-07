@@ -787,7 +787,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
           />
         </motion.a>
       </motion.div>
-      <div style={{ transform: 'scale(1.25)' }}>
+      <div className="w-fit mx-auto" style={{ transform: 'scale(1.25)' }}>
         <div className="min-h-[512px] flex items-center justify-center">
           <motion.button
             layout
