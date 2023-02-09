@@ -581,7 +581,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const feePreview = (
     <motion.div
-      key={2}
+      key='fee-preview'
       initial={{ opacity: 0 }}
       animate={
         vm.flowStep === 'submitted'
@@ -602,7 +602,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const cta = (
     <motion.div
-      key={2}
+      key='cta'
       initial={{ opacity: 0 }}
       animate={
         vm.flowStep === 'submitted'
