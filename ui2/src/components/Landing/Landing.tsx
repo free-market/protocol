@@ -16,6 +16,8 @@ import Logo from '@component/Logo'
 import CrossChainJobCard from '@component/CrossChainJobCard'
 import DepositFlow from '@component/DepositFlow'
 
+const USE_DELAY = 0
+
 export const Landing = (): JSX.Element => {
   const [firstStepButtonActive, setFirstStepButtonActive] = useState(false)
   const [firstStepClicked, setFirstStepClicked] = useState(false)
@@ -52,21 +54,21 @@ export const Landing = (): JSX.Element => {
           damping: 26,
           stiffness: 450,
           bounce: 1,
-          delay: titleDelay + titleTextDelay + titleSpeed * i,
+          delay: USE_DELAY * (titleDelay + titleTextDelay + titleSpeed * i),
         },
         color: {
           type: 'spring',
           damping: 50,
           stiffness: 50,
           duration: 0,
-          delay: titleDelay + titleTextDelay + titleSpeed * 2 * i + 0.5,
+          delay: USE_DELAY * (titleDelay + titleTextDelay + titleSpeed * 2 * i + 0.5),
         },
         scale: {
           type: 'spring',
           damping: 20,
           stiffness: 150,
           bounce: 1,
-          delay: titleDelay + titleTextDelay + titleSpeed * i,
+          delay: USE_DELAY * (titleDelay + titleTextDelay + titleSpeed * i),
           ease: [0, 0.71, 0.2, 1.5],
         },
         rotate: {
@@ -74,7 +76,7 @@ export const Landing = (): JSX.Element => {
           damping: 100,
           stiffness: 1000,
           bounce: 1,
-          delay: titleDelay + titleTextDelay + titleSpeed * i,
+          delay: USE_DELAY * (titleDelay + titleTextDelay + titleSpeed * i),
           mass: 10,
         },
       },
@@ -155,7 +157,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 3.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 3.5),
                         },
                         x: {
                           type: 'spring',
@@ -163,7 +165,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 3.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 3.5),
                         },
                       }}
                       style={{
@@ -189,7 +191,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 2.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 2.5),
                         },
                         x: {
                           type: 'spring',
@@ -197,7 +199,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 2.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 2.5),
                         },
                       }}
                       id="path4469"
@@ -223,7 +225,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 1.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 1.5),
                         },
                         x: {
                           type: 'spring',
@@ -231,7 +233,7 @@ export const Landing = (): JSX.Element => {
                           duration: 0.1,
                           stiffness: 450,
                           bounce: 1,
-                          delay: titleDelay + titleSpeed * 1.5,
+                          delay: USE_DELAY * (titleDelay + titleSpeed * 1.5),
                         },
                       }}
                       id="path4471"

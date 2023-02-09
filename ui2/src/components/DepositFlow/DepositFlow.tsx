@@ -650,8 +650,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   if (vm.flowStep === 'started' || (open && !loading)) {
     return (
-      <div className="h-full relative">
-        <motion.div className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between">
+      <div className="h-full relative px-2">
+        <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
           <motion.a
             layoutId="link"
             href="https://fmprotocol.com"

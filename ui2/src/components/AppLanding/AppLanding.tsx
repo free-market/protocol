@@ -7,7 +7,7 @@ export const AppLanding = (): JSX.Element => {
   return (
     <>
       <div className="w-full min-h-screen relative bg-stone-200">
-        <div className="max-w-6xl mx-auto flex items-start justify-between">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-between px-2">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{
@@ -23,7 +23,7 @@ export const AppLanding = (): JSX.Element => {
           </motion.div>
 
           <motion.div className="grow flex flex-col items-stretch">
-            <div className="mx-4 saturate-[0.9] rounded-full bg-[#627eea] flex justify-between items-center relative overflow-hidden p-2 mt-20 mx-20">
+            <div className="mx-4 saturate-[0.9] rounded-full bg-[#399fe7] flex justify-between items-center relative overflow-hidden p-2 mt-20 mx-20">
               <div className="grow flex items-center rounded-full bg-stone-600 px-2 py-2">
                 <div className="w-full font-mono font-bold text-stone-500 flex items-center gap-2 justify-between px-2">
                   <span className="text-xs">destination</span>
@@ -33,7 +33,7 @@ export const AppLanding = (): JSX.Element => {
                       className="inline w-14"
                     />{' '}
                     <span className="font-normal text-stone-400">
-                      Ethereum Market V3
+                      Arbitrum Market V3
                     </span>
                   </span>
                 </div>
@@ -47,13 +47,13 @@ export const AppLanding = (): JSX.Element => {
                       transition: { delay: 1.3 },
                     }}
                     className="w-full h-full"
-                    src="https://app.aave.com/icons/networks/ethereum.svg"
+                    src="https://app.aave.com/icons/networks/arbitrum.svg"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="max-w-2xl inline-block border border-stone-400/90 bg-stone-100/90 font-mono text-stone-600 m-20">
+            <div className="max-w-2xl inline-block border border-stone-400/90 bg-stone-100/90 font-mono text-stone-600 m-5 xl:m-20">
               <div className="flex flex-col items-center p-5 gap-5">
                 <span className="flex gap-10">
                   <p className="space-y-4">
