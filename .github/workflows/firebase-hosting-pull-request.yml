@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - run: cd ui2 && pnpm install --filter . --filter @fmp/evm && pnpm run build
+      - run: cd ui2 && pnpm install --filter . && pnpm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
