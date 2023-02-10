@@ -1,3 +1,8 @@
+body,
+html {
+	background-color: rgb(231 229 228);
+}
+
 /*
  Solarized Color Schemes originally by Ethan Schoonover
  http://ethanschoonover.com/solarized
@@ -70,9 +75,7 @@ pre[class*="language-"] {
 }
 
 :not(pre) > code[class*="language-"],
-pre[class*="language-"],
-body,
-html {
+pre[class*="language-"], {
 	background-color: #fdf6e3; /* base3 */
 }
 
@@ -189,9 +192,7 @@ html {
   }
 
   :not(pre) > code[class*="language-"],
-  pre[class*="language-"],
-  body,
-  html {
+  pre[class*="language-"], {
     background: #002b36;
   }
 
@@ -328,9 +329,7 @@ html {
 }
 
 :not(pre) > code[class*="language-"],
-.dark pre[class*="language-"],
-body,
-html {
+.dark pre[class*="language-"], {
 	background: #002b36;
 }
 
