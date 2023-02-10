@@ -107,7 +107,7 @@ function Icon() {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 5112 1700"
-      className="max-w-lg mx-auto pt-10"
+      className="max-w-sm mx-auto pt-10"
     >
       <mask
         id="mask0_2_13"
