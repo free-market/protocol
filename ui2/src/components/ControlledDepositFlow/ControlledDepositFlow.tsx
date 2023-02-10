@@ -13,7 +13,6 @@ import {
   useProvider,
   useSigner,
   useSwitchNetwork,
-  useWebSocketProvider,
 } from 'wagmi'
 import {
   FrontDoor__factory,
@@ -67,10 +66,6 @@ export const ControlledDepositFlow = (
 
   const dstProvider = useProvider({
     chainId: dstNetworkId,
-  })
-
-  const dstWSProvider = useWebSocketProvider({
-    chainId: dstNetworkId
   })
 
   const srcProvider = useProvider({
@@ -398,15 +393,20 @@ export const ControlledDepositFlow = (
             }
           }
           vm.dispatch({ name: 'WorkflowSubmissionStarted' })
-          await delay(500)
-          const wait = await submitWorkflow()
+          await delay(50)
+          let wait
+          try {
+            wait = await submitWorkflow()
+          } catch (error) {
+            console.error(error)
+            vm.dispatch({ name: 'WorkflowSubmissionFailed' })
+            return
+          }
           vm.dispatch({ name: 'WorkflowSubmissionFinished' })
           await delay(3000)
           vm.dispatch({ name: 'WorkflowStarted' })
           await wait()
           vm.dispatch({ name: 'WorkflowCompleted' })
-          // TODO(FMP-408): update job card instead of alerting here
-          alert('complete!')
         }
       } else if (vm.selectedChain.address != null) {
         switchNetwork?.(Number(vm.selectedChain.address))

@@ -48,6 +48,7 @@ export type Action =
     }
   | { name: 'AmountChanged'; value?: string }
   | { name: 'WorkflowSubmissionStarted' }
+  | { name: 'WorkflowSubmissionFailed' }
   | { name: 'WorkflowSubmissionFinished' }
   | { name: 'WorkflowStarted'; value?: string }
   | { name: 'WorkflowCompleted' }
@@ -72,6 +73,7 @@ export type State = {
     | 'submitting'
     | 'submitted'
     | 'started'
+    | 'complete'
   formEditingMode?: EditingMode
   amountEditing: boolean
   amount?: string

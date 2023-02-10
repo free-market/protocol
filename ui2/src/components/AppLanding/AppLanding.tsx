@@ -17,7 +17,7 @@ export const AppLanding = (): JSX.Element => {
             animate={{
               opacity: 1,
             }}
-            className="bg-stone-100 rounded-xl shadow-md flex items-center justify-center relative z-10 w-full basis-1/2 pt-5 m-10 max-w-md"
+            className="bg-stone-100 rounded-xl shadow-md flex items-center justify-center relative z-10 w-full basis-1/2 m-10 max-w-md"
           >
             <SharedWagmiConfig>
               <DepositFlowStateProvider>

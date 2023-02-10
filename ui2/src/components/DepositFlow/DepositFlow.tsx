@@ -648,7 +648,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     </motion.div>
   )
 
-  if (vm.flowStep === 'started' || (open && !loading)) {
+  if (vm.flowStep === 'started' || vm.flowStep === 'complete' || (open && !loading)) {
     return (
       <div className="h-full relative px-2">
         <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
@@ -690,9 +690,9 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
           </AnimatePresence>
         </motion.div>
 
-        <div className="min-h-[512px] pb-8">
+        <div className="pb-8">
           <AnimatePresence mode="wait">
-            {vm.flowStep === 'started' ? (
+            {vm.flowStep === 'started' || vm.flowStep === 'complete' ? (
               <motion.div
                 key="foo"
                 animate={{ opacity: 1, y: 0 }}
@@ -702,8 +702,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                 <div className="mt-32">
                   <CrossChainJobCard
                     spinnerLocation="status"
-                    status="sending"
-                    cardTitle="Deposit"
+                    status={vm.flowStep === 'complete' ? 'completed' : 'sending'}
+                    cardTitle="Aave Arbitrum Market V3"
                   />
                 </div>
               </motion.div>
@@ -771,8 +771,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   }
 
   return (
-    <div className="h-full relative">
-      <motion.div className="absolute left-0 right-0 mx-5 p-2 flex items-center gap-2 justify-between">
+    <div className="min-h-[556px] flex items-center h-full relative">
+      <motion.div className="absolute left-0 right-0 top-0 mx-5 p-2 flex items-center gap-2 justify-between">
         <motion.a
           layoutId="link"
           href="https://fmprotocol.com"
@@ -788,7 +788,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
         </motion.a>
       </motion.div>
       <div className="w-fit mx-auto" style={{ transform: 'scale(1.25)' }}>
-        <div className="min-h-[512px] flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <motion.button
             layout
             onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
