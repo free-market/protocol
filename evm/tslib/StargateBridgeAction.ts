@@ -9,7 +9,7 @@ const WorkflowRunner = truffleContract(workflowRunnerArtifact)
 import { FrontDoorInstance } from '../types/truffle-contracts/FrontDoor'
 import { WorkflowRunnerInstance } from '../types/truffle-contracts/WorkflowRunner'
 import Web3 from 'web3'
-import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
+import { Provider, WebSocketProvider } from '@ethersproject/providers'
 import { IERC20__factory, StargateBridgeAction__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { BigNumber } from 'ethers'
 import log from 'loglevel'
@@ -71,14 +71,14 @@ export function waitForNonceOld(
   webSocketProviderUrl: string,
   stargateBridgeActionAddress: string,
   assetAddress: string,
-  nonce: string,
+  _nonce: string,
   timeoutMillis: number
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     console.log('sgba', stargateBridgeActionAddress)
     const provider = new WebSocketProvider(webSocketProviderUrl)
     const sba = StargateBridgeAction__factory.connect(stargateBridgeActionAddress, provider)
-    const expectedNonce = BigNumber.from(nonce)
+    // const expectedNonce = BigNumber.from(nonce)
     const asset = IERC20__factory.connect(assetAddress, provider)
 
     let x = 0
@@ -104,18 +104,18 @@ export function waitForNonceOld(
     //   }
     // })
     const filter = sba.filters.SgReceiveCalled(null)
-    const asdf = sba.on(filter, (tokenAddr, amount, x: BridgePayloadStructOutput, _event) => {
+    sba.on(filter, (tokenAddr, amount, x: BridgePayloadStructOutput, _event) => {
       const steps: WorkflowStepStructOutput[] = x.workflow.steps
 
       console.log('omg workflow', tokenAddr, amount, JSON.stringify(steps.length))
       for (const step of steps) {
-        console.log(`step:  
+        console.log(`step:
   actionId=${step.actionId}
   actionAddress=${step.actionAddress}
   inputAssets=${JSON.stringify(step.inputAssets)}
   inputAssets=${JSON.stringify(step.outputAssets)}
   data=${step.data}
-  nextStepIndex=${step.nextStepIndex}        
+  nextStepIndex=${step.nextStepIndex}
         `)
       }
       sba.removeAllListeners()
@@ -135,8 +135,21 @@ export function waitForNonce(
   dstUserAddr: string,
   dstActionAddr: string
 ): Promise<string> {
+  const provider = new WebSocketProvider(webSocketProviderUrl)
+  return waitForNonceWithProvider(provider, frontDoorAddress, nonce, timeoutMillis, dstUsdcAddr, dstATokenAddr, dstUserAddr, dstActionAddr)
+}
+
+export function waitForNonceWithProvider(
+  provider: Provider,
+  frontDoorAddress: string,
+  nonce: string,
+  timeoutMillis: number,
+  dstUsdcAddr: string,
+  dstATokenAddr: string,
+  dstUserAddr: string,
+  dstActionAddr: string
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    const provider = new WebSocketProvider(webSocketProviderUrl)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, provider)
     const expectedNonce = BigNumber.from(nonce)
     const filter = runner.filters.WorkflowContinuation(null, null, null)
@@ -167,6 +180,7 @@ export function waitForNonce(
         runner.removeAllListeners()
         clearInterval(updaterInterval)
         clearTimeout(timeout)
+        console.log('success')
         resolve(startingAsset.amount.toString())
       }
     })
