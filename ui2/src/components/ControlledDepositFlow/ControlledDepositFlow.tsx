@@ -26,9 +26,6 @@ import { ActionIds } from '@fmp/evm/build/utils/actionIds'
 import { AssetType } from '@fmp/evm/build/tslib/AssetType'
 import {
   encodeStargateBridgeArgs,
-  getStargateBridgeActionAddress,
-  waitForNonce,
-  waitForNonceOld,
 } from '@fmp/evm/build/tslib/StargateBridgeAction'
 import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
 import { getBridgePayload } from '@fmp/evm/build/tslib/encode-workflow'
@@ -37,11 +34,10 @@ import { Asset } from '@fmp/evm/build/tslib/Asset'
 import {
   getStargateRequiredNative,
   getStargateMinAmountOut,
-  getStargateRouterAddress,
   StargateChainIds,
   StargatePoolIds,
 } from '@fmp/evm/build/utils/stargate-utils'
-import { AddAssetActionArgs, encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
+import {  encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
 
@@ -96,10 +92,12 @@ export const ControlledDepositFlow = (
       '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
       srcSigner,
     )
-    const dstFrontDoor = FrontDoor__factory.connect(
-      '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
-      dstProvider,
-    )
+    /*
+     * const dstFrontDoor = FrontDoor__factory.connect(
+     *   '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+     *   dstProvider,
+     * )
+     */
     const dstRunner = WorkflowRunner__factory.connect(
       '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
       dstProvider,
@@ -177,7 +175,7 @@ export const ControlledDepositFlow = (
         allowBlacklisted: false,
       },
     }
-    const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
+    const { encodedWorkflow: dstEncodedWorkflow } = getBridgePayload(
       address,
       dstWorkflow,
     )
@@ -337,20 +335,17 @@ export const ControlledDepositFlow = (
       },
     ]
 
-    const displayableCosts = costs.map((it) => {
-      const rv: any = { ...it }
+    console.table(costs.map((it) => {
+      const rv = { ...it, asset: '' }
       if (it.asset.assetType === AssetType.ERC20) {
         rv.asset = `erc20 (${it.asset.assetAddress})`
       } else {
         rv.asset = 'native'
       }
       return rv
-    })
-    console.table(displayableCosts)
+    }))
 
-    const dstStargateActionBalance = await dstUsdc.balanceOf(
-      dstStargateActionAddr,
-    )
+    // const dstStargateActionBalance = await dstUsdc.balanceOf( dstStargateActionAddr,)
 
     console.log('submitting source chain workflow...')
     const txResponse = await srcRunner.executeWorkflow(srcWorkflow, {
