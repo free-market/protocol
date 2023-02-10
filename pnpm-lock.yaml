@@ -276,7 +276,6 @@ importers:
       '@zumper/react-ladda': 7.2.4
       autoprefixer: ^10.4.9
       babel-loader: ^8.0.0
-      bn.js: ^5.2.1
       buffer: 6.0.3
       classnames: 2.3.1
       clipboard-polyfill: 4.0.0-rc1
@@ -357,7 +356,6 @@ importers:
       '@wagmi/core': 0.8.14_qsndo2dqk6y3jqupqc7hrk55ri
       '@zumper/react-ladda': 7.2.4_sh5qlbywuemxd2y3xkrw2y2kr4
       babel-loader: 8.2.5_rhsdbzevgb5tizdhlla5jsbgyu
-      bn.js: 5.2.1
       buffer: 6.0.3
       classnames: 2.3.1
       clipboard-polyfill: 4.0.0-rc1
