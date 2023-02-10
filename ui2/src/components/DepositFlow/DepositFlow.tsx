@@ -650,7 +650,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   if (vm.flowStep === 'started' || vm.flowStep === 'complete' || (open && !loading)) {
     return (
-      <div className="h-full relative px-2">
+      <div className="min-h-[556px] h-full relative px-2">
         <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
           <motion.a
             layoutId="link"
