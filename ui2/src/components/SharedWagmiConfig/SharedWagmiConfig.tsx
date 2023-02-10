@@ -7,8 +7,8 @@ import { publicProvider } from 'wagmi/providers/public'
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet, goerli, avalancheFuji, arbitrumGoerli],
   [
-    infuraProvider({ apiKey: '786c6d12fb8c44c28388ac749c59b21a', priority: 1 }),
-    publicProvider({ priority: 0 }),
+    infuraProvider({ apiKey: 'b3b072b551ea4092b120e69eb5f43993', priority: 0 }),
+    publicProvider({ priority: 1 }),
   ],
 )
 
