@@ -50,6 +50,7 @@ export type Action =
   | { name: 'WorkflowSubmissionStarted' }
   | { name: 'WorkflowSubmissionFinished' }
   | { name: 'WorkflowStarted'; value?: string }
+  | { name: 'WorkflowCompleted' }
 
 export type WalletState =
   | 'ready'

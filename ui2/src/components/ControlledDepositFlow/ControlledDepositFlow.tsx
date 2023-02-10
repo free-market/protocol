@@ -13,6 +13,7 @@ import {
   useProvider,
   useSigner,
   useSwitchNetwork,
+  useWebSocketProvider,
 } from 'wagmi'
 import {
   FrontDoor__factory,
@@ -26,6 +27,7 @@ import { ActionIds } from '@fmp/evm/build/utils/actionIds'
 import { AssetType } from '@fmp/evm/build/tslib/AssetType'
 import {
   encodeStargateBridgeArgs,
+  waitForNonceWithProvider,
 } from '@fmp/evm/build/tslib/StargateBridgeAction'
 import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
 import { getBridgePayload } from '@fmp/evm/build/tslib/encode-workflow'
@@ -37,7 +39,7 @@ import {
   StargateChainIds,
   StargatePoolIds,
 } from '@fmp/evm/build/utils/stargate-utils'
-import {  encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
+import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
 
@@ -67,21 +69,25 @@ export const ControlledDepositFlow = (
     chainId: dstNetworkId,
   })
 
+  const dstWSProvider = useWebSocketProvider({
+    chainId: dstNetworkId
+  })
+
   const srcProvider = useProvider({
     chainId: srcNetworkId,
   })
 
   const { data: srcSigner } = useSigner({
-    chainId: srcNetworkId
+    chainId: srcNetworkId,
   })
 
-  const submitWorkflow = async () => {
+  const submitWorkflow = async (): Promise<() => Promise<void>> => {
     if (typeof address !== 'string') {
-      return
+      throw new Error('address has not been retrieved')
     }
 
     if (srcSigner == null) {
-      return
+      throw new Error('signer is not connected')
     }
 
     const srcFrontDoor = FrontDoor__factory.connect(
@@ -175,7 +181,7 @@ export const ControlledDepositFlow = (
         allowBlacklisted: false,
       },
     }
-    const { encodedWorkflow: dstEncodedWorkflow } = getBridgePayload(
+    const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
       address,
       dstWorkflow,
     )
@@ -190,7 +196,6 @@ export const ControlledDepositFlow = (
     // )
     const dstGasEstimate = 1_000_000
     const inputAmount = new BN(1_000_000) // $1.00
-
 
     // TODO this needs to be on chain because 'inputAmount' is not known in general
     const minAmountOut = await getStargateMinAmountOut({
@@ -225,9 +230,13 @@ export const ControlledDepositFlow = (
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
     )
     console.log('approving input asset transfer...')
-    await srcUsdc.approve(srcRunner.address, ethers.BigNumber.from(`0x${inputAmount.toJSON()}`), {
-      from: address,
-    })
+    await srcUsdc.approve(
+      srcRunner.address,
+      ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
+      {
+        from: address,
+      },
+    )
     console.log('input asset transfer approved')
 
     const allowance = await srcUsdc.allowance(address, srcRunner.address)
@@ -236,7 +245,7 @@ export const ControlledDepositFlow = (
     const approvalGasEstimate = await srcUsdc.estimateGas.approve(
       srcRunner.address,
       ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
-      { from: address }
+      { from: address },
     )
 
     // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
@@ -335,15 +344,17 @@ export const ControlledDepositFlow = (
       },
     ]
 
-    console.table(costs.map((it) => {
-      const rv = { ...it, asset: '' }
-      if (it.asset.assetType === AssetType.ERC20) {
-        rv.asset = `erc20 (${it.asset.assetAddress})`
-      } else {
-        rv.asset = 'native'
-      }
-      return rv
-    }))
+    console.table(
+      costs.map((it) => {
+        const rv = { ...it, asset: '' }
+        if (it.asset.assetType === AssetType.ERC20) {
+          rv.asset = `erc20 (${it.asset.assetAddress})`
+        } else {
+          rv.asset = 'native'
+        }
+        return rv
+      }),
+    )
 
     // const dstStargateActionBalance = await dstUsdc.balanceOf( dstStargateActionAddr,)
 
@@ -356,7 +367,18 @@ export const ControlledDepositFlow = (
     // TODO: rewrite web3 calls to re-use web3 from ethers
 
     // TODO (somewhere else): watch contract on destination for events
-    return
+    return async () => {
+      await waitForNonceWithProvider(
+        dstProvider,
+        dstRunner.address,
+        nonce,
+        60_000 * 5,
+        dstContractAddresses.sgUSDC,
+        dstMockATokenAddr,
+        address,
+        dstStargateActionAddr,
+      )
+    }
   }
 
   const handleClick = async (): Promise<void> => {
@@ -377,10 +399,14 @@ export const ControlledDepositFlow = (
           }
           vm.dispatch({ name: 'WorkflowSubmissionStarted' })
           await delay(500)
-          await submitWorkflow()
+          const wait = await submitWorkflow()
           vm.dispatch({ name: 'WorkflowSubmissionFinished' })
           await delay(3000)
           vm.dispatch({ name: 'WorkflowStarted' })
+          await wait()
+          vm.dispatch({ name: 'WorkflowCompleted' })
+          // TODO(FMP-408): update job card instead of alerting here
+          alert('complete!')
         }
       } else if (vm.selectedChain.address != null) {
         switchNetwork?.(Number(vm.selectedChain.address))
