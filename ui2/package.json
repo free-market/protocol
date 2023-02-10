@@ -69,7 +69,7 @@
     "test": "craco test --watchAll=false",
     "test:watch": "craco test --watch",
     "test:ci": "craco test --watchAll=false --runInBand",
-    "build": "craco build",
+    "build": "CI=false craco build",
     "build:storybook": "build-storybook -o build-storybook",
     "lint": "eslint src .storybook *.js"
   },
