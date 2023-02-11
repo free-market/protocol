@@ -225,13 +225,14 @@ export const ControlledDepositFlow = (
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
     )
     console.log('approving input asset transfer...')
-    await srcUsdc.approve(
+    const approveTx = await srcUsdc.approve(
       srcRunner.address,
       ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
       {
         from: address,
       },
     )
+    await approveTx.wait()
     console.log('input asset transfer approved')
 
     const allowance = await srcUsdc.allowance(address, srcRunner.address)
