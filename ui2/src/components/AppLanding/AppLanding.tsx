@@ -3,9 +3,15 @@ import ControlledDepositFlow from '@component/ControlledDepositFlow'
 import SharedWagmiConfig from '@component/SharedWagmiConfig'
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 import { useCallback, useState } from 'react'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 export const AppLanding = (): JSX.Element => {
   const [accepted, setAccepted] = useState(false)
+  const [viewing, setViewing] = useState(false)
+
+  const toggleCopy = useCallback(() => {
+    setViewing(!viewing)
+  }, [viewing, setViewing])
 
   const handleClick = useCallback(() => {
     setAccepted(true)
@@ -14,73 +20,113 @@ export const AppLanding = (): JSX.Element => {
   return (
     <>
       <div className="w-full min-h-screen relative bg-stone-200">
-        <div className="px-5">
-          <Icon />
-        </div>
-
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-between px-2">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-            }}
-            className="bg-stone-100 rounded-xl shadow-md flex items-center justify-center relative z-10 w-full basis-1/2 m-10 max-w-md"
-          >
-            <SharedWagmiConfig>
-              <DepositFlowStateProvider>
-                <ControlledDepositFlow includeDeveloperNetworks />
-              </DepositFlowStateProvider>
-            </SharedWagmiConfig>
-          </motion.div>
-
-          <motion.div className="grow flex flex-col items-stretch">
-            <div className="mx-4 saturate-[0.9] rounded-full bg-[#399fe7] flex justify-between items-center relative overflow-hidden p-2 mt-10 xl:mx-20">
-              <div className="grow flex items-center rounded-full bg-stone-600 px-2 py-2">
-                <div className="w-full font-mono font-bold text-stone-500 flex items-center gap-2 justify-between px-2">
-                  <span className="text-xs">destination</span>
-                  <span>
+        <div className="max-w-6xl mx-auto flex flex-col items-center justify-center px-2">
+          <div className="relative z-10 w-full saturate-[0.9] rounded-xl bg-[#399fe7] relative overflow-hidden p-2 m-10 xl:m-20 shadow-md max-w-md space-y-2">
+            <div>
+              <div className="leading-none text-stone-200 flex justify-between tracking-tight items-center">
+                <span className="font-light px-2">DESTINATION:</span>
+                <div className="flex items-center gap-2">
+                  <a
+                    href="https://staging.aave.com"
+                    target="_blank"
+                    className="rounded bg-stone-200 text-stone-600 px-2 py-1 flex gap-2 items-center cursor-pointer relative group"
+                  >
+                    <div className="absolute inset-0 bg-stone-800/10 invisible group-hover:visible group-active:bg-stone-800/25" />
                     <img
                       src="https://staging.aave.com/aaveLogo.svg"
-                      className="inline w-14"
+                      className="inline h-3"
                     />{' '}
-                    <span className="font-normal text-stone-400">
+                    <span className="font-medium group-hover:underline">
                       Arbitrum Market V3
                     </span>
-                  </span>
-                </div>
-              </div>
-              <div className="h-8 mx-4 overflow-hidden flex items-center justify-end">
-                <div className="w-8 h-8 relative">
-                  <motion.img
-                    initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: 1,
-                      transition: { delay: 1.3 },
-                    }}
-                    className="w-full h-full"
-                    src="https://app.aave.com/icons/networks/arbitrum.svg"
-                  />
-                </div>
-              </div>
-            </div>
+                    <ArrowTopRightOnSquareIcon className="w-5 h-5 inline-block" />
+                  </a>
 
-            <div className="max-w-2xl inline-block border border-stone-400/90 bg-stone-100/90 font-mono text-stone-600 m-5 mb-10 xl:mx-20 xl:mt-10">
-              <div className="flex flex-col items-center p-5 gap-5">
-                <span className="flex gap-10">
-                  <p className="space-y-4">
+                  <button
+                    onClick={toggleCopy}
+                    className="p-2 group flex justify-center items-center cursor-pointer rounded-full hover:bg-stone-100/25"
+                  >
+                    <svg
+                      className="w-5 h-5 fill-stone-200 group-hover:fill-stone-200/90 group-active:fill-stone-200/75"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {viewing && (
+                  <motion.div
+                    className="h-[10rem]"
+                    initial={{ opacity: 0, marginBottom: '-10rem', y: 10 }}
+                    animate={{
+                      y: 0,
+                      opacity: 1,
+                      marginBottom: 0,
+                      transition: {
+                        //default: { ease: 'anticipate', duration: 0.5 },
+                        default: {
+                          type: 'spring',
+                          duration: 0.1,
+                          stiffness: 200,
+                          mass: 1,
+                          damping: 15,
+                        },
+                        opacity: {
+                          type: 'spring',
+                          duration: 0.5,
+                          delay: 0.25,
+                        },
+                        y: {
+                          type: 'spring',
+                          duration: 0.5,
+                          delay: 0.25,
+                        },
+                      },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      marginBottom: '-10rem',
+                      y: 0,
+                      transition: {
+                        default: {
+                          type: 'spring',
+                          duration: 0.1,
+                          mass: 1,
+                          damping: 20,
+                        },
+                        opacity: {
+                          type: 'spring',
+                          duration: 0.5,
+                        },
+                        y: {
+                          type: 'spring',
+                          duration: 0.5,
+                        },
+                      },
+                    }}
+                  >
+                    <div className="space-y-2 pt-2">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs px-2 border border-transparent text-stone-400 font-light">
+                          <div className='text-stone-200 space-y-2'>
                     <div>Announcing xDeposit!</div>
 
-                    <ul className="pl-2 list-disc list-inside space-y-4">
+                    <ul className="pl-2 list-disc list-inside space-y-2">
                       <li>Send your funds on a direct flight.</li>
                       <li>Save costs, eliminate extra steps.</li>
                     </ul>
 
                     <div>Built with:</div>
 
-                    <ul className="pl-2 list-disc list-inside space-y-4">
+                    <ul className="pl-2 list-disc list-inside space-y-2">
                       <li>
                         <a
-                          className="text-cyan-600 underline cursor-pointer"
+                          className="underline cursor-pointer"
                           target="_blank"
                           href="https://stargate.finance/"
                         >
@@ -89,7 +135,7 @@ export const AppLanding = (): JSX.Element => {
                       </li>
                       <li>
                         <a
-                          className="text-cyan-600 underline cursor-pointer"
+                          className="underline cursor-pointer"
                           target="_blank"
                           href="https://fmprotocol.com/"
                         >
@@ -97,11 +143,29 @@ export const AppLanding = (): JSX.Element => {
                         </a>
                       </li>
                     </ul>
-                  </p>
-                </span>
-              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: 1,
+              }}
+              className="bg-stone-100 rounded-lg flex items-center justify-center relative z-10 w-full max-w-md"
+            >
+              <SharedWagmiConfig>
+                <DepositFlowStateProvider>
+                  <ControlledDepositFlow includeDeveloperNetworks />
+                </DepositFlowStateProvider>
+              </SharedWagmiConfig>
+            </motion.div>
+          </div>
         </div>
       </div>
       <AnimatePresence>
@@ -224,10 +288,8 @@ export const AppLanding = (): JSX.Element => {
                           className="relative inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm group"
                           autoFocus
                         >
-                          <div className="absolute inset-0 rounded-md bg-stone-800/25 invisible group-hover:visible group-active:bg-stone-800/50"/>
-                          <span>
-                          I understand
-                          </span>
+                          <div className="absolute inset-0 rounded-md bg-stone-800/25 invisible group-hover:visible group-active:bg-stone-800/50" />
+                          <span>I understand</span>
                         </button>
                       </div>
                     </motion.div>
