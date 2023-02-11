@@ -110,11 +110,9 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
       locals.minAmountOut = locals.sgParams.minAmountOut;
     }
 
-    // emit Eraseme(locals.nativeInputAsset.amount);
-
     emit StargateBridgeParamsEvent(
       locals.nativeInputAsset.amount, // native amount
-      inputAssetAmounts[0].amount, // token amount
+      locals.erc20InputAsset.amount, // token amount
       locals.sgParams.dstActionAddress, // dest addr for money and sgReceive
       locals.sgParams.dstChainId,
       locals.sgParams.srcPoolId,
@@ -130,7 +128,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
       locals.sgParams.srcPoolId,
       locals.sgParams.dstPoolId,
       payable(msg.sender), // refundAddreess
-      inputAssetAmounts[0].amount,
+      locals.erc20InputAsset.amount,
       locals.minAmountOut,
       IStargateRouter.lzTxObj(
         locals.sgParams.dstGasForCall,
