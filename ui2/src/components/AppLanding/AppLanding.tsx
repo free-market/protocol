@@ -39,6 +39,17 @@ export const AppLanding = (): JSX.Element => {
                     <span className="font-medium group-hover:underline">
                       Arbitrum Market V3
                     </span>
+                    <div className="w-4 h-4 relative">
+                      <motion.img
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: { delay: 1.3 },
+                        }}
+                        className="w-full h-full"
+                        src="https://app.aave.com/icons/networks/arbitrum.svg"
+                      />
+                    </div>
                     <ArrowTopRightOnSquareIcon className="w-5 h-5 inline-block" />
                   </a>
 
@@ -113,36 +124,36 @@ export const AppLanding = (): JSX.Element => {
                     <div className="space-y-2 pt-2">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-xs px-2 border border-transparent text-stone-400 font-light">
-                          <div className='text-stone-200 space-y-2'>
-                    <div>Announcing xDeposit!</div>
+                          <div className="text-stone-200 space-y-2">
+                            <div>Announcing xDeposit!</div>
 
-                    <ul className="pl-2 list-disc list-inside space-y-2">
-                      <li>Send your funds on a direct flight.</li>
-                      <li>Save costs, eliminate extra steps.</li>
-                    </ul>
+                            <ul className="pl-2 list-disc list-inside space-y-2">
+                              <li>Send your funds on a direct flight.</li>
+                              <li>Save costs, eliminate extra steps.</li>
+                            </ul>
 
-                    <div>Built with:</div>
+                            <div>Built with:</div>
 
-                    <ul className="pl-2 list-disc list-inside space-y-2">
-                      <li>
-                        <a
-                          className="underline cursor-pointer"
-                          target="_blank"
-                          href="https://stargate.finance/"
-                        >
-                          Stargate
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="underline cursor-pointer"
-                          target="_blank"
-                          href="https://fmprotocol.com/"
-                        >
-                          Free Market Protocol
-                        </a>
-                      </li>
-                    </ul>
+                            <ul className="pl-2 list-disc list-inside space-y-2">
+                              <li>
+                                <a
+                                  className="underline cursor-pointer"
+                                  target="_blank"
+                                  href="https://stargate.finance/"
+                                >
+                                  Stargate
+                                </a>
+                              </li>
+                              <li>
+                                <a
+                                  className="underline cursor-pointer"
+                                  target="_blank"
+                                  href="https://fmprotocol.com/"
+                                >
+                                  Free Market Protocol
+                                </a>
+                              </li>
+                            </ul>
                           </div>
                         </div>
                       </div>
