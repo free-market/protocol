@@ -26,7 +26,7 @@
   },
   "lint-staged": {
     "./ui2/**/*.(js|ts|jsx|tsx)": [
-      "./ui2/node_modules/.bin/prettier --write -u"
+      "./node_modules/.bin/prettier --write -u"
     ]
   },
   "workspaces": [
