@@ -13,6 +13,8 @@ import '../Layout/super-shadow.css'
 import { Action, EditingMode } from '@component/DepositFlowStateProvider/types'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 
+const ANIMATE_HIGHLIGHT = false
+
 const MAX_SELECTOR_HEIGHT = 240
 
 // use this to debug the editing state
@@ -85,7 +87,9 @@ const SearchResult = (props: {
         )}
         key={`${symbol}${index}`}
       >
-        {formEditingMode?.recently === undefined || !selectorRecentlyChanged
+        {(formEditingMode?.recently === undefined ||
+          !selectorRecentlyChanged) &&
+        ANIMATE_HIGHLIGHT
           ? formEditingMode?.name === selector.name &&
             (highlightedChoice
               ? highlightedChoice.address === address
