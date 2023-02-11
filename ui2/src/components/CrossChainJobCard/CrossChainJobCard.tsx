@@ -10,6 +10,7 @@ export const CrossChainJobCard = (props: {
   pulseBehavior?: 'gradient' | 'pulse'
   layoutId?: string
   cardTitle?: string
+  sourceNetwork?: 'avalanche' | 'ethereum' // TODO: support all networks
 }): JSX.Element => {
   const {
     status = 'completed',
@@ -17,6 +18,7 @@ export const CrossChainJobCard = (props: {
     spinnerLocation = 'transaction',
     pulseBehavior = 'pulse',
     cardTitle = 'Transfer',
+    sourceNetwork = 'ethereum',
   } = props
 
   const [clicked, setClicked] = useState(false)
@@ -106,10 +108,6 @@ export const CrossChainJobCard = (props: {
           </div>
         </div>
       </div>
-
-      {pulseBehavior === 'gradient' && transactionGradient}
-
-      {pulseBehavior === 'pulse' && transactionPulse}
     </div>
   )
 
@@ -135,6 +133,32 @@ export const CrossChainJobCard = (props: {
     </div>
   )
 
+  const arbitrumPill = (
+    <div className="rounded bg-[#399fe7] w-[calc(100%-2rem)] h-4 flex justify-between relative overflow-hidden border border-stone-600">
+      <div></div>
+
+      <div className="">
+        <div className="h-4 mx-4 overflow-hidden flex items-center">
+          <div className="w-6 h-6 relative">
+            <motion.img
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: 1,
+                transition: { delay: 1.3 },
+              }}
+              className="w-full h-full"
+              src="https://app.aave.com/icons/networks/arbitrum.svg"
+            />
+          </div>
+        </div>
+      </div>
+
+      {pulseBehavior === 'gradient' && transactionGradient}
+
+      {pulseBehavior === 'pulse' && status === 'sending' && transactionPulse}
+    </div>
+  )
+
   const currentTransactionIndicator = (
     <div
       className={cx('rounded border-2 border-stone-300 h-3', {
@@ -147,16 +171,79 @@ export const CrossChainJobCard = (props: {
     <>
       <div className={cx('flex', 'flex-col gap-1')}>
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 flex items-center">
-            {currentTransactionIndicator}
-          </div>
-
-          <div className="pl-2">{avalanchePill}</div>
-        </div>
-        <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 flex items-center"></div>
 
-          <div className="pl-2">{ethereumPill}</div>
+          <div className="pl-2 flex items-center gap-2">
+            {sourceNetwork === 'ethereum' ? ethereumPill : avalanchePill}
+
+            <AnimatePresence>
+              <motion.svg
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                viewBox="0 0 50 50"
+                className="stroke-emerald-400/90 w-4 h-4"
+              >
+                <motion.path
+                  className="stroke-emerald-400/90"
+                  fill="none"
+                  strokeWidth="3"
+                  d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+                  style={{ translateX: 5, translateY: 4 }}
+                />
+                <motion.path
+                  className="stroke-emerald-400/90"
+                  fill="none"
+                  strokeWidth="3"
+                  initial={{ pathLength: 0.2 }}
+                  animate={{
+                    pathLength: 1,
+                  }}
+                  transition={{ duration: 0.5 }}
+                  d="M14,26 L 22,33 L 35,16"
+                />
+              </motion.svg>
+            </AnimatePresence>
+          </div>
+        </div>
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 flex items-center">
+            {status === 'sending' && currentTransactionIndicator}
+          </div>
+
+          <div className="pl-2 flex items-center gap-2">
+            {arbitrumPill}
+
+            <AnimatePresence>
+              {status === 'completed' && (
+                <motion.svg
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  viewBox="0 0 50 50"
+                  className="stroke-emerald-400/90 w-4 h-4"
+                >
+                  <motion.path
+                    className="stroke-emerald-400/90"
+                    fill="none"
+                    strokeWidth="3"
+                    d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+                    style={{ translateX: 5, translateY: 4 }}
+                  />
+
+                  <motion.path
+                    className="stroke-emerald-400/90"
+                    fill="none"
+                    strokeWidth="3"
+                    initial={{ pathLength: 0.2 }}
+                    animate={{
+                      pathLength: 1,
+                    }}
+                    transition={{ duration: 0.5 }}
+                    d="M14,26 L 22,33 L 35,16"
+                  />
+                </motion.svg>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </>
@@ -267,12 +354,24 @@ export const CrossChainJobCard = (props: {
                 }}
               >
                 <div className="space-y-2 pt-2">
-                  <div className="mx-4 saturate-[0.9] rounded-full bg-[#E84142] h-9 flex justify-between items-center relative overflow-hidden p-2">
+                  <div
+                    className={cx(
+                      'mx-4 saturate-[0.9] rounded-full h-9 flex justify-between items-center relative overflow-hidden p-2',
+                      {
+                        'bg-[#E84142]': sourceNetwork === 'avalanche',
+                        'bg-[#627eea]': sourceNetwork === 'ethereum',
+                      },
+                    )}
+                  >
                     <div className="grow flex items-center rounded-full bg-stone-600 px-2">
                       <div className="font-mono font-bold text-stone-500 flex items-center">
                         <span className="text-xs">01 /</span>{' '}
                         <span className="text-stone-400 font-[Inter] font-bold pl-2">
-                          Avalanche
+                          {
+                            { avalanche: 'Avalanche', ethereum: 'Ethereum' }[
+                              sourceNetwork
+                            ]
+                          }
                         </span>
                       </div>
                     </div>
@@ -285,17 +384,17 @@ export const CrossChainJobCard = (props: {
                             transition: { delay: 1.3 },
                           }}
                           className="w-full h-full"
-                          src="https://app.aave.com/icons/networks/avalanche.svg"
+                          src={`https://app.aave.com/icons/networks/${sourceNetwork}.svg`}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="mx-4 saturate-[0.9] rounded-full bg-[#627eea] h-9 flex justify-between items-center relative overflow-hidden border border-stone-600 p-2">
+                  <div className="mx-4 saturate-[0.9] rounded-full bg-[#399fe7] h-9 flex justify-between items-center relative overflow-hidden border border-stone-600 p-2">
                     <div className="grow flex items-center rounded-full bg-stone-600 px-2">
                       <div className="font-mono font-bold text-stone-500 flex items-center">
                         <span className="text-xs">02 /</span>{' '}
                         <span className="text-stone-400 font-[Inter] font-bold pl-2">
-                          Ethereum
+                          Arbitrum
                         </span>
                       </div>
                     </div>
@@ -308,7 +407,7 @@ export const CrossChainJobCard = (props: {
                             transition: { delay: 1.3 },
                           }}
                           className="w-full h-full"
-                          src="https://app.aave.com/icons/networks/ethereum.svg"
+                          src="https://app.aave.com/icons/networks/arbitrum.svg"
                         />
                       </div>
                     </div>

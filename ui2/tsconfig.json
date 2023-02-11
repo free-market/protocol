@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "lib": [
+      "ES2018",
       "dom",
       "dom.iterable",
       "esnext"

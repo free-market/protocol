@@ -62,8 +62,18 @@ export const DepositFlowStateProvider = (props: {
         state.formEditingMode = undefined
         break
       }
+      case 'WorkflowSubmissionFailed': {
+        state.flowStep = 'closed'
+        state.formEditingMode = undefined
+        break
+      }
       case 'WorkflowStarted': {
         state.flowStep = 'started'
+        state.formEditingMode = undefined
+        break
+      }
+      case 'WorkflowCompleted': {
+        state.flowStep = 'complete'
         state.formEditingMode = undefined
         break
       }
