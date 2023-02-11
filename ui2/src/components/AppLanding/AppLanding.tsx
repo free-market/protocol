@@ -1,9 +1,16 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import ControlledDepositFlow from '@component/ControlledDepositFlow'
 import SharedWagmiConfig from '@component/SharedWagmiConfig'
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
+import { useCallback, useState } from 'react'
 
 export const AppLanding = (): JSX.Element => {
+  const [accepted, setAccepted] = useState(false)
+
+  const handleClick = useCallback(() => {
+    setAccepted(true)
+  }, [setAccepted])
+
   return (
     <>
       <div className="w-full min-h-screen relative bg-stone-200">
@@ -97,6 +104,136 @@ export const AppLanding = (): JSX.Element => {
           </motion.div>
         </div>
       </div>
+      <AnimatePresence>
+        <div
+          className="relative z-10"
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+        >
+          <AnimatePresence>
+            {!accepted && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: 1,
+                  transition: { ease: 'easeOut', duration: 0.3 },
+                }}
+                exit={{
+                  opacity: 0,
+                  transition: { ease: 'easeIn', duration: 0.3 },
+                }}
+                className="fixed inset-0 bg-stone-800/90"
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {!accepted && (
+              <>
+                <div className="fixed inset-0 z-10 overflow-y-auto">
+                  <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    {/*
+  Modal panel, show/hide based on modal state.
+
+  Entering: "ease-out duration-300"
+    From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+    To: "opacity-100 translate-y-0 sm:scale-100"
+  Leaving: "ease-in duration-200"
+    From: "opacity-100 translate-y-0 sm:scale-100"
+    To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+*/}
+                    <motion.div
+                      initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        transition: { ease: 'easeOut', duration: 0.3 },
+                      }}
+                      exit={{
+                        opacity: 0,
+                        y: 4,
+                        scale: 0.95,
+                        transition: { ease: 'easeIn', duration: 0.2 },
+                      }}
+                      className="relative overflow-hidden rounded-lg bg-white text-left shadow-xl sm:my-8 sm:w-full sm:max-w-lg"
+                    >
+                      <div className="bg-red-600 px-4 py-3 sm:flex sm:px-6 justify-center">
+                        <div className="bg-stone-50 text-stone-900 font-mono px-2 rounded-2xl font-bold text-6xl my-2">
+                          DISCLAIMER
+                        </div>
+                      </div>
+                      <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div className="sm:flex sm:items-start">
+                          <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            {/* Heroicon name: outline/exclamation-triangle */}
+                            <svg
+                              className="h-6 w-6 text-red-600"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3
+                              className="text-lg font-medium leading-6 text-stone-900"
+                              id="modal-title"
+                            >
+                              THIS SOFTWARE IS PROVIDED AS-IS WITHOUT A
+                              WARRANTY. PROCEED AT YOUR OWN RISK.
+                            </h3>
+                            <div className="mt-2 space-y-2">
+                              <p className="text-sm text-stone-500">
+                                This software is part of a MAINNET ALPHA
+                                release.
+                              </p>
+                              <p className="text-sm text-stone-500">
+                                It may contain mistakes, defects and your funds
+                                may be lossed.
+                              </p>
+                              <p className="text-sm text-stone-500">
+                                Free Market Labs, Inc. is not liable for any
+                                funds lost during the operation of this
+                                software.
+                              </p>
+                              <p className="text-sm text-stone-500">
+                                In no event shall Free Market Labs, Inc. be
+                                liable for any claim, damages or other
+                                liability, whether in an action of contract,
+                                tort or otherwise, arising from, out of or in
+                                connection with the software or the use or other
+                                dealings in the software.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-stone-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button
+                          onClick={handleClick}
+                          type="button"
+                          className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                          I understand
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+      </AnimatePresence>
     </>
   )
 }
@@ -189,7 +326,7 @@ function Icon() {
       ></path>
       <path
         fill="#57534e"
-        style={{transform: 'translate(493px,195px) scale(0.84)'}}
+        style={{ transform: 'translate(493px,195px) scale(0.84)' }}
         d="M3157.88 1471H3219v-153h36v-39h-36v-9.38c0-21.37 12.75-23.25 36-22.5V1204c-33-3.38-64.87.37-81.37 16.5-10.13 10.12-15.75 24.75-15.75 44.62V1279h-24.75v39h24.75v153zm116.48 0h61.13v-86.25c0-41.63 24-60 61.5-54.75h1.5v-52.5c-2.63-1.13-6.38-1.5-12-1.5-23.25 0-39 10.12-52.5 33h-1.13v-30h-58.5v192zm233.64 5.63c24.38 0 43.88-6.38 60-17.63 16.88-11.63 28.13-28.13 32.25-45.38h-59.62c-5.25 12-15.75 19.13-31.88 19.13-25.12 0-39.37-16.13-43.12-42h138c.37-39-10.88-72.38-33.75-93.38-16.5-15-38.25-24-65.63-24-58.5 0-98.62 43.88-98.62 101.26 0 58.12 39 102 102.37 102zm-42-122.26c4.13-22.87 16.13-37.5 39.38-37.5 19.87 0 34.12 14.63 36.37 37.5H3466zm251.84 122.26c24.38 0 43.88-6.38 60-17.63 16.88-11.63 28.13-28.13 32.25-45.38h-59.62c-5.25 12-15.75 19.13-31.88 19.13-25.12 0-39.37-16.13-43.12-42h138c.37-39-10.88-72.38-33.75-93.38-16.5-15-38.25-24-65.63-24-58.5 0-98.62 43.88-98.62 101.26 0 58.12 39 102 102.37 102zm-42-122.26c4.13-22.87 16.13-37.5 39.38-37.5 19.87 0 34.12 14.63 36.37 37.5h-75.75zM3833.93 1471h61.13v-107.63c0-22.87 11.25-39 30.37-39 18.38 0 27 12 27 32.63v114h61.13v-107.63c0-22.87 10.87-39 30.37-39 18.38 0 27 12 27 32.63v114h61.13v-124.88c0-43.12-21.75-72.75-65.25-72.75-24.75 0-45.38 10.5-60.38 33.75h-.75c-9.75-20.62-28.87-33.75-54-33.75-27.75 0-46.12 13.13-58.12 33h-1.13V1279h-58.5v192zm382.56 4.88c28.87 0 45.75-10.13 57-26.26h.75c1.5 9.75 3.37 17.25 6.37 21.38h59.25v-2.63c-5.25-3.37-6.75-12-6.75-27.37v-96.75c0-24-7.87-42.75-24.37-54.75-13.88-10.5-33.38-15.75-62.25-15.75-58.13 0-85.5 30.37-87 66h56.25c1.87-16.13 11.62-24.75 31.12-24.75 18.38 0 26.25 8.25 26.25 20.62 0 13.13-12.75 16.88-48.75 21.38-39.75 5.25-73.5 18-73.5 60.37 0 37.88 27.38 58.51 65.63 58.51zm19.5-39.01c-15 0-26.25-6-26.25-21.37 0-14.63 9.75-20.63 33.37-25.88 12.38-3 23.63-6 31.5-10.12v22.87c0 20.63-15.75 34.5-38.62 34.5zm126.75 34.13h61.13v-86.25c0-41.63 24-60 61.5-54.75h1.5v-52.5c-2.63-1.13-6.38-1.5-12-1.5-23.25 0-39 10.12-52.5 33h-1.13v-30h-58.5v192zm143.56 0h60.37v-58.88l18.38-19.5 46.12 78.38h70.88l-75.38-120 67.5-72h-70.5l-57 64.87v-141h-60.37V1471zm288.57 5.63c24.38 0 43.88-6.38 60-17.63 16.88-11.63 28.13-28.13 32.25-45.38h-59.62c-5.25 12-15.75 19.13-31.88 19.13-25.12 0-39.37-16.13-43.12-42h138c.37-39-10.88-72.38-33.75-93.38-16.5-15-38.25-24-65.63-24-58.5 0-98.62 43.88-98.62 101.26 0 58.12 39 102 102.37 102zm-42-122.26c4.13-22.87 16.13-37.5 39.38-37.5 19.87 0 34.12 14.63 36.37 37.5h-75.75zm230.55 118.88c16.5 0 28.13-1.5 33.38-3v-44.63c-2.25 0-8.25.38-13.5.38-13.13 0-21.38-3.75-21.38-18.75v-90h34.88V1279h-34.88v-60.75h-59.62V1279h-25.5v38.25h25.5v103.12c0 41.25 25.5 52.88 61.12 52.88z"
       ></path>
       <path
