@@ -76,10 +76,7 @@ export const ControlledDepositFlow = (
     chainId: srcNetworkId,
   })
 
-  const submitWorkflow = async (): Promise<{
-    transaction: { hash: string }
-    wait: () => Promise<{ transaction: { hash: string } }>
-  }> => {
+  const predictFees = async () => {
     if (typeof address !== 'string') {
       throw new Error('address has not been retrieved')
     }
@@ -91,10 +88,6 @@ export const ControlledDepositFlow = (
     const srcFrontDoor = FrontDoor__factory.connect(
       '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
       srcProvider,
-    )
-    const srcRunner = WorkflowRunner__factory.connect(
-      '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
-      srcSigner,
     )
     /*
      * const dstFrontDoor = FrontDoor__factory.connect(
@@ -127,16 +120,6 @@ export const ControlledDepositFlow = (
       srcContractAddresses.sgUSDC,
       srcSigner,
     )
-
-    const dstUsdc = ERC20__factory.connect(
-      dstContractAddresses.sgUSDC,
-      dstProvider,
-    )
-
-    const srcUsdcAsset = {
-      assetType: AssetType.ERC20,
-      assetAddress: srcContractAddresses.sgUSDC,
-    }
 
     // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
     // TODO move into helper
@@ -223,6 +206,118 @@ export const ControlledDepositFlow = (
     })
 
     const srcUsdcBalance = await srcUsdc.balanceOf(address)
+
+    return {
+      dstWorkflow,
+      dstEncodedWorkflow,
+      nonce,
+      dstGasEstimate,
+      inputAmount,
+      minAmountOut,
+      srcGasCost,
+      dstGasCost,
+      stargateRequiredNative,
+      srcUsdcBalance,
+    }
+  }
+
+  const submitWorkflow = async (): Promise<{
+    transaction: { hash: string }
+    wait: () => Promise<{ transaction: { hash: string } }>
+  }> => {
+    if (typeof address !== 'string') {
+      throw new Error('address has not been retrieved')
+    }
+
+    if (srcSigner == null) {
+      throw new Error('signer is not connected')
+    }
+
+    const srcRunner = WorkflowRunner__factory.connect(
+      '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
+      srcSigner,
+    )
+    /*
+     * const dstFrontDoor = FrontDoor__factory.connect(
+     *   '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+     *   dstProvider,
+     * )
+     */
+    const dstRunner = WorkflowRunner__factory.connect(
+      '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+      dstProvider,
+    )
+    const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
+      ActionIds.aaveSupply,
+    )
+    const dstAaveSupplyAction = AaveSupplyAction__factory.connect(
+      dstAaveSupplyActionAddr,
+      dstProvider,
+    )
+    const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
+    const dstMockAToken = ERC20__factory.connect(dstMockATokenAddr, dstProvider)
+    const aTokenBalanceBefore = await dstMockAToken.balanceOf(address)
+    console.log('balance', aTokenBalanceBefore)
+
+    // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
+
+    const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
+    const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
+
+    const srcUsdc = ERC20__factory.connect(
+      srcContractAddresses.sgUSDC,
+      srcSigner,
+    )
+
+    const dstUsdc = ERC20__factory.connect(
+      dstContractAddresses.sgUSDC,
+      dstProvider,
+    )
+
+    const srcUsdcAsset = {
+      assetType: AssetType.ERC20,
+      assetAddress: srcContractAddresses.sgUSDC,
+    }
+
+    // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
+    // TODO move into helper
+    const dstStargateActionAddr = await dstRunner.getActionAddress(
+      ActionIds.stargateBridge,
+    )
+    console.log('dstStargateActionAddr', dstStargateActionAddr)
+    const dstStargateAction = StargateBridgeAction__factory.connect(
+      dstStargateActionAddr,
+      dstProvider,
+    )
+    const dstStargateRouterAddr =
+      await dstStargateAction.stargateRouterAddress()
+    console.log('dstStargateRouterAddr', dstStargateRouterAddr)
+    // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
+    //   1, // the remote chainId sending the tokens (value not used by us)
+    //   ADDRESS_ZERO, // the remote Bridge address (value not used by us)
+    //   2, // nonce (value not used by us)
+    //   dstContractAddresses.sgUSDC, // the token contract on the dst chain
+    //   inputAmount, // the qty of local _token contract tokens
+    //   dstEncodedWorkflow,
+    //   { from: dstStargateRouterAddr } // claim we are sg router as required by our sgReceive implementation
+    // )
+
+    // console.log(`srcGasCost ${srcGasCostStr}`)
+    // console.log(`dstGasCost ${dstGasCostStr}`)
+    // const dstWorkflowGasCostEstimate = new BN(dstGasEstimate).mul(dstGasCost)
+
+    const {
+      dstEncodedWorkflow,
+      nonce,
+      dstGasEstimate,
+      inputAmount,
+      minAmountOut,
+      srcGasCost,
+      dstGasCost,
+      stargateRequiredNative,
+      srcUsdcBalance,
+    } = await predictFees()
+
     const dstUsdcBalance = await dstUsdc.balanceOf(address)
     console.log(
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
@@ -473,10 +568,61 @@ export const ControlledDepositFlow = (
       : 'network-mismatch'
     : 'unconnected'
 
+  const handleAmountChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { value } = event.target
+    vm.dispatch({ name: 'AmountChanged', value })
+
+    // TODO: introduce promise queue and throttle this function call
+    if (value.trim() === '') {
+      vm.dispatch({ name: 'UnavailableFeePredicted' })
+    } else {
+      vm.dispatch({ name: 'FeePredictionStarted', amount: value })
+
+      const {
+        /**
+         * store these other parameters somewhere,
+         * and use them in the submitWorkflow call
+         * instead of re-computing them
+         *
+         * dstEncodedWorkflow,
+         * nonce,
+         * dstGasEstimate,
+         * inputAmount,
+         * minAmountOut,
+         * stargateRequiredNative,
+         * srcUsdcBalance,
+         */
+        srcGasCost,
+        dstGasCost,
+      } = await predictFees()
+
+      vm.dispatch({
+        name: 'FeePredicted',
+        amount: value,
+        fee: {
+          slippage: '0.5%',
+          destination: {
+            gasPrice: dstGasCost.toString(),
+          },
+          source: {
+            gasPrice: srcGasCost.toString(),
+          },
+          protocol: {
+            usd: '0.00',
+          },
+          lowestPossibleAmount: '',
+        },
+      })
+    }
+  }
+
   return (
     <>
       <DepositFlow
         {...rest}
+        onAmountChange={handleAmountChange}
         balanceState={balanceState}
         balance={balance}
         walletState={walletState}

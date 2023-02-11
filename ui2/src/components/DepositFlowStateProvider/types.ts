@@ -52,6 +52,25 @@ export type Action =
   | { name: 'WorkflowSubmissionFinished'; transaction: { hash: string } }
   | { name: 'WorkflowStarted'; value?: string }
   | { name: 'WorkflowCompleted'; transaction: { hash: string } }
+  | { name: 'FeePredictionStarted'; amount: string }
+  | {
+      name: 'FeePredicted'
+      amount: string
+      fee: {
+        slippage: string
+        destination: {
+          gasPrice: string
+        }
+        source: {
+          gasPrice: string
+        }
+        protocol: {
+          usd: string
+        }
+        lowestPossibleAmount: string
+      }
+    }
+  | { name: 'UnavailableFeePredicted' }
 
 export type WalletState =
   | 'ready'
@@ -84,6 +103,28 @@ export type State = {
   selectorRecentlyChanged: boolean
   sourceTransaction?: { hash: string }
   destinationTransaction?: { hash: string }
+  fee:
+    | {
+        status: 'unavailable'
+      }
+    | { status: 'loading' }
+    | {
+        status: 'predicted'
+        amount: string
+        details: {
+          slippage: string
+          destination: {
+            gasPrice: string
+          }
+          source: {
+            gasPrice: string
+          }
+          protocol: {
+            usd: string
+          }
+          lowestPossibleAmount: string
+        }
+      }
 }
 
 export type ViewModel = State & { dispatch: (action: Action) => void }
