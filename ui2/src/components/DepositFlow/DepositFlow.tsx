@@ -794,7 +794,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
             onHoverStart={loading ? undefined : handleDepositButtonHoverStart}
             onHoverEnd={loading ? undefined : handleDepositButtonHoverEnd}
             whileTap={
-              { '--fmp-extra-scale': loading ? 0.9 : 0.8 } as Record<
+              { '--fmp-extra-scale': loading ? 0.9 : 0.3 } as Record<
                 `--${string}`,
                 string | number
               >
