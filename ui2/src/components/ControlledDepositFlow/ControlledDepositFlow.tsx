@@ -76,7 +76,10 @@ export const ControlledDepositFlow = (
     chainId: srcNetworkId,
   })
 
-  const submitWorkflow = async (): Promise<() => Promise<void>> => {
+  const submitWorkflow = async (): Promise<{
+    transaction: { hash: string }
+    wait: () => Promise<{ transaction: { hash: string } }>
+  }> => {
     if (typeof address !== 'string') {
       throw new Error('address has not been retrieved')
     }
@@ -363,17 +366,21 @@ export const ControlledDepositFlow = (
     // TODO: rewrite web3 calls to re-use web3 from ethers
 
     // TODO (somewhere else): watch contract on destination for events
-    return async () => {
-      await waitForNonceWithProvider(
-        dstProvider,
-        dstRunner.address,
-        nonce,
-        60_000 * 5,
-        dstContractAddresses.sgUSDC,
-        dstMockATokenAddr,
-        address,
-        dstStargateActionAddr,
-      )
+    return {
+      transaction: {
+        hash: txResponse.hash,
+      },
+      wait: async () =>
+        waitForNonceWithProvider(
+          dstProvider,
+          dstRunner.address,
+          nonce,
+          60_000 * 5,
+          dstContractAddresses.sgUSDC,
+          dstMockATokenAddr,
+          address,
+          dstStargateActionAddr,
+        ),
     }
   }
 
@@ -395,19 +402,22 @@ export const ControlledDepositFlow = (
           }
           vm.dispatch({ name: 'WorkflowSubmissionStarted' })
           await delay(50)
-          let wait
+          let wait, transaction
           try {
-            wait = await submitWorkflow()
+            ;({ wait, transaction } = await submitWorkflow())
           } catch (error) {
             console.error(error)
             vm.dispatch({ name: 'WorkflowSubmissionFailed' })
             return
           }
-          vm.dispatch({ name: 'WorkflowSubmissionFinished' })
+          vm.dispatch({ name: 'WorkflowSubmissionFinished', transaction })
           await delay(3000)
           vm.dispatch({ name: 'WorkflowStarted' })
-          await wait()
-          vm.dispatch({ name: 'WorkflowCompleted' })
+          const { transaction: destinationTransaction } = await wait()
+          vm.dispatch({
+            name: 'WorkflowCompleted',
+            transaction: destinationTransaction,
+          })
         }
       } else if (vm.selectedChain.address != null) {
         switchNetwork?.(Number(vm.selectedChain.address))

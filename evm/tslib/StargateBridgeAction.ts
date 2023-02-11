@@ -125,7 +125,7 @@ export function waitForNonceOld(
     })
   })
 }
-export function waitForNonce(
+export async function waitForNonce(
   webSocketProviderUrl: string,
   frontDoorAddress: string,
   nonce: string,
@@ -136,7 +136,8 @@ export function waitForNonce(
   dstActionAddr: string
 ): Promise<string> {
   const provider = new WebSocketProvider(webSocketProviderUrl)
-  return waitForNonceWithProvider(provider, frontDoorAddress, nonce, timeoutMillis, dstUsdcAddr, dstATokenAddr, dstUserAddr, dstActionAddr)
+  const result = await waitForNonceWithProvider(provider, frontDoorAddress, nonce, timeoutMillis, dstUsdcAddr, dstATokenAddr, dstUserAddr, dstActionAddr)
+return result.amount
 }
 
 export function waitForNonceWithProvider(
@@ -148,8 +149,8 @@ export function waitForNonceWithProvider(
   dstATokenAddr: string,
   dstUserAddr: string,
   dstActionAddr: string
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
+): Promise<{transaction: { hash: string }, amount: string }> {
+  return new Promise((resolve, reject) => {
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, provider)
     const expectedNonce = BigNumber.from(nonce)
     const filter = runner.filters.WorkflowContinuation(null, null, null)
@@ -177,11 +178,15 @@ export function waitForNonceWithProvider(
     }, timeoutMillis)
     runner.on(filter, (nonce, _userAddress, startingAsset, _event) => {
       if (nonce.eq(expectedNonce)) {
+        _event.transactionHash
         runner.removeAllListeners()
         clearInterval(updaterInterval)
         clearTimeout(timeout)
         console.log('success')
-        resolve(startingAsset.amount.toString())
+        resolve({
+          amount: startingAsset.amount.toString(),
+          transaction: { hash: _event.transactionHash }
+        })
       }
     })
   })

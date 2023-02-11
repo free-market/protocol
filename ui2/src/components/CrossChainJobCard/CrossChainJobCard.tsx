@@ -1,4 +1,8 @@
-import { ArrowRightIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowRightIcon,
+  ArrowTopRightOnSquareIcon,
+  ChevronUpDownIcon,
+} from '@heroicons/react/20/solid'
 import cx from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useState } from 'react'
@@ -11,6 +15,8 @@ export const CrossChainJobCard = (props: {
   layoutId?: string
   cardTitle?: string
   sourceNetwork?: 'avalanche' | 'ethereum' // TODO: support all networks
+  sourceTransaction?: { hash: string }
+  destinationTransaction?: { hash: string }
 }): JSX.Element => {
   const {
     status = 'completed',
@@ -19,6 +25,8 @@ export const CrossChainJobCard = (props: {
     pulseBehavior = 'pulse',
     cardTitle = 'Transfer',
     sourceNetwork = 'ethereum',
+    sourceTransaction,
+    destinationTransaction,
   } = props
 
   const [clicked, setClicked] = useState(false)
@@ -304,8 +312,8 @@ export const CrossChainJobCard = (props: {
           <AnimatePresence>
             {clicked && (
               <motion.div
-                className="h-[11.5rem]"
-                initial={{ opacity: 0, marginBottom: '-11.5rem', y: 10 }}
+                className="h-[20rem]"
+                initial={{ opacity: 0, marginBottom: '-20rem', y: 10 }}
                 animate={{
                   y: 0,
                   opacity: 1,
@@ -333,7 +341,7 @@ export const CrossChainJobCard = (props: {
                 }}
                 exit={{
                   opacity: 0,
-                  marginBottom: '-11.5rem',
+                  marginBottom: '-20rem',
                   y: 0,
                   transition: {
                     default: {
@@ -356,61 +364,101 @@ export const CrossChainJobCard = (props: {
                 <div className="space-y-2 pt-2">
                   <div
                     className={cx(
-                      'mx-4 saturate-[0.9] rounded-full h-9 flex justify-between items-center relative overflow-hidden p-2',
+                      'mx-4 saturate-[0.9] rounded-md relative overflow-hidden p-2 flex flex-col gap-2',
                       {
                         'bg-[#E84142]': sourceNetwork === 'avalanche',
                         'bg-[#627eea]': sourceNetwork === 'ethereum',
                       },
                     )}
                   >
-                    <div className="grow flex items-center rounded-full bg-stone-600 px-2">
-                      <div className="font-mono font-bold text-stone-500 flex items-center">
-                        <span className="text-xs">01 /</span>{' '}
-                        <span className="text-stone-400 font-[Inter] font-bold pl-2">
-                          {
-                            { avalanche: 'Avalanche', ethereum: 'Ethereum' }[
-                              sourceNetwork
-                            ]
-                          }
-                        </span>
+                    <div className="w-full flex items-center justify-between relative h-9">
+                      <div className="grow flex items-center rounded bg-stone-600 px-2 h-9">
+                        <div className="font-mono font-bold text-stone-500 flex items-center">
+                          <span className="text-xs">01 /</span>{' '}
+                          <span className="text-stone-400 font-[Inter] font-bold pl-2">
+                            {
+                              { avalanche: 'Avalanche', ethereum: 'Ethereum' }[
+                                sourceNetwork
+                              ]
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-8 mx-4 overflow-hidden flex items-center justify-end">
+                        <div className="w-8 h-8 relative">
+                          <motion.img
+                            initial={{ opacity: 0 }}
+                            animate={{
+                              opacity: 1,
+                              transition: { delay: 1.3 },
+                            }}
+                            className="w-full h-full"
+                            src={`https://app.aave.com/icons/networks/${sourceNetwork}.svg`}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="h-8 mx-4 overflow-hidden flex items-center justify-end">
-                      <div className="w-8 h-8 relative">
-                        <motion.img
-                          initial={{ opacity: 0 }}
-                          animate={{
-                            opacity: 1,
-                            transition: { delay: 1.3 },
-                          }}
-                          className="w-full h-full"
-                          src={`https://app.aave.com/icons/networks/${sourceNetwork}.svg`}
-                        />
+                    <a
+                      onClick={(e) => {
+                        e.stopPropagation()
+                      }}
+                      href={`https://testnet.layerzeroscan.com/tx/${sourceTransaction?.hash}`}
+                      target="_blank"
+                      className="w-full rounded p-2 bg-stone-600 flex items-center text-stone-400 hover:underline"
+                    >
+                      <div className="font-mono font-bold overflow-ellipsis truncate basis-0 grow">
+                        TX {sourceTransaction?.hash}
                       </div>
-                    </div>
+                      <ArrowTopRightOnSquareIcon className="basis-6 w-6 h-6 inline-block" />
+                    </a>
                   </div>
-                  <div className="mx-4 saturate-[0.9] rounded-full bg-[#399fe7] h-9 flex justify-between items-center relative overflow-hidden border border-stone-600 p-2">
-                    <div className="grow flex items-center rounded-full bg-stone-600 px-2">
-                      <div className="font-mono font-bold text-stone-500 flex items-center">
-                        <span className="text-xs">02 /</span>{' '}
-                        <span className="text-stone-400 font-[Inter] font-bold pl-2">
-                          Arbitrum
-                        </span>
+                  <div className="mx-4 saturate-[0.9] bg-[#399fe7] rounded-md relative overflow-hidden p-2 flex flex-col gap-2">
+                    <div className="w-full flex items-center justify-between relative h-9">
+                      <div className="grow flex items-center rounded bg-stone-600 px-2 h-9">
+                        <div className="font-mono font-bold text-stone-500 flex items-center">
+                          <span className="text-xs">02 /</span>{' '}
+                          <span className="text-stone-400 font-[Inter] font-bold pl-2">
+                            Arbitrum
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-8 mx-4 overflow-hidden flex items-center justify-end">
+                        <div className="w-8 h-8 relative">
+                          <motion.img
+                            initial={{ opacity: 0 }}
+                            animate={{
+                              opacity: 1,
+                              transition: { delay: 1.3 },
+                            }}
+                            className="w-full h-full"
+                            src={`https://app.aave.com/icons/networks/arbitrum.svg`}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="h-8 mx-4 overflow-hidden flex items-center justify-end">
-                      <div className="w-8 h-8 relative">
-                        <motion.img
-                          initial={{ opacity: 0 }}
-                          animate={{
-                            opacity: 1,
-                            transition: { delay: 1.3 },
-                          }}
-                          className="w-full h-full"
-                          src="https://app.aave.com/icons/networks/arbitrum.svg"
-                        />
+                    <a
+                      onClick={(e) => {
+                        e.stopPropagation()
+                      }}
+                      href={
+                        destinationTransaction
+                          ? `https://testnet.layerzeroscan.com/tx/${destinationTransaction?.hash}`
+                          : undefined
+                      }
+                      target="_blank"
+                      className="w-full rounded p-2 bg-stone-600 flex items-center text-stone-400 hover:underline"
+                    >
+                      <div className="font-mono font-bold overflow-ellipsis truncate basis-0 grow">
+                        {destinationTransaction ? (
+                          <>TX {destinationTransaction.hash}</>
+                        ) : (
+                          <>sending...</>
+                        )}
                       </div>
-                    </div>
+                      {destinationTransaction && (
+                        <ArrowTopRightOnSquareIcon className="basis-6 w-6 h-6 inline-block" />
+                      )}
+                    </a>
                   </div>
 
                   <div className="space-y-1">
