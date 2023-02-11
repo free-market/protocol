@@ -581,7 +581,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const feePreview = (
     <motion.div
-      key='fee-preview'
+      key="fee-preview"
       initial={{ opacity: 0 }}
       animate={
         vm.flowStep === 'submitted'
@@ -602,7 +602,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
   const cta = (
     <motion.div
-      key='cta'
+      key="cta"
       initial={{ opacity: 0 }}
       animate={
         vm.flowStep === 'submitted'
@@ -648,7 +648,11 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     </motion.div>
   )
 
-  if (vm.flowStep === 'started' || vm.flowStep === 'complete' || (open && !loading)) {
+  if (
+    vm.flowStep === 'started' ||
+    vm.flowStep === 'complete' ||
+    (open && !loading)
+  ) {
     return (
       <div className="min-h-[556px] h-full relative px-2">
         <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
@@ -702,8 +706,12 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                 <div className="mt-32">
                   <CrossChainJobCard
                     spinnerLocation="status"
-                    status={vm.flowStep === 'complete' ? 'completed' : 'sending'}
+                    status={
+                      vm.flowStep === 'complete' ? 'completed' : 'sending'
+                    }
                     cardTitle="Aave Arbitrum Market V3"
+                    sourceTransaction={vm.sourceTransaction}
+                    destinationTransaction={vm.destinationTransaction}
                   />
                 </div>
               </motion.div>
@@ -918,7 +926,10 @@ function Icon() {
         y="1074"
         maskUnits="userSpaceOnUse"
       >
-        <path fill="rgb(245 245 244)" d="M2028.15 1074H0v512h2028.15v-512z"></path>
+        <path
+          fill="rgb(245 245 244)"
+          d="M2028.15 1074H0v512h2028.15v-512z"
+        ></path>
       </mask>
       <g>
         <path
@@ -960,7 +971,10 @@ function Icon() {
           y="1074"
           maskUnits="userSpaceOnUse"
         >
-          <path fill="rgb(245 245 244)" d="M512.003 1074H0v512h512.003v-512z"></path>
+          <path
+            fill="rgb(245 245 244)"
+            d="M512.003 1074H0v512h512.003v-512z"
+          ></path>
         </mask>
         <g style={{ transform: 'translate(116px,14px)' }}>
           <mask
@@ -972,7 +986,10 @@ function Icon() {
             y="1074"
             maskUnits="userSpaceOnUse"
           >
-            <path fill="rgb(245 245 244)" d="M512.003 1074H0v512h512.003v-512z"></path>
+            <path
+              fill="rgb(245 245 244)"
+              d="M512.003 1074H0v512h512.003v-512z"
+            ></path>
           </mask>
           <g fill="rgb(168 162 158)">
             <path d="M306.775 1094.37l13.626 31.91A264.228 264.228 0 00459.72 1265.6l31.916 13.63c8.352 3.56 15.133 8.67 20.367 14.75-15.893-113.96-106.022-204.1-219.98-219.98 6.071 5.22 11.191 12.01 14.752 20.37zM20.368 1279.23l31.915-13.63a264.292 264.292 0 00139.332-139.32l13.612-31.91c3.574-8.36 8.683-15.15 14.753-20.37C106.023 1089.88 15.894 1180.02 0 1293.98c5.234-6.08 12.015-11.19 20.368-14.75zM491.636 1380.76l-31.916 13.63c-62.664 26.74-112.576 76.67-139.319 139.33l-13.626 31.9c-3.561 8.36-8.681 15.15-14.752 20.38 113.958-15.89 204.087-106.03 219.98-219.99-5.234 6.08-12.015 11.19-20.367 14.75zM205.227 1565.62l-13.612-31.9c-26.757-62.66-76.669-112.59-139.332-139.33l-31.915-13.63c-8.353-3.56-15.134-8.67-20.368-14.75 15.894 113.96 106.023 204.1 219.98 219.99-6.07-5.23-11.179-12.02-14.753-20.38z"></path>

@@ -60,6 +60,7 @@ export const DepositFlowStateProvider = (props: {
       case 'WorkflowSubmissionFinished': {
         state.flowStep = 'submitted'
         state.formEditingMode = undefined
+        state.sourceTransaction = action.transaction
         break
       }
       case 'WorkflowSubmissionFailed': {
@@ -75,6 +76,7 @@ export const DepositFlowStateProvider = (props: {
       case 'WorkflowCompleted': {
         state.flowStep = 'complete'
         state.formEditingMode = undefined
+        state.destinationTransaction = action.transaction
         break
       }
       case 'SelectorShadowClicked': {

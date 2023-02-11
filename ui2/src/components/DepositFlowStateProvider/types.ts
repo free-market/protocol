@@ -49,9 +49,9 @@ export type Action =
   | { name: 'AmountChanged'; value?: string }
   | { name: 'WorkflowSubmissionStarted' }
   | { name: 'WorkflowSubmissionFailed' }
-  | { name: 'WorkflowSubmissionFinished' }
+  | { name: 'WorkflowSubmissionFinished'; transaction: { hash: string } }
   | { name: 'WorkflowStarted'; value?: string }
-  | { name: 'WorkflowCompleted' }
+  | { name: 'WorkflowCompleted'; transaction: { hash: string } }
 
 export type WalletState =
   | 'ready'
@@ -82,6 +82,8 @@ export type State = {
   selectedChain: { address: string | number }
   selectedToken: { address: string | number }
   selectorRecentlyChanged: boolean
+  sourceTransaction?: { hash: string }
+  destinationTransaction?: { hash: string }
 }
 
 export type ViewModel = State & { dispatch: (action: Action) => void }
