@@ -402,7 +402,7 @@ export const ControlledDepositFlow = (
             dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
             srcPoolId: StargatePoolIds.USDC.toString(),
             dstPoolId: StargatePoolIds.USDC.toString(),
-            dstChainId: StargateChainIds.Optimism.toString(),
+            dstChainId: StargateChainIds.Arbitrum.toString(),
             dstGasForCall: dstGasEstimate.toString(), // gas units (not wei or gwei)
             dstNativeAmount: '0',
             minAmountOut: minAmountOut,
