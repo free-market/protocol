@@ -252,17 +252,11 @@ export const ControlledDepositFlow = (
     }
 
     const srcRunner = WorkflowRunner__factory.connect(
-      '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
+      '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       srcSigner,
     )
-    /*
-     * const dstFrontDoor = FrontDoor__factory.connect(
-     *   '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
-     *   dstProvider,
-     * )
-     */
     const dstRunner = WorkflowRunner__factory.connect(
-      '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+      '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       dstProvider,
     )
     const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
