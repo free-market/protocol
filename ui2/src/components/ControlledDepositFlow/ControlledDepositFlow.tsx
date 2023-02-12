@@ -112,6 +112,7 @@ export const ControlledDepositFlow = (
       '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       dstProvider,
     )
+    console.log('got providers')
     const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
       ActionIds.aaveSupply,
     )
@@ -136,6 +137,7 @@ export const ControlledDepositFlow = (
 
     // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
     // TODO move into helper
+    console.log('got asdfasdfasdf')
     const dstStargateActionAddr = await dstRunner.getActionAddress(
       ActionIds.stargateBridge,
     )
@@ -259,6 +261,7 @@ export const ControlledDepositFlow = (
       '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       dstProvider,
     )
+    console.log('foo')
     const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
       ActionIds.aaveSupply,
     )
@@ -277,12 +280,12 @@ export const ControlledDepositFlow = (
     const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
 
     const srcUsdc = ERC20__factory.connect(
-      '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+      '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
       srcSigner,
     )
 
     const dstUsdc = ERC20__factory.connect(
-      '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+      '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
       dstProvider,
     )
 
@@ -293,6 +296,7 @@ export const ControlledDepositFlow = (
 
     // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
     // TODO move into helper
+    console.log('bar')
     const dstStargateActionAddr = await dstRunner.getActionAddress(
       ActionIds.stargateBridge,
     )
