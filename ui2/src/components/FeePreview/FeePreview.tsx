@@ -93,7 +93,9 @@ export const FeePreview = (props: {
                             </div>
                           </span>
                         )}
-                        <span>~{vm.fee.details.protocol.usd}</span>
+                        <span>
+                          ~{Number(vm.fee.details.protocol.usd).toFixed(2)}
+                        </span>
                         <span>{assetSymbol}</span>
                         <svg
                           className="w-4 h-4 fill-stone-500"
@@ -176,19 +178,26 @@ export const FeePreview = (props: {
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-400 font-light">
                               <div>Gas on destination</div>
                               <div>
-                                {vm.fee.details.destination.gasPrice} {destinationGasSymbol}
+                                {vm.fee.details.destination.gasPrice}{' '}
+                                {destinationGasSymbol}
                               </div>
                             </div>
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-500 font-light">
                               <div>Fee</div>
                               <div className="flex items-center gap-1">
-                                ${Number(vm.amount) - Number(vm.fee.details.protocol.usd)}
+                                $
+                                {Math.ceil(
+                                  (Number(vm.amount) -
+                                    Number(vm.fee.details.protocol.usd)) *
+                                    100,
+                                ) / 100}
                               </div>
                             </div>
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-500 font-light">
                               <div>Gas cost</div>
                               <div>
-                                {vm.fee.details.source.gasPrice} {sourceGasSymbol}
+                                {vm.fee.details.source.gasPrice}{' '}
+                                {sourceGasSymbol}
                               </div>
                             </div>
                           </div>

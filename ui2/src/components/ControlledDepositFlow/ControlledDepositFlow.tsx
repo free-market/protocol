@@ -586,18 +586,15 @@ export const ControlledDepositFlow = (
     const { value } = event.target
     vm.dispatch({ name: 'AmountChanged', value })
 
-    // TODO: introduce promise queue and throttle this function call
+    // TODO(FMP-418): introduce promise queue and throttle this function call
     if (value.trim() === '') {
       vm.dispatch({ name: 'UnavailableFeePredicted' })
     } else {
       vm.dispatch({ name: 'FeePredictionStarted', amount: value })
 
-      const workflowDetails = await predictFees(Number(value))
+      const workflowDetails = await predictFees(Number(value) * 1_000_000)
 
-      const {
-        srcGasCost,
-        dstGasCost,
-      } = workflowDetails
+      const { srcGasCost, dstGasCost } = workflowDetails
 
       vm.dispatch({
         name: 'FeePredicted',
@@ -611,11 +608,11 @@ export const ControlledDepositFlow = (
             gasPrice: srcGasCost.toString(),
           },
           protocol: {
-            usd: workflowDetails.minAmountOut,
+            usd: ethers.utils.formatUnits(workflowDetails.minAmountOut, 6),
           },
           lowestPossibleAmount: '',
         },
-        workflowDetails
+        workflowDetails,
       })
     }
   }
