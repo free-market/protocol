@@ -77,7 +77,7 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
             ],
             outputAssets: [WETH_ASSET],
             data: '0x',
-            nextStepIndex: 0,
+            nextStepIndex: -1,
           },
         ],
         trustSettings: {
