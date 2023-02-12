@@ -520,7 +520,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                       },
                     },
                     {
-                      address: '0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43',
+                      address: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
                       symbol: 'USDC',
                       title: 'USD Coin',
                       icon: {
