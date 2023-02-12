@@ -38,6 +38,12 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+  },
+  optimism: {
+    stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
   },
   avalancheGoerli: {
     // stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
@@ -47,10 +53,6 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     sgUSDC: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
     sgUSDT: '0x533046F316590C19d99c74eE661c6d541b64471C',
     aaveUSDC: '0x72A9c57cD5E2Ff20450e409cF6A542f1E6c710fc',
-  },
-  optimism: {
-    stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
-    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   },
 }
 
