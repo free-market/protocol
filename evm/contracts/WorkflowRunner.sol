@@ -160,25 +160,25 @@ contract WorkflowRunner is
       WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
       address actionAddress = resolveActionAddress(currentStep);
       AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
-      // // invoke the step
-      // emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.actionId, actionAddress, inputAssetAmounts);
-      // WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
-      // emit WorkflowStepResultEvent(stepResult);
-      // // debit input assets
-      // for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-      //   assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
-      // }
-      // // credit output assets
-      // for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-      //   assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
-      // }
-      // if (currentStep.nextStepIndex == -1) {
-      //   break;
-      // }
-      // currentStepIndex = uint16(currentStep.nextStepIndex);
-      break;
+
+      // invoke the step
+      emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.actionId, actionAddress, inputAssetAmounts);
+      WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
+      emit WorkflowStepResultEvent(stepResult);
+      // debit input assets
+      for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
+        assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
+      }
+      // credit output assets
+      for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+        assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
+      }
+      if (currentStep.nextStepIndex == -1) {
+        break;
+      }
+      currentStepIndex = uint16(currentStep.nextStepIndex);
     }
-    // refundUser(userAddress, assetBalances);
+    refundUser(userAddress, assetBalances);
   }
 
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
@@ -238,6 +238,7 @@ contract WorkflowRunner is
       uint256 currentWorkflowAssetBalance = assetBalances.getAssetBalance(stepInputAsset.asset);
       if (stepInputAsset.amountIsPercent) {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
+        // rv[i].amount = 1;
       } else {
         require(currentWorkflowAssetBalance <= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
         rv[i].amount = stepInputAsset.amount;

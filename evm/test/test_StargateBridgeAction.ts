@@ -109,7 +109,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     expect(invos[0].payload).to.equal(sgbParams.dstWorkflow)
   })
 
-  it.only('can be invoked by stargate', async () => {
+  it('can be invoked by stargate', async () => {
     const mockWorkflowRunner = await MockWorkflowRunner.new()
     const dummyStargateRouterAddr = accounts[0] // use the default account as the router so the require won't fail
     const dummyStargateRemoteBridgeAddr = toChecksumAddress(2)

@@ -239,7 +239,7 @@ test('does a stargate swap in a workflow', async (t) => {
         inputAssets: [
           {
             asset: srcUsdcAsset,
-            amount: 100_0000,
+            amount: '1000000',
             amountIsPercent: true,
           },
           {
@@ -317,7 +317,8 @@ test('does a stargate swap in a workflow', async (t) => {
 
   console.log('submitting source chain workflow...')
   const txResponse = await srcRunner.executeWorkflow(srcWorkflow, { from: srcUserAddress, value: stargateRequiredNative })
-  console.log(JSON.stringify(txResponse, null, 4))
+  // console.log(JSON.stringify(txResponse, null, 4))
+  console.log(`tx=${txResponse.tx}`)
   console.log('source chain workflow completed, waiting for continuation workflow...')
   const startMillis = Date.now()
   const dstStargateActionBalanceAfter = await dstUsdc.balanceOf(dstStargateActionAddr)
@@ -349,7 +350,7 @@ test('does a stargate swap in a workflow', async (t) => {
   // console.log('stargate invoked', sgResult)
 
   const dstProviderUrl = process.env['ARBITRUM_GOERLI_WS_URL']!
-  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 5)
+  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 30)
   // await waitForNonce(
   //   dstProviderUrl,
   //   dstFrontDoor.address,
