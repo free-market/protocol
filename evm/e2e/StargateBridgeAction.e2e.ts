@@ -51,8 +51,8 @@ function formatStep(step: any) {
 
 const sleep = promisify(setTimeout)
 
-const srcChain = 'ethereumGoerli'
-const dstChain = 'arbitrumGoerli'
+const srcChain = 'optimism'
+const dstChain = 'arbitrum'
 
 const srcProvider = truffleConfig.networks[srcChain].provider() as EIP1193Provider
 const dstProvider = truffleConfig.networks[dstChain].provider() as EIP1193Provider
@@ -119,8 +119,14 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const srcContractAddresses = getNetworkConfig(srcNetworkId)
   const dstContractAddresses = getNetworkConfig(dstNetworkId)
-  const srcUsdc = (await IERC20Src.at(srcContractAddresses.sgUSDC)) as IERC20Instance
-  const dstUsdc = (await IERC20Dst.at(dstContractAddresses.sgUSDC)) as IERC20Instance
+
+  const optimismUsdc = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
+  const arbitrumUsdc = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
+
+  const srcUsdc = (await IERC20Src.at(optimismUsdc)) as IERC20Instance
+  const dstUsdc = (await IERC20Dst.at(arbitrumUsdc)) as IERC20Instance
+  // const srcUsdc = (await IERC20Src.at(srcContractAddresses.sgUSDC)) as IERC20Instance
+  // const dstUsdc = (await IERC20Dst.at(dstContractAddresses.sgUSDC)) as IERC20Instance
 
   const srcUsdcAsset = {
     assetType: AssetType.ERC20,
@@ -144,7 +150,7 @@ test('does a stargate swap in a workflow', async (t) => {
           {
             asset: {
               assetType: AssetType.ERC20,
-              assetAddress: dstContractAddresses.sgUSDC,
+              assetAddress: optimismUsdc, //dstContractAddresses.sgUSDC,
             },
             amount: '1000000',
             amountIsPercent: true,
@@ -173,7 +179,7 @@ test('does a stargate swap in a workflow', async (t) => {
     provider: srcProvider,
     frontDoorAddress: srcFrontDoor.address,
     inputAmount: inputAmount,
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: StargateChainIds.Arbitrum,
     srcPoolId: StargatePoolIds.USDC,
     dstPoolId: StargatePoolIds.USDC,
     dstUserAddress: dstUserAddress,
@@ -194,7 +200,7 @@ test('does a stargate swap in a workflow', async (t) => {
     dstAddress: dstUserAddress,
     dstGasForCall: dstGasEstimate.toString(),
     payload: dstEncodedWorkflow,
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: StargateChainIds.Arbitrum,
   })
 
   const srcUsdcBalance = await srcUsdc.balanceOf(srcUserAddress)
