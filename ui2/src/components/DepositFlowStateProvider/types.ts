@@ -1,3 +1,6 @@
+import BN from 'bn.js'
+import * as ethers from 'ethers'
+import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
 export type Action =
   | { name: 'DepositButtonClicked' }
   | { name: 'FormLoaded' }
@@ -69,6 +72,18 @@ export type Action =
         }
         lowestPossibleAmount: string
       }
+      workflowDetails?: {
+        dstWorkflow: EvmWorkflow
+        dstEncodedWorkflow: string
+        nonce: string
+        dstGasEstimate: number
+        inputAmount: BN
+        minAmountOut: string
+        srcGasCost: ethers.ethers.BigNumber
+        dstGasCost: ethers.ethers.BigNumber
+        stargateRequiredNative: string
+        srcUsdcBalance: ethers.ethers.BigNumber
+      }
     }
   | { name: 'UnavailableFeePredicted' }
 
@@ -123,6 +138,18 @@ export type State = {
             usd: string
           }
           lowestPossibleAmount: string
+        }
+        workflowDetails?: {
+          dstWorkflow: EvmWorkflow
+          dstEncodedWorkflow: string
+          nonce: string
+          dstGasEstimate: number
+          inputAmount: BN
+          minAmountOut: string
+          srcGasCost: ethers.ethers.BigNumber
+          dstGasCost: ethers.ethers.BigNumber
+          stargateRequiredNative: string
+          srcUsdcBalance: ethers.ethers.BigNumber
         }
       }
 }

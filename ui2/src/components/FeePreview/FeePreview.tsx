@@ -13,18 +13,14 @@ export const FeePreview = (props: {
   sourceGasAmount?: string
   sourceGasSymbol?: string
 }): JSX.Element => {
+  const vm = useDepositFlowState()
+
   const {
     showImage = false,
-    assetAmount = '0.00',
     assetSymbol = 'USDC',
-    destinationGasAmount = '0.00235148',
     destinationGasSymbol = 'ETH',
-    feeAmount = '3.00',
-    sourceGasAmount = '1.435278',
-    sourceGasSymbol = 'AVAX',
+    sourceGasSymbol = 'ETH',
   } = props
-
-  const vm = useDepositFlowState()
 
   const [clicked, setClicked] = useState(false)
 
@@ -97,7 +93,7 @@ export const FeePreview = (props: {
                             </div>
                           </span>
                         )}
-                        <span>{assetAmount}</span>
+                        <span>~{vm.fee.details.protocol.usd}</span>
                         <span>{assetSymbol}</span>
                         <svg
                           className="w-4 h-4 fill-stone-500"
@@ -175,32 +171,24 @@ export const FeePreview = (props: {
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-400 font-light">
                               <div>Slippage</div>
-                              <div>0.5%</div>
+                              <div>{vm.fee.details.slippage}</div>
                             </div>
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-400 font-light">
                               <div>Gas on destination</div>
                               <div>
-                                {destinationGasAmount} {destinationGasSymbol}
+                                {vm.fee.details.destination.gasPrice} {destinationGasSymbol}
                               </div>
                             </div>
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-500 font-light">
                               <div>Fee</div>
                               <div className="flex items-center gap-1">
-                                ${feeAmount}{' '}
-                                <svg
-                                  className="w-4 h-4 fill-stone-400"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                  aria-hidden="true"
-                                >
-                                  <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
-                                </svg>
+                                ${Number(vm.amount) - Number(vm.fee.details.protocol.usd)}
                               </div>
                             </div>
                             <div className="flex items-center justify-between text-xs px-4 border border-transparent text-stone-500 font-light">
                               <div>Gas cost</div>
                               <div>
-                                {sourceGasAmount} {sourceGasSymbol}
+                                {vm.fee.details.source.gasPrice} {sourceGasSymbol}
                               </div>
                             </div>
                           </div>

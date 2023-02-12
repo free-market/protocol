@@ -42,6 +42,19 @@ import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
 
+type FeePrediction = {
+  dstWorkflow: EvmWorkflow
+  dstEncodedWorkflow: string
+  nonce: string
+  dstGasEstimate: number
+  inputAmount: BN
+  minAmountOut: string
+  srcGasCost: ethers.ethers.BigNumber
+  dstGasCost: ethers.ethers.BigNumber
+  stargateRequiredNative: string
+  srcUsdcBalance: ethers.ethers.BigNumber
+}
+
 interface WorkflowCostItem {
   description: string
   amount: string
@@ -76,7 +89,7 @@ export const ControlledDepositFlow = (
     chainId: srcNetworkId,
   })
 
-  const predictFees = async () => {
+  const predictFees = async (amount = 1_000_000): Promise<FeePrediction> => {
     if (typeof address !== 'string') {
       throw new Error('address has not been retrieved')
     }
@@ -176,7 +189,7 @@ export const ControlledDepositFlow = (
     //   { from: dstStargateRouterAddr } // claim we are sg router as required by our sgReceive implementation
     // )
     const dstGasEstimate = 1_000_000
-    const inputAmount = new BN(1_000_000) // $1.00
+    const inputAmount = new BN(amount) // $1.00
 
     // TODO this needs to be on chain because 'inputAmount' is not known in general
     const minAmountOut = await getStargateMinAmountOut({
@@ -458,13 +471,12 @@ export const ControlledDepositFlow = (
       value: stargateRequiredNative,
     })
     console.log(JSON.stringify(txResponse, null, 4))
-    // TODO: rewrite web3 calls to re-use web3 from ethers
 
-    // TODO (somewhere else): watch contract on destination for events
     return {
       transaction: {
         hash: txResponse.hash,
       },
+
       wait: async () =>
         waitForNonceWithProvider(
           dstProvider,
@@ -580,23 +592,12 @@ export const ControlledDepositFlow = (
     } else {
       vm.dispatch({ name: 'FeePredictionStarted', amount: value })
 
+      const workflowDetails = await predictFees(Number(value))
+
       const {
-        /**
-         * store these other parameters somewhere,
-         * and use them in the submitWorkflow call
-         * instead of re-computing them
-         *
-         * dstEncodedWorkflow,
-         * nonce,
-         * dstGasEstimate,
-         * inputAmount,
-         * minAmountOut,
-         * stargateRequiredNative,
-         * srcUsdcBalance,
-         */
         srcGasCost,
         dstGasCost,
-      } = await predictFees()
+      } = workflowDetails
 
       vm.dispatch({
         name: 'FeePredicted',
@@ -610,10 +611,11 @@ export const ControlledDepositFlow = (
             gasPrice: srcGasCost.toString(),
           },
           protocol: {
-            usd: '0.00',
+            usd: workflowDetails.minAmountOut,
           },
           lowestPossibleAmount: '',
         },
+        workflowDetails
       })
     }
   }

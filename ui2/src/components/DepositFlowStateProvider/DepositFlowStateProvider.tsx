@@ -176,6 +176,7 @@ export const DepositFlowStateProvider = (props: {
           status: 'predicted',
           amount: action.amount,
           details: action.fee,
+          workflowDetails: action.workflowDetails
         }
         break
       }
