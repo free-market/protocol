@@ -17,7 +17,7 @@ import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
 import { hexByteLength, concatHex } from '../e2e/hexStringUtils'
 import { ActionIds } from '../utils/actionIds'
 import { encodeStargateBridgeArgs, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/Workflow'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 
 contract('StargateBridgeAction', function (accounts: string[]) {
@@ -61,7 +61,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
   const srcChain = 'ethereumGoerli'
   const dstChain = 'arbitrumGoerli'
 
-  it.only('calls mock stargate', async () => {
+  it('calls mock stargate', async () => {
     // const srcProvider = truffleConfig.networks[srcChain].provider() as HDWalletProvider
     const [mockToken, mockStargateRouter] = await Promise.all([MockToken.new(), MockStargateRouter.new()])
     const dummyFrontDoorAddr = toChecksumAddress(1)
@@ -109,7 +109,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     expect(invos[0].payload).to.equal(sgbParams.dstWorkflow)
   })
 
-  it('can be invoked by stargate', async () => {
+  it.only('can be invoked by stargate', async () => {
     const mockWorkflowRunner = await MockWorkflowRunner.new()
     const dummyStargateRouterAddr = accounts[0] // use the default account as the router so the require won't fail
     const dummyStargateRemoteBridgeAddr = toChecksumAddress(2)
@@ -134,10 +134,6 @@ contract('StargateBridgeAction', function (accounts: string[]) {
           nextStepIndex: -1,
         },
       ],
-      trustSettings: {
-        allowUnknown: false,
-        allowBlacklisted: false,
-      },
     }
     const { encodedWorkflow, nonce } = getBridgePayload(accounts[0], dummyWorkflow)
 

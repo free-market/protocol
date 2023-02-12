@@ -63,8 +63,8 @@ module.exports = {
     },
     arbitrumGoerli: {
       provider: () => {
-        // return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, ' https://goerli-rollup.arbitrum.io/rpc')
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
+        // return new HDWalletProvider(process.env.WALLET_MNEMONIC, 'https://goerli-rollup.arbitrum.io/rpc')
       },
       network_id: '421613',
       disableConfirmationListener: true,

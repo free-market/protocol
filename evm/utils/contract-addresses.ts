@@ -18,6 +18,7 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     wormholeCoreBridge: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
     wormholeTokenBridge: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
     stargateRouter: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+    aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
   },
   ethereumGoerli: {
     sgUSDC: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
@@ -36,6 +37,7 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   },
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   },
   avalancheGoerli: {
     // stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
@@ -45,6 +47,10 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     sgUSDC: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
     sgUSDT: '0x533046F316590C19d99c74eE661c6d541b64471C',
     aaveUSDC: '0x72A9c57cD5E2Ff20450e409cF6A542f1E6c710fc',
+  },
+  optimism: {
+    stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   },
 }
 

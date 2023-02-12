@@ -1,5 +1,5 @@
 import { AssetType } from './AssetType'
-import { EvmWorkflow } from './Workflow'
+import { EvmWorkflow } from './EvmWorkflow'
 import { ethers } from 'ethers'
 import { randomHex } from 'web3-utils'
 const abiCoder = ethers.utils.defaultAbiCoder
@@ -31,17 +31,9 @@ const WorkflowStepSchema = `
   )
 `
 
-const TrustSettingsSchema = `
-  tuple(
-    bool allowUnknown,
-    bool allowBlacklisted
-  )
-`
-
 const WorkflowSchema = `
   tuple(
-    ${WorkflowStepSchema}[] steps,
-    ${TrustSettingsSchema} trustSettings
+    ${WorkflowStepSchema}[] steps
   )
 `
 

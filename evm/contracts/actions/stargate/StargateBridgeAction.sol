@@ -38,7 +38,6 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
   address public immutable frontDoorAddress;
   address public immutable stargateRouterAddress;
 
-  event Wtf(uint256 x);
   event SgReceiveCalled(address tokenAddress, uint256 amount, BridgePayload bridgePayload);
 
   event StargateBridgeParamsEvent(
@@ -74,7 +73,6 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
     Asset[] calldata,
     bytes calldata data
   ) public payable returns (WorkflowStepResult memory) {
-    emit Wtf(66);
     Locals memory locals;
     require(inputAssetAmounts.length == 2, 'there must be 2 input assets');
     if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
@@ -155,11 +153,8 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
     bytes memory payload
   ) external {
     require(msg.sender == stargateRouterAddress, 'only Stargate is permitted to call sgReceive');
-    emit Wtf(99);
     BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
-    // TODO eraseme we don't need this event after everything is debugged
     emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
-
     // TODO maybe we do delegateProxy here instead to avoid having this xfer
     IERC20 startingToken = IERC20(tokenAddress);
     SafeERC20.safeTransfer(startingToken, frontDoorAddress, amount);

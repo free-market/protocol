@@ -16,6 +16,7 @@ import './LibStorageWriter.sol';
 import './EternalStorage.sol';
 import './IWorkflowStep.sol';
 import './LibAsset.sol';
+import './LibPercent.sol';
 
 contract WorkflowRunner is
   FreeMarketBase,
@@ -47,7 +48,6 @@ contract WorkflowRunner is
   // latestActionAddresses maps actionId to latest and greatest version of that action
   bytes32 constant latestActionAddresses = 0xc94d198e6194ea38dbd900920351d7f8e6c6d85b1d3b803fb93c54be008e11fd; // keccak256('latestActionAddresses')
 
-  event ErasemeEvent(string msg, uint256 value);
   event ActionAddressSetEvent(uint16 actionId, address actionAddress);
 
   function getActionWhitelistKey(uint16 actionId) internal pure returns (bytes32) {
@@ -126,11 +126,9 @@ contract WorkflowRunner is
 
   // event  (string msg, uint256 number);
   event WorkflowExecution(address sender, Workflow workflow);
-  event WorkflowStepExecution(uint16 stepIndex, WorkflowStep step, address actionAddress, AssetAmount[] assetAmounts);
+  event WorkflowStepExecution(uint16 stepIndex, WorkflowStep step, uint16 actionId, address actionAddress, AssetAmount[] assetAmounts);
   event WorkflowStepResultEvent(WorkflowStepResult result);
-  event RemainingAsset(Asset asset, uint256 amount);
-  // event RemainingAsset(uint8 assetType, address assetAddress, uint256 amount);
-  // event WorkflowStep()
+  event RemainingAsset(Asset asset, uint256 totalAmount, uint256 feeAmount, uint256 userAmount);
   using LibAssetBalances for LibAssetBalances.AssetBalances;
 
   function executeWorkflow(Workflow calldata workflow) external payable nonReentrant {
@@ -150,64 +148,56 @@ contract WorkflowRunner is
     LibAssetBalances.AssetBalances memory assetBalances;
     // credit ETH if sent with this call
     if (msg.value != 0) {
+      // TODO add event
       assetBalances.credit(0, uint256(msg.value));
     }
     // credit any starting assets (if this is a continutation workflow with assets sent by a bridge)
     if (startingAsset.amount > 0) {
       assetBalances.credit(startingAsset.asset, startingAsset.amount);
     }
-    bool first = true;
-
-    // emit ErasemeEvent('length', workflow.steps.length);
     while (true) {
       // prepare to invoke the step
       WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
       address actionAddress = resolveActionAddress(currentStep);
       AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
-      emit WorkflowStepExecution(currentStepIndex, currentStep, actionAddress, inputAssetAmounts);
-      WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
-      emit WorkflowStepResultEvent(stepResult);
-      // invoke the step
-      emit ErasemeEvent('next', uint256(uint16(currentStep.nextStepIndex)));
-
-      // debit input assets
-      for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-        assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
-      }
-      // if (!first) {
+      // // invoke the step
+      // emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.actionId, actionAddress, inputAssetAmounts);
+      // WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
+      // emit WorkflowStepResultEvent(stepResult);
+      // // debit input assets
+      // for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
+      //   assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
+      // }
+      // // credit output assets
+      // for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+      //   assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
+      // }
+      // if (currentStep.nextStepIndex == -1) {
       //   break;
       // }
-      // credit output assets
-      for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-        assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
-      }
-      if (currentStep.nextStepIndex == -1) {
-        emit ErasemeEvent('sentinel', uint256(uint16(currentStep.nextStepIndex)));
-        break;
-      }
-      // emit ErasemeEvent('next step index', uint256(uint16(currentStep.nextStepIndex)));
-      currentStepIndex = uint16(currentStep.nextStepIndex);
-      // break;
-      first = false;
+      // currentStepIndex = uint16(currentStep.nextStepIndex);
+      break;
     }
-    refundUser(userAddress, assetBalances);
+    // refundUser(userAddress, assetBalances);
   }
 
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
-      emit RemainingAsset(asset, ab.amount);
+      uint256 feeAmount = LibPercent.percentageOf(ab.amount, 30);
+      uint256 userAmount = ab.amount - feeAmount;
+      emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
         // TODO this needs a unit test
         require(address(this).balance == ab.amount, 'computed native balance does not match actual balance');
-        (bool sent, bytes memory data) = payable(userAddress).call{value: ab.amount}('');
+        (bool sent, bytes memory data) = payable(userAddress).call{value: userAmount}('');
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
         uint256 amount = token.balanceOf(address(this));
         require(ab.amount == amount, 'computed token balance does not match actual balance');
-        SafeERC20.safeTransfer(token, userAddress, amount);
+        SafeERC20.safeTransfer(token, userAddress, userAmount);
       } else {
         revert('unknown asset type in assetBalances');
       }
@@ -247,8 +237,7 @@ contract WorkflowRunner is
       rv[i].asset = stepInputAsset.asset;
       uint256 currentWorkflowAssetBalance = assetBalances.getAssetBalance(stepInputAsset.asset);
       if (stepInputAsset.amountIsPercent) {
-        require(0 < stepInputAsset.amount && stepInputAsset.amount <= 100_000, 'percent must be between 1 and 100_000');
-        rv[i].amount = (uint256(currentWorkflowAssetBalance) * stepInputAsset.amount) / 100_000;
+        rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
       } else {
         require(currentWorkflowAssetBalance <= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
         rv[i].amount = stepInputAsset.amount;
