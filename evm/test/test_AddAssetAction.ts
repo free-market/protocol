@@ -138,7 +138,7 @@ contract('AddAssetAction', function (accounts: string[]) {
             inputAssets: [], // no input assets
             outputAssets: [getWethAsset()],
             data: addAssetArgs,
-            nextStepIndex: 0,
+            nextStepIndex: -1,
           },
         ],
         trustSettings: {

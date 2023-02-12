@@ -42,6 +42,19 @@ import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
 
+type FeePrediction = {
+  dstWorkflow: EvmWorkflow
+  dstEncodedWorkflow: string
+  nonce: string
+  dstGasEstimate: number
+  inputAmount: BN
+  minAmountOut: string
+  srcGasCost: ethers.ethers.BigNumber
+  dstGasCost: ethers.ethers.BigNumber
+  stargateRequiredNative: string
+  srcUsdcBalance: ethers.ethers.BigNumber
+}
+
 interface WorkflowCostItem {
   description: string
   amount: string
@@ -76,10 +89,7 @@ export const ControlledDepositFlow = (
     chainId: srcNetworkId,
   })
 
-  const submitWorkflow = async (): Promise<{
-    transaction: { hash: string }
-    wait: () => Promise<{ transaction: { hash: string } }>
-  }> => {
+  const predictFees = async (amount = 1_000_000): Promise<FeePrediction> => {
     if (typeof address !== 'string') {
       throw new Error('address has not been retrieved')
     }
@@ -92,6 +102,150 @@ export const ControlledDepositFlow = (
       '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
       srcProvider,
     )
+    /*
+     * const dstFrontDoor = FrontDoor__factory.connect(
+     *   '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+     *   dstProvider,
+     * )
+     */
+    const dstRunner = WorkflowRunner__factory.connect(
+      '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+      dstProvider,
+    )
+    const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
+      ActionIds.aaveSupply,
+    )
+    const dstAaveSupplyAction = AaveSupplyAction__factory.connect(
+      dstAaveSupplyActionAddr,
+      dstProvider,
+    )
+    const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
+    const dstMockAToken = ERC20__factory.connect(dstMockATokenAddr, dstProvider)
+    const aTokenBalanceBefore = await dstMockAToken.balanceOf(address)
+    console.log('balance', aTokenBalanceBefore)
+
+    // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
+
+    const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
+    const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
+
+    const srcUsdc = ERC20__factory.connect(
+      srcContractAddresses.sgUSDC,
+      srcSigner,
+    )
+
+    // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
+    // TODO move into helper
+    const dstStargateActionAddr = await dstRunner.getActionAddress(
+      ActionIds.stargateBridge,
+    )
+    console.log('dstStargateActionAddr', dstStargateActionAddr)
+    const dstStargateAction = StargateBridgeAction__factory.connect(
+      dstStargateActionAddr,
+      dstProvider,
+    )
+    const dstStargateRouterAddr =
+      await dstStargateAction.stargateRouterAddress()
+    console.log('dstStargateRouterAddr', dstStargateRouterAddr)
+
+    const dstWorkflow: EvmWorkflow = {
+      steps: [
+        {
+          //
+          // -- Aave Supply
+          actionId: ActionIds.aaveSupply,
+          actionAddress: ADDRESS_ZERO,
+          inputAssets: [
+            {
+              asset: {
+                assetType: AssetType.ERC20,
+                assetAddress: dstContractAddresses.sgUSDC,
+              },
+              amount: 100_000,
+              amountIsPercent: true,
+            },
+          ],
+          outputAssets: [],
+          data: encodeAaveSupplyArgs({ onBehalfOf: address }),
+          nextStepIndex: -1,
+        },
+      ],
+      trustSettings: {
+        allowUnknown: false,
+        allowBlacklisted: false,
+      },
+    }
+    const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
+      address,
+      dstWorkflow,
+    )
+    // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
+    //   1, // the remote chainId sending the tokens (value not used by us)
+    //   ADDRESS_ZERO, // the remote Bridge address (value not used by us)
+    //   2, // nonce (value not used by us)
+    //   dstContractAddresses.sgUSDC, // the token contract on the dst chain
+    //   inputAmount, // the qty of local _token contract tokens
+    //   dstEncodedWorkflow,
+    //   { from: dstStargateRouterAddr } // claim we are sg router as required by our sgReceive implementation
+    // )
+    const dstGasEstimate = 1_000_000
+    const inputAmount = new BN(amount) // $1.00
+
+    // TODO this needs to be on chain because 'inputAmount' is not known in general
+    const minAmountOut = await getStargateMinAmountOut({
+      provider: window.ethereum as unknown as EIP1193Provider,
+      frontDoorAddress: srcFrontDoor.address,
+      inputAmount: inputAmount,
+      dstChainId: StargateChainIds.GoerliArbitrum,
+      srcPoolId: StargatePoolIds.USDC,
+      dstPoolId: StargatePoolIds.USDC,
+      dstUserAddress: address,
+    })
+
+    const srcGasCost = await srcProvider.getGasPrice()
+    const dstGasCost = await dstProvider.getGasPrice()
+
+    // console.log(`srcGasCost ${srcGasCostStr}`)
+    // console.log(`dstGasCost ${dstGasCostStr}`)
+    // const dstWorkflowGasCostEstimate = new BN(dstGasEstimate).mul(dstGasCost)
+
+    const stargateRequiredNative = await getStargateRequiredNative({
+      provider: window.ethereum as unknown as EIP1193Provider,
+      frontDoorAddress: srcFrontDoor.address,
+      dstAddress: address,
+      dstGasForCall: dstGasEstimate.toString(),
+      payload: dstEncodedWorkflow,
+      dstChainId: StargateChainIds.GoerliArbitrum,
+    })
+
+    const srcUsdcBalance = await srcUsdc.balanceOf(address)
+
+    return {
+      dstWorkflow,
+      dstEncodedWorkflow,
+      nonce,
+      dstGasEstimate,
+      inputAmount,
+      minAmountOut,
+      srcGasCost,
+      dstGasCost,
+      stargateRequiredNative,
+      srcUsdcBalance,
+    }
+  }
+
+  const submitWorkflow = async (): Promise<{
+    transaction: { hash: string }
+    wait: () => Promise<{ transaction: { hash: string } }>
+  }> => {
+    if (typeof address !== 'string') {
+      throw new Error('address has not been retrieved')
+    }
+
+    if (srcSigner == null) {
+      throw new Error('signer is not connected')
+    }
+
     const srcRunner = WorkflowRunner__factory.connect(
       '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
       srcSigner,
@@ -151,38 +305,6 @@ export const ControlledDepositFlow = (
     const dstStargateRouterAddr =
       await dstStargateAction.stargateRouterAddress()
     console.log('dstStargateRouterAddr', dstStargateRouterAddr)
-
-    const dstWorkflow: EvmWorkflow = {
-      steps: [
-        {
-          //
-          // -- Aave Supply
-          actionId: ActionIds.aaveSupply,
-          actionAddress: ADDRESS_ZERO,
-          inputAssets: [
-            {
-              asset: {
-                assetType: AssetType.ERC20,
-                assetAddress: dstContractAddresses.sgUSDC,
-              },
-              amount: 100_000,
-              amountIsPercent: true,
-            },
-          ],
-          outputAssets: [],
-          data: encodeAaveSupplyArgs({ onBehalfOf: address }),
-          nextStepIndex: -1,
-        },
-      ],
-      trustSettings: {
-        allowUnknown: false,
-        allowBlacklisted: false,
-      },
-    }
-    const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
-      address,
-      dstWorkflow,
-    )
     // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
     //   1, // the remote chainId sending the tokens (value not used by us)
     //   ADDRESS_ZERO, // the remote Bridge address (value not used by us)
@@ -192,37 +314,23 @@ export const ControlledDepositFlow = (
     //   dstEncodedWorkflow,
     //   { from: dstStargateRouterAddr } // claim we are sg router as required by our sgReceive implementation
     // )
-    const dstGasEstimate = 1_000_000
-    const inputAmount = new BN(1_000_000) // $1.00
-
-    // TODO this needs to be on chain because 'inputAmount' is not known in general
-    const minAmountOut = await getStargateMinAmountOut({
-      provider: window.ethereum as unknown as EIP1193Provider,
-      frontDoorAddress: srcFrontDoor.address,
-      inputAmount: inputAmount,
-      dstChainId: StargateChainIds.GoerliArbitrum,
-      srcPoolId: StargatePoolIds.USDC,
-      dstPoolId: StargatePoolIds.USDC,
-      dstUserAddress: address,
-    })
-
-    const srcGasCost = await srcProvider.getGasPrice()
-    const dstGasCost = await dstProvider.getGasPrice()
 
     // console.log(`srcGasCost ${srcGasCostStr}`)
     // console.log(`dstGasCost ${dstGasCostStr}`)
     // const dstWorkflowGasCostEstimate = new BN(dstGasEstimate).mul(dstGasCost)
 
-    const stargateRequiredNative = await getStargateRequiredNative({
-      provider: window.ethereum as unknown as EIP1193Provider,
-      frontDoorAddress: srcFrontDoor.address,
-      dstAddress: address,
-      dstGasForCall: dstGasEstimate.toString(),
-      payload: dstEncodedWorkflow,
-      dstChainId: StargateChainIds.GoerliArbitrum,
-    })
+    const {
+      dstEncodedWorkflow,
+      nonce,
+      dstGasEstimate,
+      inputAmount,
+      minAmountOut,
+      srcGasCost,
+      dstGasCost,
+      stargateRequiredNative,
+      srcUsdcBalance,
+    } = await predictFees()
 
-    const srcUsdcBalance = await srcUsdc.balanceOf(address)
     const dstUsdcBalance = await dstUsdc.balanceOf(address)
     console.log(
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
@@ -363,13 +471,12 @@ export const ControlledDepositFlow = (
       value: stargateRequiredNative,
     })
     console.log(JSON.stringify(txResponse, null, 4))
-    // TODO: rewrite web3 calls to re-use web3 from ethers
 
-    // TODO (somewhere else): watch contract on destination for events
     return {
       transaction: {
         hash: txResponse.hash,
       },
+
       wait: async () =>
         waitForNonceWithProvider(
           dstProvider,
@@ -473,10 +580,51 @@ export const ControlledDepositFlow = (
       : 'network-mismatch'
     : 'unconnected'
 
+  const handleAmountChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { value } = event.target
+    vm.dispatch({ name: 'AmountChanged', value })
+
+    // TODO: introduce promise queue and throttle this function call
+    if (value.trim() === '') {
+      vm.dispatch({ name: 'UnavailableFeePredicted' })
+    } else {
+      vm.dispatch({ name: 'FeePredictionStarted', amount: value })
+
+      const workflowDetails = await predictFees(Number(value))
+
+      const {
+        srcGasCost,
+        dstGasCost,
+      } = workflowDetails
+
+      vm.dispatch({
+        name: 'FeePredicted',
+        amount: value,
+        fee: {
+          slippage: '0.5%',
+          destination: {
+            gasPrice: dstGasCost.toString(),
+          },
+          source: {
+            gasPrice: srcGasCost.toString(),
+          },
+          protocol: {
+            usd: workflowDetails.minAmountOut,
+          },
+          lowestPossibleAmount: '',
+        },
+        workflowDetails
+      })
+    }
+  }
+
   return (
     <>
       <DepositFlow
         {...rest}
+        onAmountChange={handleAmountChange}
         balanceState={balanceState}
         balance={balance}
         walletState={walletState}

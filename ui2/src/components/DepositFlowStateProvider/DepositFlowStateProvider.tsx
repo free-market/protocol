@@ -13,6 +13,7 @@ export const initialState: State = {
   selectedChain: { address: 1 },
   selectedToken: { address: '0x0' },
   selectorRecentlyChanged: false,
+  fee: { status: 'unavailable' },
 }
 
 export const DepositFlowStateContext = createContext<ViewModel>({
@@ -162,6 +163,26 @@ export const DepositFlowStateProvider = (props: {
 
       case 'AmountChanged': {
         state.amount = action.value
+        break
+      }
+
+      case 'FeePredictionStarted': {
+        state.fee = { status: 'loading' }
+        break
+      }
+
+      case 'FeePredicted': {
+        state.fee = {
+          status: 'predicted',
+          amount: action.amount,
+          details: action.fee,
+          workflowDetails: action.workflowDetails
+        }
+        break
+      }
+
+      case 'UnavailableFeePredicted': {
+        state.fee = { status: 'unavailable' }
         break
       }
 

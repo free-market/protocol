@@ -47,7 +47,7 @@ contract('AaveSupplyAction', function (accounts: string[]) {
     await validateAction(ActionIds.aaveSupply, deployedAave.address)
   })
 
-  it.only('invokes Pool.supply', async () => {
+  it('invokes Pool.supply', async () => {
     // start with the input asset already in custody of the contract
     await mockInputAsset.mint(aaveSupplyAction.address, inputAmount)
     const aTokenBalanceBefore = await mockAToken.balanceOf(userAddress)

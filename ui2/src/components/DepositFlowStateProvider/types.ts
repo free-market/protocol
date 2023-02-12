@@ -1,3 +1,6 @@
+import BN from 'bn.js'
+import * as ethers from 'ethers'
+import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
 export type Action =
   | { name: 'DepositButtonClicked' }
   | { name: 'FormLoaded' }
@@ -52,6 +55,37 @@ export type Action =
   | { name: 'WorkflowSubmissionFinished'; transaction: { hash: string } }
   | { name: 'WorkflowStarted'; value?: string }
   | { name: 'WorkflowCompleted'; transaction: { hash: string } }
+  | { name: 'FeePredictionStarted'; amount: string }
+  | {
+      name: 'FeePredicted'
+      amount: string
+      fee: {
+        slippage: string
+        destination: {
+          gasPrice: string
+        }
+        source: {
+          gasPrice: string
+        }
+        protocol: {
+          usd: string
+        }
+        lowestPossibleAmount: string
+      }
+      workflowDetails?: {
+        dstWorkflow: EvmWorkflow
+        dstEncodedWorkflow: string
+        nonce: string
+        dstGasEstimate: number
+        inputAmount: BN
+        minAmountOut: string
+        srcGasCost: ethers.ethers.BigNumber
+        dstGasCost: ethers.ethers.BigNumber
+        stargateRequiredNative: string
+        srcUsdcBalance: ethers.ethers.BigNumber
+      }
+    }
+  | { name: 'UnavailableFeePredicted' }
 
 export type WalletState =
   | 'ready'
@@ -84,6 +118,40 @@ export type State = {
   selectorRecentlyChanged: boolean
   sourceTransaction?: { hash: string }
   destinationTransaction?: { hash: string }
+  fee:
+    | {
+        status: 'unavailable'
+      }
+    | { status: 'loading' }
+    | {
+        status: 'predicted'
+        amount: string
+        details: {
+          slippage: string
+          destination: {
+            gasPrice: string
+          }
+          source: {
+            gasPrice: string
+          }
+          protocol: {
+            usd: string
+          }
+          lowestPossibleAmount: string
+        }
+        workflowDetails?: {
+          dstWorkflow: EvmWorkflow
+          dstEncodedWorkflow: string
+          nonce: string
+          dstGasEstimate: number
+          inputAmount: BN
+          minAmountOut: string
+          srcGasCost: ethers.ethers.BigNumber
+          dstGasCost: ethers.ethers.BigNumber
+          stargateRequiredNative: string
+          srcUsdcBalance: ethers.ethers.BigNumber
+        }
+      }
 }
 
 export type ViewModel = State & { dispatch: (action: Action) => void }

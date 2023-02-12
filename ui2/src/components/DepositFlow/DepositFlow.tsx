@@ -27,6 +27,7 @@ export type DepositFlowProps = {
   balanceState?: 'loading' | 'hidden' | 'displayed'
   balance?: string
   onClick?: () => void
+  onAmountChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const defaultNetworkChoices: SelectorChoice[] = [
@@ -88,6 +89,9 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     balanceState = 'hidden',
     balance,
     onClick,
+    onAmountChange = () => {
+      // no-op
+    },
   } = props
 
   const depositButtonBackgroundControls = useAnimationControls()
@@ -260,11 +264,6 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     </motion.button>
   )
 
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target
-    dispatch({ name: 'AmountChanged', value })
-  }
-
   const amountInput = (
     <div className="bg-stone-600 pt-2 rounded group hover:bg-stone-500/75">
       <div className="text-xs text-stone-200 font-light ml-2 group-hover:text-stone-300">
@@ -288,7 +287,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
         autoFocus
         className="relative font-bold outline-none border-none flex-auto overflow-hidden overflow-ellipsis placeholder-low-emphesis focus:placeholder-primary focus:placeholder:text-low-emphesis focus:outline-2 flex-grow text-left bg-transparent placeholder:text-stone-400 text-stone-200 rounded px-2 pb-2 pt-8 -mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:!bg-transparent w-full focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
         onBlur={onBlur}
-        onChange={handleAmountChange}
+        onChange={onAmountChange}
       />
     </div>
   )
