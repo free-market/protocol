@@ -146,7 +146,7 @@ test('does a stargate swap in a workflow', async (t) => {
               assetType: AssetType.ERC20,
               assetAddress: dstContractAddresses.sgUSDC,
             },
-            amount: 100_000,
+            amount: '1000000',
             amountIsPercent: true,
           },
         ],
