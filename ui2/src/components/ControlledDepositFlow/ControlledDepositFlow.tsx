@@ -500,7 +500,7 @@ export const ControlledDepositFlow = (
           // TODO(FMP-381): prevent user from starting deposit until after gas balance is fetched
           if (destGasBalance?.data?.value.toHexString() === '0x00') {
             const choice = window.confirm(
-              `You have no gas on Ethereum. Are you sure you want to deposit to ${address}?`,
+              `You have no gas on Arbitrum. Are you sure you want to deposit to ${address}?`,
             )
 
             if (!choice) {
@@ -542,7 +542,7 @@ export const ControlledDepositFlow = (
 
   const destGasBalance = useBalance({
     // TODO(FMP-380): track the destination details somewhere
-    chainId: 1,
+    chainId: 421613,
     address,
   })
 
