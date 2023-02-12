@@ -291,7 +291,7 @@ export const ControlledDepositFlow = (
 
     const srcUsdcAsset = {
       assetType: AssetType.ERC20,
-      assetAddress: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+      assetAddress: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
     }
 
     // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
