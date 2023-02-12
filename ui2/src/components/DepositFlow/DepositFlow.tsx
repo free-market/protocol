@@ -500,55 +500,24 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
             }}
             selectedChoice={vm.selectedToken}
             choices={
-              vm.selectedChain.address !== 5
-                ? undefined
+              vm.selectedChain.address === 10
+                ? [
+                    {
+                      address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+                      symbol: 'USDC',
+                      title: 'USDC',
+                      icon: {
+                        url: 'https://app.aave.com/icons/tokens/usdc.svg',
+                      },
+                    },
+                  ]
                 : [
-                    {
-                      address: '0x0',
-                      symbol: 'ETH',
-                      title: 'Ether',
-                      icon: {
-                        url: 'https://app.aave.com/icons/tokens/eth.svg',
-                      },
-                    },
-                    {
-                      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-                      symbol: 'WETH',
-                      title: 'Wrapped Ether',
-                      icon: {
-                        url: 'https://app.aave.com/icons/tokens/weth.svg',
-                      },
-                    },
                     {
                       address: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
                       symbol: 'USDC',
                       title: 'USD Coin',
                       icon: {
                         url: 'https://app.aave.com/icons/tokens/usdc.svg',
-                      },
-                    },
-                    {
-                      address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-                      symbol: 'DAI',
-                      title: 'Dai Stablecoin',
-                      icon: {
-                        url: 'https://app.aave.com/icons/tokens/dai.svg',
-                      },
-                    },
-                    {
-                      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-                      symbol: 'USDT',
-                      title: 'Tether USD',
-                      icon: {
-                        url: 'https://app.aave.com/icons/tokens/usdt.svg',
-                      },
-                    },
-                    {
-                      address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-                      symbol: 'wBTC',
-                      title: 'Wrapped BTC',
-                      icon: {
-                        url: 'https://app.aave.com/icons/tokens/wbtc.svg',
                       },
                     },
                   ]

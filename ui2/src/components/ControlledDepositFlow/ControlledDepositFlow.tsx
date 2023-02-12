@@ -1,9 +1,6 @@
 import BN from 'bn.js'
 import DepositFlow from '@component/DepositFlow'
-import {
-  defaultNetworkChoices,
-  DepositFlowProps,
-} from '@component/DepositFlow/DepositFlow'
+import { DepositFlowProps } from '@component/DepositFlow/DepositFlow'
 import { useDepositFlowState } from '@component/DepositFlowStateProvider/useDepositFlowState'
 import {
   useAccount,
@@ -42,6 +39,9 @@ import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
 
+const SOURCE_CHAIN_ID = 10 // Optimism
+const DEST_CHAIN_ID = 42161 // Arbitrum
+
 type FeePrediction = {
   dstWorkflow: EvmWorkflow
   dstEncodedWorkflow: string
@@ -74,8 +74,8 @@ export const ControlledDepositFlow = (
   const vm = useDepositFlowState()
   const { switchNetwork } = useSwitchNetwork()
 
-  const srcNetworkId = 5
-  const dstNetworkId = 421613
+  const srcNetworkId = SOURCE_CHAIN_ID
+  const dstNetworkId = DEST_CHAIN_ID
 
   const dstProvider = useProvider({
     chainId: dstNetworkId,
@@ -99,7 +99,7 @@ export const ControlledDepositFlow = (
     }
 
     const srcFrontDoor = FrontDoor__factory.connect(
-      '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1',
+      '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       srcProvider,
     )
     /*
@@ -109,7 +109,7 @@ export const ControlledDepositFlow = (
      * )
      */
     const dstRunner = WorkflowRunner__factory.connect(
-      '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f',
+      '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299',
       dstProvider,
     )
     const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
@@ -126,11 +126,11 @@ export const ControlledDepositFlow = (
 
     // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
 
-    const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
+    // const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
     const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
 
     const srcUsdc = ERC20__factory.connect(
-      srcContractAddresses.sgUSDC,
+      '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
       srcSigner,
     )
 
@@ -159,7 +159,7 @@ export const ControlledDepositFlow = (
             {
               asset: {
                 assetType: AssetType.ERC20,
-                assetAddress: dstContractAddresses.sgUSDC,
+                assetAddress: dstContractAddresses.USDC,
               },
               amount: 100_000,
               amountIsPercent: true,
@@ -175,10 +175,13 @@ export const ControlledDepositFlow = (
         allowBlacklisted: false,
       },
     }
+
     const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
       address,
       dstWorkflow,
     )
+
+    console.log('got encoded workflow')
     // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
     //   1, // the remote chainId sending the tokens (value not used by us)
     //   ADDRESS_ZERO, // the remote Bridge address (value not used by us)
@@ -196,14 +199,18 @@ export const ControlledDepositFlow = (
       provider: window.ethereum as unknown as EIP1193Provider,
       frontDoorAddress: srcFrontDoor.address,
       inputAmount: inputAmount,
-      dstChainId: StargateChainIds.GoerliArbitrum,
-      srcPoolId: StargatePoolIds.USDC,
-      dstPoolId: StargatePoolIds.USDC,
+      dstChainId: StargateChainIds.Optimism,
+      srcPoolId: 1, //StargatePoolIds.USDC on optimism https://stargateprotocol.gitbook.io/stargate/developers/pool-ids
+      dstPoolId: 1, //StargatePoolIds.USDC on arbitrum
       dstUserAddress: address,
     })
 
+    console.log('got minAmountOut')
+
     const srcGasCost = await srcProvider.getGasPrice()
     const dstGasCost = await dstProvider.getGasPrice()
+
+    console.log('got gas prices')
 
     // console.log(`srcGasCost ${srcGasCostStr}`)
     // console.log(`dstGasCost ${dstGasCostStr}`)
@@ -215,8 +222,10 @@ export const ControlledDepositFlow = (
       dstAddress: address,
       dstGasForCall: dstGasEstimate.toString(),
       payload: dstEncodedWorkflow,
-      dstChainId: StargateChainIds.GoerliArbitrum,
+      dstChainId: StargateChainIds.Arbitrum,
     })
+
+    console.log('got required native')
 
     const srcUsdcBalance = await srcUsdc.balanceOf(address)
 
@@ -274,22 +283,22 @@ export const ControlledDepositFlow = (
 
     // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
 
-    const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
+    // const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
     const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
 
     const srcUsdc = ERC20__factory.connect(
-      srcContractAddresses.sgUSDC,
+      '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
       srcSigner,
     )
 
     const dstUsdc = ERC20__factory.connect(
-      dstContractAddresses.sgUSDC,
+      '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
       dstProvider,
     )
 
     const srcUsdcAsset = {
       assetType: AssetType.ERC20,
-      assetAddress: srcContractAddresses.sgUSDC,
+      assetAddress: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
     }
 
     // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
@@ -399,7 +408,7 @@ export const ControlledDepositFlow = (
             dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
             srcPoolId: StargatePoolIds.USDC.toString(),
             dstPoolId: StargatePoolIds.USDC.toString(),
-            dstChainId: StargateChainIds.GoerliArbitrum.toString(),
+            dstChainId: StargateChainIds.Optimism.toString(),
             dstGasForCall: dstGasEstimate.toString(), // gas units (not wei or gwei)
             dstNativeAmount: '0',
             minAmountOut: minAmountOut,
@@ -555,7 +564,6 @@ export const ControlledDepositFlow = (
 
   // Ethereum mainnet, Ethereum Goerli, and Avalanche Fuji
   if (
-    [1, 5, 43113].includes(vm.selectedChain.address as number) &&
     connected &&
     networkMatches
   ) {
@@ -570,7 +578,10 @@ export const ControlledDepositFlow = (
     }
   }
 
-  const { includeDeveloperNetworks = false, ...rest } = props
+  const {
+    // includeDeveloperNetworks = false,
+    ...rest
+  } = props
 
   const walletState = connected
     ? networkMatches
@@ -627,6 +638,17 @@ export const ControlledDepositFlow = (
         walletState={walletState}
         onClick={handleClick}
         networkChoices={
+          [
+            {
+              address: 10,
+              symbol: 'Optimism',
+              title: 'Optimism',
+              icon: {
+                url: 'https://app.aave.com/icons/networks/optimism.svg',
+              },
+            },
+          ]
+          /*
           includeDeveloperNetworks
             ? [
                 {
@@ -656,6 +678,7 @@ export const ControlledDepositFlow = (
                 ...defaultNetworkChoices,
               ]
             : undefined
+           */
         }
       />
     </>
