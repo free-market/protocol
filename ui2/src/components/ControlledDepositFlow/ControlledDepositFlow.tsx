@@ -199,7 +199,7 @@ export const ControlledDepositFlow = (
       provider: window.ethereum as unknown as EIP1193Provider,
       frontDoorAddress: srcFrontDoor.address,
       inputAmount: inputAmount,
-      dstChainId: StargateChainIds.Optimism,
+      dstChainId: StargateChainIds.Arbitrum,
       srcPoolId: 1, //StargatePoolIds.USDC on optimism https://stargateprotocol.gitbook.io/stargate/developers/pool-ids
       dstPoolId: 1, //StargatePoolIds.USDC on arbitrum
       dstUserAddress: address,
