@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import * as ethers from 'ethers'
-import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
+import { EvmWorkflow } from '@fmp/evm/build/tslib/EvmWorkflow'
 export type Action =
   | { name: 'DepositButtonClicked' }
   | { name: 'FormLoaded' }

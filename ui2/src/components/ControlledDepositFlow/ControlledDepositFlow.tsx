@@ -25,7 +25,7 @@ import {
   encodeStargateBridgeArgs,
   waitForNonceWithProvider,
 } from '@fmp/evm/build/tslib/StargateBridgeAction'
-import { EvmWorkflow } from '@fmp/evm/build/tslib/Workflow'
+import { EvmWorkflow } from '@fmp/evm/build/tslib/EvmWorkflow'
 import { getBridgePayload } from '@fmp/evm/build/tslib/encode-workflow'
 import { encodeAaveSupplyArgs } from '@fmp/evm/build/tslib/AaveSupplyAction'
 import { Asset } from '@fmp/evm/build/tslib/Asset'
@@ -170,10 +170,6 @@ export const ControlledDepositFlow = (
           nextStepIndex: -1,
         },
       ],
-      trustSettings: {
-        allowUnknown: false,
-        allowBlacklisted: false,
-      },
     }
 
     const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(
@@ -418,7 +414,6 @@ export const ControlledDepositFlow = (
           nextStepIndex: -1,
         },
       ],
-      trustSettings: { allowUnknown: false, allowBlacklisted: false },
     }
 
     const srcWorkflowGasEstimate = await srcRunner.estimateGas.executeWorkflow(
