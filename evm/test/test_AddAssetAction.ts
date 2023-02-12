@@ -141,10 +141,6 @@ contract('AddAssetAction', function (accounts: string[]) {
             nextStepIndex: -1,
           },
         ],
-        trustSettings: {
-          allowUnknown: false,
-          allowBlacklisted: false,
-        },
       },
       { from: userAddress }
     )

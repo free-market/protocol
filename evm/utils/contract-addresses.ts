@@ -1,6 +1,7 @@
 const NetworkIdToName = {
   '1': 'ethereum',
   '5': 'ethereumGoerli',
+  '10': 'optimism',
   '42161': 'arbitrum',
   '421613': 'arbitrumGoerli',
   '43114': 'avalanche',
@@ -18,6 +19,7 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     wormholeCoreBridge: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
     wormholeTokenBridge: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
     stargateRouter: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+    aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
   },
   ethereumGoerli: {
     sgUSDC: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
@@ -36,6 +38,13 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   },
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+  },
+  optimism: {
+    stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
   },
   avalancheGoerli: {
     // stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',

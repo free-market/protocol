@@ -40,6 +40,7 @@ module.exports = {
         return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_MAINNET_URL)
       },
       network_id: '42161',
+      gasPrice: '200000000',
       disableConfirmationListener: true,
     },
     avalanche: {
@@ -47,6 +48,13 @@ module.exports = {
         return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCHE_MAINNET_URL)
       },
       network_id: '43114',
+      disableConfirmationListener: true,
+    },
+    optimism: {
+      provider: () => {
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.OPTIMISM_MAINNET_URL)
+      },
+      network_id: '10',
       disableConfirmationListener: true,
     },
 
@@ -63,8 +71,8 @@ module.exports = {
     },
     arbitrumGoerli: {
       provider: () => {
-        // return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
-        return new HDWalletProvider(process.env.WALLET_MNEMONIC, ' https://goerli-rollup.arbitrum.io/rpc')
+        return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.ARBITRUM_GOERLI_URL)
+        // return new HDWalletProvider(process.env.WALLET_MNEMONIC, 'https://goerli-rollup.arbitrum.io/rpc')
       },
       network_id: '421613',
       disableConfirmationListener: true,

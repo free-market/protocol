@@ -37,7 +37,7 @@ import { ActionIds } from '../utils/actionIds'
 import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
 import { AssetType } from '../tslib/AssetType'
 import { encodeStargateBridgeArgs, getStargateBridgeActionAddress, waitForNonce, waitForNonceOld } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/Workflow'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 import { Asset } from '../tslib/Asset'
 import { IStargateRouter } from '../types/ethers-contracts'
@@ -146,7 +146,7 @@ test('does a stargate swap in a workflow', async (t) => {
               assetType: AssetType.ERC20,
               assetAddress: dstContractAddresses.sgUSDC,
             },
-            amount: 100_000,
+            amount: '1000000',
             amountIsPercent: true,
           },
         ],
@@ -155,10 +155,6 @@ test('does a stargate swap in a workflow', async (t) => {
         nextStepIndex: -1,
       },
     ],
-    trustSettings: {
-      allowUnknown: false,
-      allowBlacklisted: false,
-    },
   }
   const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(dstUserAddress, dstWorkflow)
   // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
@@ -212,6 +208,7 @@ test('does a stargate swap in a workflow', async (t) => {
   console.log(`allowance after approve: ${allowance}`)
 
   const approvalGasEstimate = await srcUsdc.approve.estimateGas(srcRunner.address, inputAmount, { from: srcUserAddress })
+  console.log('asdf')
 
   // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
   const ASSET_NATIVE: Asset = {
@@ -242,7 +239,7 @@ test('does a stargate swap in a workflow', async (t) => {
         inputAssets: [
           {
             asset: srcUsdcAsset,
-            amount: 100_000,
+            amount: '1000000',
             amountIsPercent: true,
           },
           {
@@ -267,7 +264,6 @@ test('does a stargate swap in a workflow', async (t) => {
         nextStepIndex: -1,
       },
     ],
-    trustSettings: { allowUnknown: false, allowBlacklisted: false },
   }
 
   const srcWorkflowGasEstimate = await srcRunner.executeWorkflow.estimateGas(srcWorkflow, {
@@ -321,7 +317,8 @@ test('does a stargate swap in a workflow', async (t) => {
 
   console.log('submitting source chain workflow...')
   const txResponse = await srcRunner.executeWorkflow(srcWorkflow, { from: srcUserAddress, value: stargateRequiredNative })
-  console.log(JSON.stringify(txResponse, null, 4))
+  // console.log(JSON.stringify(txResponse, null, 4))
+  console.log(`tx=${txResponse.tx}`)
   console.log('source chain workflow completed, waiting for continuation workflow...')
   const startMillis = Date.now()
   const dstStargateActionBalanceAfter = await dstUsdc.balanceOf(dstStargateActionAddr)
@@ -353,7 +350,7 @@ test('does a stargate swap in a workflow', async (t) => {
   // console.log('stargate invoked', sgResult)
 
   const dstProviderUrl = process.env['ARBITRUM_GOERLI_WS_URL']!
-  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 5)
+  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 30)
   // await waitForNonce(
   //   dstProviderUrl,
   //   dstFrontDoor.address,
