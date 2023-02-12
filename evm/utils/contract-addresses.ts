@@ -1,6 +1,7 @@
 const NetworkIdToName = {
   '1': 'ethereum',
   '5': 'ethereumGoerli',
+  '10': 'optimism',
   '42161': 'arbitrum',
   '421613': 'arbitrumGoerli',
   '43114': 'avalanche',
