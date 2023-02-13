@@ -387,7 +387,7 @@ export const ControlledDepositFlow = (
           inputAssets: [
             {
               asset: srcUsdcAsset,
-              amount: 100_000,
+              amount: '1000000',
               amountIsPercent: true,
             },
             {
@@ -556,10 +556,7 @@ export const ControlledDepositFlow = (
   const networkMatches = Number(vm.selectedChain.address) === chain?.id
 
   // Ethereum mainnet, Ethereum Goerli, and Avalanche Fuji
-  if (
-    connected &&
-    networkMatches
-  ) {
+  if (connected && networkMatches) {
     balanceState = 'loading'
 
     if (balanceData) {
