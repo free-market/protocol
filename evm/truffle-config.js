@@ -96,6 +96,9 @@ module.exports = {
   console: {
     require: 'init-console.js',
   },
+  plugins: [
+    'truffle-plugin-stdjsonin'
+  ]
 
   // add typechain as a post build step (produces typescript typings from contract metadata)
   // build: "typechain --target=truffle-v5 'build/contracts/*.json'",
