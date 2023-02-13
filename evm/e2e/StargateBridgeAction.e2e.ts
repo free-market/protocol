@@ -66,6 +66,7 @@ const FrontDoorDst = truffleContract(FrontDoorArtifact)
 const WorkflowRunnerSrc = truffleContract(WorkflowRunnerArtifact)
 const WorkflowRunnerDst = truffleContract(WorkflowRunnerArtifact)
 
+const SrcStargateBridgeAction = truffleContract(StargateBridgeActionArtifact)
 const DstStargateBridgeAction = truffleContract(StargateBridgeActionArtifact)
 
 const DstAaveSupplyAction = truffleContract(AaveSupplyActionArtifact)
@@ -82,6 +83,7 @@ FrontDoorSrc.setProvider(srcProvider)
 FrontDoorDst.setProvider(dstProvider)
 WorkflowRunnerSrc.setProvider(srcProvider)
 WorkflowRunnerDst.setProvider(dstProvider)
+SrcStargateBridgeAction.setProvider(srcProvider)
 DstStargateBridgeAction.setProvider(dstProvider)
 IERC20Src.setProvider(srcProvider)
 IERC20Dst.setProvider(dstProvider)
@@ -109,6 +111,11 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcRunner = (await WorkflowRunnerSrc.at(srcFrontDoor.address)) as WorkflowRunnerInstance
   const dstRunner = (await WorkflowRunnerDst.at(dstFrontDoor.address)) as WorkflowRunnerInstance
 
+  const srcStargateBridgeActionAddress = await srcRunner.getActionAddress(ActionIds.stargateBridge)
+  const srcStargateBridgeAction = (await SrcStargateBridgeAction.at(srcStargateBridgeActionAddress)) as StargateBridgeActionInstance
+  const srcStargateRouterAddress = await srcStargateBridgeAction.stargateRouterAddress()
+  console.log(`src StargateBridgeAction=${srcStargateBridgeActionAddress} StargateBridgeAction=${srcStargateRouterAddress}`)
+
   const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(ActionIds.aaveSupply)
   const dstAaveSupplyAction = (await DstAaveSupplyAction.at(dstAaveSupplyActionAddr)) as AaveSupplyActionInstance
   const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
@@ -130,7 +137,7 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const srcUsdcAsset = {
     assetType: AssetType.ERC20,
-    assetAddress: srcContractAddresses.sgUSDC,
+    assetAddress: optimismUsdc, // srcContractAddresses.sgUSDC,
   }
 
   // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
@@ -150,7 +157,7 @@ test('does a stargate swap in a workflow', async (t) => {
           {
             asset: {
               assetType: AssetType.ERC20,
-              assetAddress: optimismUsdc, //dstContractAddresses.sgUSDC,
+              assetAddress: arbitrumUsdc, //dstContractAddresses.sgUSDC,
             },
             amount: '1000000',
             amountIsPercent: true,
@@ -207,10 +214,13 @@ test('does a stargate swap in a workflow', async (t) => {
   const dstUsdcBalance = await dstUsdc.balanceOf(srcUserAddress)
   console.log(`before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`)
   console.log('approving input asset transfer...')
-  await srcUsdc.approve(srcRunner.address, inputAmount, { from: srcUserAddress })
-  console.log('input asset transfer approved')
-
   const allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
+  console.log(`inputAmount=${inputAmount.toString()} allowance=${allowance.toString()}`)
+  if (allowance.lt(inputAmount)) {
+    await srcUsdc.approve(srcRunner.address, inputAmount, { from: srcUserAddress })
+    console.log('input asset transfer approved')
+  }
+
   console.log(`allowance after approve: ${allowance}`)
 
   const approvalGasEstimate = await srcUsdc.approve.estimateGas(srcRunner.address, inputAmount, { from: srcUserAddress })
@@ -260,7 +270,7 @@ test('does a stargate swap in a workflow', async (t) => {
           dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
           srcPoolId: StargatePoolIds.USDC.toString(),
           dstPoolId: StargatePoolIds.USDC.toString(),
-          dstChainId: StargateChainIds.GoerliArbitrum.toString(),
+          dstChainId: StargateChainIds.Arbitrum.toString(),
           dstGasForCall: dstGasEstimate.toString(), // gas units (not wei or gwei)
           dstNativeAmount: '0',
           minAmountOut: minAmountOut,
