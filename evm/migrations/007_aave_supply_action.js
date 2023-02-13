@@ -14,8 +14,10 @@ module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()
   const networkConfig = getNetworkConfig(networkId)
   let aTokenAddr, poolAddr
-  if (!networkConfig.aavePool) {
-    console.log(`deploying mock Aave Pool for networkId=${networkId}`)
+  const chainId = await web3.eth.getChainId()
+  // if chainId is 1337 assume it's ganache
+  if (!networkConfig.aavePool || chainId === 1337) {
+    console.log(`deploying mock Aave Pool for networkId=${networkId} chainId=${chainId}`)
     const pool = await MockAavePool.new()
     await sleep(SLEEPMS)
     aTokenAddr = await pool.mockAToken()

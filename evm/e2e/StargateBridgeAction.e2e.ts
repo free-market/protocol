@@ -37,7 +37,7 @@ import { ActionIds } from '../utils/actionIds'
 import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
 import { AssetType } from '../tslib/AssetType'
 import { encodeStargateBridgeArgs, getStargateBridgeActionAddress, waitForNonce, waitForNonceOld } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/Workflow'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 import { Asset } from '../tslib/Asset'
 import { IStargateRouter } from '../types/ethers-contracts'
@@ -51,8 +51,8 @@ function formatStep(step: any) {
 
 const sleep = promisify(setTimeout)
 
-const srcChain = 'ethereumGoerli'
-const dstChain = 'arbitrumGoerli'
+const srcChain = 'optimism'
+const dstChain = 'arbitrum'
 
 const srcProvider = truffleConfig.networks[srcChain].provider() as EIP1193Provider
 const dstProvider = truffleConfig.networks[dstChain].provider() as EIP1193Provider
@@ -119,8 +119,14 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const srcContractAddresses = getNetworkConfig(srcNetworkId)
   const dstContractAddresses = getNetworkConfig(dstNetworkId)
-  const srcUsdc = (await IERC20Src.at(srcContractAddresses.sgUSDC)) as IERC20Instance
-  const dstUsdc = (await IERC20Dst.at(dstContractAddresses.sgUSDC)) as IERC20Instance
+
+  const optimismUsdc = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
+  const arbitrumUsdc = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
+
+  const srcUsdc = (await IERC20Src.at(optimismUsdc)) as IERC20Instance
+  const dstUsdc = (await IERC20Dst.at(arbitrumUsdc)) as IERC20Instance
+  // const srcUsdc = (await IERC20Src.at(srcContractAddresses.sgUSDC)) as IERC20Instance
+  // const dstUsdc = (await IERC20Dst.at(dstContractAddresses.sgUSDC)) as IERC20Instance
 
   const srcUsdcAsset = {
     assetType: AssetType.ERC20,
@@ -144,9 +150,9 @@ test('does a stargate swap in a workflow', async (t) => {
           {
             asset: {
               assetType: AssetType.ERC20,
-              assetAddress: dstContractAddresses.sgUSDC,
+              assetAddress: optimismUsdc, //dstContractAddresses.sgUSDC,
             },
-            amount: 100_000,
+            amount: '1000000',
             amountIsPercent: true,
           },
         ],
@@ -155,10 +161,6 @@ test('does a stargate swap in a workflow', async (t) => {
         nextStepIndex: -1,
       },
     ],
-    trustSettings: {
-      allowUnknown: false,
-      allowBlacklisted: false,
-    },
   }
   const { encodedWorkflow: dstEncodedWorkflow, nonce } = getBridgePayload(dstUserAddress, dstWorkflow)
   // const dstGasEstimate = await dstStargateAction.sgReceive.estimateGas(
@@ -177,7 +179,7 @@ test('does a stargate swap in a workflow', async (t) => {
     provider: srcProvider,
     frontDoorAddress: srcFrontDoor.address,
     inputAmount: inputAmount,
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: StargateChainIds.Arbitrum,
     srcPoolId: StargatePoolIds.USDC,
     dstPoolId: StargatePoolIds.USDC,
     dstUserAddress: dstUserAddress,
@@ -198,7 +200,7 @@ test('does a stargate swap in a workflow', async (t) => {
     dstAddress: dstUserAddress,
     dstGasForCall: dstGasEstimate.toString(),
     payload: dstEncodedWorkflow,
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: StargateChainIds.Arbitrum,
   })
 
   const srcUsdcBalance = await srcUsdc.balanceOf(srcUserAddress)
@@ -212,6 +214,7 @@ test('does a stargate swap in a workflow', async (t) => {
   console.log(`allowance after approve: ${allowance}`)
 
   const approvalGasEstimate = await srcUsdc.approve.estimateGas(srcRunner.address, inputAmount, { from: srcUserAddress })
+  console.log('asdf')
 
   // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
   const ASSET_NATIVE: Asset = {
@@ -242,7 +245,7 @@ test('does a stargate swap in a workflow', async (t) => {
         inputAssets: [
           {
             asset: srcUsdcAsset,
-            amount: 100_000,
+            amount: '1000000',
             amountIsPercent: true,
           },
           {
@@ -257,7 +260,7 @@ test('does a stargate swap in a workflow', async (t) => {
           dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
           srcPoolId: StargatePoolIds.USDC.toString(),
           dstPoolId: StargatePoolIds.USDC.toString(),
-          dstChainId: StargateChainIds.GoerliArbitrum.toString(),
+          dstChainId: StargateChainIds.Arbitrum.toString(),
           dstGasForCall: dstGasEstimate.toString(), // gas units (not wei or gwei)
           dstNativeAmount: '0',
           minAmountOut: minAmountOut,
@@ -267,7 +270,6 @@ test('does a stargate swap in a workflow', async (t) => {
         nextStepIndex: -1,
       },
     ],
-    trustSettings: { allowUnknown: false, allowBlacklisted: false },
   }
 
   const srcWorkflowGasEstimate = await srcRunner.executeWorkflow.estimateGas(srcWorkflow, {
@@ -321,7 +323,8 @@ test('does a stargate swap in a workflow', async (t) => {
 
   console.log('submitting source chain workflow...')
   const txResponse = await srcRunner.executeWorkflow(srcWorkflow, { from: srcUserAddress, value: stargateRequiredNative })
-  console.log(JSON.stringify(txResponse, null, 4))
+  // console.log(JSON.stringify(txResponse, null, 4))
+  console.log(`tx=${txResponse.tx}`)
   console.log('source chain workflow completed, waiting for continuation workflow...')
   const startMillis = Date.now()
   const dstStargateActionBalanceAfter = await dstUsdc.balanceOf(dstStargateActionAddr)
@@ -353,7 +356,7 @@ test('does a stargate swap in a workflow', async (t) => {
   // console.log('stargate invoked', sgResult)
 
   const dstProviderUrl = process.env['ARBITRUM_GOERLI_WS_URL']!
-  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 5)
+  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 30)
   // await waitForNonce(
   //   dstProviderUrl,
   //   dstFrontDoor.address,

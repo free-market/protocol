@@ -80,10 +80,6 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
             nextStepIndex: -1,
           },
         ],
-        trustSettings: {
-          allowUnknown: false,
-          allowBlacklisted: false,
-        },
       },
       { value: testAmount, from: userAccount }
     )

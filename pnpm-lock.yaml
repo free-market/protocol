@@ -92,6 +92,7 @@ importers:
       nodemon: ^2.0.20
       rimraf: ^3.0.2
       truffle: ^5.6.8
+      truffle-plugin-stdjsonin: github:mhrsalehi/truffle-plugin-stdjsonin
       ts-node: ^10.9.1
       typechain: ^8.1.1
       typescript: ^4.9.3
@@ -150,6 +151,7 @@ importers:
       nodemon: 2.0.20
       rimraf: 3.0.2
       truffle: 5.6.8
+      truffle-plugin-stdjsonin: github.com/mhrsalehi/truffle-plugin-stdjsonin/0ddb4110de7e14b2242f7467600d1ac149e2c460
       ts-node: 10.9.1_zhirybrk4zoofuxp64necizyzy
       typechain: 8.1.1_typescript@4.9.3
       typescript: 4.9.3
@@ -12811,6 +12813,10 @@ packages:
       inherits: 2.0.4
       safe-buffer: 5.2.1
 
+  /circular/1.0.5:
+    resolution: {integrity: sha512-n4Sspha+wxUl5zeA3JYp1zFCjsLz2VfXIe2gRKNQBrIX+7iPdGcCGZOF8W8IULtllZ/aejXtySfdFFt1wy/3JQ==}
+    dev: true
+
   /cjs-module-lexer/1.2.2:
     resolution: {integrity: sha512-cOU9usZw8/dXIXKtwa8pM0OTJQuJkxMN6w30csNRUerHfeQ5R6U3kkU/FtJeIf3M202OHfY2U8ccInBG7/xogA==}
 
@@ -12891,6 +12897,17 @@ packages:
     dependencies:
       restore-cursor: 3.1.0
 
+  /cli-logger/0.5.40:
+    resolution: {integrity: sha512-piXVCa0TLm/+A7xdVEhw7t4OSrsmJaZIekWcoGrVMY1bHtLJTXgiNzgHlKT0EVHQ14sCKWorQJazU7UWgZhXOQ==}
+    dependencies:
+      circular: 1.0.5
+      cli-util: 1.1.27
+    dev: true
+
+  /cli-regexp/0.1.2:
+    resolution: {integrity: sha512-L++cAQ5g0Nu6aV56B3uaR+c7jEGSAa4WApY1ZN7XiD8niJ5jRfXE/qvMwgz3uZBG0rft4hJS75Vpz2F3mSm4Mg==}
+    dev: true
+
   /cli-spinners/2.7.0:
     resolution: {integrity: sha512-qu3pN8Y3qHNgE2AFweciB1IfMnmZ/fsNTEE+NOFjmGB2F/7rLhnhzppvpCnN4FovtP26k8lHyy9ptEbNwWFLzw==}
     engines: {node: '>=6'}
@@ -12926,6 +12943,12 @@ packages:
     dependencies:
       slice-ansi: 5.0.0
       string-width: 5.1.2
+    dev: true
+
+  /cli-util/1.1.27:
+    resolution: {integrity: sha512-Z6+zI0kIrqf9Oi+PmUm8J9AELp8bTf2vCLYseudYtdOPNJvzpNiExO95aHIm477IbPdu/8SE9Wvc/M1kJl4Anw==}
+    dependencies:
+      cli-regexp: 0.1.2
     dev: true
 
   /cli-width/1.1.1:
@@ -33627,3 +33650,11 @@ packages:
       bn.js: 4.12.0
       ethereumjs-util: 6.2.1
     dev: false
+
+  github.com/mhrsalehi/truffle-plugin-stdjsonin/0ddb4110de7e14b2242f7467600d1ac149e2c460:
+    resolution: {tarball: https://codeload.github.com/mhrsalehi/truffle-plugin-stdjsonin/tar.gz/0ddb4110de7e14b2242f7467600d1ac149e2c460}
+    name: truffle-plugin-stdjsonin
+    version: 0.5.14
+    dependencies:
+      cli-logger: 0.5.40
+    dev: true

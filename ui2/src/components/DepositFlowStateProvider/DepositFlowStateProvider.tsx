@@ -10,7 +10,7 @@ export const initialState: State = {
   amountEditing: false,
   amount: undefined,
   tokenSearchValue: '',
-  selectedChain: { address: 1 },
+  selectedChain: { address: 10 },
   selectedToken: { address: '0x0' },
   selectorRecentlyChanged: false,
   fee: { status: 'unavailable' },
