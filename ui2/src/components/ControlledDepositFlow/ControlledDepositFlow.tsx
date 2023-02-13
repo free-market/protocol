@@ -163,7 +163,7 @@ export const ControlledDepositFlow = (
                 assetType: AssetType.ERC20,
                 assetAddress: dstContractAddresses.USDC,
               },
-              amount: 100_000,
+              amount: '1000000',
               amountIsPercent: true,
             },
           ],
@@ -339,24 +339,22 @@ export const ControlledDepositFlow = (
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
     )
     console.log('approving input asset transfer...')
-    const approveTx = await srcUsdc.approve(
-      srcRunner.address,
-      ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
-      {
-        from: address,
-      },
-    )
-    await approveTx.wait()
-    console.log('input asset transfer approved')
+    try {
+      const approveTx = await srcUsdc.approve(
+        srcRunner.address,
+        ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
+        {
+          from: address,
+        },
+      )
+      await approveTx.wait()
+      console.log('input asset transfer approved')
+    } catch (_error) {
+      // no-op
+    }
 
     const allowance = await srcUsdc.allowance(address, srcRunner.address)
     console.log(`allowance after approve: ${allowance}`)
-
-    const approvalGasEstimate = await srcUsdc.estimateGas.approve(
-      srcRunner.address,
-      ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
-      { from: address },
-    )
 
     // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
     const ASSET_NATIVE: Asset = {
@@ -422,13 +420,12 @@ export const ControlledDepositFlow = (
       },
     )
     const srcWorkflowGasCost = srcGasCost.mul(srcWorkflowGasEstimate)
-    const approvalGasCost = approvalGasEstimate.mul(srcGasCost)
     const maxSlippageAbsolute = inputAmount.sub(new BN(minAmountOut))
 
     const costs: WorkflowCostItem[] = [
       {
         description: 'token transfer approval gas',
-        amount: approvalGasCost.toString(),
+        amount: '0', // TODO
         asset: ASSET_NATIVE,
       },
       {
