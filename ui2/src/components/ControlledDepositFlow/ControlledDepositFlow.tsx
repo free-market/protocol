@@ -482,7 +482,7 @@ export const ControlledDepositFlow = (
           dstRunner.address,
           nonce,
           60_000 * 5,
-          dstContractAddresses.sgUSDC,
+          dstContractAddresses.USDC,
           dstMockATokenAddr,
           address,
           dstStargateActionAddr,
