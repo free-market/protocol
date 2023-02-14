@@ -402,7 +402,7 @@ export const CrossChainJobCard = (props: {
                       onClick={(e) => {
                         e.stopPropagation()
                       }}
-                      href={`https://testnet.layerzeroscan.com/tx/${sourceTransaction?.hash}`}
+                      href={`https://layerzeroscan.com/tx/${sourceTransaction?.hash}`}
                       target="_blank"
                       className="w-full rounded p-2 bg-stone-600 flex items-center text-stone-400 hover:underline"
                     >
@@ -442,7 +442,7 @@ export const CrossChainJobCard = (props: {
                       }}
                       href={
                         destinationTransaction
-                          ? `https://testnet.layerzeroscan.com/tx/${destinationTransaction?.hash}`
+                          ? `https://layerzeroscan.com/tx/${destinationTransaction?.hash}`
                           : undefined
                       }
                       target="_blank"
