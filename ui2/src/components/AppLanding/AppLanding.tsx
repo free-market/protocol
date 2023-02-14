@@ -21,7 +21,7 @@ export const AppLanding = (): JSX.Element => {
     <>
       <div className="w-full min-h-screen relative bg-stone-200">
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center px-2">
-          <div className="relative z-10 w-full saturate-[0.9] rounded-xl bg-[#399fe7] relative overflow-hidden p-2 m-10 xl:m-20 shadow-md max-w-md space-y-2">
+          <div className="relative z-10 w-full saturate-[0.9] rounded-xl bg-[#399fe7] relative overflow-hidden p-2 m-2 xl:m-20 shadow-md max-w-md space-y-2">
             <div>
               <div className="leading-none text-stone-200 flex justify-between tracking-tight items-center">
                 <span className="font-light px-2">DESTINATION:</span>

@@ -22,6 +22,7 @@ import CrossChainJobCard from '@component/CrossChainJobCard'
 import FeePreview from '@component/FeePreview'
 
 export type DepositFlowProps = {
+  layout?: 'default' | 'iframe'
   networkChoices?: SelectorChoice[]
   walletState?: WalletState
   balanceState?: 'loading' | 'hidden' | 'displayed'
@@ -92,6 +93,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     onAmountChange = () => {
       // no-op
     },
+    layout = 'default',
   } = props
 
   const depositButtonBackgroundControls = useAnimationControls()
@@ -622,45 +624,52 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     (open && !loading)
   ) {
     return (
-      <div className="min-h-[556px] h-full relative px-2">
-        <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
-          <motion.a
-            layoutId="link"
-            href="https://fmprotocol.com"
-            target="_blank"
-            className="p-2 group relative overflow-hidden rounded"
-            title="Free Market Protocol"
-          >
-            <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
-            <Logo className="stroke-stone-600 w-8 h-8" />
-          </motion.a>
+      <div
+        className={cx(
+          layout === 'iframe' ? 'min-h-508px' : 'min-h-[556px]',
+          'h-full relative px-2',
+        )}
+      >
+        {layout === 'default' && (
+          <motion.div className="absolute left-0 right-0 mx-5 py-2 flex items-center gap-2 justify-between">
+            <motion.a
+              layoutId="link"
+              href="https://fmprotocol.com"
+              target="_blank"
+              className="p-2 group relative overflow-hidden rounded"
+              title="Free Market Protocol"
+            >
+              <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
+              <Logo className="stroke-stone-600 w-8 h-8" />
+            </motion.a>
 
-          <AnimatePresence>
-            {open && !loading && (
-              <motion.button
-                key="button"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  y: -20,
-                  transition: {
-                    ease: 'anticipate',
-                    bounce: 1,
-                    stiffness: 500,
-                    velocity: 500,
-                  },
-                }}
-                transition={{ delay: baseDelay }}
-                className="font-medium text-sm text-stone-500 flex items-center rounded hover:bg-stone-800/[0.1] active:bg-stone-800/[0.15] px-3 cursor-pointer h-8 user-select-none"
-                onClick={handleBackClick}
-              >
-                <ChevronLeftIcon className="w-5 h-5" />
-                <span>Back</span>
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </motion.div>
+            <AnimatePresence>
+              {open && !loading && (
+                <motion.button
+                  key="button"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0,
+                    y: -20,
+                    transition: {
+                      ease: 'anticipate',
+                      bounce: 1,
+                      stiffness: 500,
+                      velocity: 500,
+                    },
+                  }}
+                  transition={{ delay: baseDelay }}
+                  className="font-medium text-sm text-stone-500 flex items-center rounded hover:bg-stone-800/[0.1] active:bg-stone-800/[0.15] px-3 cursor-pointer h-8 user-select-none"
+                  onClick={handleBackClick}
+                >
+                  <ChevronLeftIcon className="w-5 h-5" />
+                  <span>Back</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         <div className="pb-8">
           <AnimatePresence mode="wait">
@@ -690,7 +699,12 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                 exit={{ opacity: 0, y: -20 }}
                 className="h-full flex items-start justify-center"
               >
-                <div className="space-y-4 mt-16">
+                <div
+                  className={cx(
+                    'space-y-4',
+                    layout === 'iframe' ? 'mt-4' : 'mt-16',
+                  )}
+                >
                   <AnimatePresence>
                     <motion.h2
                       key={0}
@@ -747,22 +761,29 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
   }
 
   return (
-    <div className="min-h-[556px] flex items-center h-full relative">
-      <motion.div className="absolute left-0 right-0 top-0 mx-5 p-2 flex items-center gap-2 justify-around">
-        <motion.a
-          layoutId="link"
-          href="https://fmprotocol.com"
-          target="_blank"
-          className="p-2 group relative overflow-hidden rounded"
-          title="Free Market Protocol"
-        >
-          <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
-          <Logo
-            className="stroke-stone-600 w-8 h-8"
-            preserveAspectRatio="xMidYMid meet"
-          />
-        </motion.a>
-      </motion.div>
+    <div
+      className={cx(
+        layout === 'iframe' ? 'min-h-[508px]' : 'min-h-[556px]',
+        'flex items-center h-full relative',
+      )}
+    >
+      {layout === 'default' && (
+        <motion.div className="absolute left-0 right-0 top-0 mx-5 p-2 flex items-center gap-2 justify-around">
+          <motion.a
+            layoutId="link"
+            href="https://fmprotocol.com"
+            target="_blank"
+            className="p-2 group relative overflow-hidden rounded"
+            title="Free Market Protocol"
+          >
+            <div className="absolute top-0 bottom-0 left-0 right-0 invisible group-hover:visible bg-stone-800/[0.1] group-active:visible group-active:bg-stone-800/[0.15] z-10" />
+            <Logo
+              className="stroke-stone-600 w-8 h-8"
+              preserveAspectRatio="xMidYMid meet"
+            />
+          </motion.a>
+        </motion.div>
+      )}
       <div className="w-fit mx-auto" style={{ transform: 'scale(1.25)' }}>
         <div className="flex items-center justify-center">
           <motion.button
