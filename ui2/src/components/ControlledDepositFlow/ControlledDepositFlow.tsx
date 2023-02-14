@@ -38,6 +38,7 @@ import {
 import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
 import { EIP1193Provider } from 'eip1193-provider'
+import { useQueryParam, StringParam } from 'use-query-params'
 
 const SOURCE_CHAIN_ID = 10 // Optimism
 const DEST_CHAIN_ID = 42161 // Arbitrum
@@ -68,6 +69,7 @@ export const ControlledDepositFlow = (
     includeDeveloperNetworks?: boolean
   },
 ): JSX.Element => {
+  const [layout] = useQueryParam('layout', StringParam)
   const { chain } = useNetwork()
   const { address, isConnected: connected } = useAccount()
   const { connect, connectors } = useConnect()
@@ -667,6 +669,7 @@ export const ControlledDepositFlow = (
             : undefined
            */
         }
+        layout={layout === 'iframe' ? 'iframe' : 'default'}
       />
     </>
   )
