@@ -11,7 +11,7 @@ export const initialState: State = {
   amount: undefined,
   tokenSearchValue: '',
   selectedChain: { address: 10 },
-  selectedToken: { address: '0x0' },
+  selectedToken: { address: '0x7f5c764cbc14f9669b88837ca1490cca17c31607' },
   selectorRecentlyChanged: false,
   fee: { status: 'unavailable' },
 }
@@ -176,7 +176,7 @@ export const DepositFlowStateProvider = (props: {
           status: 'predicted',
           amount: action.amount,
           details: action.fee,
-          workflowDetails: action.workflowDetails
+          workflowDetails: action.workflowDetails,
         }
         break
       }
