@@ -85,7 +85,7 @@ export const ETH_ASSET = {
   assetAddress: ADDRESS_ZERO,
 }
 
-const verboseLog = false
+const verboseLog = true
 
 export function verbose(...s: string[]) {
   if (verboseLog) {

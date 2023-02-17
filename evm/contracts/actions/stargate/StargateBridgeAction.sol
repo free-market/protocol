@@ -38,6 +38,9 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
   address public immutable frontDoorAddress;
   address public immutable stargateRouterAddress;
 
+  /// @notice This event is emitted on the destination chain when Stargate invokes our sgReceive method
+  /// @param tokenAddress the address of the erc20 that was transfered from the source chain to this chain.abi
+  /// @param bridgePayload the payload that was sent along with the erc20.
   event SgReceiveCalled(address tokenAddress, uint256 amount, BridgePayload bridgePayload);
 
   event StargateBridgeParamsEvent(

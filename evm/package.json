@@ -14,7 +14,7 @@
     "generate-clients:truffle": "typechain --target=truffle-v5  --glob=\"build/contracts/*.json\" --always-generate-overloads",
     "generate-clients:web3": "typechain --target=web3-v1 --glob=\"build/contracts/*.json\" --always-generate-overloads",
     "import-truffle-networks": "ts-node utils/import-truffle-networks.ts",
-    "export-truffle-networks": "ts-node utils/import-truffle-networks.ts"
+    "export-truffle-networks": "ts-node utils/export-truffle-networks.ts"
   },
   "keywords": [],
   "author": "",

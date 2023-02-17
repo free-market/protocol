@@ -1,270 +1,4 @@
 {
-  "1": {
-    "events": {
-      "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint16",
-            "name": "actionId",
-            "type": "uint16"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "actionAddress",
-            "type": "address"
-          }
-        ],
-        "name": "ActionAddressSetEvent",
-        "type": "event"
-      },
-      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "sender",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
-          }
-        ],
-        "name": "LogNewOwner",
-        "type": "event"
-      },
-      "0xc9b3109043e2a2330d2eb2f8ffdc64c03d637d5deabb0ad117faa08b4e0bb7ab": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "components": [
-              {
-                "internalType": "enum AssetType",
-                "name": "assetType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "assetAddress",
-                "type": "address"
-              }
-            ],
-            "indexed": false,
-            "internalType": "struct Asset",
-            "name": "asset",
-            "type": "tuple"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "RemainingAsset",
-        "type": "event"
-      },
-      "0xab733976560259f9d55c1241bbffbf64fab725b4a8e1a9ef7e1ab191c234fc76": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "sender",
-            "type": "address"
-          }
-        ],
-        "name": "WorkflowExecution",
-        "type": "event"
-      },
-      "0x43f848886e8a63e958b3b64277b6a357eac458527f6dd3982d8a5319a15db506": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint16",
-            "name": "stepIndex",
-            "type": "uint16"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint16",
-                "name": "actionId",
-                "type": "uint16"
-              },
-              {
-                "internalType": "address",
-                "name": "actionAddress",
-                "type": "address"
-              },
-              {
-                "components": [
-                  {
-                    "components": [
-                      {
-                        "internalType": "enum AssetType",
-                        "name": "assetType",
-                        "type": "uint8"
-                      },
-                      {
-                        "internalType": "address",
-                        "name": "assetAddress",
-                        "type": "address"
-                      }
-                    ],
-                    "internalType": "struct Asset",
-                    "name": "asset",
-                    "type": "tuple"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "bool",
-                    "name": "amountIsPercent",
-                    "type": "bool"
-                  }
-                ],
-                "internalType": "struct WorkflowStepInputAsset[]",
-                "name": "inputAssets",
-                "type": "tuple[]"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "enum AssetType",
-                    "name": "assetType",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "assetAddress",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct Asset[]",
-                "name": "outputAssets",
-                "type": "tuple[]"
-              },
-              {
-                "internalType": "bytes",
-                "name": "args",
-                "type": "bytes"
-              },
-              {
-                "internalType": "uint16",
-                "name": "nextStepIndex",
-                "type": "uint16"
-              }
-            ],
-            "indexed": false,
-            "internalType": "struct WorkflowStep",
-            "name": "step",
-            "type": "tuple"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "actionAddress",
-            "type": "address"
-          },
-          {
-            "components": [
-              {
-                "components": [
-                  {
-                    "internalType": "enum AssetType",
-                    "name": "assetType",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "assetAddress",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct Asset",
-                "name": "asset",
-                "type": "tuple"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "indexed": false,
-            "internalType": "struct AssetAmount[]",
-            "name": "assetAmounts",
-            "type": "tuple[]"
-          }
-        ],
-        "name": "WorkflowStepExecution",
-        "type": "event"
-      },
-      "0x1be234cf4e8d146a6f5aab8e2b960bac341eb94c350a7b3acc3cb303b0743121": {
-        "anonymous": false,
-        "inputs": [
-          {
-            "components": [
-              {
-                "components": [
-                  {
-                    "components": [
-                      {
-                        "internalType": "enum AssetType",
-                        "name": "assetType",
-                        "type": "uint8"
-                      },
-                      {
-                        "internalType": "address",
-                        "name": "assetAddress",
-                        "type": "address"
-                      }
-                    ],
-                    "internalType": "struct Asset",
-                    "name": "asset",
-                    "type": "tuple"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct AssetAmount[]",
-                "name": "outputAssetAmounts",
-                "type": "tuple[]"
-              },
-              {
-                "internalType": "int16",
-                "name": "nextStepIndex",
-                "type": "int16"
-              }
-            ],
-            "indexed": false,
-            "internalType": "struct WorkflowStepResult",
-            "name": "result",
-            "type": "tuple"
-          }
-        ],
-        "name": "WorkflowStepResultEvent",
-        "type": "event"
-      }
-    },
-    "links": {},
-    "address": "0xC22A9230462dd083aea308f1b204CAD46973fba1",
-    "transactionHash": "0x00f3beaa7b5844d27b3565c5cb6409ca1c3fa0b39a634d96424cb5d3b05ce562"
-  },
   "5": {
     "events": {
       "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
@@ -305,7 +39,7 @@
         "name": "LogNewOwner",
         "type": "event"
       },
-      "0xc9b3109043e2a2330d2eb2f8ffdc64c03d637d5deabb0ad117faa08b4e0bb7ab": {
+      "0xb57bad0019da5831064de8f296d1458a6ca8403646dd9c362e9ddbb588cb52c0": {
         "anonymous": false,
         "inputs": [
           {
@@ -329,27 +63,174 @@
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "amount",
+            "name": "totalAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "userAmount",
             "type": "uint256"
           }
         ],
         "name": "RemainingAsset",
         "type": "event"
       },
-      "0xab733976560259f9d55c1241bbffbf64fab725b4a8e1a9ef7e1ab191c234fc76": {
+      "0x5fb75a336a44ceb6f98a3b8492da063de0d7407916807b030a6703bc96c38712": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount",
+            "name": "startingAsset",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowContinuation",
+        "type": "event"
+      },
+      "0xfd67fb0ff088c2cb3b707935e33c12854f03baac3b19a725ccf2c24c15cc37b0": {
         "anonymous": false,
         "inputs": [
           {
             "indexed": false,
             "internalType": "address",
-            "name": "sender",
+            "name": "userAddress",
             "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint16",
+                    "name": "actionId",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "actionAddress",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "components": [
+                          {
+                            "internalType": "enum AssetType",
+                            "name": "assetType",
+                            "type": "uint8"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                          }
+                        ],
+                        "internalType": "struct Asset",
+                        "name": "asset",
+                        "type": "tuple"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bool",
+                        "name": "amountIsPercent",
+                        "type": "bool"
+                      }
+                    ],
+                    "internalType": "struct WorkflowStepInputAsset[]",
+                    "name": "inputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset[]",
+                    "name": "outputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int16",
+                    "name": "nextStepIndex",
+                    "type": "int16"
+                  }
+                ],
+                "internalType": "struct WorkflowStep[]",
+                "name": "steps",
+                "type": "tuple[]"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Workflow",
+            "name": "workflow",
+            "type": "tuple"
           }
         ],
         "name": "WorkflowExecution",
         "type": "event"
       },
-      "0x43f848886e8a63e958b3b64277b6a357eac458527f6dd3982d8a5319a15db506": {
+      "0x32e7f7ce7461b6ac3c6796949dd292a7525cbbe0e3b615a82aafd356081d1b3d": {
         "anonymous": false,
         "inputs": [
           {
@@ -423,19 +304,25 @@
               },
               {
                 "internalType": "bytes",
-                "name": "args",
+                "name": "data",
                 "type": "bytes"
               },
               {
-                "internalType": "uint16",
+                "internalType": "int16",
                 "name": "nextStepIndex",
-                "type": "uint16"
+                "type": "int16"
               }
             ],
             "indexed": false,
             "internalType": "struct WorkflowStep",
             "name": "step",
             "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
           },
           {
             "indexed": false,
@@ -525,10 +412,2383 @@
         ],
         "name": "WorkflowStepResultEvent",
         "type": "event"
+      },
+      "0x9bcd7e47da45cdf09ef1c28bf2e75e06aa76ff03e44d86ee2999a61da32a30a8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "inputAssetAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
       }
     },
     "links": {},
-    "address": "0x4cB833Ff80C8fE1d0B646C76962FB4Af759029B5",
-    "transactionHash": "0x448cb037a2af3a41010e7d013e67f53617785fffc978dae7e98c32241c118c9d"
+    "address": "0xFc01a16967E76BC3AEdbBbcD3efEf33F1c632283",
+    "transactionHash": "0xe4afdc867d02920bba85a37ed50e70a65249203f1a6e2e3c067c5141915f5251"
+  },
+  "10": {
+    "events": {
+      "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          }
+        ],
+        "name": "ActionAddressSetEvent",
+        "type": "event"
+      },
+      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LogNewOwner",
+        "type": "event"
+      },
+      "0xb57bad0019da5831064de8f296d1458a6ca8403646dd9c362e9ddbb588cb52c0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum AssetType",
+                "name": "assetType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "assetAddress",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Asset",
+            "name": "asset",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "userAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RemainingAsset",
+        "type": "event"
+      },
+      "0x5fb75a336a44ceb6f98a3b8492da063de0d7407916807b030a6703bc96c38712": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount",
+            "name": "startingAsset",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowContinuation",
+        "type": "event"
+      },
+      "0xfd67fb0ff088c2cb3b707935e33c12854f03baac3b19a725ccf2c24c15cc37b0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint16",
+                    "name": "actionId",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "actionAddress",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "components": [
+                          {
+                            "internalType": "enum AssetType",
+                            "name": "assetType",
+                            "type": "uint8"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                          }
+                        ],
+                        "internalType": "struct Asset",
+                        "name": "asset",
+                        "type": "tuple"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bool",
+                        "name": "amountIsPercent",
+                        "type": "bool"
+                      }
+                    ],
+                    "internalType": "struct WorkflowStepInputAsset[]",
+                    "name": "inputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset[]",
+                    "name": "outputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int16",
+                    "name": "nextStepIndex",
+                    "type": "int16"
+                  }
+                ],
+                "internalType": "struct WorkflowStep[]",
+                "name": "steps",
+                "type": "tuple[]"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Workflow",
+            "name": "workflow",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowExecution",
+        "type": "event"
+      },
+      "0x32e7f7ce7461b6ac3c6796949dd292a7525cbbe0e3b615a82aafd356081d1b3d": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "assetAmounts",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      },
+      "0x1be234cf4e8d146a6f5aab8e2b960bac341eb94c350a7b3acc3cb303b0743121": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepResultEvent",
+        "type": "event"
+      },
+      "0x9bcd7e47da45cdf09ef1c28bf2e75e06aa76ff03e44d86ee2999a61da32a30a8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "inputAssetAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      }
+    },
+    "links": {},
+    "address": "0x59b8f325Fe905e5B38eadeB666134eE1A876f7ca",
+    "transactionHash": "0xacfaa43b6ee3b761a112f5e2c8569c671a81a0ed915f916365702e5b300c514c"
+  },
+  "42161": {
+    "events": {
+      "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          }
+        ],
+        "name": "ActionAddressSetEvent",
+        "type": "event"
+      },
+      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LogNewOwner",
+        "type": "event"
+      },
+      "0xb57bad0019da5831064de8f296d1458a6ca8403646dd9c362e9ddbb588cb52c0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum AssetType",
+                "name": "assetType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "assetAddress",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Asset",
+            "name": "asset",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "userAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RemainingAsset",
+        "type": "event"
+      },
+      "0x5fb75a336a44ceb6f98a3b8492da063de0d7407916807b030a6703bc96c38712": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount",
+            "name": "startingAsset",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowContinuation",
+        "type": "event"
+      },
+      "0xfd67fb0ff088c2cb3b707935e33c12854f03baac3b19a725ccf2c24c15cc37b0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint16",
+                    "name": "actionId",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "actionAddress",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "components": [
+                          {
+                            "internalType": "enum AssetType",
+                            "name": "assetType",
+                            "type": "uint8"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                          }
+                        ],
+                        "internalType": "struct Asset",
+                        "name": "asset",
+                        "type": "tuple"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bool",
+                        "name": "amountIsPercent",
+                        "type": "bool"
+                      }
+                    ],
+                    "internalType": "struct WorkflowStepInputAsset[]",
+                    "name": "inputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset[]",
+                    "name": "outputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int16",
+                    "name": "nextStepIndex",
+                    "type": "int16"
+                  }
+                ],
+                "internalType": "struct WorkflowStep[]",
+                "name": "steps",
+                "type": "tuple[]"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Workflow",
+            "name": "workflow",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowExecution",
+        "type": "event"
+      },
+      "0x32e7f7ce7461b6ac3c6796949dd292a7525cbbe0e3b615a82aafd356081d1b3d": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "assetAmounts",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      },
+      "0x1be234cf4e8d146a6f5aab8e2b960bac341eb94c350a7b3acc3cb303b0743121": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepResultEvent",
+        "type": "event"
+      },
+      "0x9bcd7e47da45cdf09ef1c28bf2e75e06aa76ff03e44d86ee2999a61da32a30a8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "inputAssetAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      }
+    },
+    "links": {},
+    "address": "0x6C25dACd521dda0D7aC4b942622DbB4DbE1db18B",
+    "transactionHash": "0x13f58f74ed1d101fa58f85a5774df26ceaf8c9441b9435217d8bc4978344ecbc"
+  },
+  "43114": {
+    "events": {
+      "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          }
+        ],
+        "name": "ActionAddressSetEvent",
+        "type": "event"
+      },
+      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LogNewOwner",
+        "type": "event"
+      },
+      "0xb57bad0019da5831064de8f296d1458a6ca8403646dd9c362e9ddbb588cb52c0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum AssetType",
+                "name": "assetType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "assetAddress",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Asset",
+            "name": "asset",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "userAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RemainingAsset",
+        "type": "event"
+      },
+      "0x5fb75a336a44ceb6f98a3b8492da063de0d7407916807b030a6703bc96c38712": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount",
+            "name": "startingAsset",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowContinuation",
+        "type": "event"
+      },
+      "0xfd67fb0ff088c2cb3b707935e33c12854f03baac3b19a725ccf2c24c15cc37b0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint16",
+                    "name": "actionId",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "actionAddress",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "components": [
+                          {
+                            "internalType": "enum AssetType",
+                            "name": "assetType",
+                            "type": "uint8"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                          }
+                        ],
+                        "internalType": "struct Asset",
+                        "name": "asset",
+                        "type": "tuple"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bool",
+                        "name": "amountIsPercent",
+                        "type": "bool"
+                      }
+                    ],
+                    "internalType": "struct WorkflowStepInputAsset[]",
+                    "name": "inputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset[]",
+                    "name": "outputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int16",
+                    "name": "nextStepIndex",
+                    "type": "int16"
+                  }
+                ],
+                "internalType": "struct WorkflowStep[]",
+                "name": "steps",
+                "type": "tuple[]"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Workflow",
+            "name": "workflow",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowExecution",
+        "type": "event"
+      },
+      "0x9bcd7e47da45cdf09ef1c28bf2e75e06aa76ff03e44d86ee2999a61da32a30a8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "inputAssetAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      }
+    },
+    "links": {},
+    "address": "0x197Cc90A2C4Fb9bD8e6E80A9b2feE463e5c86496",
+    "transactionHash": "0x803b85624e604370af31421392b74eefb202f49124b4f00e964d54e3498f1276"
+  },
+  "421613": {
+    "events": {
+      "0x6521f3db84836ab4fd0021f24d813643845fccd2100af8ca45695746805aeae8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          }
+        ],
+        "name": "ActionAddressSetEvent",
+        "type": "event"
+      },
+      "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LogNewOwner",
+        "type": "event"
+      },
+      "0xb57bad0019da5831064de8f296d1458a6ca8403646dd9c362e9ddbb588cb52c0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum AssetType",
+                "name": "assetType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "assetAddress",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Asset",
+            "name": "asset",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "userAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RemainingAsset",
+        "type": "event"
+      },
+      "0x5fb75a336a44ceb6f98a3b8492da063de0d7407916807b030a6703bc96c38712": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount",
+            "name": "startingAsset",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowContinuation",
+        "type": "event"
+      },
+      "0xfd67fb0ff088c2cb3b707935e33c12854f03baac3b19a725ccf2c24c15cc37b0": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint16",
+                    "name": "actionId",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "actionAddress",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "components": [
+                          {
+                            "internalType": "enum AssetType",
+                            "name": "assetType",
+                            "type": "uint8"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                          }
+                        ],
+                        "internalType": "struct Asset",
+                        "name": "asset",
+                        "type": "tuple"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bool",
+                        "name": "amountIsPercent",
+                        "type": "bool"
+                      }
+                    ],
+                    "internalType": "struct WorkflowStepInputAsset[]",
+                    "name": "inputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset[]",
+                    "name": "outputAssets",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int16",
+                    "name": "nextStepIndex",
+                    "type": "int16"
+                  }
+                ],
+                "internalType": "struct WorkflowStep[]",
+                "name": "steps",
+                "type": "tuple[]"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct Workflow",
+            "name": "workflow",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowExecution",
+        "type": "event"
+      },
+      "0x32e7f7ce7461b6ac3c6796949dd292a7525cbbe0e3b615a82aafd356081d1b3d": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "assetAmounts",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      },
+      "0x1be234cf4e8d146a6f5aab8e2b960bac341eb94c350a7b3acc3cb303b0743121": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepResultEvent",
+        "type": "event"
+      },
+      "0x9bcd7e47da45cdf09ef1c28bf2e75e06aa76ff03e44d86ee2999a61da32a30a8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "actionId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "actionAddress",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "amountIsPercent",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct WorkflowStepInputAsset[]",
+                "name": "inputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset[]",
+                "name": "outputAssets",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStep",
+            "name": "step",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "actionAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "enum AssetType",
+                    "name": "assetType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "assetAddress",
+                    "type": "address"
+                  }
+                ],
+                "internalType": "struct Asset",
+                "name": "asset",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct AssetAmount[]",
+            "name": "inputAssetAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "enum AssetType",
+                        "name": "assetType",
+                        "type": "uint8"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "assetAddress",
+                        "type": "address"
+                      }
+                    ],
+                    "internalType": "struct Asset",
+                    "name": "asset",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct AssetAmount[]",
+                "name": "outputAssetAmounts",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "int16",
+                "name": "nextStepIndex",
+                "type": "int16"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct WorkflowStepResult",
+            "name": "result",
+            "type": "tuple"
+          }
+        ],
+        "name": "WorkflowStepExecution",
+        "type": "event"
+      }
+    },
+    "links": {},
+    "address": "0x1040bE52D630dA4df00e75e44B332A1D5a67D284",
+    "transactionHash": "0x4a79fe4c506ddc80b3bc69b16daed2d9bcdcd99069917c90c06eb5be3a090535"
   }
 }

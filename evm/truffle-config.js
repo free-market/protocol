@@ -47,6 +47,8 @@ module.exports = {
       provider: () => {
         return new HDWalletProvider(process.env.WALLET_MNEMONIC, process.env.AVALANCHE_MAINNET_URL)
       },
+      // gasPrice: '200000000',
+      // gas: '1000000',
       network_id: '43114',
       disableConfirmationListener: true,
     },

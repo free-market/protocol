@@ -103,13 +103,16 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
 
     // verify eth balances
     expect(endingBalanceEth.lt(beginningBalanceEth)).to.be.true
-    const ethDelta = beginningBalanceEth.sub(endingBalanceEth)
+    const feePercent = new BN('30')
+    const fee = testAmount.mul(feePercent).div(new BN(1000000))
+    const ethDelta = beginningBalanceEth.sub(endingBalanceEth).sub(fee)
     const expectedEth = beginningBalanceEth.sub(testAmount).sub(gasInWei)
+
     expect(endingBalanceEth.toString()).to.equal(expectedEth.toString())
 
     // verify weth balances
-    const wethDelta = endingBalanceWeth.sub(beginningBalanceWeth)
+    const wethDeltaActual = endingBalanceWeth.sub(beginningBalanceWeth)
     expect(endingBalanceWeth.gt(beginningBalanceWeth)).to.be.true
-    expect(wethDelta.toString()).to.equal(testAmount.toString())
+    expect(wethDeltaActual.toString()).to.equal(testAmount.sub(fee).toString())
   })
 })

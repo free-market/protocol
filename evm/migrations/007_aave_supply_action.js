@@ -13,22 +13,18 @@ const SLEEPMS = 500
 module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()
   const networkConfig = getNetworkConfig(networkId)
-  let aTokenAddr, poolAddr
+  let poolAddr
   const chainId = await web3.eth.getChainId()
   // if chainId is 1337 assume it's ganache
   if (!networkConfig.aavePool || chainId === 1337) {
     console.log(`deploying mock Aave Pool for networkId=${networkId} chainId=${chainId}`)
     const pool = await MockAavePool.new()
     await sleep(SLEEPMS)
-    aTokenAddr = await pool.mockAToken()
-    await sleep(SLEEPMS)
     poolAddr = pool.address
   } else {
-    assert(networkConfig.aaveAToken, 'aaveAToken not present in network configuration')
-    aTokenAddr = networkConfig.aaveAToken
-    poolAddr = networkConfig.aaveAToken
+    poolAddr = networkConfig.aavePool
   }
-  await deployer.deploy(AaveSupplyAction, poolAddr, aTokenAddr)
+  await deployer.deploy(AaveSupplyAction, poolAddr)
   const aaveSupplyAction = await AaveSupplyAction.deployed()
   await sleep(SLEEPMS)
   const frontDoor = await FrontDoor.deployed()

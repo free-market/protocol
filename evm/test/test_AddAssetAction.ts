@@ -114,8 +114,13 @@ contract('AddAssetAction', function (accounts: string[]) {
   })
 
   it('transfers an ERC20 in a workflow', async () => {
+    // percentages have 4 decimals of precision (1/10th of a basis point)
+    const feePercentage = new BN('30')
+    const expectedFee = inputAmount.mul(feePercentage).div(new BN('1000000'))
+
     // ensure WETH balance
     const userWethBalanceBefore = await ensureWethBalance(inputAmount)
+    const expectedUserBalanceAfter = userWethBalanceBefore.sub(expectedFee)
     // runner's balance should be zero but check anyway
     const runnerWethBalanceBefore = await weth.balanceOf(runner.address)
 
@@ -153,7 +158,7 @@ contract('AddAssetAction', function (accounts: string[]) {
     // resulting in no net change do anything's balances
     const runnerWethBalanceAfter = await weth.balanceOf(runner.address)
     const userWethBalanceAfter = await weth.balanceOf(userAddress)
-    expect(runnerWethBalanceAfter.toString()).to.equal(runnerWethBalanceBefore.toString())
-    expect(userWethBalanceAfter.toString()).to.equal(userWethBalanceBefore.toString())
+    expect(runnerWethBalanceAfter.toString()).to.equal(expectedFee.toString())
+    expect(userWethBalanceAfter.toString()).to.equal(expectedUserBalanceAfter.toString())
   })
 })

@@ -22,4 +22,8 @@ contract MockAavePool is IAaveV3Pool {
     mockAToken.mint(onBehalfOf, amount);
     emit Supply(asset, msg.sender, onBehalfOf, amount, referralCode);
   }
+
+  function getReserveData(address) external view returns (ReserveData memory) {
+    return ReserveData(ReserveConfigurationMap(0), 0, 0, 0, 0, 0, 0, 0, address(mockAToken), address(0), address(0), address(0), 0, 9, 0);
+  }
 }
