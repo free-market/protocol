@@ -3,7 +3,7 @@ import { solidity } from 'ethereum-waffle'
 import BN from 'bn.js'
 import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
 import { AaveSupplyActionInstance, MockAavePoolInstance, MockTokenInstance } from '../types/truffle-contracts'
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, validateAction } from './test-utilities'
 import { AssetAmount } from '../tslib/AssetAmount'
@@ -30,7 +30,7 @@ contract('AaveSupplyAction', function (accounts: string[]) {
     mockPool = await MockAavePool.new()
     const mockATokenAddr = await mockPool.mockAToken()
     mockAToken = await MockToken.at(mockATokenAddr)
-    aaveSupplyAction = await AaveSupplyAction.new(mockPool.address, mockATokenAddr)
+    aaveSupplyAction = await AaveSupplyAction.new(mockPool.address)
     const inputAsset: Asset = {
       assetType: AssetType.ERC20,
       assetAddress: mockInputAsset.address,

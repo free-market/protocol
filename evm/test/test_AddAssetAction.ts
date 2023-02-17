@@ -1,9 +1,9 @@
 import BN from 'bn.js'
 import { AddAssetActionArgs } from '../tslib/AddAssetAction'
 import { AddAssetActionInstance, WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { AssetType } from '../tslib/AssetType'
-import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
+import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 import {
   ADDRESS_ZERO,
   expectRejection,
@@ -66,7 +66,7 @@ contract('AddAssetAction', function (accounts: string[]) {
   })
 
   async function unitTestCommon() {
-    const actionWethBalanceBefore = await weth.balanceOf(runner.address)
+    const actionWethBalanceBefore = await weth.balanceOf(addAssetAction.address)
     const userWethBalanceBefore = await ensureWethBalance(inputAmount)
     await weth.approve(addAssetAction.address, inputAmount, { from: userAddress })
     const data = getAddAssetArgs(userAddress, inputAmount)
@@ -115,15 +115,18 @@ contract('AddAssetAction', function (accounts: string[]) {
 
   it('transfers an ERC20 in a workflow', async () => {
     // percentages have 4 decimals of precision (1/10th of a basis point)
-    const feePercentage = new BN('30')
+    const feePercentage = new BN('300')
     const expectedFee = inputAmount.mul(feePercentage).div(new BN('1000000'))
 
     // ensure WETH balance
     const userWethBalanceBefore = await ensureWethBalance(inputAmount)
-    const expectedUserBalanceAfter = userWethBalanceBefore.sub(expectedFee)
-    // runner's balance should be zero but check anyway
-    const runnerWethBalanceBefore = await weth.balanceOf(runner.address)
 
+    // all the user is doing is transferring in and then getting refunded, but the refund is less the fee
+    const expectedUserBalanceAfter = userWethBalanceBefore.sub(expectedFee)
+
+    // runner's weth balance should increase by fee
+    const runnerWethBalanceBefore = await weth.balanceOf(runner.address)
+    const expectedRunnerBalanceAfter = runnerWethBalanceBefore.add(expectedFee)
     // approve WETH transfer
     await weth.approve(runner.address, inputAmount, { from: userAddress })
 
@@ -152,13 +155,12 @@ contract('AddAssetAction', function (accounts: string[]) {
 
     logEvents(txResponse)
 
-    // not much to assert here:
-    // the asset gets transferred to runner in the one and only step of the workflow
-    // and then refunded to the user after the workflow completes
-    // resulting in no net change do anything's balances
     const runnerWethBalanceAfter = await weth.balanceOf(runner.address)
     const userWethBalanceAfter = await weth.balanceOf(userAddress)
-    expect(runnerWethBalanceAfter.toString()).to.equal(expectedFee.toString())
+    expect(runnerWethBalanceAfter.toString()).to.equal(expectedRunnerBalanceAfter.toString())
     expect(userWethBalanceAfter.toString()).to.equal(expectedUserBalanceAfter.toString())
+    // prettier-ignore
+    console.log(`fmp blance before=${runnerWethBalanceBefore.toString()} after=${runnerWethBalanceAfter.toString()} delta=${runnerWethBalanceAfter.sub(runnerWethBalanceBefore).toString()}`
+    )
   })
 })

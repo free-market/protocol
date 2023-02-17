@@ -7,7 +7,7 @@ import { EIP1193Provider } from 'eip1193-provider'
 import { promisify } from 'util'
 import HDWalletProvider from '@truffle/hdwallet-provider'
 const truffleContract = require('@truffle/contract')
-import { getNetworkConfig } from '../utils/contract-addresses'
+import { getNetworkConfig } from '../tslib/contract-addresses'
 import {
   getStargateRequiredNative,
   getStargateMinAmountOut,
@@ -23,6 +23,8 @@ import {
   IStargateRouterInstance,
   StargateBridgeActionInstance,
   WorkflowRunnerInstance,
+  IAaveV3PoolInstance,
+  MockAavePoolInstance,
 } from '../types/truffle-contracts'
 
 import FrontDoorArtifact from '../build/contracts/FrontDoor.json'
@@ -32,8 +34,9 @@ import IERC20Artifact from '../build/contracts/IERC20.json'
 import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
 import MockAavePoolArtifact from '../build/contracts/MockAavePool.json'
 import AaveSupplyActionArtifact from '../build/contracts/AaveSupplyAction.json'
+import IAaveV3PoolArtifact from '../build/contracts/IAaveV3Pool.json'
 
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
 import { AssetType } from '../tslib/AssetType'
 import { encodeStargateBridgeArgs, getStargateBridgeActionAddress, waitForNonce, waitForNonceOld } from '../tslib/StargateBridgeAction'
@@ -42,12 +45,6 @@ import { getBridgePayload } from '../tslib/encode-workflow'
 import { Asset } from '../tslib/Asset'
 import { IStargateRouter } from '../types/ethers-contracts'
 import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
-
-function formatStep(step: any) {
-  return `actionId: ${step.actionId}\nlatest:${step.latest}\nwhitelist: ${JSON.stringify(step.whitelist)}\nblacklist: ${JSON.stringify(
-    step.blacklist
-  )}`
-}
 
 const sleep = promisify(setTimeout)
 
@@ -99,6 +96,11 @@ interface WorkflowCostItem {
 test('does a stargate swap in a workflow', async (t) => {
   const inputAmount = new BN(1_000_000) // $1.00
 
+  const srcContractAddresses = getNetworkConfig(srcNetworkId)
+  const dstContractAddresses = getNetworkConfig(dstNetworkId)
+  const srcUsdcAddr = srcContractAddresses.sgUSDC
+  const dstUsdcAddr = dstContractAddresses.sgUSDC
+
   const srcWeb3 = new Web3(srcProvider as any)
   const dstWeb3 = new Web3(dstProvider as any)
 
@@ -118,26 +120,26 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(ActionIds.aaveSupply)
   const dstAaveSupplyAction = (await DstAaveSupplyAction.at(dstAaveSupplyActionAddr)) as AaveSupplyActionInstance
-  const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
+  const dstAavePoolAddr = await dstAaveSupplyAction.poolAddress()
+  const dstAavePool = (await DstMockAavePool.at(dstAavePoolAddr)) as MockAavePoolInstance
+  const reserveData = await dstAavePool.getReserveData(dstUsdcAddr)
+  const dstMockATokenAddr = reserveData.aTokenAddress
+
+  // const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
   const dstMockAToken = (await IERC20Dst.at(dstMockATokenAddr)) as IERC20Instance
   const aTokenBalanceBefore = await dstMockAToken.balanceOf(dstUserAddress)
 
   // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
 
-  const srcContractAddresses = getNetworkConfig(srcNetworkId)
-  const dstContractAddresses = getNetworkConfig(dstNetworkId)
-
   // const optimismUsdc = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
   // const arbitrumUsdc = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
-  const optimismUsdc = srcContractAddresses.sgUSDC
-  const arbitrumUsdc = dstContractAddresses.sgUSDC
 
-  const srcUsdc = (await IERC20Src.at(optimismUsdc)) as IERC20Instance
-  const dstUsdc = (await IERC20Dst.at(arbitrumUsdc)) as IERC20Instance
+  const srcUsdc = (await IERC20Src.at(srcUsdcAddr)) as IERC20Instance
+  const dstUsdc = (await IERC20Dst.at(dstUsdcAddr)) as IERC20Instance
 
   const srcUsdcAsset = {
     assetType: AssetType.ERC20,
-    assetAddress: optimismUsdc, // srcContractAddresses.sgUSDC,
+    assetAddress: srcUsdcAddr, // srcContractAddresses.sgUSDC,
   }
 
   // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
@@ -157,7 +159,7 @@ test('does a stargate swap in a workflow', async (t) => {
           {
             asset: {
               assetType: AssetType.ERC20,
-              assetAddress: arbitrumUsdc,
+              assetAddress: dstUsdcAddr,
             },
             amount: '1000000',
             amountIsPercent: true,
@@ -214,13 +216,14 @@ test('does a stargate swap in a workflow', async (t) => {
   const dstUsdcBalance = await dstUsdc.balanceOf(srcUserAddress)
   console.log(`before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`)
   console.log('approving input asset transfer...')
-  const allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
+  let allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
   console.log(`inputAmount=${inputAmount.toString()} allowance=${allowance.toString()}`)
   if (allowance.lt(inputAmount)) {
     await srcUsdc.approve(srcRunner.address, inputAmount, { from: srcUserAddress })
     console.log('input asset transfer approved')
   }
 
+  allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
   console.log(`allowance after approve: ${allowance}`)
 
   const approvalGasEstimate = await srcUsdc.approve.estimateGas(srcRunner.address, inputAmount, { from: srcUserAddress })

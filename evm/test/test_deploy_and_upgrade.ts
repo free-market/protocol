@@ -4,7 +4,7 @@ import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-cont
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { expectRejection } from './test-utilities'
 
 contract('deploy and upgrade', function (accounts: string[]) {

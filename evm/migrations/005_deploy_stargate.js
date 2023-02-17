@@ -2,8 +2,8 @@ var FrontDoor = artifacts.require('FrontDoor')
 var WorkflowRunner = artifacts.require('WorkflowRunner')
 var StargateBridgeAction = artifacts.require('StargateBridgeAction')
 
-var { getNetworkConfig } = require('../build/utils/contract-addresses')
-var { ActionIds } = require('../build/utils/actionIds')
+var { getNetworkConfig } = require('../build/tslib/contract-addresses')
+var { ActionIds } = require('../build/tslib/actionIds')
 
 module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()

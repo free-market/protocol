@@ -2,7 +2,7 @@ import { concatHex, hexByteLength } from '../e2e/hexStringUtils'
 import { EIP1193Provider } from 'eip1193-provider'
 import frontDoorArtifact from '../build/contracts/FrontDoor.json'
 import workflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from './actionIds'
 const truffleContract = require('@truffle/contract')
 const FrontDoor = truffleContract(frontDoorArtifact)
 const WorkflowRunner = truffleContract(workflowRunnerArtifact)

@@ -5,7 +5,7 @@ const UnwrapEther = artifacts.require('UnwrapEther')
 const IERC20 = artifacts.require('IERC20')
 const IWorkflowStep = artifacts.require('IWorkflowStep')
 
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { AssetType } from '../tslib/AssetType'
 import {
   commify,
@@ -18,7 +18,7 @@ import {
   ETH_ASSET,
   verbose,
 } from './test-utilities'
-import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
+import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 import { IERC20Instance } from '../types/truffle-contracts/IERC20'
 import BN from 'bn.js'
 import { AllEvents } from '../types/truffle-contracts/WorkflowRunner'
@@ -103,7 +103,7 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
 
     // verify eth balances
     expect(endingBalanceEth.lt(beginningBalanceEth)).to.be.true
-    const feePercent = new BN('30')
+    const feePercent = new BN('300')
     const fee = testAmount.mul(feePercent).div(new BN(1000000))
     const ethDelta = beginningBalanceEth.sub(endingBalanceEth).sub(fee)
     const expectedEth = beginningBalanceEth.sub(testAmount).sub(gasInWei)

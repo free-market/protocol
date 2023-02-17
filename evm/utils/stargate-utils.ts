@@ -9,7 +9,7 @@ import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
 import IStargateFactoryArtifact from '../build/contracts/IStargateFactory.json'
 import IStargatePoolArtifact from '../build/contracts/IStargatePool.json'
 import IStargateFeeLibraryArtifact from '../build/contracts/IStargateFeeLibrary.json'
-import { ActionIds } from './actionIds'
+import { ActionIds } from '../tslib/actionIds'
 
 // import { Contract } from 'web3-eth-contract'
 const Contract = require('web3-eth-contract')

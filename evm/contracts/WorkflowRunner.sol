@@ -24,8 +24,6 @@ contract WorkflowRunner is
   IWorkflowRunner, /*IUserProxyManager,*/
   IActionManager
 {
-  uint256 FEE_DECIBIPS = 300;
-
   constructor(address payable frontDoorAddress)
     FreeMarketBase(
       msg.sender, // owner
@@ -205,7 +203,7 @@ contract WorkflowRunner is
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
-      uint256 feeAmount = LibPercent.percentageOf(ab.amount, FEE_DECIBIPS);
+      uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
       uint256 userAmount = ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
@@ -215,8 +213,6 @@ contract WorkflowRunner is
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
-        uint256 amount = token.balanceOf(address(this));
-        require(ab.amount == amount, 'computed token balance does not match actual balance');
         SafeERC20.safeTransfer(token, userAddress, userAmount);
       } else {
         revert('unknown asset type in assetBalances');
