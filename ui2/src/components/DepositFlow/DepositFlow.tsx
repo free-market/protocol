@@ -236,6 +236,8 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
     bounce: 1,
   }
 
+  const { amount = '0.00' } = vm
+
   const amountButton = (
     <motion.button
       className="w-full text-left bg-stone-600 p-2 rounded group hover:bg-stone-500/75 flex justify-between items-stretch active:bg-stone-500/50 focus:outline focus:outline-2 focus:outline-offset-[-4px] focus:outline-sky-600/50"
@@ -248,7 +250,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
 
         <div className="flex items-center gap-2">
           <div className="text-stone-300 group-hover:text-stone-200 group-active:text-stone-200/75 font-bold leading-none py-1">
-            {vm.amount ?? '0.00'}
+            {amount.length === 0 ? '0.00' : amount}
           </div>
         </div>
       </div>
