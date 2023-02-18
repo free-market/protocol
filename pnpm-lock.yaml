@@ -270,6 +270,7 @@ importers:
       '@types/prismjs': 1.26.0
       '@types/react': 17.0.38
       '@types/react-dom': 17.0.11
+      '@types/react-helmet': 6.1.6
       '@types/react-syntax-highlighter': 15.5.5
       '@types/testing-library__jest-dom': 5.14.5
       '@typescript-eslint/eslint-plugin': ^5.51.0
@@ -322,6 +323,7 @@ importers:
       react-confetti: 6.1.0
       react-dom: ^18
       react-final-form: 6.5.9
+      react-helmet: 6.1.0
       react-refresh: ^0.10
       react-router-dom: 6.8.1
       react-scripts: ^5
@@ -362,6 +364,7 @@ importers:
       '@testing-library/dom': 8.18.1
       '@types/bn.js': 5.1.1
       '@types/prismjs': 1.26.0
+      '@types/react-helmet': 6.1.6
       '@types/react-syntax-highlighter': 15.5.5
       '@types/testing-library__jest-dom': 5.14.5
       '@usedapp/core': 1.1.5_ethers@5.7.2+react@18.2.0
@@ -392,6 +395,7 @@ importers:
       react-confetti: 6.1.0_react@18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-final-form: 6.5.9_b76tjmhm4bpbaoui6lan2hu4pm
+      react-helmet: 6.1.0_react@18.2.0
       react-refresh: 0.10.0
       react-router-dom: 6.8.1_biqbaboplfbrettd7655fr4n2y
       react-simple-code-editor: 0.13.0_5j6ti7usv4vm5kvbysyprdovd4_biqbaboplfbrettd7655fr4n2y
@@ -7420,6 +7424,12 @@ packages:
     dependencies:
       '@types/react': 18.0.21
     dev: true
+
+  /@types/react-helmet/6.1.6:
+    resolution: {integrity: sha512-ZKcoOdW/Tg+kiUbkFCBtvDw0k3nD4HJ/h/B9yWxN4uDO8OkRksWTO+EL+z/Qu3aHTeTll3Ro0Cc/8UhwBCMG5A==}
+    dependencies:
+      '@types/react': 18.0.21
+    dev: false
 
   /@types/react-syntax-highlighter/15.5.5:
     resolution: {integrity: sha512-QH3JZQXa2usAvJvSsdSUJ4Yu4j8ReuZpgRrEW+XP+Rmosbn425YshW9iGEb/pAARm8496axHhHUPRH3UmTiB6A==}
@@ -26984,6 +26994,18 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-helmet/6.1.0_react@18.2.0:
+    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
+    peerDependencies:
+      react: '>=16.3.0'
+    dependencies:
+      object-assign: 4.1.1
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-fast-compare: 3.2.0
+      react-side-effect: 2.1.2_react@18.2.0
+    dev: false
+
   /react-inspector/5.1.1_react@18.2.0:
     resolution: {integrity: sha512-GURDaYzoLbW8pMGXwYPDBIv6nqei4kK7LPRZ9q9HCZF54wqXz/dnylBp/kfE9XmekBhHvLDdcYeyIwSrvtOiWg==}
     peerDependencies:
@@ -27133,6 +27155,14 @@ packages:
       - webpack-plugin-serve
     dev: true
     patched: true
+
+  /react-side-effect/2.1.2_react@18.2.0:
+    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /react-simple-code-editor/0.13.0_5j6ti7usv4vm5kvbysyprdovd4_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-v49lVlDv6dlda92Hm+7PorN9V8k+Ech7Y52dPZ3QYClJXaciiYW42Ja/j6MPb5ZPfU6w34ZMi2HRsLhxUjBF8A==}

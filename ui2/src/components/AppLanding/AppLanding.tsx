@@ -4,10 +4,14 @@ import SharedWagmiConfig from '@component/SharedWagmiConfig'
 import DepositFlowStateProvider from '@component/DepositFlowStateProvider'
 import { useCallback, useState } from 'react'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
+import { useQueryParam, StringParam } from 'use-query-params'
+import cx from 'classnames'
+import { Helmet } from 'react-helmet'
 
 export const AppLanding = (): JSX.Element => {
   const [accepted, setAccepted] = useState(false)
   const [viewing, setViewing] = useState(false)
+  const [layout] = useQueryParam('layout', StringParam)
 
   const toggleCopy = useCallback(() => {
     setViewing(!viewing)
@@ -17,9 +21,22 @@ export const AppLanding = (): JSX.Element => {
     setAccepted(true)
   }, [setAccepted])
 
+  const embedded = layout === 'iframe'
+
   return (
     <>
-      <div className="w-full min-h-screen relative bg-stone-200">
+      {embedded && (
+        <Helmet>
+          <style type="text/css">
+            {'html, body { background-color: transparent !important }'}
+          </style>
+        </Helmet>
+      )}
+      <div
+        className={cx('w-full min-h-screen relative', {
+          'bg-stone-200': !embedded,
+        })}
+      >
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center px-2">
           <div className="relative z-10 w-full saturate-[0.9] rounded-xl bg-[#399fe7] relative overflow-hidden p-2 m-2 xl:m-20 shadow-md max-w-md space-y-2">
             <div>
@@ -27,7 +44,7 @@ export const AppLanding = (): JSX.Element => {
                 <span className="font-light px-2">DESTINATION:</span>
                 <div className="flex items-center gap-2">
                   <a
-                    href="https://staging.aave.com"
+                    href="https://app.aave.com"
                     target="_blank"
                     className="rounded bg-stone-200 text-stone-600 px-2 py-1 flex gap-2 items-center cursor-pointer relative group"
                   >
