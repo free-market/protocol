@@ -290,7 +290,7 @@ export const AppLanding = (): JSX.Element => {
                               </p>
                               <p className="text-sm text-stone-500">
                                 It may contain mistakes, defects and your funds
-                                may be lossed.
+                                may be lost.
                               </p>
                               <p className="text-sm text-stone-500">
                                 Free Market Labs, Inc. is not liable for any
