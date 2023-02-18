@@ -1,21 +1,29 @@
-import test from 'ava'
-import fs from 'fs'
-const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
+import AaveSupplyActionArtifact from '../build/contracts/AaveSupplyAction.json'
 import BN from 'bn.js'
-import Web3 from 'web3'
-import { EIP1193Provider } from 'eip1193-provider'
-import { promisify } from 'util'
+import FrontDoorArtifact from '../build/contracts/FrontDoor.json'
+import fs from 'fs'
 import HDWalletProvider from '@truffle/hdwallet-provider'
-const truffleContract = require('@truffle/contract')
+import IAaveV3PoolArtifact from '../build/contracts/IAaveV3Pool.json'
+import IERC20Artifact from '../build/contracts/IERC20.json'
+import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
+import MockAavePoolArtifact from '../build/contracts/MockAavePool.json'
+import StargateBridgeActionArtifact from '../build/contracts/StargateBridgeAction.json'
+import test from 'ava'
+import Web3 from 'web3'
+import WorkflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
+import { ActionIds } from '../tslib/actionIds'
+import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
+import { Asset } from '../tslib/Asset'
+import { AssetType } from '../tslib/AssetType'
+import { EIP1193Provider } from 'eip1193-provider'
+import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
+import { getBridgePayload } from '../tslib/encode-workflow'
 import { getNetworkConfig } from '../tslib/contract-addresses'
-import {
-  getStargateRequiredNative,
-  getStargateMinAmountOut,
-  getStargateRouterAddress,
-  StargateChainIds,
-  StargatePoolIds,
-} from '../utils/stargate-utils'
-
+import { IStargateRouter } from '../types/ethers-contracts'
+import { promisify } from 'util'
+const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
+const truffleContract = require('@truffle/contract')
 import {
   AaveSupplyActionInstance,
   FrontDoorInstance,
@@ -26,27 +34,16 @@ import {
   IAaveV3PoolInstance,
   MockAavePoolInstance,
 } from '../types/truffle-contracts'
-
-import FrontDoorArtifact from '../build/contracts/FrontDoor.json'
-import WorkflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
-import StargateBridgeActionArtifact from '../build/contracts/StargateBridgeAction.json'
-import IERC20Artifact from '../build/contracts/IERC20.json'
-import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
-import MockAavePoolArtifact from '../build/contracts/MockAavePool.json'
-import AaveSupplyActionArtifact from '../build/contracts/AaveSupplyAction.json'
-import IAaveV3PoolArtifact from '../build/contracts/IAaveV3Pool.json'
-
-import { ActionIds } from '../tslib/actionIds'
-import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
-import { AssetType } from '../tslib/AssetType'
-import { encodeStargateBridgeArgs, getStargateBridgeActionAddress, waitForNonce, waitForNonceOld } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/EvmWorkflow'
-import { getBridgePayload } from '../tslib/encode-workflow'
-import { Asset } from '../tslib/Asset'
-import { IStargateRouter } from '../types/ethers-contracts'
-import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
-
-const sleep = promisify(setTimeout)
+import {
+  getStargateRequiredNative,
+  getStargateMinAmountOut,
+  StargateChainIds,
+  StargatePoolIds,
+  encodeStargateBridgeArgs,
+  getStargateBridgeActionAddress,
+  waitForNonce,
+  waitForNonceOld,
+} from '../tslib/StargateBridgeAction'
 
 const srcChain = 'ethereumGoerli'
 const dstChain = 'arbitrumGoerli'
