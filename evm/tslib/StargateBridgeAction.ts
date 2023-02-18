@@ -1,21 +1,20 @@
-import { concatHex, hexByteLength } from '../e2e/hexStringUtils'
+import { defaultAbiCoder } from '@ethersproject/abi'
+import { BigNumber } from '@ethersproject/bignumber'
+import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
 import { EIP1193Provider } from 'eip1193-provider'
-import { BigNumber } from 'ethers'
 import log from 'loglevel'
 import Web3 from 'web3'
-import { default as frontDoorArtifact, default as FrontDoorArtifact } from '../build/contracts/FrontDoor.json'
-import { default as workflowRunnerArtifact, default as WorkflowRunnerArtifact } from '../build/contracts/WorkflowRunner.json'
 import {
   IERC20__factory,
-  StargateBridgeAction__factory,
-  WorkflowRunner__factory,
-  IStargatePool__factory,
-  IStargateRouter__factory,
   IStargateFactory__factory,
   IStargateFeeLibrary__factory,
+  IStargatePool__factory,
+  IStargateRouter__factory,
+  StargateBridgeAction__factory,
+  WorkflowRunner__factory,
 } from '../types/ethers-contracts'
 import { ActionIds } from './actionIds'
-import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
+import { concatHex, hexByteLength } from './hexStringUtils'
 
 export const StargateChainIds = {
   Ethereum: 101,
@@ -156,28 +155,34 @@ export interface StargateBridgeActionArgs {
   dstNativeAmount: string
   minAmountOut: string
   minAmountOutIsPercent: boolean
-  dstWorkflow: string
+  continuationWorkflow: string
 }
 
 export function encodeStargateBridgeArgs(args: StargateBridgeActionArgs) {
-  const web3 = new Web3()
-  const stargateSwapParams = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'uint16', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bool'],
+  console.log('encoding', JSON.stringify(args))
+  // const a = { dstActionAddress: '0x4E90a36B45879F5baE71B57Ad525e817aFA54890' }
+  const encodedArgs = defaultAbiCoder.encode(
     [
-      args.dstActionAddress,
-      args.dstUserAddress,
-      args.dstChainId,
-      args.srcPoolId,
-      args.dstPoolId,
-      args.dstGasForCall,
-      args.dstNativeAmount,
-      args.minAmountOut,
-      args.minAmountOutIsPercent,
-    ]
+      `tuple(
+        address dstActionAddress,
+        address dstUserAddress,
+        uint16 dstChainId,
+        uint256 srcPoolId,
+        uint256 dstPoolId,
+        uint256 dstGasForCall,
+        uint256 dstNativeAmount,
+        uint256 minAmountOut,
+        bool minAmountOutIsPercent,
+        bytes continuationWorkflow
+      )`,
+      // `tuple(
+      //   address dstActionAddress
+      // )`,
+    ],
+    [args]
   )
-
-  const lengthPrefix = web3.eth.abi.encodeParameters(['uint256'], [hexByteLength(stargateSwapParams)])
-  return concatHex(lengthPrefix, concatHex(stargateSwapParams, args.dstWorkflow))
+  return encodedArgs
+  // return concatHex(lengthPrefix, concatHex(stargateSwapParams, args.dstWorkflow))
 }
 
 export async function getStargateBridgeActionAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {

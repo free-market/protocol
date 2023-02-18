@@ -281,7 +281,7 @@ test('does a stargate swap in a workflow', async (t) => {
           dstNativeAmount: '0',
           minAmountOut: minAmountOut,
           minAmountOutIsPercent: false,
-          dstWorkflow: dstEncodedWorkflow,
+          continuationWorkflow: dstEncodedWorkflow,
         }),
         nextStepIndex: -1,
       },

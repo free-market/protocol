@@ -6,6 +6,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
     "@fmp/evm": "workspace:*",
     "ethers": "^5.7.2",
     "jest": "^28.1.0"
