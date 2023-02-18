@@ -1,29 +1,23 @@
-import AaveSupplyActionArtifact from '../build/contracts/AaveSupplyAction.json'
-import BN from 'bn.js'
-import FrontDoorArtifact from '../build/contracts/FrontDoor.json'
-import fs from 'fs'
-import HDWalletProvider from '@truffle/hdwallet-provider'
-import IAaveV3PoolArtifact from '../build/contracts/IAaveV3Pool.json'
-import IERC20Artifact from '../build/contracts/IERC20.json'
-import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
-import MockAavePoolArtifact from '../build/contracts/MockAavePool.json'
-import StargateBridgeActionArtifact from '../build/contracts/StargateBridgeAction.json'
+import log from 'loglevel'
+import '../utils/init-logger'
 import test from 'ava'
-import Web3 from 'web3'
-import WorkflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
-import { ActionIds } from '../tslib/actionIds'
-import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
-import { Asset } from '../tslib/Asset'
-import { AssetType } from '../tslib/AssetType'
-import { EIP1193Provider } from 'eip1193-provider'
-import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
-import { EvmWorkflow } from '../tslib/EvmWorkflow'
-import { getBridgePayload } from '../tslib/encode-workflow'
-import { getNetworkConfig } from '../tslib/contract-addresses'
-import { IStargateRouter } from '../types/ethers-contracts'
-import { promisify } from 'util'
+import fs from 'fs'
 const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
+import BN from 'bn.js'
+import Web3 from 'web3'
+import { EIP1193Provider } from 'eip1193-provider'
+import { promisify } from 'util'
+import HDWalletProvider from '@truffle/hdwallet-provider'
 const truffleContract = require('@truffle/contract')
+import { getNetworkConfig } from '../tslib/contract-addresses'
+import {
+  getStargateRequiredNative,
+  getStargateMinAmountOut,
+  getStargateRouterAddress,
+  StargateChainIds,
+  StargatePoolIds,
+} from '../utils/stargate-utils'
+
 import {
   AaveSupplyActionInstance,
   FrontDoorInstance,
@@ -34,16 +28,29 @@ import {
   IAaveV3PoolInstance,
   MockAavePoolInstance,
 } from '../types/truffle-contracts'
-import {
-  getStargateRequiredNative,
-  getStargateMinAmountOut,
-  StargateChainIds,
-  StargatePoolIds,
-  encodeStargateBridgeArgs,
-  getStargateBridgeActionAddress,
-  waitForNonce,
-  waitForNonceOld,
-} from '../tslib/StargateBridgeAction'
+
+import FrontDoorArtifact from '../build/contracts/FrontDoor.json'
+import WorkflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
+import StargateBridgeActionArtifact from '../build/contracts/StargateBridgeAction.json'
+import IERC20Artifact from '../build/contracts/IERC20.json'
+import IStargateRouterArtifact from '../build/contracts/IStargateRouter.json'
+import MockAavePoolArtifact from '../build/contracts/MockAavePool.json'
+import AaveSupplyActionArtifact from '../build/contracts/AaveSupplyAction.json'
+import IAaveV3PoolArtifact from '../build/contracts/IAaveV3Pool.json'
+
+import { ActionIds } from '../tslib/actionIds'
+import { AddAssetActionArgs, encodeAddAssetArgs } from '../tslib/AddAssetAction'
+import { AssetType } from '../tslib/AssetType'
+import { encodeStargateBridgeArgs, getStargateBridgeActionAddress, waitForNonce } from '../tslib/StargateBridgeAction'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
+import { getBridgePayload } from '../tslib/encode-workflow'
+import { Asset } from '../tslib/Asset'
+import { IStargateRouter } from '../types/ethers-contracts'
+import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
+
+const sleep = promisify(setTimeout)
+
+log.setLevel('debug')
 
 const srcChain = 'ethereumGoerli'
 const dstChain = 'arbitrumGoerli'
@@ -104,7 +111,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcUserAddress = (srcProvider as unknown as HDWalletProvider).getAddress(0)
   const dstUserAddress = (dstProvider as unknown as HDWalletProvider).getAddress(0)
 
-  console.log('initializing...')
+  log.debug('initializing...')
   const srcFrontDoor = (await FrontDoorSrc.deployed()) as FrontDoorInstance
   const dstFrontDoor = (await FrontDoorDst.deployed()) as FrontDoorInstance
   const srcRunner = (await WorkflowRunnerSrc.at(srcFrontDoor.address)) as WorkflowRunnerInstance
@@ -113,7 +120,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcStargateBridgeActionAddress = await srcRunner.getActionAddress(ActionIds.stargateBridge)
   const srcStargateBridgeAction = (await SrcStargateBridgeAction.at(srcStargateBridgeActionAddress)) as StargateBridgeActionInstance
   const srcStargateRouterAddress = await srcStargateBridgeAction.stargateRouterAddress()
-  console.log(`src StargateBridgeAction=${srcStargateBridgeActionAddress} StargateRouter=${srcStargateRouterAddress}`)
+  log.debug(`src StargateBridgeAction=${srcStargateBridgeActionAddress} StargateRouter=${srcStargateRouterAddress}`)
 
   const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(ActionIds.aaveSupply)
   const dstAaveSupplyAction = (await DstAaveSupplyAction.at(dstAaveSupplyActionAddr)) as AaveSupplyActionInstance
@@ -126,7 +133,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const dstMockAToken = (await IERC20Dst.at(dstMockATokenAddr)) as IERC20Instance
   const aTokenBalanceBefore = await dstMockAToken.balanceOf(dstUserAddress)
 
-  // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
+  // log.debug(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
 
   // const optimismUsdc = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
   // const arbitrumUsdc = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
@@ -141,7 +148,7 @@ test('does a stargate swap in a workflow', async (t) => {
 
   // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
   // TODO move into helper
-  const dstStargateActionAddr = await getStargateBridgeActionAddress(dstProvider)
+  const dstStargateActionAddr = await getStargateBridgeActionAddress(dstFrontDoor.address, dstProvider)
   const dstStargateAction = (await DstStargateBridgeAction.at(dstStargateActionAddr)) as StargateBridgeActionInstance
   const dstStargateRouterAddr = await dstStargateAction.stargateRouterAddress()
 
@@ -184,7 +191,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const minAmountOut = await getStargateMinAmountOut({
     provider: srcProvider,
     frontDoorAddress: srcFrontDoor.address,
-    inputAmount: inputAmount,
+    inputAmount: inputAmount.toString(),
     dstChainId: StargateChainIds.GoerliArbitrum,
     srcPoolId: StargatePoolIds.USDC,
     dstPoolId: StargatePoolIds.USDC,
@@ -196,8 +203,8 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcGasCost = new BN(srcGasCostStr)
   const dstGasCost = new BN(dstGasCostStr)
 
-  // console.log(`srcGasCost ${srcGasCostStr}`)
-  // console.log(`dstGasCost ${dstGasCostStr}`)
+  // log.debug(`srcGasCost ${srcGasCostStr}`)
+  // log.debug(`dstGasCost ${dstGasCostStr}`)
   // const dstWorkflowGasCostEstimate = new BN(dstGasEstimate).mul(dstGasCost)
 
   const stargateRequiredNative = await getStargateRequiredNative({
@@ -211,20 +218,19 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const srcUsdcBalance = await srcUsdc.balanceOf(srcUserAddress)
   const dstUsdcBalance = await dstUsdc.balanceOf(srcUserAddress)
-  console.log(`before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`)
-  console.log('approving input asset transfer...')
+  log.debug(`before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`)
+  log.debug('approving input asset transfer...')
   let allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
-  console.log(`inputAmount=${inputAmount.toString()} allowance=${allowance.toString()}`)
+  log.debug(`inputAmount=${inputAmount.toString()} allowance=${allowance.toString()}`)
   if (allowance.lt(inputAmount)) {
     await srcUsdc.approve(srcRunner.address, inputAmount, { from: srcUserAddress })
-    console.log('input asset transfer approved')
+    log.debug('input asset transfer approved')
   }
 
   allowance = await srcUsdc.allowance(srcUserAddress, srcRunner.address)
-  console.log(`allowance after approve: ${allowance}`)
+  log.debug(`allowance after approve: ${allowance}`)
 
   const approvalGasEstimate = await srcUsdc.approve.estimateGas(srcRunner.address, inputAmount, { from: srcUserAddress })
-  console.log('asdf')
 
   // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
   const ASSET_NATIVE: Asset = {
@@ -331,21 +337,21 @@ test('does a stargate swap in a workflow', async (t) => {
 
   const dstStargateActionBalance = await dstUsdc.balanceOf(dstStargateActionAddr)
 
-  console.log('submitting source chain workflow...')
+  log.debug('submitting source chain workflow...')
   const txResponse = await srcRunner.executeWorkflow(srcWorkflow, { from: srcUserAddress, value: stargateRequiredNative })
-  // console.log(JSON.stringify(txResponse, null, 4))
-  console.log(`tx=${txResponse.tx}`)
-  console.log('source chain workflow completed, waiting for continuation workflow...')
+  // log.debug(JSON.stringify(txResponse, null, 4))
+  log.debug(`tx=${txResponse.tx}`)
+  log.debug('source chain workflow completed, waiting for continuation workflow...')
   const startMillis = Date.now()
   const dstStargateActionBalanceAfter = await dstUsdc.balanceOf(dstStargateActionAddr)
   // prettier-ignore
-  // console.log(`before=${dstStargateActionBalance.toString()} after=${dstStargateActionBalanceAfter.toString()} diff=${dstStargateActionBalanceAfter.sub(dstStargateActionBalance).toString()}`)
+  // log.debug(`before=${dstStargateActionBalance.toString()} after=${dstStargateActionBalanceAfter.toString()} diff=${dstStargateActionBalanceAfter.sub(dstStargateActionBalance).toString()}`)
 
   // const sgRouterAddr = await getStargateRouterAddress(srcFrontDoor.address, srcProvider)
   // const sgRouter = (await IStargateRouter.at(sgRouterAddr)) as IStargateRouterInstance
 
   // await srcUsdc.approve(sgRouterAddr, inputAmount, { from: srcUserAddress })
-  // console.log('invoking stargate')
+  // log.debug('invoking stargate')
   // const sgResult = await sgRouter.swap(
   //   StargateChainIds.GoerliArbitrum, // dest chain
   //   StargatePoolIds.USDC, // src pool
@@ -363,28 +369,28 @@ test('does a stargate swap in a workflow', async (t) => {
   //   dstEncodedWorkflow,
   //   { from: srcUserAddress, value: stargateBridgeFee }
   // )
-  // console.log('stargate invoked', sgResult)
+  // log.debug('stargate invoked', sgResult)
 
   const dstProviderUrl = process.env['ARBITRUM_GOERLI_WS_URL']!
-  await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 30)
-  // await waitForNonce(
-  //   dstProviderUrl,
-  //   dstFrontDoor.address,
-  //   nonce,
-  //   60_000 * 5,
-  //   dstContractAddresses.sgUSDC,
-  //   dstMockATokenAddr,
-  //   dstUserAddress,
-  //   dstStargateActionAddr
-  // )
+  // await waitForNonceOld(dstProviderUrl, dstStargateActionAddr, dstContractAddresses.sgUSDC, nonce, 60_000 * 30)
+  await waitForNonce(
+    dstProviderUrl,
+    dstFrontDoor.address,
+    nonce,
+    60_000 * 3,
+    dstContractAddresses.sgUSDC,
+    dstMockATokenAddr,
+    dstUserAddress,
+    dstStargateActionAddr
+  )
   const endMillis = Date.now()
   const seconds = Math.round((endMillis - startMillis) / 1000)
-  console.log(console.log(`continuation workflow completed in ${seconds} seconds`))
+  log.debug(log.debug(`continuation workflow completed in ${seconds} seconds`))
 
   const aTokenBalanceAfter = await dstMockAToken.balanceOf(dstUserAddress)
-  console.log(`starting aTokens: ${aTokenBalanceBefore.toString()}`)
-  console.log(`ending aTokens:   ${aTokenBalanceAfter.toString()}`)
-  console.log(`difference:       ${aTokenBalanceAfter.sub(aTokenBalanceBefore).toString()}`)
+  log.debug(`starting aTokens: ${aTokenBalanceBefore.toString()}`)
+  log.debug(`ending aTokens:   ${aTokenBalanceAfter.toString()}`)
+  log.debug(`difference:       ${aTokenBalanceAfter.sub(aTokenBalanceBefore).toString()}`)
 
   // const srcUsdcBalanceAfter = await srcUsdc.balanceOf(userAddressSrc)
   // t.is(srcUsdcBalance.sub(inputAmount).toString(), srcUsdcBalanceAfter.toString(), 'source balance delta')
@@ -395,17 +401,17 @@ test('does a stargate swap in a workflow', async (t) => {
   // for (;;) {
   //   const dstUsdcBalanceAfter = await dstUsdc.balanceOf(userAddressSrc)
   //   if (dstUsdcBalanceAfter.gte(expectedDstUsdcBalanceAfter)) {
-  //     console.log(`after  srcUsdcBalance=${srcUsdcBalanceAfter.toString()} dstUsdcBalance=${dstUsdcBalanceAfter}`)
+  //     log.debug(`after  srcUsdcBalance=${srcUsdcBalanceAfter.toString()} dstUsdcBalance=${dstUsdcBalanceAfter}`)
   //     break
   //   }
   //   if (Date.now() >= timeOut) {
   //     t.fail('timeout waiting for dest balance to update')
   //   }
-  //   console.log(`expected balance not found, time remaining: ${(timeOut - Date.now()) / 1000}`)
+  //   log.debug(`expected balance not found, time remaining: ${(timeOut - Date.now()) / 1000}`)
   //   await sleep(5000)
   // }
 
-  // console.log(`sg result\n${JSON.stringify(sgResult)}`)
+  // log.debug(`sg result\n${JSON.stringify(sgResult)}`)
 
   await Promise.all([
     (srcProvider as unknown as HDWalletProvider).engine.stop(),

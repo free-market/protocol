@@ -14,7 +14,7 @@ const MockWorkflowRunner = artifacts.require('MockWorkflowRunner')
 import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, toChecksumAddress } from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
-import { hexByteLength, concatHex } from '../tslib/hexStringUtils'
+import { hexByteLength, concatHex } from '../e2e/hexStringUtils'
 import { ActionIds } from '../tslib/actionIds'
 import { encodeStargateBridgeArgs, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
 import { EvmWorkflow } from '../tslib/EvmWorkflow'

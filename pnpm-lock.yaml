@@ -73,6 +73,7 @@ importers:
       bn.js: ^5.2.1
       bs58: ^5.0.0
       chai: ^4.3.6
+      chalk: 4.1.2
       concurrently: ^7.6.0
       contract: link:@types/truffle/contract
       cross-env: ^7.0.3
@@ -88,6 +89,7 @@ importers:
       google-protobuf: ^3.21.2
       keccak: ^3.0.3
       loglevel: ^1.8.0
+      loglevel-plugin-prefix: ^0.8.4
       node-fetch: ^3.3.0
       nodemon: ^2.0.20
       rimraf: ^3.0.2
@@ -134,6 +136,7 @@ importers:
       axios: 1.2.1
       bn.js: 5.2.1
       chai: 4.3.6
+      chalk: 4.1.2
       concurrently: 7.6.0
       contract: link:@types/truffle/contract
       cross-env: 7.0.3
@@ -146,6 +149,7 @@ importers:
       ganache: 7.5.0
       google-protobuf: 3.21.2
       keccak: 3.0.3
+      loglevel-plugin-prefix: 0.8.4
       node-fetch: 3.3.0
       nodemon: 2.0.20
       rimraf: 3.0.2
@@ -10148,7 +10152,7 @@ packages:
       arrify: 3.0.0
       callsites: 4.0.0
       cbor: 8.1.0
-      chalk: 5.0.1
+      chalk: 5.2.0
       chokidar: 3.5.3
       chunkd: 2.0.1
       ci-info: 3.3.2
@@ -11467,7 +11471,7 @@ packages:
     dependencies:
       ansi-align: 3.0.1
       camelcase: 7.0.0
-      chalk: 5.0.1
+      chalk: 5.2.0
       cli-boxes: 3.0.0
       string-width: 5.1.2
       type-fest: 2.19.0
@@ -12103,6 +12107,11 @@ packages:
 
   /chalk/5.0.1:
     resolution: {integrity: sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: true
+
+  /chalk/5.2.0:
+    resolution: {integrity: sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
     dev: true
 
@@ -21149,6 +21158,10 @@ packages:
       triple-beam: 1.3.0
     dev: true
 
+  /loglevel-plugin-prefix/0.8.4:
+    resolution: {integrity: sha512-WpG9CcFAOjz/FtNht+QJeGpvVl/cdR6P0z6OcXSkr8wFJOsV2GRj2j10JLfjuA4aYkcKCNIEqRGCyTife9R8/g==}
+    dev: true
+
   /loglevel/1.8.0:
     resolution: {integrity: sha512-G6A/nJLRgWOuuwdNuA6koovfEV1YpqqAG4pRUlFaz3jj2QNZ8M4vBqnVA+HBTmU/AMNUtlOsMmSpF6NyOjztbA==}
     engines: {node: '>= 0.6.0'}
@@ -21392,7 +21405,7 @@ packages:
     dependencies:
       ansi-escapes: 5.0.0
       cardinal: 2.1.1
-      chalk: 5.0.1
+      chalk: 5.2.0
       cli-table3: 0.6.3
       marked: 4.1.0
       node-emoji: 1.11.0
