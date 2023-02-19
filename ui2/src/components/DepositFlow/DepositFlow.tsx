@@ -21,6 +21,8 @@ import { GenericExpandingSelectorRef } from '@component/GenericExpandingSelector
 import CrossChainJobCard from '@component/CrossChainJobCard'
 import FeePreview from '@component/FeePreview'
 
+type SourceNetworkAddress = 10 | 5
+
 export type DepositFlowProps = {
   layout?: 'default' | 'iframe'
   networkChoices?: SelectorChoice[]
@@ -684,6 +686,7 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               >
                 <div className="mt-32">
                   <CrossChainJobCard
+                    sourceNetwork={({5: 'ethereum', 10: 'optimism'} as Record<SourceNetworkAddress, 'optimism' | 'ethereum' | 'avalanche'>)[vm.selectedChain.address as SourceNetworkAddress]}
                     spinnerLocation="status"
                     status={
                       vm.flowStep === 'complete' ? 'completed' : 'sending'

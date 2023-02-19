@@ -90,9 +90,33 @@ export const DepositFlowStateProvider = (props: {
       }
       case 'SelectorResultClicked': {
         if (action.selector.name === 'chain') {
-          state.selectedChain = action.result
+          const { address } = action.result
+          if (typeof address === 'string') {
+            console.error(
+              'cannot handle action: chain address must be number',
+              {
+                action,
+              },
+            )
+
+            break
+          }
+
+          state.selectedChain = { address }
         } else if (action.selector.name === 'token') {
-          state.selectedToken = action.result
+          const { address } = action.result
+          if (typeof address === 'number') {
+            console.error(
+              'cannot handle action: token address must be hex string',
+              {
+                action,
+              },
+            )
+
+            break
+          }
+
+          state.selectedToken = { address }
         }
         break
       }
