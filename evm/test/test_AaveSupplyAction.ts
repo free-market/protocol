@@ -1,7 +1,6 @@
 import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
 import BN from 'bn.js'
-import { encodeAaveSupplyArgs } from '../tslib/AaveSupplyAction'
 import { AaveSupplyActionInstance, MockAavePoolInstance, MockTokenInstance } from '../types/truffle-contracts'
 import { ActionIds } from '../tslib/actionIds'
 import { AssetType } from '../tslib/AssetType'
@@ -21,7 +20,6 @@ contract('AaveSupplyAction', function (accounts: string[]) {
   let mockAToken!: MockTokenInstance
   let mockPool!: MockAavePoolInstance
   const userAddress = accounts[1]
-  const keepATokensData = encodeAaveSupplyArgs({ onBehalfOf: ADDRESS_ZERO })
   const inputAmount = new BN(10).pow(new BN(16)) // 0.01 ETH
   let inputAssetAmount!: AssetAmount
 

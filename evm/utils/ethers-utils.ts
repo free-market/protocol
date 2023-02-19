@@ -1,50 +1,35 @@
-import { ethers, BigNumberish, BigNumber, Signer, Wallet } from 'ethers'
-import { IUserProxyManager__factory, Weth__factory } from '../types/ethers-contracts'
+// import { ethers, BigNumberish, BigNumber, Signer } from 'ethers'
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
+import { Provider } from '@ethersproject/providers'
+import { Signer } from '@ethersproject/abstract-signer'
+import { Wallet } from '@ethersproject/wallet'
+import { HDNode } from '@ethersproject/hdnode'
+import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts'
+
+import BN from 'bn.js'
+import dotenv from 'dotenv'
+import fs from 'fs'
+import Web3 from 'web3'
+
+dotenv.config()
+// import { ethers, BigNumberish, BigNumber, Signer, Wallet } from 'ethers'
+// import { IUserProxyManager__factory, Weth__factory } from '../types/ethers-contracts'
 // import { IERC20__factory } from '../types/ethers-contracts/factories/IERC20__factory'
-import type { Provider } from '@ethersproject/providers'
+// import type { Provider } from '@ethersproject/providers'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-
-const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
-const CURVE_THREEPOOL_LPTOKEN_ADDRESS = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
-
-// export function getMainNetContracts(signerOrProvider: Signer | Provider) {
-//   return {
-//     weth: Weth__factory.connect(WETH_ADDRESS, signerOrProvider),
-//     curve3PoolLp: IERC20__factory.connect(CURVE_THREEPOOL_LPTOKEN_ADDRESS, signerOrProvider),
-//     usdt: IERC20__factory.connect(USDT_ADDRESS, signerOrProvider),
-//     usdc: IERC20__factory.connect(USDC_ADDRESS, signerOrProvider),
-//   }
-// }
-
-export async function getUserProxyAddress(frontDoorAddress: string, userWallet: Wallet) {
-  // obtain the user's proxy address via UserProxyManager
-  const userProxyManager = IUserProxyManager__factory.connect(frontDoorAddress, userWallet)
-  let userProxyAddress = await userProxyManager.getUserProxy()
-  if (userProxyAddress === ADDRESS_ZERO) {
-    console.log('creating user proxy')
-    const txResult = await userProxyManager.createUserProxy()
-    const txReceipt = await userWallet.provider.getTransactionReceipt(txResult.hash)
-    console.log('user proxy created, gas: ' + txReceipt.gasUsed.toString())
-    userProxyAddress = await userProxyManager.getUserProxy()
-  }
-  console.log('user proxy address', userProxyAddress)
-  return userProxyAddress
-}
 
 export async function ensureEthBalance(targetBalanceWei: BigNumber, fromWallet: Wallet, toAddress: string) {
   const targetAddressBalanceWei = await fromWallet.provider.getBalance(toAddress)
   const weiToSend = targetBalanceWei.sub(targetAddressBalanceWei)
   if (!weiToSend.isNegative() && !weiToSend.isZero()) {
-    console.log(`sending ${ethers.utils.formatEther(weiToSend)} ETH to ${toAddress}`)
+    console.log(`sending ${weiToSend} ETH to ${toAddress}`)
     await fromWallet.sendTransaction({
       to: toAddress,
       value: weiToSend,
     })
     const userProxyBalanceEthAfter = await fromWallet.provider.getBalance(toAddress)
-    console.log(`ETH sent, current balance: ${ethers.utils.formatEther(userProxyBalanceEthAfter)}`)
+    console.log(`ETH sent, current balance: ${userProxyBalanceEthAfter}`)
   }
 }
 
@@ -57,11 +42,38 @@ export async function getEthBalanceShortfall(targetBalanceWei: BigNumber, provid
   return BigNumber.from('0')
 }
 
-export const STEPID = {
-  ETH_WETH: 0,
-  CURVE_TRICRYPTO_SWAP: 1,
-  CURVE_3POOL_SWAP: 2,
-  WORMHOLE: 3,
-  WITHDRAWAL: 4,
-  CURVE_3POOL_FUND: 5,
+export async function getContractAddressViaProvider(providerUrl: string, contractName: string): Promise<string> {
+  // can't find a way to get networkId from ethers (it supports chainId which is different)
+  const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl))
+  const networkId = await web3.eth.net.getId()
+  return getContractAddressViaNetworkId(networkId, contractName)
+}
+
+export function getContractAddressViaNetworkId(networkId: number, contractName: string): string {
+  const content = fs.readFileSync(`./build/contracts/${contractName}.json`).toString()
+  const json = JSON.parse(content)
+  return json.networks[networkId].address
+}
+
+function getProvider(signerOrProvider: Signer | Provider): Provider {
+  if ('provider' in signerOrProvider) {
+    return signerOrProvider.provider!
+  }
+  if ('getNetwork' in signerOrProvider) {
+    return signerOrProvider
+  }
+  throw new Error('could not get signer or provider')
+}
+
+// export async function getFrontDoor(signerOrProvider: Signer | Provider, address?: string) {
+//   const provider = getProvider(signerOrProvider)
+//   const addr = address || (await getDeployedContractAddress(provider, 'FrontDoor'))
+//   return FrontDoor__factory.connect(addr, signerOrProvider)
+// }
+
+export function getWalletFromMnemonic(mnemonic: string, testAccountIndex: number, provider: Provider): Wallet {
+  const hdNode = HDNode.fromMnemonic(mnemonic)
+  const wallet = new Wallet(hdNode.derivePath(`m/44'/60'/0'/0/${testAccountIndex}`).privateKey, provider)
+  wallet.connect(provider)
+  return wallet
 }

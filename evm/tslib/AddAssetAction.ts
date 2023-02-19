@@ -1,8 +1,7 @@
-import BN from 'bn.js'
 import Web3 from 'web3'
 export interface AddAssetActionArgs {
   fromAddress: string
-  amount: BN | string | number
+  amount: string | number
 }
 
 export function encodeAddAssetArgs(args: AddAssetActionArgs) {

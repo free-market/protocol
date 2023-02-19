@@ -48,7 +48,7 @@ contract('AddAssetAction', function (accounts: string[]) {
   function getAddAssetArgs(address: string, amount: BN | string | number) {
     const args: AddAssetActionArgs = {
       fromAddress: userAddress,
-      amount: inputAmount,
+      amount: inputAmount.toString(),
     }
     return web3.eth.abi.encodeParameters(['address', 'uint256'], [args.fromAddress, toBN(args.amount)])
   }
@@ -133,7 +133,7 @@ contract('AddAssetAction', function (accounts: string[]) {
     // invoke workflow
     const args: AddAssetActionArgs = {
       fromAddress: userAddress,
-      amount: inputAmount,
+      amount: inputAmount.toString(),
     }
 
     const addAssetArgs = web3.eth.abi.encodeParameters(['address', 'uint256'], [args.fromAddress, args.amount])

@@ -192,53 +192,6 @@ export async function getStargateBridgeActionAddress(frontDoorAddress: string, p
   return stargateBridgeActionAddress
 }
 
-export function waitForNonce(
-  webSocketProviderUrl: string,
-  frontDoorAddress: string,
-  nonce: string,
-  timeoutMillis: number,
-  dstUsdcAddr: string,
-  dstATokenAddr: string,
-  dstUserAddr: string,
-  dstActionAddr: string
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const provider = new WebSocketProvider(webSocketProviderUrl)
-    const runner = WorkflowRunner__factory.connect(frontDoorAddress, provider)
-    const expectedNonce = BigNumber.from(nonce)
-    const filter = runner.filters.WorkflowContinuation(null, null, null)
-
-    const dstUsdc = IERC20__factory.connect(dstUsdcAddr, provider)
-    const dstAToken = IERC20__factory.connect(dstATokenAddr, provider)
-
-    let x = 0
-    const updaterInterval = setInterval(async () => {
-      x += 10
-      // log.debug('elapsed: ' + x)
-      const [actionUsdc, userUsdc, userAToken] = await Promise.all([
-        dstUsdc.balanceOf(dstActionAddr),
-        dstUsdc.balanceOf(dstUserAddr),
-        dstAToken.balanceOf(dstUserAddr),
-      ])
-
-      log.debug(`elapsed=${x} | action usdc=${actionUsdc} | user usdc=${userUsdc} | user aToken=${userAToken}`)
-    }, 10_000)
-
-    const timeout = setTimeout(() => {
-      runner.removeAllListeners() // canceles the subscription
-      clearInterval(updaterInterval)
-      reject('timeout')
-    }, timeoutMillis)
-    runner.on(filter, (nonce, _userAddress, startingAsset, _event) => {
-      if (nonce.eq(expectedNonce)) {
-        runner.removeAllListeners()
-        clearInterval(updaterInterval)
-        clearTimeout(timeout)
-        resolve(startingAsset.amount.toString())
-      }
-    })
-  })
-}
 
 // const StargatePoolIdsByChain: Record<string, number[]> = {
 //   Ethereum: [1, 2, 3, 7, 11, 13, 14, 15, 16, 17, 19],
