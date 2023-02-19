@@ -7,6 +7,8 @@ import cx from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useState } from 'react'
 
+type NetworkName = 'optimism' | 'avalanche' | 'ethereum'
+
 export const CrossChainJobCard = (props: {
   status?: 'completed' | 'sending'
   transactionView?: 'tall' | 'compact'
@@ -14,7 +16,7 @@ export const CrossChainJobCard = (props: {
   pulseBehavior?: 'gradient' | 'pulse'
   layoutId?: string
   cardTitle?: string
-  sourceNetwork?: 'avalanche' | 'ethereum' // TODO: support all networks
+  sourceNetwork?: NetworkName
   sourceTransaction?: { hash: string }
   destinationTransaction?: { hash: string }
 }): JSX.Element => {
@@ -95,6 +97,14 @@ export const CrossChainJobCard = (props: {
     />
   )
 
+  const currentTransactionIndicator = (
+    <div
+      className={cx('rounded border-2 border-stone-300 h-3', {
+        'animate-pulse': pulseBehavior !== 'pulse',
+      })}
+    ></div>
+  )
+
   const avalanchePill = (
     <div className="rounded bg-[#E84142] w-[calc(100%-2rem)] h-4 flex justify-between relative overflow-hidden border border-stone-600">
       {spinnerLocation === 'transaction' && transactionSpinner}
@@ -112,6 +122,30 @@ export const CrossChainJobCard = (props: {
               }}
               className="w-full h-full"
               src="https://app.aave.com/icons/networks/avalanche.svg"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  const optimismPill = (
+    <div className="rounded bg-[#FF0421] w-[calc(100%-2rem)] h-4 flex justify-between relative overflow-hidden border border-stone-600">
+      {spinnerLocation === 'transaction' && transactionSpinner}
+
+      {spinnerLocation === 'status' && <div></div>}
+
+      <div className="">
+        <div className="h-4 mx-4 overflow-hidden flex items-center">
+          <div className="w-6 h-6 relative">
+            <motion.img
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: 1,
+                transition: { delay: 1.3 },
+              }}
+              className="w-full h-full"
+              src="https://app.aave.com/icons/networks/optimism.svg"
             />
           </div>
         </div>
@@ -167,13 +201,11 @@ export const CrossChainJobCard = (props: {
     </div>
   )
 
-  const currentTransactionIndicator = (
-    <div
-      className={cx('rounded border-2 border-stone-300 h-3', {
-        'animate-pulse': pulseBehavior !== 'pulse',
-      })}
-    ></div>
-  )
+  const pills: Record<NetworkName, React.ReactNode> = {
+    ethereum: ethereumPill,
+    avalanche: avalanchePill,
+    optimism: optimismPill,
+  }
 
   const compactTransactionView = (
     <>
@@ -182,7 +214,7 @@ export const CrossChainJobCard = (props: {
           <div className="absolute left-0 top-0 bottom-0 flex items-center"></div>
 
           <div className="pl-2 flex items-center gap-2">
-            {sourceNetwork === 'ethereum' ? ethereumPill : avalanchePill}
+            {pills[sourceNetwork]}
 
             <AnimatePresence>
               <motion.svg
@@ -368,6 +400,7 @@ export const CrossChainJobCard = (props: {
                       {
                         'bg-[#E84142]': sourceNetwork === 'avalanche',
                         'bg-[#627eea]': sourceNetwork === 'ethereum',
+                        'bg-[#FF0421]': sourceNetwork === 'optimism',
                       },
                     )}
                   >
@@ -377,9 +410,11 @@ export const CrossChainJobCard = (props: {
                           <span className="text-xs">01 /</span>{' '}
                           <span className="text-stone-400 font-[Inter] font-bold pl-2">
                             {
-                              { avalanche: 'Avalanche', ethereum: 'Ethereum' }[
-                                sourceNetwork
-                              ]
+                              {
+                                avalanche: 'Avalanche',
+                                ethereum: 'Ethereum',
+                                optimism: 'Optimism',
+                              }[sourceNetwork]
                             }
                           </span>
                         </div>

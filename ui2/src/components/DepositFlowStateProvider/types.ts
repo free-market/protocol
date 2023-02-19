@@ -113,8 +113,8 @@ export type State = {
   amount?: string
   tokenSearchValue: string
   highlightedSelectorResult?: { address: string | number }
-  selectedChain: { address: string | number }
-  selectedToken: { address: string | number }
+  selectedChain: { address: number }
+  selectedToken: { address: string }
   selectorRecentlyChanged: boolean
   sourceTransaction?: { hash: string }
   destinationTransaction?: { hash: string }
