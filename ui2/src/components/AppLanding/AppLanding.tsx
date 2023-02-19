@@ -44,7 +44,7 @@ export const AppLanding = (): JSX.Element => {
                 <span className="font-light px-2">DESTINATION:</span>
                 <div className="flex items-center gap-2">
                   <a
-                    href="https://app.aave.com/?marketName=proto_arbitrum_v3"
+                    href="https://aave-xdeposit-demo-a4xy.vercel.app/?marketName=proto_arbitrum_v3"
                     target="_blank"
                     className="rounded bg-stone-200 text-stone-600 px-2 py-1 flex gap-2 items-center cursor-pointer relative group"
                   >
