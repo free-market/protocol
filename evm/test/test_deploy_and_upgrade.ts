@@ -1,10 +1,10 @@
-import { ADDRESS_ZERO } from '../utils/ethers-utils'
+import { ADDRESS_ZERO } from '../tslib/contract-addresses'
 import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
 
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
-import { ActionIds } from '../utils/actionIds'
+import { ActionIds } from '../tslib/actionIds'
 import { expectRejection } from './test-utilities'
 
 contract('deploy and upgrade', function (accounts: string[]) {

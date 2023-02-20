@@ -3,8 +3,8 @@ var WorkflowRunner = artifacts.require('WorkflowRunner')
 var WrapEther = artifacts.require('WrapEther')
 var UnwrapEther = artifacts.require('UnwrapEther')
 
-var { getNetworkConfig } = require('../build/utils/contract-addresses')
-var { ActionIds } = require('../build/utils/actionIds')
+var { getNetworkConfig } = require('../build/tslib/contract-addresses')
+var { ActionIds } = require('../build/tslib/actionIds')
 
 var { promisify } = require('util')
 var sleep = promisify(setTimeout)

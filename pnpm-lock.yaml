@@ -46,7 +46,14 @@ importers:
       '@aave/core-v3': ^1.17.2
       '@ava/typescript': ^3.0.1
       '@ethersproject/abi': ^5.7.0
+      '@ethersproject/abstract-signer': ^5.7.0
+      '@ethersproject/bignumber': ^5.7.0
+      '@ethersproject/contracts': ^5.7.0
+      '@ethersproject/experimental': ^5.7.0
+      '@ethersproject/hdnode': ^5.7.0
       '@ethersproject/providers': ^5.7.2
+      '@ethersproject/solidity': ^5.7.0
+      '@ethersproject/wallet': ^5.7.0
       '@openzeppelin/contracts': ^4.8.0
       '@truffle/config': ^1.3.45
       '@truffle/contract': ^4.6.12
@@ -73,6 +80,7 @@ importers:
       bn.js: ^5.2.1
       bs58: ^5.0.0
       chai: ^4.3.6
+      chalk: 4.1.2
       concurrently: ^7.6.0
       contract: link:@types/truffle/contract
       cross-env: ^7.0.3
@@ -88,6 +96,7 @@ importers:
       google-protobuf: ^3.21.2
       keccak: ^3.0.3
       loglevel: ^1.8.0
+      loglevel-plugin-prefix: ^0.8.4
       node-fetch: ^3.3.0
       nodemon: ^2.0.20
       rimraf: ^3.0.2
@@ -102,6 +111,13 @@ importers:
       web3-utils: ^1.8.1
     dependencies:
       '@aave/core-v3': 1.17.2
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/experimental': 5.7.0
+      '@ethersproject/hdnode': 5.7.0
+      '@ethersproject/solidity': 5.7.0
+      '@ethersproject/wallet': 5.7.0
       '@truffle/config': 1.3.45
       '@truffle/hdwallet-provider': 2.1.2_@babel+core@7.19.1
       big.js: 6.2.1
@@ -135,6 +151,7 @@ importers:
       axios: 1.2.1
       bn.js: 5.2.1
       chai: 4.3.6
+      chalk: 4.1.2
       concurrently: 7.6.0
       contract: link:@types/truffle/contract
       cross-env: 7.0.3
@@ -147,6 +164,7 @@ importers:
       ganache: 7.5.0
       google-protobuf: 3.21.2
       keccak: 3.0.3
+      loglevel-plugin-prefix: 0.8.4
       node-fetch: 3.3.0
       nodemon: 2.0.20
       rimraf: 3.0.2
@@ -244,6 +262,7 @@ importers:
       '@emotion/react': 11.10.4
       '@emotion/styled': 11.10.4
       '@ethersproject/abi': ^5.7.0
+      '@ethersproject/experimental': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@fmp/evm': workspace:*
       '@headlessui/react': 1.6.6
@@ -311,6 +330,7 @@ importers:
       immer: 9.0.16
       jest: ^28.1.0
       ladda: 2.0.3
+      loglevel: ^1.8.0
       node-polyfill-webpack-plugin: 2.0.1
       os-browserify: 0.3.0
       path-browserify: 1.0.1
@@ -355,6 +375,7 @@ importers:
       '@emotion/react': 11.10.4_epdrcolz2h2z2eazo6tjklb5uq
       '@emotion/styled': 11.10.4_klllyr6q6ddmynwlfkcjzvy5zy
       '@ethersproject/abi': 5.7.0
+      '@ethersproject/experimental': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@fmp/evm': link:../evm
       '@headlessui/react': 1.6.6_biqbaboplfbrettd7655fr4n2y
@@ -386,6 +407,7 @@ importers:
       https-browserify: 1.0.0
       immer: 9.0.16
       ladda: 2.0.3
+      loglevel: 1.8.0
       node-polyfill-webpack-plugin: 2.0.1_webpack@5.74.0
       os-browserify: 0.3.0
       path-browserify: 1.0.1
@@ -2846,6 +2868,17 @@ packages:
       '@ethersproject/properties': 5.7.0
       '@ethersproject/transactions': 5.7.0
 
+  /@ethersproject/experimental/5.7.0:
+    resolution: {integrity: sha512-DWvhuw7Dg8JPyhMbh/CNYOwsTLjXRx/HGkacIL5rBocG8jJC0kmixwoK/J3YblO4vtcyBLMa+sV74RJZK2iyHg==}
+    dependencies:
+      '@ethersproject/web': 5.7.1
+      ethers: 5.7.2
+      scrypt-js: 3.0.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
   /@ethersproject/hash/5.7.0:
     resolution: {integrity: sha512-qX5WrQfnah1EFnO5zJv1v46a8HW0+E5xuBBDTwMFZLuVTx0tbU2kkx15NqdjxecrLGatQN9FGQKpb1FKdHCt+g==}
     dependencies:
@@ -3195,7 +3228,7 @@ packages:
       '@graphql-tools/utils': 8.9.0_graphql@15.8.0
       dataloader: 2.1.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
       value-or-promise: 1.0.11
     dev: true
     optional: true
@@ -3222,7 +3255,7 @@ packages:
     dependencies:
       '@graphql-tools/utils': 8.9.0_graphql@15.8.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -3233,7 +3266,7 @@ packages:
     dependencies:
       '@graphql-tools/utils': 8.12.0_graphql@15.8.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -3246,7 +3279,7 @@ packages:
       '@graphql-tools/utils': 8.12.0_graphql@15.8.0
       fast-json-stable-stringify: 2.1.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -3258,7 +3291,7 @@ packages:
       '@graphql-tools/merge': 8.3.1_graphql@15.8.0
       '@graphql-tools/utils': 8.9.0_graphql@15.8.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
       value-or-promise: 1.0.11
     dev: true
     optional: true
@@ -3271,7 +3304,7 @@ packages:
       '@graphql-tools/merge': 8.3.6_graphql@15.8.0
       '@graphql-tools/utils': 8.12.0_graphql@15.8.0
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
       value-or-promise: 1.0.11
     dev: true
     optional: true
@@ -3282,7 +3315,7 @@ packages:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -3292,7 +3325,7 @@ packages:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -3967,7 +4000,7 @@ packages:
       '@motionone/easing': 10.14.0
       '@motionone/types': 10.14.0
       '@motionone/utils': 10.14.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@motionone/dom/10.13.1:
@@ -3978,14 +4011,14 @@ packages:
       '@motionone/types': 10.14.0
       '@motionone/utils': 10.14.0
       hey-listen: 1.0.8
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@motionone/easing/10.14.0:
     resolution: {integrity: sha512-2vUBdH9uWTlRbuErhcsMmt1jvMTTqvGmn9fHq8FleFDXBlHFs5jZzHJT9iw+4kR1h6a4SZQuCf72b9ji92qNYA==}
     dependencies:
       '@motionone/utils': 10.14.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@motionone/generators/10.14.0:
@@ -3993,7 +4026,7 @@ packages:
     dependencies:
       '@motionone/types': 10.14.0
       '@motionone/utils': 10.14.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@motionone/types/10.14.0:
@@ -4005,7 +4038,7 @@ packages:
     dependencies:
       '@motionone/types': 10.14.0
       hey-listen: 1.0.8
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@mrmlnc/readdir-enhanced/2.2.1:
@@ -4324,7 +4357,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tiny-warning: 1.0.3
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@reach/utils/0.16.0_biqbaboplfbrettd7655fr4n2y:
@@ -4336,7 +4369,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tiny-warning: 1.0.3
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /@redux-saga/core/1.2.1:
@@ -5889,7 +5922,7 @@ packages:
       flat-cache: 3.0.4
       micromatch: 4.0.5
       react-docgen-typescript: 2.2.2_typescript@4.9.5
-      tslib: 2.5.0
+      tslib: 2.4.0
       typescript: 4.9.5
       webpack: 5.74.0
     transitivePeerDependencies:
@@ -5908,7 +5941,7 @@ packages:
       flat-cache: 3.0.4
       micromatch: 4.0.5
       react-docgen-typescript: 2.2.2_typescript@4.9.5
-      tslib: 2.5.0
+      tslib: 2.4.0
       typescript: 4.9.5
       webpack: 5.74.0
     transitivePeerDependencies:
@@ -7060,7 +7093,7 @@ packages:
   /@types/bn.js/4.11.6:
     resolution: {integrity: sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg==}
     dependencies:
-      '@types/node': 18.11.11
+      '@types/node': 17.0.6
 
   /@types/bn.js/5.1.1:
     resolution: {integrity: sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==}
@@ -7367,7 +7400,6 @@ packages:
 
   /@types/node/17.0.6:
     resolution: {integrity: sha512-+XBAjfZmmivILUzO0HwBJoYkAyyySSLg5KCGBDFLomJo0sV6szvVLAf4ANZZ0pfWzgEds5KmGLG9D5hfEqOhaA==}
-    dev: true
 
   /@types/node/18.11.11:
     resolution: {integrity: sha512-KJ021B1nlQUBLopzZmPBVuGU9un7WJd/W4ya7Ih02B4Uwky5Nja0yGYav2EfYIk0RR2Q9oVhf60S2XR1BCWJ2g==}
@@ -10088,14 +10120,14 @@ packages:
     resolution: {integrity: sha512-x1FCFnFifvYDDzTaLII71vG5uvDwgtmDTEVWAxrgeiR8VjMONcCXJx7E+USjDtHlwFmt9MysbqgF9b9Vjr6w+w==}
     engines: {node: '>=4'}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /ast-types/0.14.2:
     resolution: {integrity: sha512-O0yuUDnZeQDL+ncNGlJ78BiO4jnYI3bvMsD5prT0/nsgijG/LpNBIr63gTjVTNsiGkgQhiyCShTgxt8oXOrklA==}
     engines: {node: '>=4'}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /astral-regex/2.0.0:
@@ -10158,7 +10190,7 @@ packages:
   /async-mutex/0.2.6:
     resolution: {integrity: sha512-Hs4R+4SPgamu6rSGW8C7cV9gaWUKEHykfzCCvIRuaVv636Ju10ZdeUbvb4TBEW0INuq2DHZqXbK4Nd3yG4RaRw==}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /async-retry/1.3.3:
@@ -10263,7 +10295,7 @@ packages:
       arrify: 3.0.0
       callsites: 4.0.0
       cbor: 8.1.0
-      chalk: 5.0.1
+      chalk: 5.2.0
       chokidar: 3.5.3
       chunkd: 2.0.1
       ci-info: 3.3.2
@@ -11979,7 +12011,7 @@ packages:
     dependencies:
       ansi-align: 3.0.1
       camelcase: 7.0.0
-      chalk: 5.0.1
+      chalk: 5.2.0
       cli-boxes: 3.0.0
       string-width: 5.1.2
       type-fest: 2.19.0
@@ -12257,14 +12289,6 @@ packages:
     dependencies:
       node-gyp-build: 4.4.0
 
-  /bufferutil/4.0.7:
-    resolution: {integrity: sha512-kukuqc39WOHtdxtw4UScxF/WVnMFVSQVKhtx3AjZJzhd0RGZZldcrfSEbVsWWe6KNH253574cq5F+wpv0G9pJw==}
-    engines: {node: '>=6.14.2'}
-    requiresBuild: true
-    dependencies:
-      node-gyp-build: 4.4.0
-    dev: false
-
   /builtin-modules/3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
     engines: {node: '>=6'}
@@ -12467,7 +12491,7 @@ packages:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /camelcase-css/2.0.1:
@@ -12642,6 +12666,11 @@ packages:
 
   /chalk/5.0.1:
     resolution: {integrity: sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: true
+
+  /chalk/5.2.0:
+    resolution: {integrity: sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
     dev: true
 
@@ -14837,7 +14866,7 @@ packages:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.5.0
+      tslib: 2.4.0
 
   /dot-prop/5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
@@ -18524,7 +18553,7 @@ packages:
       graphql: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
       graphql: 15.8.0
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
     optional: true
 
@@ -22618,6 +22647,10 @@ packages:
       triple-beam: 1.3.0
     dev: true
 
+  /loglevel-plugin-prefix/0.8.4:
+    resolution: {integrity: sha512-WpG9CcFAOjz/FtNht+QJeGpvVl/cdR6P0z6OcXSkr8wFJOsV2GRj2j10JLfjuA4aYkcKCNIEqRGCyTife9R8/g==}
+    dev: true
+
   /loglevel/1.8.0:
     resolution: {integrity: sha512-G6A/nJLRgWOuuwdNuA6koovfEV1YpqqAG4pRUlFaz3jj2QNZ8M4vBqnVA+HBTmU/AMNUtlOsMmSpF6NyOjztbA==}
     engines: {node: '>= 0.6.0'}
@@ -22668,7 +22701,7 @@ packages:
   /lower-case/2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
 
   /lowercase-keys/1.0.1:
     resolution: {integrity: sha512-G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==}
@@ -22921,7 +22954,7 @@ packages:
     dependencies:
       ansi-escapes: 5.0.0
       cardinal: 2.1.1
-      chalk: 5.0.1
+      chalk: 5.2.0
       cli-table3: 0.6.3
       marked: 4.1.0
       node-emoji: 1.11.0
@@ -23788,7 +23821,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.5.0
+      tslib: 2.4.0
 
   /node-abort-controller/3.0.1:
     resolution: {integrity: sha512-/ujIVxthRs+7q6hsdjHMaj8hRG9NuWmwrz+JdRwZ14jdFoKSkm+vDsCbF9PLpnSqjaWQJuTmVtcWHNLr+vrOFw==}
@@ -24712,7 +24745,7 @@ packages:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /parent-module/1.0.1:
@@ -24842,7 +24875,7 @@ packages:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /pascalcase/0.1.1:
@@ -28101,9 +28134,9 @@ packages:
       '@babel/runtime': 7.20.1
       eventemitter3: 4.0.7
       uuid: 8.3.2
-      ws: 8.6.0_3cxu5zja4e2r5wmvge7mdcljwq
+      ws: 8.6.0_hcncwespmqodzcu7vroqfx4wjq
     optionalDependencies:
-      bufferutil: 4.0.7
+      bufferutil: 4.0.6
       utf-8-validate: 5.0.10
     dev: false
 
@@ -28151,13 +28184,13 @@ packages:
   /rxjs/7.5.6:
     resolution: {integrity: sha512-dnyv2/YsXhnm461G+R/Pe5bWP41Nm6LBXEYWI6eiFP4fiwx6WRI/CD0zbdVAudd9xwLEF2IDcKXLHit0FYjUzw==}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /rxjs/7.8.0:
     resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: true
 
   /safe-buffer/5.1.1:
@@ -28766,7 +28799,7 @@ packages:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.5.0
+      tslib: 2.4.0
     dev: false
 
   /snapdragon-node/2.1.1:
@@ -30671,9 +30704,6 @@ packages:
 
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
-
-  /tslib/2.5.0:
-    resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
 
   /tss-react/4.2.0_gyryel6m34lsxtsejhafetjriq:
     resolution: {integrity: sha512-f0ov6IG8voaJpQ2j31leaOBIwZ1eRz2LOmWhdrMm4ERLTuyQm1Lw8VlVrqcqrpa+fP3UuFrwkLnWUARKZp20lg==}
@@ -33440,7 +33470,7 @@ packages:
         optional: true
     dev: true
 
-  /ws/8.6.0_3cxu5zja4e2r5wmvge7mdcljwq:
+  /ws/8.6.0_hcncwespmqodzcu7vroqfx4wjq:
     resolution: {integrity: sha512-AzmM3aH3gk0aX7/rZLYvjdvZooofDu3fFOzGqcSnQ1tOcTWwhM/o+q++E8mAyVVIyUdajrkzWUGftaVSDLn1bw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -33452,7 +33482,7 @@ packages:
       utf-8-validate:
         optional: true
     dependencies:
-      bufferutil: 4.0.7
+      bufferutil: 4.0.6
       utf-8-validate: 5.0.10
     dev: false
 

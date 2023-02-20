@@ -1,5 +1,5 @@
-// const { ActionIds } = require('./utils/actionIds')
-// const { AssetType } = require('./utils/AssetType')
+// const { ActionIds } = require('./tslib/actionIds')
+// const { AssetType } = require('./tslib/AssetType')
 const truffleContract = require('@truffle/contract')
 
 async function getEth(addr) {

@@ -2,8 +2,7 @@ var FrontDoor = artifacts.require('FrontDoor')
 var WorkflowRunner = artifacts.require('WorkflowRunner')
 var AddAssetAction = artifacts.require('AddAssetAction')
 
-var { getNetworkConfig } = require('../build/utils/contract-addresses')
-var { ActionIds } = require('../build/utils/actionIds')
+var { ActionIds } = require('../build/tslib/actionIds')
 
 var { promisify } = require('util')
 var sleep = promisify(setTimeout)

@@ -1,3 +1,5 @@
+export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
+
 const NetworkIdToName = {
   '1': 'ethereum',
   '5': 'ethereumGoerli',
@@ -22,11 +24,11 @@ const ADDRESSES: Record<string, Record<string, string>> = {
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
   },
   ethereumGoerli: {
-    sgUSDC: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
-    sgUSDT: '0x5BCc22abEC37337630C0E0dd41D64fd86CaeE951',
+    // USDC: '0x07865c6E87B9F70255377e024ace6630C1Eaa37F',
+    // USDT: '0x509Ee0d083DdF8AC028f2a56731412edD63223B9',
+    USDC: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620', // stargate
+    USDT: '0x5BCc22abEC37337630C0E0dd41D64fd86CaeE951', // stargate
     WETH: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-    USDC: '0x07865c6E87B9F70255377e024ace6630C1Eaa37F',
-    USDT: '0x509Ee0d083DdF8AC028f2a56731412edD63223B9',
     wormholeChainName: 'ethereum',
     wormholeCoreBridge: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
     wormholeTokenBridge: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
@@ -35,26 +37,23 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   },
   avalanche: {
     stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   },
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
-    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
-    USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   },
   optimism: {
     stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
-    aaveAToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
-    USDC: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
   },
   avalancheGoerli: {
     // stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
   },
   arbitrumGoerli: {
     stargateRouter: '0xb850873f4c993Ac2405A1AdD71F6ca5D4d4d6b4f',
-    sgUSDC: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
-    sgUSDT: '0x533046F316590C19d99c74eE661c6d541b64471C',
+    USDC: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291', // stargate
+    USDT: '0x533046F316590C19d99c74eE661c6d541b64471C', // stargate
     aaveUSDC: '0x72A9c57cD5E2Ff20450e409cF6A542f1E6c710fc',
   },
 }

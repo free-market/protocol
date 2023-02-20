@@ -13,7 +13,10 @@ struct AddAssetActionArgs {
 }
 
 contract AddAssetAction is IWorkflowStep {
-  event AssetAdded(address userAddress, AssetType assetType, address assetAddress, uint256 amount);
+  /// @notice This event is emitted when AddAssetAction is executed
+  /// @param fromAddress The address from which the asset is transferred into this workflow instance
+  /// @param assetAmount The asset and amount that is transferred into this workflow instance
+  event AssetAdded(address fromAddress, AssetAmount assetAmount);
 
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
@@ -27,10 +30,11 @@ contract AddAssetAction is IWorkflowStep {
 
     // decode arguments
     AddAssetActionArgs memory args = abi.decode(data, (AddAssetActionArgs));
-    emit AssetAdded(args.userAddress, outputAssets[0].assetType, outputAssets[0].assetAddress, args.amount);
-    IERC20 erc20 = IERC20(outputAssets[0].assetAddress);
+
+    emit AssetAdded(args.userAddress, AssetAmount(outputAssets[0], args.amount));
 
     // transfer the token to this
+    IERC20 erc20 = IERC20(outputAssets[0].assetAddress);
     SafeERC20.safeTransferFrom(erc20, args.userAddress, address(this), args.amount);
 
     // return amount transferred

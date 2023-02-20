@@ -13,9 +13,9 @@ const MockWorkflowRunner = artifacts.require('MockWorkflowRunner')
 
 import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, toChecksumAddress } from './test-utilities'
-import { getNetworkConfig, NetworkId } from '../utils/contract-addresses'
-import { hexByteLength, concatHex } from '../e2e/hexStringUtils'
-import { ActionIds } from '../utils/actionIds'
+import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
+
+import { ActionIds } from '../tslib/actionIds'
 import { encodeStargateBridgeArgs, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
 import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
@@ -62,7 +62,6 @@ contract('StargateBridgeAction', function (accounts: string[]) {
   const dstChain = 'arbitrumGoerli'
 
   it('calls mock stargate', async () => {
-    // const srcProvider = truffleConfig.networks[srcChain].provider() as HDWalletProvider
     const [mockToken, mockStargateRouter] = await Promise.all([MockToken.new(), MockStargateRouter.new()])
     const dummyFrontDoorAddr = toChecksumAddress(1)
     const stargateBridgeAction = await StargateBridgeAction.new(dummyFrontDoorAddr, mockStargateRouter.address)
@@ -82,7 +81,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
       dstNativeAmount: '5',
       minAmountOut: '100000',
       minAmountOutIsPercent: true,
-      dstWorkflow: '0xdeadbeef',
+      continuationWorkflow: '0xdeadbeef',
     }
     const params = encodeStargateBridgeArgs(sgbParams)
 
@@ -106,7 +105,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     expect(invos[0].lzTxParams.dstNativeAddr).to.equal(sgbParams.dstUserAddress.toLowerCase())
     expect(invos[0].minAmountOut).to.equal('1')
     expect(invos[0].lzTxParams.dstNativeAmount).to.equal(sgbParams.dstNativeAmount)
-    expect(invos[0].payload).to.equal(sgbParams.dstWorkflow)
+    expect(invos[0].payload).to.equal(sgbParams.continuationWorkflow)
   })
 
   it('can be invoked by stargate', async () => {

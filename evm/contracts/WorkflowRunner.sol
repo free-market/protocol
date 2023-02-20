@@ -114,21 +114,39 @@ contract WorkflowRunner is
     return ActionInfo(uint16(actionId), actionAddress, whitelist, blacklist);
   }
 
-  // function getUserProxyKey(string memory category, address addr) internal pure returns (bytes32) {
-  //   return keccak256(abi.encodePacked(category, addr));
-  // }
+  /// @notice This event is emitted when a workflow execution begins.
+  /// @param userAddress The user for which this workflow is executing.
+  /// @param workflow The workflow.
+  event WorkflowExecution(address userAddress, Workflow workflow);
 
-  // function getUserProxy() external view returns (address) {
-  //   EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-  //   bytes32 key = getUserProxyKey('userProxies', msg.sender);
-  //   return eternalStorage.getAddress(key);
-  // }
+  /// @notice This event is emitted when immediately after invoking a step in the workflow.
+  /// @param stepIndex The index of the step in the Workflow.steps array.
+  /// @param step The step configuration.
+  /// @param actionId The logical id of the step (also repeated in the step param but duplicated here for convenience).
+  /// @param actionAddress The address of the step used for this invocation.
+  /// @param inputAssetAmounts The input assets, with the absolute amount of each asset.
+  /// @param result The result returned form the step invocation.
+  event WorkflowStepExecution(
+    uint16 stepIndex,
+    WorkflowStep step,
+    uint16 actionId,
+    address actionAddress,
+    AssetAmount[] inputAssetAmounts,
+    WorkflowStepResult result
+  );
 
-  // event  (string msg, uint256 number);
-  event WorkflowExecution(address sender, Workflow workflow);
-  event WorkflowStepExecution(uint16 stepIndex, WorkflowStep step, uint16 actionId, address actionAddress, AssetAmount[] assetAmounts);
-  event WorkflowStepResultEvent(WorkflowStepResult result);
+  /// @notice This event is emitted after the workflow has completed, once for each asset ramining with a non-zero amount.
+  /// @param asset The asset.
+  /// @param totalAmount The total amount of the asset.
+  /// @param feeAmount The portion of the total amount that FMP will keep as a fee.
+  /// @param userAmount The portion of the total amount that is sent to the user.
   event RemainingAsset(Asset asset, uint256 totalAmount, uint256 feeAmount, uint256 userAmount);
+
+  /// @notice This event is emitted when this is a continuation of a workflow from another chain.abi
+  /// @param nonce The nonce provided by the caller on the source chain, used to correlate the source chain workflow segment with this segment.
+  /// @param startingAsset The asset that was transferred from the source chain to this chain
+  event WorkflowContinuation(uint256 nonce, address userAddress, AssetAmount startingAsset);
+
   using LibAssetBalances for LibAssetBalances.AssetBalances;
 
   function executeWorkflow(Workflow calldata workflow) external payable nonReentrant {
@@ -162,9 +180,9 @@ contract WorkflowRunner is
       AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
 
       // invoke the step
-      emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.actionId, actionAddress, inputAssetAmounts);
       WorkflowStepResult memory stepResult = invokeStep(actionAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
-      emit WorkflowStepResultEvent(stepResult);
+      emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.actionId, actionAddress, inputAssetAmounts, stepResult);
+
       // debit input assets
       for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
         assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
@@ -185,7 +203,7 @@ contract WorkflowRunner is
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
-      uint256 feeAmount = LibPercent.percentageOf(ab.amount, 30);
+      uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
       uint256 userAmount = ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
@@ -195,8 +213,6 @@ contract WorkflowRunner is
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
-        uint256 amount = token.balanceOf(address(this));
-        require(ab.amount == amount, 'computed token balance does not match actual balance');
         SafeERC20.safeTransfer(token, userAddress, userAmount);
       } else {
         revert('unknown asset type in assetBalances');
@@ -223,6 +239,12 @@ contract WorkflowRunner is
     if (currentStep.actionAddress == address(0)) {
       return getActionAddressInternal(currentStep.actionId);
     }
+    // ensure given address is in the whitelist for given actionId
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    require(
+      eternalStorage.containsEnumerableMapAddressToUint(getActionWhitelistKey(currentStep.actionId), currentStep.actionAddress),
+      'action address not in white list'
+    );
     return currentStep.actionAddress;
   }
 
@@ -246,8 +268,6 @@ contract WorkflowRunner is
     }
     return rv;
   }
-
-  event WorkflowContinuation(uint256 nonce, address userAddress, AssetAmount startingAsset);
 
   function continueWorkflow(
     address userAddress,

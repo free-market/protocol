@@ -32,12 +32,17 @@ struct StargateBridgeActionArgs {
   uint256 minAmountOut;
   // if true, minAmountOut passed to stargate
   bool minAmountOutIsPercent;
+  // the abi-encoded workflow that will execute on the destination chain
+  bytes continuationWorkflow;
 }
 
 contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
   address public immutable frontDoorAddress;
   address public immutable stargateRouterAddress;
 
+  /// @notice This event is emitted on the destination chain when Stargate invokes our sgReceive method
+  /// @param tokenAddress the address of the erc20 that was transfered from the source chain to this chain.abi
+  /// @param bridgePayload the payload that was sent along with the erc20.
   event SgReceiveCalled(address tokenAddress, uint256 amount, BridgePayload bridgePayload);
 
   event StargateBridgeParamsEvent(
@@ -50,7 +55,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
     uint256 dstGasForCall,
     uint256 dstNativeAmount,
     uint256 minAmountOut,
-    bytes nextChainWorkflow
+    bytes continuationWorkflow
   );
 
   constructor(address _frontDoorAddress, address _stargateRouterAddress) {
@@ -96,9 +101,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
       approveErc20(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount);
     }
 
-    // decode the parameters
-    locals.lengthPrefix = abi.decode(data[0:32], (uint256));
-    locals.sgParams = abi.decode(data[32:32 + locals.lengthPrefix], (StargateBridgeActionArgs));
+    locals.sgParams = abi.decode(data, (StargateBridgeActionArgs));
 
     // address payable refundAddress = payable(msg.sender);
     locals.dstActionAddressEncoded = abi.encodePacked(locals.sgParams.dstActionAddress);
@@ -118,7 +121,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
       locals.sgParams.dstGasForCall,
       locals.sgParams.dstNativeAmount,
       locals.minAmountOut,
-      data[32 + locals.lengthPrefix:]
+      locals.sgParams.continuationWorkflow
     );
 
     IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
@@ -134,7 +137,7 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
         abi.encodePacked(locals.sgParams.dstUserAddress)
       ),
       locals.dstActionAddressEncoded,
-      data[32 + locals.lengthPrefix:]
+      locals.sgParams.continuationWorkflow
     );
     return LibActionHelpers.noOutputAssetsResult();
   }

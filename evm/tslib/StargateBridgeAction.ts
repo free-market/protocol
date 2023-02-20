@@ -1,19 +1,149 @@
-import { concatHex, hexByteLength } from '../e2e/hexStringUtils'
+import { defaultAbiCoder } from '@ethersproject/abi'
+import { BigNumber } from '@ethersproject/bignumber'
+import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
 import { EIP1193Provider } from 'eip1193-provider'
-import frontDoorArtifact from '../build/contracts/FrontDoor.json'
-import workflowRunnerArtifact from '../build/contracts/WorkflowRunner.json'
-import { ActionIds } from '../utils/actionIds'
-const truffleContract = require('@truffle/contract')
-const FrontDoor = truffleContract(frontDoorArtifact)
-const WorkflowRunner = truffleContract(workflowRunnerArtifact)
-import { FrontDoorInstance } from '../types/truffle-contracts/FrontDoor'
-import { WorkflowRunnerInstance } from '../types/truffle-contracts/WorkflowRunner'
-import Web3 from 'web3'
-import { Provider, WebSocketProvider } from '@ethersproject/providers'
-import { IERC20__factory, StargateBridgeAction__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
-import { BigNumber } from 'ethers'
 import log from 'loglevel'
-import { BridgePayloadStructOutput, WorkflowStepStructOutput } from '../types/ethers-contracts/StargateBridgeAction'
+import Web3 from 'web3'
+import {
+  IERC20__factory,
+  IStargateFactory__factory,
+  IStargateFeeLibrary__factory,
+  IStargatePool__factory,
+  IStargateRouter__factory,
+  StargateBridgeAction__factory,
+  WorkflowRunner__factory,
+} from '../types/ethers-contracts'
+import { ActionIds } from './actionIds'
+import { concatHex, hexByteLength } from './hexStringUtils'
+
+export const StargateChainIds = {
+  Ethereum: 101,
+  BNB: 102,
+  Avalanche: 106,
+  Polygon: 109,
+  Arbitrum: 110,
+  Optimism: 111,
+  Fantom: 112,
+  GoerliEthereum: 10121,
+  GoerliArbitrum: 10143,
+  GoerliOptimism: 10132,
+  GoerliBNB: 10102,
+  GoerliAvalanche: 10106,
+  GoerliMumbai: 10109,
+  GoerliFantom: 10112,
+} as const
+
+export const StargatePoolIds = {
+  USDC: 1,
+  USDT: 2,
+  DAI: 3,
+  BUSD: 5,
+  FRAX: 7,
+  USDD: 11,
+  ETH: 13,
+  sUSD: 14,
+  LUSD: 15,
+  MAI: 16,
+  METIS: 17,
+  metisUSDT: 19,
+} as const
+
+const sgFeeLibraryCache = new Map<string, string>()
+const sgRouterCache = new Map<string, string>()
+
+export async function getStargateRouterAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {
+  let sgRouterAddr = sgRouterCache.get(frontDoorAddress)
+  if (!sgRouterAddr) {
+    log.debug('StargateRouter address not cached, retreiving')
+    const ethersProvider = new Web3Provider(provider)
+    const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
+    const sgBridgeActionAddr = await runner.getActionAddress(ActionIds.stargateBridge)
+    log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
+    const sgBridgeAction = StargateBridgeAction__factory.connect(sgBridgeActionAddr, ethersProvider)
+    sgRouterAddr = await sgBridgeAction.stargateRouterAddress()
+    log.debug(`StargateRouter address=${sgRouterAddr}`)
+    sgRouterCache.set(frontDoorAddress, sgRouterAddr)
+  }
+  return sgRouterAddr
+}
+
+async function getFeeLibraryAddress(frontDoorAddress: string, srcPoolId: number, provider: EIP1193Provider): Promise<string> {
+  const key = frontDoorAddress + srcPoolId
+  let sgFeeLibraryAddr = sgFeeLibraryCache.get(key)
+  if (!sgFeeLibraryAddr) {
+    log.debug('StargateFeeLibrary address not cached, retreiving')
+    const ethersProvider = new Web3Provider(provider)
+    const sgRouterAddress = await getStargateRouterAddress(frontDoorAddress, provider)
+    const sgRouter = IStargateRouter__factory.connect(sgRouterAddress, ethersProvider)
+    const sgFactoryAddr = await sgRouter.factory()
+    log.debug(`StargateFactory address=${sgFactoryAddr}`)
+    const sgFactory = IStargateFactory__factory.connect(sgFactoryAddr, ethersProvider)
+    const sgPoolAddr = await sgFactory.getPool(srcPoolId)
+    log.debug(`StargatePool address=${sgPoolAddr}`)
+    const sgPool = IStargatePool__factory.connect(sgPoolAddr, ethersProvider)
+    sgFeeLibraryAddr = await sgPool.feeLibrary()
+    log.debug(`StargateFeeLibrary address=${sgFeeLibraryAddr}`)
+    sgFeeLibraryCache.set(key, sgFeeLibraryAddr)
+  }
+  return sgFeeLibraryAddr
+}
+
+export interface StargateMinAmountOutArgs {
+  provider: EIP1193Provider
+  frontDoorAddress: string
+  inputAmount: string
+  dstChainId: number
+  srcPoolId: number
+  dstPoolId: number
+  dstUserAddress: string
+}
+
+// fudge factor:  multiply minAmoutOut by 999/1000 = 1 / 1000 = 0.1%
+const fudgeFactorNumerator = BigNumber.from(999)
+const fudgeFactorDenominator = BigNumber.from(1000)
+
+export async function getStargateMinAmountOut(args: StargateMinAmountOutArgs): Promise<string> {
+  const sgFeeLibraryAddr = await getFeeLibraryAddress(args.frontDoorAddress, args.srcPoolId, args.provider)
+  const ethersProvider = new Web3Provider(args.provider)
+  const sgFeeLibrary = IStargateFeeLibrary__factory.connect(sgFeeLibraryAddr, ethersProvider)
+  const swapObj = await sgFeeLibrary.getFees(args.srcPoolId, args.dstPoolId, args.dstChainId, args.dstUserAddress, args.inputAmount)
+  const [_amount, eqFee, eqReward, lpFee, protocolFee, _lkbRemove] = swapObj
+  const inputAmount = BigNumber.from(args.inputAmount)
+  const minAmountOut = inputAmount
+    .sub(BigNumber.from(eqFee))
+    .sub(BigNumber.from(protocolFee))
+    .sub(BigNumber.from(lpFee))
+    .add(BigNumber.from(eqReward))
+    .mul(fudgeFactorNumerator)
+    .div(fudgeFactorDenominator)
+
+  log.debug(`stargate minAmountOut=${minAmountOut}`)
+  return minAmountOut.toString()
+}
+
+export interface StargateFeeArgs {
+  provider: EIP1193Provider
+  frontDoorAddress: string
+  dstAddress: string
+  dstGasForCall: string
+  dstNativeAmount?: string
+  payload: string
+  dstChainId: number
+}
+export async function getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
+  log.debug(`getting stargate required gas=${args.dstGasForCall} airdrop=${args.dstNativeAmount}`)
+  const sgRouterAddress = await getStargateRouterAddress(args.frontDoorAddress, args.provider)
+  const ethersProvider = new Web3Provider(args.provider)
+  const sgRouter = IStargateRouter__factory.connect(sgRouterAddress, ethersProvider)
+  const quoteResult = await sgRouter.quoteLayerZeroFee(args.dstChainId, 1, args.dstAddress, args.payload, {
+    dstGasForCall: args.dstGasForCall,
+    dstNativeAmount: args.dstNativeAmount ?? 0,
+    dstNativeAddr: args.dstAddress,
+  })
+  const stargateFee = quoteResult['0']
+  log.debug(`stargate required native=${stargateFee.toString()}`)
+  return stargateFee.toString()
+}
 
 export interface StargateBridgeActionArgs {
   dstActionAddress: string
@@ -25,171 +155,35 @@ export interface StargateBridgeActionArgs {
   dstNativeAmount: string
   minAmountOut: string
   minAmountOutIsPercent: boolean
-  dstWorkflow: string
+  continuationWorkflow: string
 }
 
 export function encodeStargateBridgeArgs(args: StargateBridgeActionArgs) {
-  const web3 = new Web3()
-  const stargateSwapParams = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'uint16', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bool'],
+  const encodedArgs = defaultAbiCoder.encode(
     [
-      args.dstActionAddress,
-      args.dstUserAddress,
-      args.dstChainId,
-      args.srcPoolId,
-      args.dstPoolId,
-      args.dstGasForCall,
-      args.dstNativeAmount,
-      args.minAmountOut,
-      args.minAmountOutIsPercent,
-    ]
+      `tuple(
+        address dstActionAddress,
+        address dstUserAddress,
+        uint16 dstChainId,
+        uint256 srcPoolId,
+        uint256 dstPoolId,
+        uint256 dstGasForCall,
+        uint256 dstNativeAmount,
+        uint256 minAmountOut,
+        bool minAmountOutIsPercent,
+        bytes continuationWorkflow
+      )`,
+    ],
+    [args]
   )
-
-  const lengthPrefix = web3.eth.abi.encodeParameters(['uint256'], [hexByteLength(stargateSwapParams)])
-  return concatHex(lengthPrefix, concatHex(stargateSwapParams, args.dstWorkflow))
+  return encodedArgs
 }
 
-// untested ethers impl
-// export async function getStargateBridgeActionAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {
-//   const ethersProvider = new Web3Provider(provider)
-//   const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
-//   const sgBridgeAddress = await runner.getActionAddress(ActionIds.stargateBridge)
-//   return sgBridgeAddress
-// }
-
-export async function getStargateBridgeActionAddress(provider: EIP1193Provider): Promise<string> {
-  FrontDoor.setProvider(provider)
-  WorkflowRunner.setProvider(provider)
-  const frontDoor = (await FrontDoor.deployed()) as FrontDoorInstance
-  const runner = (await WorkflowRunner.at(frontDoor.address)) as WorkflowRunnerInstance
+export async function getStargateBridgeActionAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {
+  const ethersProvider = new Web3Provider(provider)
+  const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
   const stargateBridgeActionAddress = await runner.getActionAddress(ActionIds.stargateBridge)
   return stargateBridgeActionAddress
-}
-
-// TODO this will change to the generic bridge continuation event
-export function waitForNonceOld(
-  webSocketProviderUrl: string,
-  stargateBridgeActionAddress: string,
-  assetAddress: string,
-  _nonce: string,
-  timeoutMillis: number
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    console.log('sgba', stargateBridgeActionAddress)
-    const provider = new WebSocketProvider(webSocketProviderUrl)
-    const sba = StargateBridgeAction__factory.connect(stargateBridgeActionAddress, provider)
-    // const expectedNonce = BigNumber.from(nonce)
-    const asset = IERC20__factory.connect(assetAddress, provider)
-
-    let x = 0
-    const updaterInterval = setInterval(async () => {
-      x += 10
-      log.debug('elapsed: ' + x)
-      const bal = await asset.balanceOf(stargateBridgeActionAddress)
-      console.log(`elapsed seconds: ${x}  ${bal.toString()}`)
-    }, 10_000)
-
-    const timeout = setTimeout(() => {
-      sba.removeAllListeners() // canceles the subscription
-      clearInterval(updaterInterval)
-      reject()
-    }, timeoutMillis)
-    // const filter = sba.filters.SgReceiveCalled(null)
-    // const asdf = sba.on(filter, (bridgePayload, _event) => {
-    //   if (bridgePayload.nonce.eq(expectedNonce)) {
-    //     sba.removeAllListeners()
-    //     clearTimeout(timeout)
-    //     clearInterval(updaterInterval)
-    //     resolve()
-    //   }
-    // })
-    const filter = sba.filters.SgReceiveCalled(null)
-    sba.on(filter, (tokenAddr, amount, x: BridgePayloadStructOutput, _event) => {
-      const steps: WorkflowStepStructOutput[] = x.workflow.steps
-
-      console.log('omg workflow', tokenAddr, amount, JSON.stringify(steps.length))
-      for (const step of steps) {
-        console.log(`step:
-  actionId=${step.actionId}
-  actionAddress=${step.actionAddress}
-  inputAssets=${JSON.stringify(step.inputAssets)}
-  inputAssets=${JSON.stringify(step.outputAssets)}
-  data=${step.data}
-  nextStepIndex=${step.nextStepIndex}
-        `)
-      }
-      sba.removeAllListeners()
-      clearTimeout(timeout)
-      clearInterval(updaterInterval)
-      resolve()
-    })
-  })
-}
-export async function waitForNonce(
-  webSocketProviderUrl: string,
-  frontDoorAddress: string,
-  nonce: string,
-  timeoutMillis: number,
-  dstUsdcAddr: string,
-  dstATokenAddr: string,
-  dstUserAddr: string,
-  dstActionAddr: string
-): Promise<string> {
-  const provider = new WebSocketProvider(webSocketProviderUrl)
-  const result = await waitForNonceWithProvider(provider, frontDoorAddress, nonce, timeoutMillis, dstUsdcAddr, dstATokenAddr, dstUserAddr, dstActionAddr)
-return result.amount
-}
-
-export function waitForNonceWithProvider(
-  provider: Provider,
-  frontDoorAddress: string,
-  nonce: string,
-  timeoutMillis: number,
-  dstUsdcAddr: string,
-  dstATokenAddr: string,
-  dstUserAddr: string,
-  dstActionAddr: string
-): Promise<{transaction: { hash: string }, amount: string }> {
-  return new Promise((resolve, reject) => {
-    const runner = WorkflowRunner__factory.connect(frontDoorAddress, provider)
-    const expectedNonce = BigNumber.from(nonce)
-    const filter = runner.filters.WorkflowContinuation(null, null, null)
-
-    const dstUsdc = IERC20__factory.connect(dstUsdcAddr, provider)
-    const dstAToken = IERC20__factory.connect(dstATokenAddr, provider)
-
-    let x = 0
-    const updaterInterval = setInterval(async () => {
-      x += 10
-      // log.debug('elapsed: ' + x)
-      const [actionUsdc, userUsdc, userAToken] = await Promise.all([
-        dstUsdc.balanceOf(dstActionAddr),
-        dstUsdc.balanceOf(dstUserAddr),
-        dstAToken.balanceOf(dstUserAddr),
-      ])
-
-      console.log(`elapsed=${x} | action usdc=${actionUsdc} | user usdc=${userUsdc} | user aToken=${userAToken}`)
-    }, 10_000)
-
-    const timeout = setTimeout(() => {
-      runner.removeAllListeners() // canceles the subscription
-      clearInterval(updaterInterval)
-      reject('timeout')
-    }, timeoutMillis)
-    runner.on(filter, (nonce, _userAddress, startingAsset, _event) => {
-      if (nonce.eq(expectedNonce)) {
-        _event.transactionHash
-        runner.removeAllListeners()
-        clearInterval(updaterInterval)
-        clearTimeout(timeout)
-        console.log('success')
-        resolve({
-          amount: startingAsset.amount.toString(),
-          transaction: { hash: _event.transactionHash }
-        })
-      }
-    })
-  })
 }
 
 // const StargatePoolIdsByChain: Record<string, number[]> = {

@@ -10,35 +10,39 @@ import {
   useProvider,
   useSigner,
   useSwitchNetwork,
+  useWebSocketProvider,
 } from 'wagmi'
 import {
   FrontDoor__factory,
   WorkflowRunner__factory,
-  AaveSupplyAction__factory,
   ERC20__factory,
   getNetworkConfig,
   StargateBridgeAction__factory,
 } from '@fmp/evm/build'
-import { ActionIds } from '@fmp/evm/build/utils/actionIds'
+import { ActionIds } from '@fmp/evm/build/tslib/actionIds'
 import { AssetType } from '@fmp/evm/build/tslib/AssetType'
-import {
-  encodeStargateBridgeArgs,
-  waitForNonceWithProvider,
-} from '@fmp/evm/build/tslib/StargateBridgeAction'
+import { encodeStargateBridgeArgs } from '@fmp/evm/build/tslib/StargateBridgeAction'
 import { EvmWorkflow } from '@fmp/evm/build/tslib/EvmWorkflow'
 import { getBridgePayload } from '@fmp/evm/build/tslib/encode-workflow'
-import { encodeAaveSupplyArgs } from '@fmp/evm/build/tslib/AaveSupplyAction'
 import { Asset } from '@fmp/evm/build/tslib/Asset'
 import {
   getStargateRequiredNative,
   getStargateMinAmountOut,
   StargateChainIds,
   StargatePoolIds,
-} from '@fmp/evm/build/utils/stargate-utils'
+} from '@fmp/evm/build/tslib/StargateBridgeAction'
 import { encodeAddAssetArgs } from '@fmp/evm/build/tslib/AddAssetAction'
 import * as ethers from 'ethers'
-import { EIP1193Provider } from 'eip1193-provider'
 import { useQueryParam, StringParam, BooleanParam } from 'use-query-params'
+import { getATokenAddress } from '@fmp/evm/build/tslib/AaveSupplyAction'
+import { Eip1193Bridge } from '@ethersproject/experimental'
+import {
+  waitForContinuationNonce,
+  WaitForContinuationResult,
+} from '@fmp/evm/build/tslib/bridge-utils'
+import rootLogger from 'loglevel'
+
+rootLogger.setDefaultLevel('debug')
 
 type FeePrediction = {
   dstWorkflow: EvmWorkflow
@@ -93,7 +97,7 @@ const networkDetailsRecord: Record<SourceNetworkAddress, SourceNetworkDetails> &
     id: 5,
     name: 'Ethereum Goerli',
     mainnet: false,
-    frontDoor: { address: '0x0e6C8c6D26f7426C9efB06177Af716b97eB96aa1' },
+    frontDoor: { address: '0xC2924D72d322A30F885cff51A3b8830FF5721bc1' },
     USDC: { address: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620' },
   },
   42161: {
@@ -107,7 +111,9 @@ const networkDetailsRecord: Record<SourceNetworkAddress, SourceNetworkDetails> &
     id: 421613,
     name: 'Arbitrum Goerli',
     mainnet: false,
-    frontDoor: { address: '0x2d20B07cd0075EaA4d662B50Ad033C10659F0a9f' },
+    frontDoor: {
+      address: '0x768616323F67784595114381b785072FA8C61352',
+    },
     USDC: { address: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291' },
   },
 }
@@ -142,9 +148,22 @@ export const ControlledDepositFlow = (
     chainId: dstNetworkId,
   })
 
+  const dstWebSocketProvider = useWebSocketProvider({
+    chainId: dstNetworkId,
+  })
+  const dstStandardProvider = new Eip1193Bridge(
+    new ethers.VoidSigner(ADDRESS_ZERO),
+    dstWebSocketProvider,
+  )
+
   const srcProvider = useProvider({
     chainId: srcNetworkId,
   })
+
+  const srcStandardProvider = new Eip1193Bridge(
+    new ethers.VoidSigner(ADDRESS_ZERO),
+    srcProvider,
+  )
 
   const { data: srcSigner } = useSigner({
     chainId: srcNetworkId,
@@ -167,16 +186,16 @@ export const ControlledDepositFlow = (
       networkDetailsRecord[dstNetworkId].frontDoor.address,
       dstProvider,
     )
-    console.log('got providers', ActionIds.aaveSupply, (await dstProvider.getNetwork())?.chainId)
-    const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
+    console.log(
+      'got providers',
       ActionIds.aaveSupply,
+      (await dstProvider.getNetwork())?.chainId,
     )
-    console.log('dstAaveSupplyActionAddr', dstAaveSupplyActionAddr)
-    const dstAaveSupplyAction = AaveSupplyAction__factory.connect(
-      dstAaveSupplyActionAddr,
-      dstProvider,
+    const dstMockATokenAddr = await getATokenAddress(
+      networkDetailsRecord[dstNetworkId].frontDoor.address,
+      networkDetailsRecord[dstNetworkId].USDC.address,
+      dstStandardProvider,
     )
-    const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
     const dstMockAToken = ERC20__factory.connect(dstMockATokenAddr, dstProvider)
     const aTokenBalanceBefore = await dstMockAToken.balanceOf(address)
     console.log('balance', aTokenBalanceBefore)
@@ -219,7 +238,7 @@ export const ControlledDepositFlow = (
             },
           ],
           outputAssets: [],
-          data: encodeAaveSupplyArgs({ onBehalfOf: address }),
+          data: '0x',
           nextStepIndex: -1,
         },
       ],
@@ -245,9 +264,9 @@ export const ControlledDepositFlow = (
 
     // TODO this needs to be on chain because 'inputAmount' is not known in general
     const minAmountOut = await getStargateMinAmountOut({
-      provider: window.ethereum as unknown as EIP1193Provider,
+      provider: srcStandardProvider,
       frontDoorAddress: srcFrontDoor.address,
-      inputAmount: inputAmount,
+      inputAmount: inputAmount.toString(),
       dstChainId: {
         42161: StargateChainIds.Arbitrum,
         421613: StargateChainIds.GoerliArbitrum,
@@ -269,7 +288,7 @@ export const ControlledDepositFlow = (
     // const dstWorkflowGasCostEstimate = new BN(dstGasEstimate).mul(dstGasCost)
 
     const stargateRequiredNative = await getStargateRequiredNative({
-      provider: window.ethereum as unknown as EIP1193Provider,
+      provider: srcStandardProvider,
       frontDoorAddress: srcFrontDoor.address,
       dstAddress: address,
       dstGasForCall: dstGasEstimate.toString(),
@@ -300,7 +319,7 @@ export const ControlledDepositFlow = (
 
   const submitWorkflow = async (): Promise<{
     transaction: { hash: string }
-    wait: () => Promise<{ transaction: { hash: string } }>
+    wait: () => Promise<WaitForContinuationResult>
   }> => {
     if (typeof address !== 'string') {
       throw new Error('address has not been retrieved')
@@ -319,15 +338,12 @@ export const ControlledDepositFlow = (
       networkDetailsRecord[dstNetworkId].frontDoor.address,
       dstProvider,
     )
-    console.log('foo')
-    const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(
-      ActionIds.aaveSupply,
+    const dstMockATokenAddr = await getATokenAddress(
+      networkDetailsRecord[dstNetworkId].frontDoor.address,
+      networkDetailsRecord[dstNetworkId].USDC.address,
+      dstStandardProvider,
     )
-    const dstAaveSupplyAction = AaveSupplyAction__factory.connect(
-      dstAaveSupplyActionAddr,
-      dstProvider,
-    )
-    const dstMockATokenAddr = await dstAaveSupplyAction.aTokenAddress()
+
     const dstMockAToken = ERC20__factory.connect(dstMockATokenAddr, dstProvider)
     const aTokenBalanceBefore = await dstMockAToken.balanceOf(address)
     console.log('balance', aTokenBalanceBefore)
@@ -396,22 +412,25 @@ export const ControlledDepositFlow = (
     console.log(
       `before srcUsdcBalance=${srcUsdcBalance.toString()} dstUsdcBalance=${dstUsdcBalance}`,
     )
-    console.log('approving input asset transfer...')
-    try {
-      const approveTx = await srcUsdc.approve(
-        srcRunner.address,
-        ethers.BigNumber.from(`0x${inputAmount.toJSON()}`),
-        {
-          from: address,
-        },
-      )
-      await approveTx.wait()
-      console.log('input asset transfer approved')
-    } catch (_error) {
-      // no-op
+    let allowance = await srcUsdc.allowance(address, srcRunner.address)
+    if (allowance.lt(inputAmount.toString())) {
+      console.log('approving input asset transfer...')
+      try {
+        const approveTx = await srcUsdc.approve(
+          srcRunner.address,
+          ethers.BigNumber.from(inputAmount.toString()),
+          {
+            from: address,
+          },
+        )
+        await approveTx.wait()
+        console.log('input asset transfer approved')
+      } catch (_error) {
+        // no-op
+      }
     }
 
-    const allowance = await srcUsdc.allowance(address, srcRunner.address)
+    allowance = await srcUsdc.allowance(address, srcRunner.address)
     console.log(`allowance after approve: ${allowance}`)
 
     // const stargateFeePlusGas = dstWorkflowGasCostEstimate.add(new BN(stargateBridgeFee)) // .mul(new BN('11')).div(new BN('10'))
@@ -431,7 +450,7 @@ export const ControlledDepositFlow = (
           outputAssets: [srcUsdcAsset],
           data: encodeAddAssetArgs({
             fromAddress: address,
-            amount: inputAmount,
+            amount: inputAmount.toString(),
           }),
           nextStepIndex: 1,
         },
@@ -467,7 +486,7 @@ export const ControlledDepositFlow = (
             dstNativeAmount: '0',
             minAmountOut: minAmountOut,
             minAmountOutIsPercent: false,
-            dstWorkflow: dstEncodedWorkflow,
+            continuationWorkflow: dstEncodedWorkflow,
           }),
           nextStepIndex: -1,
         },
@@ -539,16 +558,17 @@ export const ControlledDepositFlow = (
       },
 
       wait: async () =>
-        waitForNonceWithProvider(
-          dstProvider,
-          dstRunner.address,
+        waitForContinuationNonce({
+          provider: dstStandardProvider,
+          frontDoorAddress: dstRunner.address,
           nonce,
-          60_000 * 5,
-          dstContractAddresses.USDC,
-          dstMockATokenAddr,
-          address,
-          dstStargateActionAddr,
-        ),
+          timeoutMillis: 60_000 * 5,
+          loggingArgs: {
+            aTokenAddr: dstMockATokenAddr,
+            dstBridgeTokenAddr: networkDetailsRecord[dstNetworkId].USDC.address,
+            userAddr: address,
+          },
+        }),
     }
   }
 
