@@ -406,7 +406,7 @@ export const ControlledDepositFlow = (
       dstGasCost,
       stargateRequiredNative,
       srcUsdcBalance,
-    } = await predictFees()
+    } = await predictFees(Number(vm.amount) * 1_000_000)
 
     const dstUsdcBalance = await dstUsdc.balanceOf(address)
     console.log(
