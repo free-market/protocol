@@ -15,7 +15,7 @@ import { encodeStargateBridgeArgs, getStargateBridgeActionAddress } from '../tsl
 import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 import { Asset } from '../tslib/Asset'
-import { IERC20__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
+import { FrontDoor__factory, IERC20__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { getATokenAddress } from '../tslib/AaveSupplyAction'
 import { JsonRpcProvider, WebSocketProvider } from '@ethersproject/providers'
 import { waitForContinuationNonce } from '../tslib/bridge-utils'
@@ -25,10 +25,16 @@ import { VoidSigner } from 'ethers'
 rootLogger.setLevel('debug')
 const log = rootLogger.getLogger('e2e')
 
-const SRC_CHAIN = 'ethereumGoerli'
-const DST_CHAIN = 'arbitrumGoerli'
-const SRC_PROVICER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
-const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
+// const SRC_CHAIN = 'ethereumGoerli'
+// const DST_CHAIN = 'arbitrumGoerli'
+// const SRC_PROVICER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
+// const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
+// const DST_CHAIN_ID= StargateChainIds.GoerliArbitrum,
+const SRC_CHAIN = 'optimism'
+const DST_CHAIN = 'arbitrum'
+const SRC_PROVICER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
+const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
+const DST_STARGATE_CHAIN_ID = StargateChainIds.Arbitrum
 
 interface WorkflowCostItem {
   description: string
@@ -115,7 +121,7 @@ test('does a stargate swap in a workflow', async (t) => {
     provider: srcStandardProvider,
     frontDoorAddress: srcFrontDoorAddr,
     inputAmount: inputAmount.toString(),
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: DST_STARGATE_CHAIN_ID,
     srcPoolId: StargatePoolIds.USDC,
     dstPoolId: StargatePoolIds.USDC,
     dstUserAddress: dstUserAddress,
@@ -130,7 +136,7 @@ test('does a stargate swap in a workflow', async (t) => {
     dstAddress: dstUserAddress,
     dstGasForCall: dstGasEstimate.toString(),
     payload: dstEncodedWorkflow,
-    dstChainId: StargateChainIds.GoerliArbitrum,
+    dstChainId: DST_STARGATE_CHAIN_ID,
   })
 
   const srcUsdcBalance = await srcUsdc.balanceOf(srcUserAddress)
@@ -195,7 +201,7 @@ test('does a stargate swap in a workflow', async (t) => {
           dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
           srcPoolId: StargatePoolIds.USDC.toString(),
           dstPoolId: StargatePoolIds.USDC.toString(),
-          dstChainId: StargateChainIds.GoerliArbitrum.toString(),
+          dstChainId: DST_STARGATE_CHAIN_ID.toString(),
           dstGasForCall: dstGasEstimate.toString(), // gas units (not wei or gwei)
           dstNativeAmount: '0',
           minAmountOut: minAmountOut,
@@ -208,7 +214,6 @@ test('does a stargate swap in a workflow', async (t) => {
   }
 
   const srcWorkflowGasEstimate = await srcRunner.estimateGas.executeWorkflow(srcWorkflow, {
-    from: srcUserAddress,
     value: stargateRequiredNative,
   })
   const srcWorkflowGasCost = srcGasCost.mul(srcWorkflowGasEstimate)
@@ -257,7 +262,11 @@ test('does a stargate swap in a workflow', async (t) => {
   const dstStargateActionBalance = await dstUsdc.balanceOf(dstStargateActionAddr)
 
   log.debug('submitting source chain workflow...')
-  const txResponse = await srcRunner.executeWorkflow(srcWorkflow, { from: srcUserAddress, value: stargateRequiredNative })
+  const explicitGasLimit = srcWorkflowGasEstimate.mul(11).div(10)
+  const txResponse = await srcRunner.executeWorkflow(srcWorkflow, {
+    value: stargateRequiredNative,
+    gasLimit: explicitGasLimit,
+  })
   const txReceipt = await txResponse.wait(1)
   log.debug('source chain workflow completed, waiting for continuation workflow...')
   log.debug(`tx=${txReceipt.transactionHash}`)

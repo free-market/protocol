@@ -42,10 +42,12 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   },
   optimism: {
     stargateRouter: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    USDC: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
   },
   avalancheGoerli: {
     // stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
