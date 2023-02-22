@@ -25,6 +25,7 @@ Interoperability remains in its nascent stage and presents difficulties for buil
 - More integrations, for example swapping via Uniswap/Sushiswap or 1inch
 - Gelato Relay support:  pay for transaction gas using any asset, not just native
 - Branch nodes:  enable on-chain decisions at transaction time to take different paths through your workflows
+- Action Developer Kit:  extend the protocol by adding new actions
 
 ## License
 
