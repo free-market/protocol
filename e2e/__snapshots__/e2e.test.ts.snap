@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`WorkflowRunner runs a cross-chain workflow 1`] = `"0xC141B18BF985ce8251A94c30ec10F88F7352b0C0"`;
