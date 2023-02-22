@@ -65,7 +65,7 @@ interface WorkflowCostItem {
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 
-type SourceNetworkAddress = 10 | 5
+type SourceNetworkAddress = 10 | 5 | 43114
 type DestinationNetworkAddress = 42161 | 421613
 
 type SourceNetworkDetails = {
@@ -92,6 +92,13 @@ const networkDetailsRecord: Record<SourceNetworkAddress, SourceNetworkDetails> &
     mainnet: true,
     frontDoor: { address: '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299' },
     USDC: { address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607' },
+  },
+  43114: {
+    id: 43114,
+    name: 'Avalanche',
+    mainnet: true,
+    frontDoor: { address: '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299' },
+    USDC: { address: '0x625e7708f30ca75bfd92586e17077590c60eb4cd' },
   },
   5: {
     id: 5,
@@ -709,6 +716,14 @@ export const ControlledDepositFlow = (
             title: 'Optimism',
             icon: {
               url: 'https://app.aave.com/icons/networks/optimism.svg',
+            },
+          },
+          {
+            address: 43114,
+            symbol: 'Avalanche',
+            title: 'Avalanche',
+            icon: {
+              url: 'https://app.aave.com/icons/networks/avalanche.svg',
             },
           },
           ...(includeDeveloperNetworks
