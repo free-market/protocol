@@ -38,6 +38,7 @@ const ADDRESSES: Record<string, Record<string, string>> = {
   avalanche: {
     stargateRouter: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    USDC: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
   },
   arbitrum: {
     stargateRouter: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',

@@ -30,9 +30,11 @@ const log = rootLogger.getLogger('e2e')
 // const SRC_PROVICER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
 // const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
 // const DST_CHAIN_ID= StargateChainIds.GoerliArbitrum,
-const SRC_CHAIN = 'optimism'
+// const SRC_CHAIN = 'optimism'
+const SRC_CHAIN = 'avalanche'
 const DST_CHAIN = 'arbitrum'
-const SRC_PROVICER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
+// const SRC_PROVICER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
+const SRC_PROVICER_URL_ENVVAR = 'AVALANCHE_MAINNET_URL'
 const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
 const DST_STARGATE_CHAIN_ID = StargateChainIds.Arbitrum
 
