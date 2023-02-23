@@ -82,6 +82,7 @@ importers:
       keccak: ^3.0.3
       loglevel: ^1.8.0
       loglevel-plugin-prefix: ^0.8.4
+      markdown-toc: ^1.2.0
       node-fetch: ^3.3.0
       nodemon: ^2.0.20
       rimraf: ^3.0.2
@@ -150,6 +151,7 @@ importers:
       google-protobuf: 3.21.2
       keccak: 3.0.3
       loglevel-plugin-prefix: 0.8.4
+      markdown-toc: 1.2.0
       node-fetch: 3.3.0
       nodemon: 2.0.20
       rimraf: 3.0.2
