@@ -565,6 +565,8 @@ export const ControlledDepositFlow = (
     })
     console.log(JSON.stringify(txResponse, null, 4))
 
+    await txResponse.wait()
+
     return {
       transaction: {
         hash: txResponse.hash,
