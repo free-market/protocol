@@ -1,6 +1,22 @@
 import BN from 'bn.js'
 import * as ethers from 'ethers'
 import { EvmWorkflow } from '@fmp/evm/build/tslib/EvmWorkflow'
+
+export type FeePredictionData = {
+  slippage: string
+  destination: {
+    gasPrice: string
+  }
+  source: {
+    gasPrice: string
+  }
+  protocol: {
+    usd: string
+  }
+  lowestPossibleAmount: string
+  suppliedAmount: string
+}
+
 export type Action =
   | { name: 'DepositButtonClicked' }
   | { name: 'FormLoaded' }
@@ -59,19 +75,7 @@ export type Action =
   | {
       name: 'FeePredicted'
       amount: string
-      fee: {
-        slippage: string
-        destination: {
-          gasPrice: string
-        }
-        source: {
-          gasPrice: string
-        }
-        protocol: {
-          usd: string
-        }
-        lowestPossibleAmount: string
-      }
+      fee: FeePredictionData
       workflowDetails?: {
         dstWorkflow: EvmWorkflow
         dstEncodedWorkflow: string
@@ -96,6 +100,19 @@ export type WalletState =
 export type EditingMode = {
   name: 'token' | 'chain'
   recently?: 'opened' | 'closed'
+}
+
+export type WorkflowDetails = {
+  dstWorkflow: EvmWorkflow
+  dstEncodedWorkflow: string
+  nonce: string
+  dstGasEstimate: number
+  inputAmount: BN
+  minAmountOut: string
+  srcGasCost: ethers.ethers.BigNumber
+  dstGasCost: ethers.ethers.BigNumber
+  stargateRequiredNative: string
+  srcUsdcBalance: ethers.ethers.BigNumber
 }
 
 export type State = {
@@ -126,31 +143,8 @@ export type State = {
     | {
         status: 'predicted'
         amount: string
-        details: {
-          slippage: string
-          destination: {
-            gasPrice: string
-          }
-          source: {
-            gasPrice: string
-          }
-          protocol: {
-            usd: string
-          }
-          lowestPossibleAmount: string
-        }
-        workflowDetails?: {
-          dstWorkflow: EvmWorkflow
-          dstEncodedWorkflow: string
-          nonce: string
-          dstGasEstimate: number
-          inputAmount: BN
-          minAmountOut: string
-          srcGasCost: ethers.ethers.BigNumber
-          dstGasCost: ethers.ethers.BigNumber
-          stargateRequiredNative: string
-          srcUsdcBalance: ethers.ethers.BigNumber
-        }
+        details: FeePredictionData
+        workflowDetails?: WorkflowDetails
       }
 }
 
