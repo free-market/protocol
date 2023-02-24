@@ -686,7 +686,14 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
               >
                 <div className="mt-32">
                   <CrossChainJobCard
-                    sourceNetwork={({5: 'ethereum', 10: 'optimism'} as Record<SourceNetworkAddress, 'optimism' | 'ethereum' | 'avalanche'>)[vm.selectedChain.address as SourceNetworkAddress]}
+                    sourceNetwork={
+                      (
+                        { 5: 'ethereum', 10: 'optimism' } as Record<
+                          SourceNetworkAddress,
+                          'optimism' | 'ethereum' | 'avalanche'
+                        >
+                      )[vm.selectedChain.address as SourceNetworkAddress]
+                    }
                     spinnerLocation="status"
                     status={
                       vm.flowStep === 'complete' ? 'completed' : 'sending'
@@ -694,6 +701,9 @@ export const DepositFlow = (props: DepositFlowProps): JSX.Element => {
                     cardTitle="Aave Arbitrum Market V3"
                     sourceTransaction={vm.sourceTransaction}
                     destinationTransaction={vm.destinationTransaction}
+                    fee={
+                      vm.fee.status === 'predicted' ? vm.fee.details : undefined
+                    }
                   />
                 </div>
               </motion.div>

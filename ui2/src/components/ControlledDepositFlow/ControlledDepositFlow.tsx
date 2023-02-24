@@ -16,7 +16,6 @@ import {
   FrontDoor__factory,
   WorkflowRunner__factory,
   ERC20__factory,
-  getNetworkConfig,
   StargateBridgeAction__factory,
 } from '@fmp/evm/build'
 import { ActionIds } from '@fmp/evm/build/tslib/actionIds'
@@ -41,6 +40,7 @@ import {
   WaitForContinuationResult,
 } from '@fmp/evm/build/tslib/bridge-utils'
 import rootLogger from 'loglevel'
+import PQueue from 'p-queue'
 
 rootLogger.setDefaultLevel('debug')
 
@@ -65,7 +65,9 @@ interface WorkflowCostItem {
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 
-type SourceNetworkAddress = 10 | 5
+const feePredictionQueue = new PQueue({ concurrency: 1 })
+
+type SourceNetworkAddress = 10 | 5 | 43114
 type DestinationNetworkAddress = 42161 | 421613
 
 type SourceNetworkDetails = {
@@ -92,6 +94,13 @@ const networkDetailsRecord: Record<SourceNetworkAddress, SourceNetworkDetails> &
     mainnet: true,
     frontDoor: { address: '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299' },
     USDC: { address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607' },
+  },
+  43114: {
+    id: 43114,
+    name: 'Avalanche',
+    mainnet: true,
+    frontDoor: { address: '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299' },
+    USDC: { address: '0x625e7708f30ca75bfd92586e17077590c60eb4cd' },
   },
   5: {
     id: 5,
@@ -329,6 +338,10 @@ export const ControlledDepositFlow = (
       throw new Error('signer is not connected')
     }
 
+    if (vm.fee.status !== 'predicted' || vm.fee.workflowDetails == null) {
+      throw new Error('fee not predicted')
+    }
+
     const srcRunner = WorkflowRunner__factory.connect(
       networkDetailsRecord[srcNetworkId].frontDoor.address,
       srcSigner,
@@ -351,7 +364,7 @@ export const ControlledDepositFlow = (
     // console.log(`srcUserAddress=${userAddressSrc} input amount=${inputAmount.toString()} minAmountOut=${minAmountOut.toString()} fee=${fee}`)
 
     // const srcContractAddresses = getNetworkConfig(`${srcNetworkId}`)
-    const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
+    // const dstContractAddresses = getNetworkConfig(`${dstNetworkId}`)
 
     const srcUsdc = ERC20__factory.connect(
       networkDetailsRecord[srcNetworkId].USDC.address,
@@ -406,7 +419,7 @@ export const ControlledDepositFlow = (
       dstGasCost,
       stargateRequiredNative,
       srcUsdcBalance,
-    } = await predictFees(Number(vm.amount) * 1_000_000)
+    } = vm.fee.workflowDetails
 
     const dstUsdcBalance = await dstUsdc.balanceOf(address)
     console.log(
@@ -662,35 +675,42 @@ export const ControlledDepositFlow = (
     const { value } = event.target
     vm.dispatch({ name: 'AmountChanged', value })
 
-    // TODO(FMP-418): introduce promise queue and throttle this function call
-    if (value.trim() === '') {
-      vm.dispatch({ name: 'UnavailableFeePredicted' })
-    } else {
-      vm.dispatch({ name: 'FeePredictionStarted', amount: value })
+    await feePredictionQueue.add(async () => {
+      // TODO(FMP-418): introduce promise queue and throttle this function call
+      if (value.trim() === '') {
+        vm.dispatch({ name: 'UnavailableFeePredicted' })
+      } else {
+        if (vm.fee.status === 'loading') {
+          console.error('fee prediction did not stop loading')
+        }
 
-      const workflowDetails = await predictFees(Number(value) * 1_000_000)
+        vm.dispatch({ name: 'FeePredictionStarted', amount: value })
 
-      const { srcGasCost, dstGasCost } = workflowDetails
+        const workflowDetails = await predictFees(Number(value) * 1_000_000)
 
-      vm.dispatch({
-        name: 'FeePredicted',
-        amount: value,
-        fee: {
-          slippage: '0.5%',
-          destination: {
-            gasPrice: dstGasCost.toString(),
+        const { srcGasCost, dstGasCost } = workflowDetails
+
+        vm.dispatch({
+          name: 'FeePredicted',
+          amount: value,
+          fee: {
+            slippage: '0.5%',
+            destination: {
+              gasPrice: dstGasCost.toString(),
+            },
+            source: {
+              gasPrice: srcGasCost.toString(),
+            },
+            protocol: {
+              usd: ethers.utils.formatUnits(workflowDetails.minAmountOut, 6),
+            },
+            lowestPossibleAmount: '',
+            suppliedAmount: value,
           },
-          source: {
-            gasPrice: srcGasCost.toString(),
-          },
-          protocol: {
-            usd: ethers.utils.formatUnits(workflowDetails.minAmountOut, 6),
-          },
-          lowestPossibleAmount: '',
-        },
-        workflowDetails,
-      })
-    }
+          workflowDetails,
+        })
+      }
+    })
   }
 
   return (
@@ -709,6 +729,14 @@ export const ControlledDepositFlow = (
             title: 'Optimism',
             icon: {
               url: 'https://app.aave.com/icons/networks/optimism.svg',
+            },
+          },
+          {
+            address: 43114,
+            symbol: 'Avalanche',
+            title: 'Avalanche',
+            icon: {
+              url: 'https://app.aave.com/icons/networks/avalanche.svg',
             },
           },
           ...(includeDeveloperNetworks
