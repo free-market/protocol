@@ -635,8 +635,7 @@ export const ControlledDepositFlow = (
   })
 
   const destGasBalance = useBalance({
-    // TODO(FMP-380): track the destination details somewhere
-    chainId: 421613,
+    chainId: dstNetworkId,
     address,
   })
 
