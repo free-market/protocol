@@ -1,0 +1,12 @@
+name: "Validate Git Tag Against Package Version"
+description: "Validate that a tag prefix matches a pattern and the remainder matches the package version"
+inputs:
+  prefix:
+    description: "The expected git ref prefix"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: validate
+      shell: bash
+      run: "${{ github.action_path }}/validate.sh ${{inputs.prefix}} ${{github.ref}}"

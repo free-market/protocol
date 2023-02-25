@@ -5,7 +5,4 @@ enum AssetType {
   Native,
   ERC20,
   ERC721
-  // Account,
-  // AaveDebt,
-  // NFT
 }
