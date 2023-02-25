@@ -85,7 +85,7 @@
     "@truffle/config": "^1.3.45",
     "@truffle/hdwallet-provider": "^2.1.2",
     "big.js": "^6.2.1",
-    "bs58": "^5.0.0",k
+    "bs58": "^5.0.0",
     "eip1193-provider": "^1.0.1",
     "glob": "^8.0.3",
     "loglevel": "^1.8.0"
