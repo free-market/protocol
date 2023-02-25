@@ -26,4 +26,4 @@ jobs:
           cd evm \
           && pnpm install --filter . \
           && pnpm run build \
-          && pnpm publish --no-git-checks --dry-run
+          && pnpm publish --no-git-checks
