@@ -6,6 +6,6 @@ describe('Component: DepositFlowStateProvider', () => {
   it('should render children', () => {
     const { asFragment } = render(<DepositFlowStateProvider />)
 
-    expect(asFragment()).toMatchInlineSnapshot()
+    expect(asFragment()).toMatchInlineSnapshot(`<DocumentFragment />`)
   })
 })

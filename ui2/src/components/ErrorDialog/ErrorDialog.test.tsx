@@ -6,6 +6,6 @@ describe('Component: ErrorDialog', () => {
   it('should render children', () => {
     const { asFragment } = render(<ErrorDialog />)
 
-    expect(asFragment()).toMatchInlineSnapshot()
+    expect(asFragment()).toMatchInlineSnapshot(`<DocumentFragment />`)
   })
 })

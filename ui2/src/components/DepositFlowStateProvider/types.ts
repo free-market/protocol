@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import * as ethers from 'ethers'
-import { EvmWorkflow } from '@fmp/evm/build/tslib/EvmWorkflow'
+import { EvmWorkflow } from '@freemarket/evm/build/tslib/EvmWorkflow'
 
 export type FeePredictionData = {
   slippage: string
