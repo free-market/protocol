@@ -2,6 +2,6 @@
 
 if which gtm > /dev/null; then
   gtm commit --yes
-elif [ -f /opt/homebrew/bin/gtm commit --yes ]; then
+elif [ -f /opt/homebrew/bin/gtm ]; then
   /opt/homebrew/bin/gtm commit --yes
 fi
