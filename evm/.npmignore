@@ -1,0 +1,4 @@
+.env
+**/eraseme*
+node_modules
+build/utils
