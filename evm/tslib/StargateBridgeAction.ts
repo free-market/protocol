@@ -1,12 +1,9 @@
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { BigNumber } from '@ethersproject/bignumber'
-import { Web3Provider, WebSocketProvider } from '@ethersproject/providers'
+import { Web3Provider } from '@ethersproject/providers'
 import { EIP1193Provider } from 'eip1193-provider'
 import log from 'loglevel'
-import { Memoize } from 'typescript-memoize'
-import Web3 from 'web3'
 import {
-  IERC20__factory,
   IStargateFactory__factory,
   IStargateFeeLibrary__factory,
   IStargatePool__factory,
@@ -15,7 +12,6 @@ import {
   WorkflowRunner__factory,
 } from '../types/ethers-contracts'
 import { ActionIds } from './actionIds'
-import { concatHex, hexByteLength } from './hexStringUtils'
 
 export const StargateChainIds: { [index: string]: number } = {
   Ethereum: 101,
