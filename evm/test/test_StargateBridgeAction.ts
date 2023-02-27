@@ -16,7 +16,7 @@ import { ADDRESS_ZERO, toChecksumAddress } from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 
 import { ActionIds } from '../tslib/actionIds'
-import { encodeStargateBridgeArgs, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
+import { StargateBridge, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
 import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 
@@ -83,7 +83,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
       minAmountOutIsPercent: true,
       continuationWorkflow: '0xdeadbeef',
     }
-    const params = encodeStargateBridgeArgs(sgbParams)
+    const params = StargateBridge.encodeStargateBridgeArgs(sgbParams)
 
     const txResponse = await stargateBridgeAction.execute(
       [inputAssetAmount, { asset: { assetType: AssetType.Native, assetAddress: ADDRESS_ZERO }, amount: '1' }],

@@ -1,41 +1,39 @@
-import rootLogger from 'loglevel'
-import '../utils/init-logger'
-import test from 'ava'
 import fs from 'fs'
-const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
-import { ADDRESS_ZERO, getNetworkConfig } from '../tslib/contract-addresses'
-import { getStargateRequiredNative, getStargateMinAmountOut, StargateChainIds, StargatePoolIds } from '../tslib/StargateBridgeAction'
-import { Eip1193Bridge } from '@ethersproject/experimental'
-import { getContractAddressViaNetworkId, getWalletFromMnemonic } from '../utils/ethers-utils'
-
+import rootLogger from 'loglevel'
+import test from 'ava'
 import { ActionIds } from '../tslib/actionIds'
-import { encodeAddAssetArgs } from '../tslib/AddAssetAction'
-import { AssetType } from '../tslib/AssetType'
-import { encodeStargateBridgeArgs, getStargateBridgeActionAddress } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/EvmWorkflow'
-import { getBridgePayload } from '../tslib/encode-workflow'
+import { ADDRESS_ZERO, getNetworkConfig } from '../tslib/contract-addresses'
 import { Asset } from '../tslib/Asset'
+import { AssetType } from '../tslib/AssetType'
+import { BigNumber } from '@ethersproject/bignumber'
+import { Eip1193Bridge } from '@ethersproject/experimental'
+import { encodeAddAssetArgs } from '../tslib/AddAssetAction'
+import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { FrontDoor__factory, IERC20__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { getATokenAddress } from '../tslib/AaveSupplyAction'
+import { getBridgePayload } from '../tslib/encode-workflow'
+import { getContractAddressViaNetworkId, getWalletFromMnemonic } from '../utils/ethers-utils'
 import { JsonRpcProvider, WebSocketProvider } from '@ethersproject/providers'
-import { waitForContinuationNonce } from '../tslib/bridge-utils'
-import { BigNumber } from '@ethersproject/bignumber'
+import { StargateBridge, StargateChainIds, StargatePoolIds } from '../tslib/StargateBridgeAction'
 import { VoidSigner } from 'ethers'
+import { waitForContinuationNonce } from '../tslib/bridge-utils'
+import '../utils/init-logger'
+const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
 
 rootLogger.setLevel('debug')
 const log = rootLogger.getLogger('e2e')
 
 // const SRC_CHAIN = 'ethereumGoerli'
 // const DST_CHAIN = 'arbitrumGoerli'
-// const SRC_PROVICER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
-// const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
+// const SRC_PROVIDER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
+// const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
 // const DST_CHAIN_ID= StargateChainIds.GoerliArbitrum,
 // const SRC_CHAIN = 'optimism'
 const SRC_CHAIN = 'avalanche'
 const DST_CHAIN = 'arbitrum'
-// const SRC_PROVICER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
-const SRC_PROVICER_URL_ENVVAR = 'AVALANCHE_MAINNET_URL'
-const DST_PROVICER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
+// const SRC_PROVIDER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
+const SRC_PROVIDER_URL_ENVVAR = 'AVALANCHE_MAINNET_URL'
+const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
 const DST_STARGATE_CHAIN_ID = StargateChainIds.Arbitrum
 
 interface WorkflowCostItem {
@@ -57,8 +55,8 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcNetworkConfig = getNetworkConfig(srcNetworkId)
   const dstNetworkConfig = getNetworkConfig(dstNetworkId)
 
-  const srcProvider = new JsonRpcProvider(process.env[SRC_PROVICER_URL_ENVVAR])
-  const dstProvider = new WebSocketProvider(process.env[DST_PROVICER_URL_ENVVAR]!)
+  const srcProvider = new JsonRpcProvider(process.env[SRC_PROVIDER_URL_ENVVAR])
+  const dstProvider = new WebSocketProvider(process.env[DST_PROVIDER_URL_ENVVAR]!)
 
   const srcWallet = getWalletFromMnemonic(process.env['WALLET_MNEMONIC']!, 0, srcProvider)
   const dstWallet = getWalletFromMnemonic(process.env['WALLET_MNEMONIC']!, 0, dstProvider)
@@ -88,7 +86,7 @@ test('does a stargate swap in a workflow', async (t) => {
 
   // TODO move to helper
   // let the caller supply the dest chain's SG action so chains don't need to know about all other chains
-  const dstStargateActionAddr = await getStargateBridgeActionAddress(dstFrontDoorAddr, dstStandardProvider)
+  const dstStargateActionAddr = await StargateBridge.getStargateBridgeActionAddress(dstFrontDoorAddr, dstStandardProvider)
 
   const dstWorkflow: EvmWorkflow = {
     steps: [
@@ -119,7 +117,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const dstGasEstimate = 1_000_000
 
   // TODO this also needs to be implemented on chain because 'inputAmount' to stargate may not be known
-  const minAmountOut = await getStargateMinAmountOut({
+  const minAmountOut = await StargateBridge.getStargateMinAmountOut({
     provider: srcStandardProvider,
     frontDoorAddress: srcFrontDoorAddr,
     inputAmount: inputAmount.toString(),
@@ -132,7 +130,7 @@ test('does a stargate swap in a workflow', async (t) => {
   const srcGasCost = await srcProvider.getGasPrice()
   const dstGasCost = await srcProvider.getGasPrice()
 
-  const stargateRequiredNative = await getStargateRequiredNative({
+  const stargateRequiredNative = await StargateBridge.getStargateRequiredNative({
     provider: srcStandardProvider,
     frontDoorAddress: srcFrontDoorAddr,
     dstAddress: dstUserAddress,
@@ -198,7 +196,7 @@ test('does a stargate swap in a workflow', async (t) => {
           },
         ],
         outputAssets: [], // no output assets, the input asset is transfered from the caller
-        data: encodeStargateBridgeArgs({
+        data: StargateBridge.encodeStargateBridgeArgs({
           dstActionAddress: dstStargateActionAddr, // who initially gets the money and gets invoked by SG
           dstUserAddress: dstStargateActionAddr, // dstUserAddress, // who gets the money after the continuation workflow completes
           srcPoolId: StargatePoolIds.USDC.toString(),

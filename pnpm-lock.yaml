@@ -91,6 +91,7 @@ importers:
       ts-node: ^10.9.1
       typechain: ^8.1.1
       typescript: ^4.9.3
+      typescript-memoize: ^1.1.1
       web3: ^1.8.1
       web3-core: ^1.8.1
       web3-eth-contract: ^1.8.1
@@ -111,6 +112,7 @@ importers:
       eip1193-provider: 1.0.1
       glob: 8.0.3
       loglevel: 1.8.0
+      typescript-memoize: 1.1.1
     devDependencies:
       '@ava/typescript': 3.0.1
       '@ethersproject/abi': 5.7.0
@@ -30965,6 +30967,10 @@ packages:
   /typescript-logic/0.0.0:
     resolution: {integrity: sha512-zXFars5LUkI3zP492ls0VskH3TtdeHCqu0i7/duGt60i5IGPIpAHE/DWo5FqJ6EjQ15YKXrt+AETjv60Dat34Q==}
     dev: true
+
+  /typescript-memoize/1.1.1:
+    resolution: {integrity: sha512-GQ90TcKpIH4XxYTI2F98yEQYZgjNMOGPpOgdjIBhaLaWji5HPWlRnZ4AeA1hfBxtY7bCGDJsqDDHk/KaHOl5bA==}
+    dev: false
 
   /typescript-tuple/2.2.1:
     resolution: {integrity: sha512-Zcr0lbt8z5ZdEzERHAMAniTiIKerFCMgd7yjq1fPnDJ43et/k9twIFQMUYff9k5oXcsQ0WpvFcgzK2ZKASoW6Q==}
