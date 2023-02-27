@@ -91,7 +91,6 @@ importers:
       ts-node: ^10.9.1
       typechain: ^8.1.1
       typescript: ^4.9.3
-      typescript-memoize: ^1.1.1
       web3: ^1.8.1
       web3-core: ^1.8.1
       web3-eth-contract: ^1.8.1
@@ -112,7 +111,6 @@ importers:
       eip1193-provider: 1.0.1
       glob: 8.0.3
       loglevel: 1.8.0
-      typescript-memoize: 1.1.1
     devDependencies:
       '@ava/typescript': 3.0.1
       '@ethersproject/abi': 5.7.0
@@ -367,7 +365,7 @@ importers:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/experimental': 5.7.0
       '@ethersproject/providers': 5.7.2
-      '@freemarket/evm': link:../evm
+      '@freemarket/evm': 0.0.1_@babel+core@7.19.1
       '@headlessui/react': 1.6.6_biqbaboplfbrettd7655fr4n2y
       '@heroicons/react': 2.0.8_react@18.2.0
       '@metamask/detect-provider': 1.2.0
@@ -2156,7 +2154,7 @@ packages:
       eth-json-rpc-filters: 4.2.2
       eth-rpc-errors: 4.0.2
       json-rpc-engine: 6.1.0
-      keccak: 3.0.2
+      keccak: 3.0.3
       preact: 10.11.3
       qs: 6.10.3
       rxjs: 6.6.7
@@ -2697,7 +2695,7 @@ packages:
     resolution: {integrity: sha512-bi0wuNJ1gw4ByNCV56H0Z4Q7D+SxUbwyG12Wxzbvqc89PXLRNR20LBcSUZRKpN0+YCPo6m0XZL/JLio3B52LTw==}
     dependencies:
       '@ethereumjs/block': 3.6.3
-      '@ethereumjs/common': 2.6.4
+      '@ethereumjs/common': 2.6.5
       '@ethereumjs/ethash': 1.1.0
       debug: 4.3.4
       ethereumjs-util: 7.1.5
@@ -2726,13 +2724,13 @@ packages:
     dependencies:
       crc-32: 1.2.2
       ethereumjs-util: 7.1.5
+    dev: false
 
   /@ethereumjs/common/2.6.5:
     resolution: {integrity: sha512-lRyVQOeCDaIVtgfbowla32pzeDv2Obr8oR8Put5RdUBNRGr1VGPGQNGP6elWIpgK3YdpzqTOh4GyUGOureVeeA==}
     dependencies:
       crc-32: 1.2.2
       ethereumjs-util: 7.1.5
-    dev: true
 
   /@ethereumjs/ethash/1.1.0:
     resolution: {integrity: sha512-/U7UOKW6BzpA+Vt+kISAoeDie1vAvY4Zy2KF5JJb+So7+1yKmJeJEHOGSnQIj330e9Zyl3L5Nae6VZyh2TJnAA==}
@@ -2747,13 +2745,13 @@ packages:
   /@ethereumjs/tx/3.3.2:
     resolution: {integrity: sha512-6AaJhwg4ucmwTvw/1qLaZUX5miWrwZ4nLOUsKyb/HtzS3BMw/CasKhdi1ims9mBKeK9sOJCH4qGKOBGyJCeeog==}
     dependencies:
-      '@ethereumjs/common': 2.6.4
+      '@ethereumjs/common': 2.6.5
       ethereumjs-util: 7.1.5
 
   /@ethereumjs/tx/3.4.0:
     resolution: {integrity: sha512-WWUwg1PdjHKZZxPPo274ZuPsJCWV3SqATrEKQP1n2DrVYVP1aZIYpo/mFaA0BDoE0tIQmBeimRCEA0Lgil+yYw==}
     dependencies:
-      '@ethereumjs/common': 2.6.4
+      '@ethereumjs/common': 2.6.5
       ethereumjs-util: 7.1.5
     dev: true
 
@@ -2762,21 +2760,21 @@ packages:
     dependencies:
       '@ethereumjs/common': 2.6.4
       ethereumjs-util: 7.1.5
+    dev: false
 
   /@ethereumjs/tx/3.5.2:
     resolution: {integrity: sha512-gQDNJWKrSDGu2w7w0PzVXVBNMzb7wwdDOmOqczmhNjqFxFuIbhVJDwiGEnxFNC2/b8ifcZzY7MLcluizohRzNw==}
     dependencies:
       '@ethereumjs/common': 2.6.5
       ethereumjs-util: 7.1.5
-    dev: true
 
   /@ethereumjs/vm/5.6.0:
     resolution: {integrity: sha512-J2m/OgjjiGdWF2P9bj/4LnZQ1zRoZhY8mRNVw/N3tXliGI8ai1sI1mlDPkLpeUUM4vq54gH6n0ZlSpz8U/qlYQ==}
     dependencies:
       '@ethereumjs/block': 3.6.3
       '@ethereumjs/blockchain': 5.5.3
-      '@ethereumjs/common': 2.6.4
-      '@ethereumjs/tx': 3.5.1
+      '@ethereumjs/common': 2.6.5
+      '@ethereumjs/tx': 3.5.2
       async-eventemitter: 0.2.4
       core-js-pure: 3.25.2
       debug: 2.6.9
@@ -3112,6 +3110,33 @@ packages:
       '@ethersproject/logger': 5.7.0
       '@ethersproject/properties': 5.7.0
       '@ethersproject/strings': 5.7.0
+
+  /@freemarket/evm/0.0.1_@babel+core@7.19.1:
+    resolution: {integrity: sha512-OfCqicKE+i60Yx/q8dvS7eA3gyGwWFDD0c82mTlqjjpAB/UGHAi695BigJ2EjnotYtTXhlx0DIKP3ErxnmVFhA==}
+    dependencies:
+      '@aave/core-v3': 1.17.2
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/experimental': 5.7.0
+      '@ethersproject/hdnode': 5.7.0
+      '@ethersproject/solidity': 5.7.0
+      '@ethersproject/wallet': 5.7.0
+      '@truffle/config': 1.3.45
+      '@truffle/hdwallet-provider': 2.1.2_@babel+core@7.19.1
+      big.js: 6.2.1
+      bs58: 5.0.0
+      eip1193-provider: 1.0.1
+      glob: 8.0.3
+      loglevel: 1.8.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - utf-8-validate
+    dev: false
 
   /@ganache/ethereum-address/0.1.4:
     resolution: {integrity: sha512-sTkU0M9z2nZUzDeHRzzGlW724xhMLXo2LeX1hixbnjHWY1Zg1hkqORywVfl+g5uOO8ht8T0v+34IxNxAhmWlbw==}
@@ -4620,7 +4645,7 @@ packages:
     resolution: {integrity: sha512-YrgX3Py7ylh8NYkbanoINUPCj//bWUjYZ5/WPy9nQ9SK3Cl7QWCR+NmbDjmC/fTspZGR+VO9LTQslM++jr5PRw==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      '@babel/runtime': 7.19.0
+      '@babel/runtime': 7.20.1
       '@noble/ed25519': 1.7.1
       '@noble/hashes': 1.1.2
       '@noble/secp256k1': 1.7.0
@@ -12400,7 +12425,7 @@ packages:
       glob: 7.2.3
       infer-owner: 1.0.4
       lru-cache: 6.0.0
-      minipass: 3.3.4
+      minipass: 3.3.6
       minipass-collect: 1.0.2
       minipass-flush: 1.0.5
       minipass-pipeline: 1.2.4
@@ -12482,7 +12507,7 @@ packages:
     dependencies:
       clone-response: 1.0.2
       get-stream: 5.2.0
-      http-cache-semantics: 4.1.0
+      http-cache-semantics: 4.1.1
       keyv: 3.1.0
       lowercase-keys: 2.0.0
       normalize-url: 4.5.1
@@ -12494,7 +12519,7 @@ packages:
     dependencies:
       clone-response: 1.0.2
       get-stream: 5.2.0
-      http-cache-semantics: 4.1.0
+      http-cache-semantics: 4.1.1
       keyv: 4.5.2
       lowercase-keys: 2.0.0
       normalize-url: 6.1.0
@@ -17848,7 +17873,7 @@ packages:
     resolution: {integrity: sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /fs-monkey/1.0.3:
@@ -19134,13 +19159,8 @@ packages:
       entities: 4.4.0
     dev: true
 
-  /http-cache-semantics/4.1.0:
-    resolution: {integrity: sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==}
-
   /http-cache-semantics/4.1.1:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}
-    dev: true
-    optional: true
 
   /http-deceiver/1.2.7:
     resolution: {integrity: sha512-LmpOGxTfbpgtGVxJrj5k7asXHCgNZp5nLfp+hWc8QQRqtb7fUy6kRY3BO1h9ddF6yIPYUARgxGOwB42DnxIaNw==}
@@ -23482,7 +23502,7 @@ packages:
     resolution: {integrity: sha512-6T6lH0H8OG9kITm/Jm6tdooIbogG9e0tLgpY6mphXSm/A9u8Nq1ryBG+Qspiub9LjWlBPsPS3tWQ/Botq4FdxA==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass-fetch/2.1.2:
@@ -23548,7 +23568,7 @@ packages:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
       yallist: 4.0.0
     dev: true
 
@@ -29208,7 +29228,7 @@ packages:
     resolution: {integrity: sha512-97qShzy1AiyxvPNIkLWoGua7xoQzzPjQ0HAH4B0rWKo7SZ6USuPcrUiAFrws0UH8RrbWmgq3LMTObhPIHbbBeQ==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /ssri/9.0.1:
@@ -30968,10 +30988,6 @@ packages:
     resolution: {integrity: sha512-zXFars5LUkI3zP492ls0VskH3TtdeHCqu0i7/duGt60i5IGPIpAHE/DWo5FqJ6EjQ15YKXrt+AETjv60Dat34Q==}
     dev: true
 
-  /typescript-memoize/1.1.1:
-    resolution: {integrity: sha512-GQ90TcKpIH4XxYTI2F98yEQYZgjNMOGPpOgdjIBhaLaWji5HPWlRnZ4AeA1hfBxtY7bCGDJsqDDHk/KaHOl5bA==}
-    dev: false
-
   /typescript-tuple/2.2.1:
     resolution: {integrity: sha512-Zcr0lbt8z5ZdEzERHAMAniTiIKerFCMgd7yjq1fPnDJ43et/k9twIFQMUYff9k5oXcsQ0WpvFcgzK2ZKASoW6Q==}
     dependencies:
@@ -32167,8 +32183,8 @@ packages:
     resolution: {integrity: sha512-Y9vYLRKP7VU7Cgq6wG1jFaG2k3/eIuiTKAG8RAuQnb6Cd9k5BRqTm5uPIiSo0AP/u11jDomZ8j7+WEgkU9+Btw==}
     engines: {node: '>=8.0.0'}
     dependencies:
-      '@ethereumjs/common': 2.6.4
-      '@ethereumjs/tx': 3.5.1
+      '@ethereumjs/common': 2.6.5
+      '@ethereumjs/tx': 3.5.2
       crypto-browserify: 3.12.0
       eth-lib: 0.2.8
       ethereumjs-util: 7.1.5
