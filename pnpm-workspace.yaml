@@ -1,9 +1,5 @@
 packages:
   - 'apps/**'
   - 'types/**'
-  - 'evm'
-  - 'wfde'
-  - 'sdk'
-  - 'examples-sdk'
+  - 'engine/**'
   - 'ui2'
-  - 'e2e'
