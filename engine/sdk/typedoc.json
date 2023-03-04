@@ -1,5 +1,9 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["./src/index.ts"],
-  "out": "docs"
+  "out": "docs",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeNotDocumented": true,
+  "excludeNotDocumentedKinds": ["Variable"]
 }

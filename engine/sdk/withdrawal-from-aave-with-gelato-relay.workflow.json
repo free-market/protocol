@@ -1,0 +1,55 @@
+{
+  "steps": [
+    {
+      "type": "add-asset",
+      "asset": {
+        "type": "fungible-token",
+        "symbol": "aUSDC"
+      },
+      "amount": "1000000"
+    },
+    {
+      "type": "aave-withdrawal",
+      "inputAsset": {
+        "asset": {
+          "type": "fungible-token",
+          "symbol": "aUSDC"
+        },
+        "amount": "123"
+      }
+    },
+    {
+      "type": "pay-gelato-relay",
+      "gasLimit": "{{ sourceChainGasUnits }}",
+      "paymentAsset": {
+        "type": "fungible-token",
+        "symbol": "USDC"
+      }
+    },
+    {
+      "type": "uniswap-exact-out",
+      "amountOut": "{{requiredAssets.stargate}}",
+      "maxSlippagePercent": 0.05,
+      "inputAsset": "USDC",
+      "outputAsset": "WETH"
+    },
+    {
+      "type": "unwrap-native",
+      "amount": "{{requiredAssets.stargate}}"
+    },
+    {
+      "stepId": "stargate",
+      "type": "stargate-bridge",
+      "destinationChain": "ethereum",
+      "maxSlippagePercent": 0.04,
+      "destinationUserAddress": "0x1234567890123456789012345678901234567890",
+      "inputAsset": {
+        "asset": {
+          "type": "fungible-token",
+          "symbol": "USDC"
+        },
+        "amount": "100%"
+      }
+    }
+  ]
+}

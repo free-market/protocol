@@ -1,4 +1,8 @@
-// chain _values_
+import z from 'zod'
+
+// chains as values
 export const CHAINS = ['ethereum', 'arbitrum', 'avalanche', 'polygon', 'binance', 'optimism', 'fantom'] as const
-// Chain as a type (union of string types derives from the CHAIN values)
-export type Chain = typeof CHAINS[number]
+
+export const chainSchema = z.enum(CHAINS)
+
+export type Chain = z.infer<typeof chainSchema>

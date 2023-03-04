@@ -1,13 +1,21 @@
-// import Big from 'big.js'
-// import { boolean, mixed, ObjectSchema, string, object } from 'yup'
-import { NumberType } from './Number'
+import z from 'zod'
+import { Amount, amountSchema } from './Amount'
+import { AssetReference, assetReferenceSchema } from './AssetReference'
+import { registerParameterType } from './Parameter'
 
 export interface AssetAmount {
-  symbol: string
-  amount: NumberType
+  asset: AssetReference
+  amount: Amount
 }
 
-// export const assetAmountSchema: ObjectSchema<AssetAmount> = object({
-//   symbol: string().required(),
-//   amount: numberSchema.required(),
-// })
+const assetAmountStrictSchema: z.ZodType<AssetAmount> = z.object({
+  asset: assetReferenceSchema,
+  /** The amount of the asset */
+  amount: amountSchema,
+})
+
+export const assetAmountSchema = registerParameterType('asset-amount', assetAmountStrictSchema)
+// export const assetAmountSchema = assetAmountStrictSchema
+
+/** An asset paired with an amount. */
+// export interface AssetAmount extends z.infer<typeof assetAmountSchema> {}

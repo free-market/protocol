@@ -117,8 +117,8 @@ export class StargateBridge {
   }
 
   // fudge factor:  multiply minAmountOut by 999/1000 = 1 / 1000 = 0.1%
-  static fudgeFactorNumerator = BigNumber.from(999)
-  static fudgeFactorDenominator = BigNumber.from(1000)
+  private static fudgeFactorNumerator = BigNumber.from(999)
+  private static fudgeFactorDenominator = BigNumber.from(1000)
 
   static async getStargateMinAmountOut(args: StargateMinAmountOutArgs): Promise<string> {
     const sgFeeLibraryAddr = await StargateBridge.getFeeLibraryAddress(args.frontDoorAddress, args.srcPoolId, args.provider)

@@ -1,46 +1,30 @@
-import Big from 'big.js'
-import { boolean, mixed, ObjectSchema, string, object, array } from 'yup'
-import { AssetAmount, assetAmountSchema } from './AssetAmount'
-import { NumberType } from './Number'
+import z from 'zod'
+import { stargateBridgeSchema } from './steps/StargateBridge'
+import { addAssetSchema } from './steps/AddAsset'
+import { aaveSupplySchema, aaveWithdrawalSchema, payGelatoRelaySchema, uniswapExactOutSchema } from './steps'
+import { chainBranchSchema } from './steps/ChainBranch'
+import { assetBalanceBranchSchema } from './steps/AssetBalanceBranch'
+import { uniswapExactInSchema } from './steps/UniswapExactAmountIn'
+import { wrapNativeSchema } from './steps/WrapNative'
+import { unwrapNativeSchema } from './steps/UnwrapNative'
 
-export interface StepInputAsset extends AssetAmount {
-  amountIsPercent: boolean
-}
+export const stepSchema = z.discriminatedUnion('type', [
+  // actions
+  aaveSupplySchema,
+  aaveWithdrawalSchema,
+  addAssetSchema,
+  payGelatoRelaySchema,
+  uniswapExactInSchema,
+  uniswapExactOutSchema,
+  unwrapNativeSchema,
+  wrapNativeSchema,
 
-export const stepInputAssetSchema: ObjectSchema<StepInputAsset> = assetAmountSchema.concat(
-  object({
-    amountIsPercent: boolean().required(),
-  })
-)
+  // bridges
+  stargateBridgeSchema,
 
-export interface WorkflowStep {
-  id: string
-  nextStepId: string
-  stepId: string
-  inputAssets?: StepInputAsset[]
-  outputAssets?: AssetAmount[]
-}
+  // branches
+  chainBranchSchema,
+  assetBalanceBranchSchema,
+])
 
-export const workflowStepSchema: ObjectSchema<WorkflowStep> = object({
-  id: string().required(),
-  nextStepId: string().required(),
-  stepId: string().required(),
-  inputAssets: array().of(stepInputAssetSchema),
-  outputAssets: array().of(assetAmountSchema),
-})
-
-export interface AddAssetAction extends WorkflowStep {
-  stepId: 'addAsset'
-}
-export interface StargateBridgeAction extends WorkflowStep {
-  stepId: 'stargateBridge'
-  minAmountOut: NumberType
-}
-
-type Step = AddAssetAction | StargateBridgeAction
-
-const asdf: Step = {
-  id: '1',
-  nextStepId: '2',
-  stepId: 'stargateBridge',
-}
+export type Step = z.infer<typeof stepSchema>

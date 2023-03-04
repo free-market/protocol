@@ -1,16 +1,36 @@
 import test from 'ava'
 import { AssetAmount, assetAmountSchema } from '../AssetAmount'
-import yupToJsonSchema from '@sodaru/yup-to-json-schema'
 
-test('validates', t => {
-  const asset: AssetAmount = {
-    symbol: 'ABC',
+test('validates fungible tokens', t => {
+  // valid
+  const assetAmount: AssetAmount = {
+    asset: {
+      type: 'fungible-token',
+      symbol: 'ABC',
+    },
     amount: 2,
   }
+  assetAmountSchema.parse(assetAmount)
 
-  assetAmountSchema.validateSync(asset)
-  const jsonSchema = yupToJsonSchema(assetAmountSchema)
-  t.log(JSON.stringify(jsonSchema, null, 4))
+  assetAmount.amount = '100.0'
+  assetAmountSchema.parse(assetAmount)
+  assetAmount.amount = '100.00%'
+  assetAmountSchema.parse(assetAmount)
+
+  assetAmount.amount = '100.'
+  t.throws(() => assetAmountSchema.parse(assetAmount))
+  assetAmount.amount = '100.00.00'
+  t.throws(() => assetAmountSchema.parse(assetAmount))
+})
+
+test('validates native', t => {
+  const assetAmount: AssetAmount = {
+    asset: {
+      type: 'native',
+    },
+    amount: 1,
+  }
+  assetAmountSchema.parse(assetAmount)
   t.pass()
 })
 

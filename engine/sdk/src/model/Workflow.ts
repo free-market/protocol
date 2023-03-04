@@ -1,20 +1,19 @@
-// /**
-//  * A parameterized workflow step.
-//  *  This is a common base class, subclasses can add step-specific parameters unique to their step.
-//  */
-// export interface WorkflowStep {
-//   stepId: string
-// }
+import z from 'zod'
+import { fungibleTokenSchema } from './Asset'
+import { parameterSchema } from './Parameter'
+import { stepSchema } from './Step'
 
-// export interface WorkflowAction extends WorkflowStep {
-//   actionId: string
-//   inputAmount: AssetAmount
-//   inputAsset: Asset
-//   outputAsset: Asset
-// }
+export const workflowSchema = z
+  .object({
+    parameters: parameterSchema.array().optional(),
+    fungibleTokens: fungibleTokenSchema
+      .array()
+      .optional()
+      .describe(
+        'Custom fungible tokens used in this workflow.  These override or augment the default curated set of tokens provided by the SDK.'
+      ),
+    steps: stepSchema.array().describe('The set of steps for this workflow.  Execution will begin at the step at index 0.'),
+  })
+  .describe('A workflow.')
 
-// export interface WorkflowBranch extends WorkflowStep {
-//   expression: string // TODO arbitrary expressions may be too expensive to implement on-chain
-//   ifTrue: string
-//   ifFalse: string
-// }
+export interface Workflow extends z.infer<typeof workflowSchema> {}
