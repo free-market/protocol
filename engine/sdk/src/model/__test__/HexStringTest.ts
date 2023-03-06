@@ -1,11 +1,11 @@
 import test from 'ava'
-import { hexStringSchema } from '../HexString'
+import { addressSchema } from '../AddressSchema'
 
 test('validates', t => {
-  hexStringSchema.parse('0x')
-  hexStringSchema.parse('0x0234567890abcdefABCDEF')
-  t.throws(() => hexStringSchema.parse(''))
-  t.throws(() => hexStringSchema.parse('0'))
-  t.throws(() => hexStringSchema.parse('x'))
-  t.throws(() => hexStringSchema.parse('0xg'))
+  addressSchema.parse('0x')
+  addressSchema.parse('0x0234567890abcdefABCDEF')
+  t.throws(() => addressSchema.parse(''))
+  t.throws(() => addressSchema.parse('0'))
+  t.throws(() => addressSchema.parse('x'))
+  t.throws(() => addressSchema.parse('0xg'))
 })

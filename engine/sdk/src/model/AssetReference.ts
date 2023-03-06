@@ -1,5 +1,6 @@
 import z from 'zod'
 import { nonEmptyStringSchema } from './NonEmptyString'
+import { registerParameterType } from './Parameter'
 
 export function createAssetReferenceSchema<T extends string>(type: T) {
   return z.object({
@@ -13,6 +14,9 @@ export const fungibleTokenAssetReferenceSchema = createAssetReferenceSchema('fun
   symbol: nonEmptyStringSchema.describe('The symbol for this token.'),
 })
 
-export const assetReferenceSchema = z.discriminatedUnion('type', [nativeAssetReferenceSchema, fungibleTokenAssetReferenceSchema])
+export const assetReferenceSchema = registerParameterType(
+  'asset-ref',
+  z.discriminatedUnion('type', [nativeAssetReferenceSchema, fungibleTokenAssetReferenceSchema])
+)
 
 export type AssetReference = z.infer<typeof assetReferenceSchema>

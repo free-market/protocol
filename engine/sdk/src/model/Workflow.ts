@@ -12,7 +12,7 @@ export const workflowSchema = z
       .describe(
         'Custom fungible tokens used in this workflow.  These override or augment the default curated set of tokens provided by the SDK.'
       ),
-    steps: stepSchema.array().describe('The set of steps for this workflow.  Execution will begin at the step at index 0.'),
+    steps: stepSchema.array().min(1).describe('The set of steps for this workflow.  Execution will begin at the step at index 0.'),
   })
   .describe('A workflow.')
 

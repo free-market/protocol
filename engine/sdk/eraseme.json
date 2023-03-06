@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "properties": {
+        "startAmount": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^\\d+(\\.\\d+)?%?$"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            ]
+        }
+    },
+    "required": [
+        "startAmount"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

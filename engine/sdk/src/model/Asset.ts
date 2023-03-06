@@ -1,7 +1,7 @@
 import z from 'zod'
 import { assetTypeSchema } from './AssetType'
 import { chainSchema } from './Chain'
-import { hexStringSchema } from './HexString'
+import { addressSchema } from './AddressSchema'
 import { nonEmptyStringSchema } from './NonEmptyString'
 
 export const assetBaseSchema = z.object({
@@ -25,7 +25,7 @@ export interface NativeAsset extends z.infer<typeof nativeAssetSchema> {}
 
 export const assetChainInfoSchema = z.object({
   /** The address of the asset.  */
-  address: hexStringSchema,
+  address: addressSchema,
 })
 
 /** Chain specific asset information. */

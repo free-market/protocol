@@ -4,7 +4,7 @@ import { StargateBridge } from '../../model/steps/StargateBridge'
 import { StargateBridgeHelper } from '../StargateBridgeHelper'
 import { createStandardProvider } from '../utils'
 import dotenv from 'dotenv'
-import rootLogger from 'loglevel'
+
 import { shouldRunE2e } from '../../private/test-utils'
 
 dotenv.config()

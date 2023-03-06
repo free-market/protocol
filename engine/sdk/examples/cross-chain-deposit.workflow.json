@@ -1,0 +1,52 @@
+{
+  "parameters": [
+    {
+      "name": "startAmount",
+      "type": "amount",
+      "description": "The amount of USDC that will be deposited into Aave."
+    }
+  ],
+  "steps": [
+    {
+      "stepId": "addAsset",
+      "type": "add-asset",
+      "asset": { "type": "fungible-token", "symbol": "aUSDC" },
+      "amount": "{{ startAmount }}"
+    },
+    {
+      "type": "aave-withdrawal",
+      "inputAsset": {
+        "asset": {
+          "type": "fungible-token",
+          "symbol": "aUSDC"
+        },
+        "amount": "100%"
+      }
+    },
+    {
+      "type": "pay-gelato-relay",
+      "paymentAsset": {
+        "type": "fungible-token",
+        "symbol": "USDC"
+      }
+    },
+    {
+      "stepId": "sg",
+      "type": "stargate-bridge",
+      "destinationChain": "arbitrum",
+      "inputAsset": {
+        "asset": { "type": "fungible-token", "symbol": "USDC" },
+        "amount": "100%"
+      },
+      "maxSlippagePercent": 0.05,
+      "destinationUserAddress": "0xabc1234"
+    },
+    {
+      "type": "aave-supply",
+      "inputAsset": {
+        "asset": { "type": "fungible-token", "symbol": "USDC" },
+        "amount": "100%"
+      }
+    }
+  ]
+}
