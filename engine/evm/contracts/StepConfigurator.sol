@@ -42,7 +42,7 @@ contract StepConfigurator is FreeMarketBase, IStepManager {
     return keccak256(abi.encodePacked('actionBlackList', actionId));
   }
 
-  function setActionAddress(uint16 actionId, address actionAddress) external onlyOwner {
+  function setStepAddress(uint16 actionId, address actionAddress) external onlyOwner {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     eternalStorage.setEnumerableMapUintToAddress(latestActionAddresses, actionId, actionAddress);
     // using the white list map like a set, we only care about the keys
@@ -60,12 +60,12 @@ contract StepConfigurator is FreeMarketBase, IStepManager {
     emit ActionAddressSetEvent(actionId, actionAddress);
   }
 
-  function getActionAddress(uint16 actionId) external view returns (address) {
+  function getStepAddress(uint16 actionId) external view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getEnumerableMapUintToAddress(latestActionAddresses, actionId);
   }
 
-  function getActionAddressInternal(uint16 actionId) internal view returns (address) {
+  function getStepAddressInternal(uint16 actionId) internal view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getEnumerableMapUintToAddress(latestActionAddresses, actionId);
   }

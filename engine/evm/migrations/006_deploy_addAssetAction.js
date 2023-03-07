@@ -18,6 +18,6 @@ module.exports = async (deployer) => {
   await sleep(SLEEPMS)
   const workflowRunner = await WorkflowRunner.at(frontDoor.address)
   await sleep(SLEEPMS)
-  await workflowRunner.setActionAddress(StepIds.addAsset, addAssetAction.address)
+  await workflowRunner.setStepAddress(StepIds.addAsset, addAssetAction.address)
   await sleep(SLEEPMS)
 }

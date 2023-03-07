@@ -11,7 +11,7 @@ export interface AaveSupplyActionArgs {
 export async function getATokenAddress(frontDoorAddress: string, reserveTokenAddress: string, provider: EIP1193Provider): Promise<string> {
   const ethersProvider = new Web3Provider(provider)
   const dstRunner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
-  const dstAaveSupplyActionAddr = await dstRunner.getActionAddress(StepIds.aaveSupply)
+  const dstAaveSupplyActionAddr = await dstRunner.getStepAddress(StepIds.aaveSupply)
   const dstAaveSupplyAction = AaveSupplyAction__factory.connect(dstAaveSupplyActionAddr, ethersProvider)
   const dstAavePoolAddr = await dstAaveSupplyAction.poolAddress()
   const dstAavePool = IAaveV3Pool__factory.connect(dstAavePoolAddr, ethersProvider)

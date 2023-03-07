@@ -48,7 +48,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     //   const ai = await fmp.getStepInfoAt(i)
     //   t.log(formatStep(ai))
     // }
-    const stargateBridgeActionAddress = await fmp.getActionAddress(StepIds.stargateBridge)
+    const stargateBridgeActionAddress = await fmp.getStepAddress(StepIds.stargateBridge)
     const stargateBridgeAction = await StargateBridgeAction.deployed()
     expect(stargateBridgeAction.address).to.equal(stargateBridgeActionAddress)
 

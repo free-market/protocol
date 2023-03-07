@@ -64,7 +64,7 @@ async function waitForContinuationNonceLogging(args: WaitForContinuationNonceLog
     const { dstBridgeTokenAddr, aTokenAddr: dstATokenAddr, userAddr: dstUserAddr } = args
     const dstBridgeToken = IERC20__factory.connect(dstBridgeTokenAddr, runner.provider)
     const dstAToken = IERC20__factory.connect(dstATokenAddr, runner.provider)
-    const dstActionAddr = await runner.getActionAddress(StepIds.aaveSupply)
+    const dstActionAddr = await runner.getStepAddress(StepIds.aaveSupply)
     let elapsedSeconds = 0
     const intervalSeconds = 10
     return setInterval(async () => {

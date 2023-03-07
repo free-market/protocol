@@ -124,15 +124,15 @@ contract('deploy and upgrade', function (accounts: string[]) {
     const wrapEther = await WrapEther.new(WETH_ADDRESS)
 
     // non owner cannot add a workflow step
-    await expectRejection(workflowRunner.setActionAddress(StepIds.wrapEther, wrapEther.address, { from: NOT_OWNER }))
+    await expectRejection(workflowRunner.setStepAddress(StepIds.wrapEther, wrapEther.address, { from: NOT_OWNER }))
 
     //  owner adds the action
-    await workflowRunner.setActionAddress(StepIds.wrapEther, wrapEther.address)
+    await workflowRunner.setStepAddress(StepIds.wrapEther, wrapEther.address)
     await expectActionAddress(StepIds.wrapEther, wrapEther.address)
 
     // owner upgrades the action
     const wrapEtherUpgraded = await WrapEther.new(WETH_ADDRESS)
-    await workflowRunner.setActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
+    await workflowRunner.setStepAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
     await expectActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
 
     // workflow actions are iterable

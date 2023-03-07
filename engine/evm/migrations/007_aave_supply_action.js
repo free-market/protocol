@@ -28,6 +28,6 @@ module.exports = async (deployer) => {
   await sleep(SLEEPMS)
   const workflowRunner = await WorkflowRunner.at(frontDoor.address)
   await sleep(SLEEPMS)
-  await workflowRunner.setActionAddress(StepIds.aaveSupply, aaveSupplyAction.address)
+  await workflowRunner.setStepAddress(StepIds.aaveSupply, aaveSupplyAction.address)
   await sleep(SLEEPMS)
 }

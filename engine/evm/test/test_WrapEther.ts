@@ -52,7 +52,7 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
       assetAddress: networkConfig.WETH,
     }
     const testAmount = new BN(10).pow(new BN(16)) // 0.01 ETH
-    const wrappedEtherAddress = await runner.getActionAddress(StepIds.wrapEther)
+    const wrappedEtherAddress = await runner.getStepAddress(StepIds.wrapEther)
     verbose(`actionId=${StepIds.wrapEther} addr=${wrappedEtherAddress}`)
 
     const beginningBalanceEth = new BN(await web3.eth.getBalance(userAccount))

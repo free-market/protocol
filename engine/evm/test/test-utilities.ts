@@ -34,7 +34,7 @@ export async function validateAction(actionId: number, actionAddress: string) {
   const runner = await getWorkflowRunner()
 
   // should be there when you ask for the address directly
-  const registeredAddress = await runner.getActionAddress(actionId)
+  const registeredAddress = await runner.getStepAddress(actionId)
   expect(registeredAddress).to.equal(actionAddress)
 
   // should be present in the enumeration

@@ -92,13 +92,13 @@ library StorageWriter {
     require(success, string(returnData));
   }
 
-  function setActionAddress(
+  function setStepAddress(
     address storageAddr,
     uint16 actionId,
     address actionAddress
   ) internal {
     (bool success, bytes memory returnData) = storageAddr.delegatecall(
-      abi.encodeWithSignature('setActionAddress(uint16,address)', actionId, actionAddress)
+      abi.encodeWithSignature('setStepAddress(uint16,address)', actionId, actionAddress)
     );
     require(success, string(returnData));
   }
