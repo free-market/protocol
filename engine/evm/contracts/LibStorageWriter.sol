@@ -94,11 +94,11 @@ library StorageWriter {
 
   function setStepAddress(
     address storageAddr,
-    uint16 actionId,
-    address actionAddress
+    uint16 stepId,
+    address stepAddress
   ) internal {
     (bool success, bytes memory returnData) = storageAddr.delegatecall(
-      abi.encodeWithSignature('setStepAddress(uint16,address)', actionId, actionAddress)
+      abi.encodeWithSignature('setStepAddress(uint16,address)', stepId, stepAddress)
     );
     require(success, string(returnData));
   }

@@ -30,20 +30,20 @@ export async function getWorkflowRunner() {
   return runner
 }
 
-export async function validateAction(actionId: number, actionAddress: string) {
+export async function validateAction(stepId: number, stepAddress: string) {
   const runner = await getWorkflowRunner()
 
   // should be there when you ask for the address directly
-  const registeredAddress = await runner.getStepAddress(actionId)
-  expect(registeredAddress).to.equal(actionAddress)
+  const registeredAddress = await runner.getStepAddress(stepId)
+  expect(registeredAddress).to.equal(stepAddress)
 
   // should be present in the enumeration
   let found = false
-  let actionCount = (await runner.getActionCount()).toNumber()
+  let actionCount = (await runner.getStepCount()).toNumber()
   for (let i = 0; i < actionCount; ++i) {
     const actionInfo = await runner.getStepInfoAt(i)
-    if (Number(actionInfo.actionId) === actionId) {
-      expect(actionInfo.whitelist.includes(actionAddress)).to.be.true
+    if (Number(actionInfo.stepId) === stepId) {
+      expect(actionInfo.whitelist.includes(stepAddress)).to.be.true
       found = true
       break
     }

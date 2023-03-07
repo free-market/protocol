@@ -22,8 +22,8 @@ const InputAssetSchema = `
 
 const WorkflowStepSchema = `
   tuple(
-    uint16 actionId,
-    address actionAddress,
+    uint16 stepId,
+    address stepAddress,
     ${InputAssetSchema}[] inputAssets,
     ${AssetSchema}[] outputAssets,
     bytes data,
@@ -82,8 +82,8 @@ export function getBridgePayload(userAddress: string, workflow: EvmWorkflow) {
 // }
 
 // const workflowStep = {
-//   actionId: 1,
-//   actionAddress: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
+//   stepId: 1,
+//   stepAddress: '0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291',
 //   inputAssets: [inputAsset],
 //   outputAssets: [asset],
 //   data: '0xdeadbeef',

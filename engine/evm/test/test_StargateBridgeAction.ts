@@ -41,7 +41,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     expect(workflowRunner.address).to.equal(upstream)
 
     const fmp = await WorkflowRunner.at(frontDoor.address)
-    // const actionCount = (await fmp.getActionCount()).toNumber()
+    // const actionCount = (await fmp.getStepCount()).toNumber()
     // expect(actionCount).to.be.greaterThan(0)
     // t.log(`${actionCount} actions are registered`)
     // for (let i = 0; i < actionCount; ++i) {
@@ -123,8 +123,8 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     const dummyWorkflow: EvmWorkflow = {
       steps: [
         {
-          actionId: 1,
-          actionAddress: ADDRESS_ZERO,
+          stepId: 1,
+          stepAddress: ADDRESS_ZERO,
           inputAssets: [
             { asset: { assetType: AssetType.ERC20, assetAddress: inputAsset.address }, amount: inputAmount, amountIsPercent: true },
           ],

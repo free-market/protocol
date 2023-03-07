@@ -141,8 +141,8 @@ contract('AddAssetAction', function (accounts: string[]) {
       {
         steps: [
           {
-            actionId: StepIds.addAsset,
-            actionAddress: ADDRESS_ZERO,
+            stepId: StepIds.addAsset,
+            stepAddress: ADDRESS_ZERO,
             inputAssets: [], // no input assets
             outputAssets: [getWethAsset()],
             data: addAssetArgs,

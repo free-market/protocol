@@ -104,18 +104,18 @@ contract('deploy and upgrade', function (accounts: string[]) {
   it('adds and upgrades workflow actions', async () => {
     const workflowRunner = await ensureWorkflowRunnerDeployed()
 
-    // helper function that loops through all actions and make sure that the contract for a given actionId  is pointing to the correct contract
-    const expectActionAddress = async (actionId: number, expectedAddress: string) => {
-      const numActions = (await workflowRunner.getActionCount()).toNumber()
+    // helper function that loops through all actions and make sure that the contract for a given stepId  is pointing to the correct contract
+    const expectActionAddress = async (stepId: number, expectedAddress: string) => {
+      const numActions = (await workflowRunner.getStepCount()).toNumber()
       let i = 0
       for (; i < numActions; ++i) {
         const actionInfo = await workflowRunner.getStepInfoAt(i)
-        if (actionInfo.actionId.toString() === actionId.toString()) {
+        if (actionInfo.stepId.toString() === stepId.toString()) {
           expect(actionInfo.whitelist.includes(expectedAddress)).to.be.true
           break
         }
       }
-      expect(i).to.not.equal(numActions, `actionId ${StepIds.wrapEther} not found`)
+      expect(i).to.not.equal(numActions, `stepId ${StepIds.wrapEther} not found`)
     }
 
     // deploy an action
@@ -136,10 +136,10 @@ contract('deploy and upgrade', function (accounts: string[]) {
     await expectActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
 
     // workflow actions are iterable
-    const actionCount = await workflowRunner.getActionCount()
+    const actionCount = await workflowRunner.getStepCount()
     expect(actionCount.toNumber()).to.equal(1)
     const actionInfo = await workflowRunner.getStepInfoAt(0)
-    expect(actionInfo.actionId.toString()).to.equal('' + StepIds.wrapEther)
+    expect(actionInfo.stepId.toString()).to.equal('' + StepIds.wrapEther)
     expect(actionInfo.whitelist.includes(wrapEtherUpgraded.address)).to.be.true
   })
 })

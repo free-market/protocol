@@ -93,8 +93,8 @@ test('does a stargate swap in a workflow', async (t) => {
       {
         //
         // -- Aave Supply
-        actionId: StepIds.aaveSupply,
-        actionAddress: ADDRESS_ZERO,
+        stepId: StepIds.aaveSupply,
+        stepAddress: ADDRESS_ZERO,
         inputAssets: [
           {
             asset: {
@@ -168,8 +168,8 @@ test('does a stargate swap in a workflow', async (t) => {
       //
       // -- Add Asset (USDC)
       {
-        actionId: StepIds.addAsset,
-        actionAddress: ADDRESS_ZERO,
+        stepId: StepIds.addAsset,
+        stepAddress: ADDRESS_ZERO,
         inputAssets: [], // no input assets
         outputAssets: [srcUsdcAsset],
         data: encodeAddAssetArgs({
@@ -181,8 +181,8 @@ test('does a stargate swap in a workflow', async (t) => {
       //
       // -- Stargate Bridge
       {
-        actionId: StepIds.stargateBridge,
-        actionAddress: ADDRESS_ZERO,
+        stepId: StepIds.stargateBridge,
+        stepAddress: ADDRESS_ZERO,
         inputAssets: [
           {
             asset: srcUsdcAsset,

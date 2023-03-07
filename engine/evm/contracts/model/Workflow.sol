@@ -16,13 +16,13 @@ struct WorkflowStepInputAsset {
 // Parameters for a workflow step
 struct WorkflowStep {
   // The logical identifer of the step (e.g., 10 represents WrapEtherStep).
-  uint16 actionId;
+  uint16 stepId;
   // The contract address of a specific version of the action.
   // Individual step contracts may be upgraded over time, and this allows
   // workflows 'freeze' the version of contract for this step
   // A value of address(0) means use the latest and greatest version  of
-  // this step based only on actionId.
-  address actionAddress;
+  // this step based only on stepId.
+  address stepAddress;
   // The input assets to this step.
   WorkflowStepInputAsset[] inputAssets;
   // The output assets for this step.

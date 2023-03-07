@@ -4,14 +4,14 @@ pragma solidity ^0.8.13;
 import './StepInfo.sol';
 
 interface IStepManager {
-  /// @dev Associate a new address with an actionId
-  function setStepAddress(uint16 actionId, address actionAddress) external; // onlyOwner
+  /// @dev Associate a new address with a stepId
+  function setStepAddress(uint16 stepId, address stepAddress) external; // onlyOwner
 
-  /// @dev Retrieve the address associated with an actionId
-  function getStepAddress(uint16 actionId) external view returns (address);
+  /// @dev Retrieve the address associated with a stepId
+  function getStepAddress(uint16 stepId) external view returns (address);
 
-  /// @dev getActionCount getStepInfoAt together allow enumeration of all actions
-  function getActionCount() external view returns (uint256);
+  /// @dev getStepCount getStepInfoAt together allow enumeration of all actions
+  function getStepCount() external view returns (uint256);
 
   function getStepInfoAt(uint256 index) external view returns (StepInfo memory);
 }
