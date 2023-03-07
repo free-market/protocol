@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
 import BN from 'bn.js'
 import { AaveSupplyActionInstance, MockAavePoolInstance, MockTokenInstance } from '../types/truffle-contracts'
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, validateAction } from './test-utilities'
 import { AssetAmount } from '../tslib/AssetAmount'
@@ -41,7 +41,7 @@ contract('AaveSupplyAction', function (accounts: string[]) {
 
   it('deployed correctly during migrate', async () => {
     const deployedAave = await AaveSupplyAction.deployed()
-    await validateAction(ActionIds.aaveSupply, deployedAave.address)
+    await validateAction(StepIds.aaveSupply, deployedAave.address)
   })
 
   it('invokes Pool.supply', async () => {

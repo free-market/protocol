@@ -1,4 +1,4 @@
-// const { ActionIds } = require('./tslib/actionIds')
+// const { StepIds } = require('./tslib/StepIds')
 // const { AssetType } = require('./tslib/AssetType')
 const truffleContract = require('@truffle/contract')
 
@@ -62,7 +62,7 @@ const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 // const WRAPETH = {
 //   steps: [
 //     {
-//       actionId: ActionIds.wrapEther,
+//       actionId: StepIds.wrapEther,
 //       actionAddress: ADDRESS_ZERO,
 //       inputAsset: {
 //         assetType: AssetType.Native,

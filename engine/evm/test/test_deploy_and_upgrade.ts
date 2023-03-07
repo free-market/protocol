@@ -4,7 +4,7 @@ import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-cont
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
 const EternalStorage = artifacts.require('EternalStorage')
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { expectRejection } from './test-utilities'
 
 contract('deploy and upgrade', function (accounts: string[]) {
@@ -109,13 +109,13 @@ contract('deploy and upgrade', function (accounts: string[]) {
       const numActions = (await workflowRunner.getActionCount()).toNumber()
       let i = 0
       for (; i < numActions; ++i) {
-        const actionInfo = await workflowRunner.getActionInfoAt(i)
+        const actionInfo = await workflowRunner.getStepInfoAt(i)
         if (actionInfo.actionId.toString() === actionId.toString()) {
           expect(actionInfo.whitelist.includes(expectedAddress)).to.be.true
           break
         }
       }
-      expect(i).to.not.equal(numActions, `actionId ${ActionIds.wrapEther} not found`)
+      expect(i).to.not.equal(numActions, `actionId ${StepIds.wrapEther} not found`)
     }
 
     // deploy an action
@@ -124,22 +124,22 @@ contract('deploy and upgrade', function (accounts: string[]) {
     const wrapEther = await WrapEther.new(WETH_ADDRESS)
 
     // non owner cannot add a workflow step
-    await expectRejection(workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEther.address, { from: NOT_OWNER }))
+    await expectRejection(workflowRunner.setActionAddress(StepIds.wrapEther, wrapEther.address, { from: NOT_OWNER }))
 
     //  owner adds the action
-    await workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEther.address)
-    await expectActionAddress(ActionIds.wrapEther, wrapEther.address)
+    await workflowRunner.setActionAddress(StepIds.wrapEther, wrapEther.address)
+    await expectActionAddress(StepIds.wrapEther, wrapEther.address)
 
     // owner upgrades the action
     const wrapEtherUpgraded = await WrapEther.new(WETH_ADDRESS)
-    await workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEtherUpgraded.address)
-    await expectActionAddress(ActionIds.wrapEther, wrapEtherUpgraded.address)
+    await workflowRunner.setActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
+    await expectActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
 
     // workflow actions are iterable
     const actionCount = await workflowRunner.getActionCount()
     expect(actionCount.toNumber()).to.equal(1)
-    const actionInfo = await workflowRunner.getActionInfoAt(0)
-    expect(actionInfo.actionId.toString()).to.equal('' + ActionIds.wrapEther)
+    const actionInfo = await workflowRunner.getStepInfoAt(0)
+    expect(actionInfo.actionId.toString()).to.equal('' + StepIds.wrapEther)
     expect(actionInfo.whitelist.includes(wrapEtherUpgraded.address)).to.be.true
   })
 })

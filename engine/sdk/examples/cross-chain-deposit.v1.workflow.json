@@ -1,0 +1,40 @@
+{
+  "parameters": [
+    {
+      "name": "startAmount",
+      "type": "amount",
+      "description": "Input Amount"
+    },
+    {
+      "name": "destUserAddress",
+      "type": "amount",
+      "description": "Input Amount"
+    }
+  ],
+
+  "steps": [
+    {
+      "stepId": "addAsset",
+      "type": "add-asset",
+      "asset": { "type": "fungible-token", "symbol": "aUSDC" },
+      "amount": "{{ startAmount }}"
+    },
+    {
+      "type": "stargate-bridge",
+      "destinationChain": "arbitrum",
+      "inputAsset": {
+        "asset": { "type": "fungible-token", "symbol": "USDC" },
+        "amount": "100%"
+      },
+      "maxSlippagePercent": 0.05,
+      "destinationUserAddress": "{{ destUserAddress }}"
+    },
+    {
+      "type": "aave-supply",
+      "inputAsset": {
+        "asset": { "type": "fungible-token", "symbol": "USDC" },
+        "amount": "100%"
+      }
+    }
+  ]
+}

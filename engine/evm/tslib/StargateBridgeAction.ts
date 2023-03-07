@@ -11,7 +11,7 @@ import {
   StargateBridgeAction__factory,
   WorkflowRunner__factory,
 } from '../types/ethers-contracts'
-import { ActionIds } from './actionIds'
+import { StepIds } from './StepIds'
 
 export const StargateChainIds: { [index: string]: number } = {
   Ethereum: 101,
@@ -99,7 +99,7 @@ export class StargateBridge {
   static async getStargateRouterAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {
     const ethersProvider = new Web3Provider(provider)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
-    const sgBridgeActionAddr = await runner.getActionAddress(ActionIds.stargateBridge)
+    const sgBridgeActionAddr = await runner.getActionAddress(StepIds.stargateBridge)
     log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
     const sgBridgeAction = StargateBridgeAction__factory.connect(sgBridgeActionAddr, ethersProvider)
     const sgRouterAddr = await sgBridgeAction.stargateRouterAddress()
@@ -178,7 +178,7 @@ export class StargateBridge {
   static async getStargateBridgeActionAddress(frontDoorAddress: string, provider: EIP1193Provider): Promise<string> {
     const ethersProvider = new Web3Provider(provider)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
-    const stargateBridgeActionAddress = await runner.getActionAddress(ActionIds.stargateBridge)
+    const stargateBridgeActionAddress = await runner.getActionAddress(StepIds.stargateBridge)
     return stargateBridgeActionAddress
   }
 }

@@ -1,4 +1,4 @@
-export const ActionIds = {
+export const StepIds = {
   wrapEther: 10,
   unwrapEther: 11,
   addAsset: 12,

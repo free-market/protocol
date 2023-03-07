@@ -157,4 +157,9 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     log.debug(`stargate required native=${stargateFee.toString()}`)
     return stargateFee.toString()
   }
+
+  getBridgeDestinationChain(stepConfig: StargateBridge): Chain | null {
+    return stepConfig.destinationChain
+  }
+
 }

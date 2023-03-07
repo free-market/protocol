@@ -1,6 +1,6 @@
 import z, { ZodTypeAny } from 'zod'
 import chalk from 'chalk'
-import WorkflowInstance from '../runner/WorkflowInstance'
+import WorkflowRunner from '../runner/WorkflowRunner'
 import fs from 'fs'
 import { WorkflowValidationError } from '../runner/WorkflowValidationError'
 import { Workflow } from '../model'
@@ -12,7 +12,7 @@ export function validateWorkflow(fileName: string, verbose: boolean) {
   const fileContent = fs.readFileSync(fileName).toString()
 
   try {
-    const rv = new WorkflowInstance(fileContent)
+    const rv = new WorkflowRunner(fileContent)
     if (verbose) {
       console.log(`\nWorkflow file ${chalk.yellow(fileName)} is valid!  🚀\n`)
     }

@@ -3,7 +3,7 @@ var WorkflowRunner = artifacts.require('WorkflowRunner')
 var StargateBridgeAction = artifacts.require('StargateBridgeAction')
 
 var { getNetworkConfig } = require('../build/tslib/contract-addresses')
-var { ActionIds } = require('../build/tslib/actionIds')
+var { StepIds } = require('../build/tslib/StepIds')
 
 module.exports = async (deployer) => {
   const networkId = await web3.eth.net.getId()
@@ -15,7 +15,7 @@ module.exports = async (deployer) => {
     await deployer.deploy(StargateBridgeAction, frontDoor.address, networkConfig.stargateRouter)
     const stargateBridge = await StargateBridgeAction.deployed()
     const workflowRunner = await WorkflowRunner.at(frontDoor.address)
-    await workflowRunner.setActionAddress(ActionIds.stargateBridge, stargateBridge.address)
+    await workflowRunner.setActionAddress(StepIds.stargateBridge, stargateBridge.address)
   } else {
     console.log(`Stargate not available on network=${networkId}`)
   }

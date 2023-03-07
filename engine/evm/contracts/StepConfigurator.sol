@@ -8,7 +8,7 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import './model/Workflow.sol';
 import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
-import './IActionManager.sol';
+import './IStepManager.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
 import './LibAssetBalances.sol';
@@ -17,8 +17,10 @@ import './EternalStorage.sol';
 import './IWorkflowStep.sol';
 import './LibAsset.sol';
 
-contract StepConfigurator is FreeMarketBase, IActionManager {
-  constructor(address payable frontDoorAddress)
+contract StepConfigurator is FreeMarketBase, IStepManager {
+  constructor(
+    address payable frontDoorAddress
+  )
     FreeMarketBase(
       msg.sender, // owner
       FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
@@ -73,7 +75,7 @@ contract StepConfigurator is FreeMarketBase, IActionManager {
     return eternalStorage.lengthEnumerableMapUintToAddress(latestActionAddresses);
   }
 
-  function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
+  function getStepInfoAt(uint256 index) public view returns (StepInfo memory) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     (uint256 actionId, address actionAddress) = eternalStorage.atEnumerableMapUintToAddress(latestActionAddresses, index);
 
@@ -93,6 +95,6 @@ contract StepConfigurator is FreeMarketBase, IActionManager {
       blacklist[i] = blacklistedAddress;
     }
 
-    return ActionInfo(uint16(actionId), actionAddress, whitelist, blacklist);
+    return StepInfo(uint16(actionId), actionAddress, whitelist, blacklist);
   }
 }

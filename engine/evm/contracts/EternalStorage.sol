@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 import '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
 
 import './Ownable.sol';
-import './ActionInfo.sol';
 
 contract EternalStorage is Ownable {
   address internal writer;
@@ -167,43 +166,23 @@ contract EternalStorage is Ownable {
 
   // enumerable set
 
-  function setEnumerableMapUintToAddress(
-    bytes32 _key1,
-    uint256 _key2,
-    address _value
-  ) external onlyWriter returns (bool) {
+  function setEnumerableMapUintToAddress(bytes32 _key1, uint256 _key2, address _value) external onlyWriter returns (bool) {
     return enumerableMapUintToAddressMapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapAddressToUint(
-    bytes32 _key1,
-    address _key2,
-    uint256 _value
-  ) external onlyWriter returns (bool) {
+  function setEnumerableMapAddressToUint(bytes32 _key1, address _key2, uint256 _value) external onlyWriter returns (bool) {
     return enumerableMapAddressToUintMapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapBytes32ToBytes32Map(
-    bytes32 _key1,
-    bytes32 _key2,
-    bytes32 _value
-  ) external onlyWriter returns (bool) {
+  function setEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2, bytes32 _value) external onlyWriter returns (bool) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapUintToUintMap(
-    bytes32 _key1,
-    uint256 _key2,
-    uint256 _value
-  ) external onlyWriter returns (bool) {
+  function setEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2, uint256 _value) external onlyWriter returns (bool) {
     return enumerableMapUintToUintMapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapBytes32ToUintMap(
-    bytes32 _key1,
-    bytes32 _key2,
-    uint256 _value
-  ) external onlyWriter returns (bool) {
+  function setEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2, uint256 _value) external onlyWriter returns (bool) {
     return enumerableMapBytes32ToUintMapStorage[_key1].set(_key2, _value);
   }
 

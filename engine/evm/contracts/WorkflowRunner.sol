@@ -8,7 +8,7 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import './model/Workflow.sol';
 import './FrontDoor.sol';
 import './IWorkflowRunner.sol';
-import './IActionManager.sol';
+import './IStepManager.sol';
 import './IUserProxyManager.sol';
 import './UserProxy.sol';
 import './LibAssetBalances.sol';
@@ -18,13 +18,10 @@ import './IWorkflowStep.sol';
 import './LibAsset.sol';
 import './LibPercent.sol';
 
-contract WorkflowRunner is
-  FreeMarketBase,
-  ReentrancyGuard,
-  IWorkflowRunner, /*IUserProxyManager,*/
-  IActionManager
-{
-  constructor(address payable frontDoorAddress)
+contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner /*IUserProxyManager,*/, IStepManager {
+  constructor(
+    address payable frontDoorAddress
+  )
     FreeMarketBase(
       msg.sender, // owner
       FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
@@ -91,7 +88,7 @@ contract WorkflowRunner is
     return eternalStorage.lengthEnumerableMapUintToAddress(latestActionAddresses);
   }
 
-  function getActionInfoAt(uint256 index) public view returns (ActionInfo memory) {
+  function getStepInfoAt(uint256 index) public view returns (StepInfo memory) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     (uint256 actionId, address actionAddress) = eternalStorage.atEnumerableMapUintToAddress(latestActionAddresses, index);
 
@@ -111,7 +108,7 @@ contract WorkflowRunner is
       blacklist[i] = blacklistedAddress;
     }
 
-    return ActionInfo(uint16(actionId), actionAddress, whitelist, blacklist);
+    return StepInfo(uint16(actionId), actionAddress, whitelist, blacklist);
   }
 
   /// @notice This event is emitted when a workflow execution begins.
@@ -154,11 +151,7 @@ contract WorkflowRunner is
     executeWorkflow(msg.sender, workflow, startingAssets);
   }
 
-  function executeWorkflow(
-    address userAddress,
-    Workflow memory workflow,
-    AssetAmount memory startingAsset
-  ) internal {
+  function executeWorkflow(address userAddress, Workflow memory workflow, AssetAmount memory startingAsset) internal {
     emit WorkflowExecution(userAddress, workflow);
     // workflow starts on the step with index 0
     uint16 currentStepIndex = 0;
@@ -248,11 +241,10 @@ contract WorkflowRunner is
     return currentStep.actionAddress;
   }
 
-  function resolveAmounts(LibAssetBalances.AssetBalances memory assetBalances, WorkflowStepInputAsset[] memory inputAssets)
-    internal
-    pure
-    returns (AssetAmount[] memory)
-  {
+  function resolveAmounts(
+    LibAssetBalances.AssetBalances memory assetBalances,
+    WorkflowStepInputAsset[] memory inputAssets
+  ) internal pure returns (AssetAmount[] memory) {
     AssetAmount[] memory rv = new AssetAmount[](inputAssets.length);
     for (uint256 i = 0; i < inputAssets.length; ++i) {
       WorkflowStepInputAsset memory stepInputAsset = inputAssets[i];

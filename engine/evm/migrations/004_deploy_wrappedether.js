@@ -4,7 +4,7 @@ var WrapEther = artifacts.require('WrapEther')
 var UnwrapEther = artifacts.require('UnwrapEther')
 
 var { getNetworkConfig } = require('../build/tslib/contract-addresses')
-var { ActionIds } = require('../build/tslib/actionIds')
+var { StepIds } = require('../build/tslib/StepIds')
 
 var { promisify } = require('util')
 var sleep = promisify(setTimeout)
@@ -20,11 +20,11 @@ module.exports = async (deployer) => {
     const frontDoor = await FrontDoor.deployed()
     const wrapEther = await WrapEther.deployed()
     const workflowRunner = await WorkflowRunner.at(frontDoor.address)
-    await workflowRunner.setActionAddress(ActionIds.wrapEther, wrapEther.address)
+    await workflowRunner.setActionAddress(StepIds.wrapEther, wrapEther.address)
 
     await deployer.deploy(UnwrapEther, wethAddr)
     const unwrapEther = await UnwrapEther.deployed()
-    await workflowRunner.setActionAddress(ActionIds.unwrapEther, unwrapEther.address)
+    await workflowRunner.setActionAddress(StepIds.unwrapEther, unwrapEther.address)
   } else {
     console.log(`WETH not available on network=${networkId}`)
   }

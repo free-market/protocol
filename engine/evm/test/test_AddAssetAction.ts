@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 import { AddAssetActionArgs } from '../tslib/AddAssetAction'
 import { AddAssetActionInstance, WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { AssetType } from '../tslib/AssetType'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 import {
@@ -62,7 +62,7 @@ contract('AddAssetAction', function (accounts: string[]) {
   })
 
   it('deployed correctly during migrate', async () => {
-    await validateAction(ActionIds.addAsset, addAssetAction.address)
+    await validateAction(StepIds.addAsset, addAssetAction.address)
   })
 
   async function unitTestCommon() {
@@ -141,7 +141,7 @@ contract('AddAssetAction', function (accounts: string[]) {
       {
         steps: [
           {
-            actionId: ActionIds.addAsset,
+            actionId: StepIds.addAsset,
             actionAddress: ADDRESS_ZERO,
             inputAssets: [], // no input assets
             outputAssets: [getWethAsset()],

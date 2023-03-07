@@ -5,7 +5,7 @@ const UnwrapEther = artifacts.require('UnwrapEther')
 const IERC20 = artifacts.require('IERC20')
 const IWorkflowStep = artifacts.require('IWorkflowStep')
 
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { AssetType } from '../tslib/AssetType'
 import {
   commify,
@@ -42,8 +42,8 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
   })
 
   it('deployed correctly during migrate', async () => {
-    await validateAction(ActionIds.wrapEther, wrapEther.address)
-    await validateAction(ActionIds.unwrapEther, unwrapEther.address)
+    await validateAction(StepIds.wrapEther, wrapEther.address)
+    await validateAction(StepIds.unwrapEther, unwrapEther.address)
   })
 
   it('wraps and unwraps ETH in a workflow', async () => {
@@ -52,8 +52,8 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
       assetAddress: networkConfig.WETH,
     }
     const testAmount = new BN(10).pow(new BN(16)) // 0.01 ETH
-    const wrappedEtherAddress = await runner.getActionAddress(ActionIds.wrapEther)
-    verbose(`actionId=${ActionIds.wrapEther} addr=${wrappedEtherAddress}`)
+    const wrappedEtherAddress = await runner.getActionAddress(StepIds.wrapEther)
+    verbose(`actionId=${StepIds.wrapEther} addr=${wrappedEtherAddress}`)
 
     const beginningBalanceEth = new BN(await web3.eth.getBalance(userAccount))
     const beginningBalanceWeth = await weth.balanceOf(userAccount)
@@ -66,7 +66,7 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
       {
         steps: [
           {
-            actionId: ActionIds.wrapEther,
+            actionId: StepIds.wrapEther,
             actionAddress: ADDRESS_ZERO,
             inputAssets: [
               {

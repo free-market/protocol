@@ -3,7 +3,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { EIP1193Provider } from 'eip1193-provider'
 import log from 'loglevel'
 import { IERC20__factory, WorkflowRunner, WorkflowRunner__factory } from '../types/ethers-contracts'
-import { ActionIds } from './actionIds'
+import { StepIds } from './StepIds'
 
 interface WaitForContinuationNonceLoggingArgs {
   dstBridgeTokenAddr: string
@@ -64,7 +64,7 @@ async function waitForContinuationNonceLogging(args: WaitForContinuationNonceLog
     const { dstBridgeTokenAddr, aTokenAddr: dstATokenAddr, userAddr: dstUserAddr } = args
     const dstBridgeToken = IERC20__factory.connect(dstBridgeTokenAddr, runner.provider)
     const dstAToken = IERC20__factory.connect(dstATokenAddr, runner.provider)
-    const dstActionAddr = await runner.getActionAddress(ActionIds.aaveSupply)
+    const dstActionAddr = await runner.getActionAddress(StepIds.aaveSupply)
     let elapsedSeconds = 0
     const intervalSeconds = 10
     return setInterval(async () => {

@@ -15,7 +15,7 @@ import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, toChecksumAddress } from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { StargateBridge, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
 import { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
@@ -45,10 +45,10 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     // expect(actionCount).to.be.greaterThan(0)
     // t.log(`${actionCount} actions are registered`)
     // for (let i = 0; i < actionCount; ++i) {
-    //   const ai = await fmp.getActionInfoAt(i)
+    //   const ai = await fmp.getStepInfoAt(i)
     //   t.log(formatStep(ai))
     // }
-    const stargateBridgeActionAddress = await fmp.getActionAddress(ActionIds.stargateBridge)
+    const stargateBridgeActionAddress = await fmp.getActionAddress(StepIds.stargateBridge)
     const stargateBridgeAction = await StargateBridgeAction.deployed()
     expect(stargateBridgeAction.address).to.equal(stargateBridgeActionAddress)
 

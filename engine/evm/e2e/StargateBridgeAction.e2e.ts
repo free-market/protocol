@@ -1,7 +1,7 @@
 import fs from 'fs'
 import rootLogger from 'loglevel'
 import test from 'ava'
-import { ActionIds } from '../tslib/actionIds'
+import { StepIds } from '../tslib/StepIds'
 import { ADDRESS_ZERO, getNetworkConfig } from '../tslib/contract-addresses'
 import { Asset } from '../tslib/Asset'
 import { AssetType } from '../tslib/AssetType'
@@ -93,7 +93,7 @@ test('does a stargate swap in a workflow', async (t) => {
       {
         //
         // -- Aave Supply
-        actionId: ActionIds.aaveSupply,
+        actionId: StepIds.aaveSupply,
         actionAddress: ADDRESS_ZERO,
         inputAssets: [
           {
@@ -168,7 +168,7 @@ test('does a stargate swap in a workflow', async (t) => {
       //
       // -- Add Asset (USDC)
       {
-        actionId: ActionIds.addAsset,
+        actionId: StepIds.addAsset,
         actionAddress: ADDRESS_ZERO,
         inputAssets: [], // no input assets
         outputAssets: [srcUsdcAsset],
@@ -181,7 +181,7 @@ test('does a stargate swap in a workflow', async (t) => {
       //
       // -- Stargate Bridge
       {
-        actionId: ActionIds.stargateBridge,
+        actionId: StepIds.stargateBridge,
         actionAddress: ADDRESS_ZERO,
         inputAssets: [
           {

@@ -3,7 +3,7 @@ const WorkflowRunner = artifacts.require('WorkflowRunner')
 const AaveSupplyAction = artifacts.require('AaveSupplyAction')
 const MockAavePool = artifacts.require('MockAavePool')
 const { getNetworkConfig } = require('../build/tslib/contract-addresses')
-const { ActionIds } = require('../build/tslib/actionIds')
+const { StepIds } = require('../build/tslib/StepIds')
 const { promisify } = require('util')
 const sleep = promisify(setTimeout)
 const SLEEPMS = 500
@@ -28,6 +28,6 @@ module.exports = async (deployer) => {
   await sleep(SLEEPMS)
   const workflowRunner = await WorkflowRunner.at(frontDoor.address)
   await sleep(SLEEPMS)
-  await workflowRunner.setActionAddress(ActionIds.aaveSupply, aaveSupplyAction.address)
+  await workflowRunner.setActionAddress(StepIds.aaveSupply, aaveSupplyAction.address)
   await sleep(SLEEPMS)
 }

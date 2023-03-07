@@ -41,7 +41,7 @@ export async function validateAction(actionId: number, actionAddress: string) {
   let found = false
   let actionCount = (await runner.getActionCount()).toNumber()
   for (let i = 0; i < actionCount; ++i) {
-    const actionInfo = await runner.getActionInfoAt(i)
+    const actionInfo = await runner.getStepInfoAt(i)
     if (Number(actionInfo.actionId) === actionId) {
       expect(actionInfo.whitelist.includes(actionAddress)).to.be.true
       found = true

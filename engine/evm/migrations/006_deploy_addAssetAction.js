@@ -2,7 +2,7 @@ var FrontDoor = artifacts.require('FrontDoor')
 var WorkflowRunner = artifacts.require('WorkflowRunner')
 var AddAssetAction = artifacts.require('AddAssetAction')
 
-var { ActionIds } = require('../build/tslib/actionIds')
+var { StepIds } = require('../build/tslib/StepIds')
 
 var { promisify } = require('util')
 var sleep = promisify(setTimeout)
@@ -18,6 +18,6 @@ module.exports = async (deployer) => {
   await sleep(SLEEPMS)
   const workflowRunner = await WorkflowRunner.at(frontDoor.address)
   await sleep(SLEEPMS)
-  await workflowRunner.setActionAddress(ActionIds.addAsset, addAssetAction.address)
+  await workflowRunner.setActionAddress(StepIds.addAsset, addAssetAction.address)
   await sleep(SLEEPMS)
 }

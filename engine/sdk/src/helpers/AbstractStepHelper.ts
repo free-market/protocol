@@ -105,4 +105,9 @@ export abstract class AbstractStepHelper<T> implements IStepHelper<T> {
   }
 
   abstract getRequiredAssets(stepConfig: T): Promise<AssetAmount[]>
+
+  getBridgeDestinationChain(stepConfig: T): Chain | null {
+    return null
+  }
+
 }

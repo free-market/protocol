@@ -15,7 +15,7 @@ export const WORKFLOW_END_STEP_ID = '__end__'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
-export default class WorkflowInstance {
+export default class WorkflowRunner {
   private workflow: Workflow
   private providers = new Map<string, EIP1193Provider>()
   private steps: StepNode[]
@@ -84,7 +84,7 @@ export default class WorkflowInstance {
         }
         const schema = stepSchema._def.optionsMap.get(step.type)
         assert(schema)
-        const property = WorkflowInstance.getZodChild(schema, valuePath.slice(1)) as any
+        const property = WorkflowRunner.getZodChild(schema, valuePath.slice(1)) as any
         assert(property._def._parameterTypeName)
 
         if (declaredParamType !== property._def._parameterTypeName) {
@@ -196,8 +196,8 @@ export default class WorkflowInstance {
     }
   }
 
-  applyArguments(args: Arguments): WorkflowInstance {
-    const rv = new WorkflowInstance(cloneDeep(this.workflow))
+  applyArguments(args: Arguments): WorkflowRunner {
+    const rv = new WorkflowRunner(cloneDeep(this.workflow))
     const mapStepIdToStep = rv.getStepMap()
     const allParams = rv.findAllParameterReferences()
     for (const [paramName, paths] of allParams) {
@@ -220,7 +220,7 @@ export default class WorkflowInstance {
     // add missing stepIds
     for (let i = 0; i < steps.length; ++i) {
       if (!steps[i].stepId) {
-        steps[i].stepId = WorkflowInstance.formatStepId(i)
+        steps[i].stepId = WorkflowRunner.formatStepId(i)
       }
     }
 

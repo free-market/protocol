@@ -1,5 +1,5 @@
 import test, { ExecutionContext } from 'ava'
-import WorkflowInstance from '../WorkflowInstance'
+import WorkflowRunner from '../WorkflowRunner'
 import { Workflow, Arguments } from '../../model'
 import { throws } from '../../private/test-utils'
 import { assert } from '../../private/test-utils'
@@ -18,7 +18,7 @@ const testWorkflowJson = `
 `
 
 test('instantiates a workflow from a json string', t => {
-  new WorkflowInstance(testWorkflowJson)
+  new WorkflowRunner(testWorkflowJson)
   t.pass()
 })
 
@@ -44,7 +44,7 @@ test('throws an error when there are duplicate stepIds', t => {
       },
     ],
   }
-  t.throws(() => new WorkflowInstance(workflow), { message: message => validateExceptionMessage(t, message, 1, /is not unique/) })
+  t.throws(() => new WorkflowRunner(workflow), { message: message => validateExceptionMessage(t, message, 1, /is not unique/) })
 })
 test('throws an error when there nextStepId refers to a non-existent step', t => {
   const workflow: Workflow = {
@@ -59,7 +59,7 @@ test('throws an error when there nextStepId refers to a non-existent step', t =>
       },
     ],
   }
-  t.throws(() => new WorkflowInstance(workflow), { message: message => validateExceptionMessage(t, message, 1, /does not exist/) })
+  t.throws(() => new WorkflowRunner(workflow), { message: message => validateExceptionMessage(t, message, 1, /does not exist/) })
 })
 
 test('finds all parameter references in a workflow', t => {
@@ -77,8 +77,8 @@ test('finds all parameter references in a workflow', t => {
       },
     ],
   }
-  const workflowInstance = new WorkflowInstance(workflow)
-  const map = workflowInstance.findAllParameterReferences()
+  const runner = new WorkflowRunner(workflow)
+  const map = runner.findAllParameterReferences()
   // const rec = mapToRecord(map)
   // t.snapshot(rec)
   t.snapshot(map)
@@ -101,7 +101,7 @@ test('fails to validate when a parameter reference is not found in the declared 
     ],
   }
   try {
-    new WorkflowInstance(workflow)
+    new WorkflowRunner(workflow)
     t.fail('it was supposed to throw')
   } catch (e) {
     t.snapshot(e)
@@ -139,7 +139,7 @@ test('fails to validate when a parameter reference should be a different type th
     ],
   }
   try {
-    new WorkflowInstance(workflow)
+    new WorkflowRunner(workflow)
     t.fail('it was supposed to throw')
   } catch (e) {
     t.snapshot(e)
@@ -177,8 +177,8 @@ test('validate when everything is good', t => {
       },
     ],
   }
-  const workflowInstance = new WorkflowInstance(workflow)
-  t.notThrows(() => workflowInstance.validateParameters())
+  const runner = new WorkflowRunner(workflow)
+  t.notThrows(() => runner.validateParameters())
 })
 
 test('fails to validate when there are undeclared arguments', t => {
@@ -196,7 +196,7 @@ test('fails to validate when there are undeclared arguments', t => {
   const args: Arguments = {
     foo: 1,
   }
-  throws(t, () => new WorkflowInstance(workflow).validateArguments(args))
+  throws(t, () => new WorkflowRunner(workflow).validateArguments(args))
 })
 
 test('fails to validate when there are zod problems in the workflow', t => {
@@ -211,7 +211,7 @@ test('fails to validate when there are zod problems in the workflow', t => {
       },
     ],
   }
-  throws(t, () => new WorkflowInstance(workflow))
+  throws(t, () => new WorkflowRunner(workflow))
 })
 
 const workflowWithOneParam: Workflow = {
@@ -236,13 +236,13 @@ test('fails to validate when there are zod problems in the arguments', t => {
   const args: Arguments = {
     addAssetAmount: 'xyz',
   }
-  const workflowInstance = new WorkflowInstance(workflowWithOneParam)
+  const runner = new WorkflowRunner(workflowWithOneParam)
 
-  throws(t, () => workflowInstance.validateArguments(args))
+  throws(t, () => runner.validateArguments(args))
 })
 test('fails to validate when arguments are not provided for all parameters', t => {
-  const workflowInstance = new WorkflowInstance(workflowWithOneParam)
-  throws(t, () => workflowInstance.validateArguments({}))
+  const runner = new WorkflowRunner(workflowWithOneParam)
+  throws(t, () => runner.validateArguments({}))
 })
 
 const workflowWithTwoParams: Workflow = {
@@ -276,12 +276,12 @@ const argsForTwoParamWorkflow: Arguments = {
 }
 
 test('validates arguments', t => {
-  const workflowInstance = new WorkflowInstance(workflowWithTwoParams)
-  workflowInstance.validateArguments(argsForTwoParamWorkflow)
+  const runner = new WorkflowRunner(workflowWithTwoParams)
+  runner.validateArguments(argsForTwoParamWorkflow)
   t.pass()
 })
 test('applies arguments', t => {
-  const originalWorkflow = new WorkflowInstance(workflowWithTwoParams)
+  const originalWorkflow = new WorkflowRunner(workflowWithTwoParams)
   const workflowBefore = originalWorkflow.getWorkflow()
   const workflowInstanceWithArgs = originalWorkflow.applyArguments(argsForTwoParamWorkflow).getWorkflow()
   const theStep = workflowInstanceWithArgs.steps[0]
