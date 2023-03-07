@@ -101,10 +101,10 @@ contract('deploy and upgrade', function (accounts: string[]) {
     await es.setWriter(oldWriter)
   })
 
-  it('adds and upgrades workflow actions', async () => {
+  it('adds and upgrades workflow steps', async () => {
     const workflowRunner = await ensureWorkflowRunnerDeployed()
 
-    // helper function that loops through all actions and make sure that the contract for a given stepId  is pointing to the correct contract
+    // helper function that loops through all steps and make sure that the contract for a given stepId  is pointing to the correct contract
     const expectActionAddress = async (stepId: number, expectedAddress: string) => {
       const numActions = (await workflowRunner.getStepCount()).toNumber()
       let i = 0
@@ -135,7 +135,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     await workflowRunner.setStepAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
     await expectActionAddress(StepIds.wrapEther, wrapEtherUpgraded.address)
 
-    // workflow actions are iterable
+    // workflow steps are iterable
     const actionCount = await workflowRunner.getStepCount()
     expect(actionCount.toNumber()).to.equal(1)
     const actionInfo = await workflowRunner.getStepInfoAt(0)

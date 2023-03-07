@@ -17,7 +17,7 @@
             "type": "address"
           }
         ],
-        "name": "ActionAddressSetEvent",
+        "name": "StepAddressSetEvent",
         "type": "event"
       },
       "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
@@ -612,7 +612,7 @@
             "type": "address"
           }
         ],
-        "name": "ActionAddressSetEvent",
+        "name": "StepAddressSetEvent",
         "type": "event"
       },
       "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
@@ -1207,7 +1207,7 @@
             "type": "address"
           }
         ],
-        "name": "ActionAddressSetEvent",
+        "name": "StepAddressSetEvent",
         "type": "event"
       },
       "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
@@ -1802,7 +1802,7 @@
             "type": "address"
           }
         ],
-        "name": "ActionAddressSetEvent",
+        "name": "StepAddressSetEvent",
         "type": "event"
       },
       "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {
@@ -2214,7 +2214,7 @@
             "type": "address"
           }
         ],
-        "name": "ActionAddressSetEvent",
+        "name": "StepAddressSetEvent",
         "type": "event"
       },
       "0x1f8d7d25344642d919d55999e4664aa452a5f424bc0936ceb9c2b300db7dcbd9": {

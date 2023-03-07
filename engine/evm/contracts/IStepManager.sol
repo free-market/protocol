@@ -10,7 +10,7 @@ interface IStepManager {
   /// @dev Retrieve the address associated with a stepId
   function getStepAddress(uint16 stepId) external view returns (address);
 
-  /// @dev getStepCount getStepInfoAt together allow enumeration of all actions
+  /// @dev getStepCount getStepInfoAt together allow enumeration of all steps
   function getStepCount() external view returns (uint256);
 
   function getStepInfoAt(uint256 index) external view returns (StepInfo memory);

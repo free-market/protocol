@@ -25,7 +25,7 @@ export default class WorkflowRunner {
     this.workflow = workflowSchema.parse(unparsedWorkflow)
     this.steps = this.addMissingStepIds(this.workflow.steps)
     this.validateWorkflowSteps()
-    this.validateParameters()
+a    this.validateParameters()
   }
 
   setStartChainProvider(provider: EIP1193Provider) {

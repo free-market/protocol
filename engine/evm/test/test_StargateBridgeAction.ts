@@ -43,7 +43,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
     const fmp = await WorkflowRunner.at(frontDoor.address)
     // const actionCount = (await fmp.getStepCount()).toNumber()
     // expect(actionCount).to.be.greaterThan(0)
-    // t.log(`${actionCount} actions are registered`)
+    // t.log(`${actionCount} steps are registered`)
     // for (let i = 0; i < actionCount; ++i) {
     //   const ai = await fmp.getStepInfoAt(i)
     //   t.log(formatStep(ai))
