@@ -1,10 +1,8 @@
-import z from 'zod'
-import { EvmWorkflowStep } from '@freemarket/evm'
-import type { AaveSupply, AaveWithdrawal, StargateBridge, UniswapExactIn } from '../model'
-import WorkflowRunner from '../runner/WorkflowRunner'
+import type { AaveSupply, StargateBridge } from '../model'
+
 import { AbstractStepHelper } from './AbstractStepHelper'
 
-export class AaveSupplyHelper extends AbstractStepHelper<StargateBridge> {
+export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
   // getEncodedWorkflowStep(chainType: 'evm', stepConfig: StargateBridge, workflow: WorkflowRunner): EvmWorkflowStep {
   //   throw new Error('Method not implemented.')
   // }

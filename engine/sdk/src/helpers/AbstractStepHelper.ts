@@ -1,10 +1,12 @@
-import type { EIP1193Provider } from 'eip1193-provider'
-import type { BridgeTarget, IStepHelper, NextSteps } from '../IStepHelper'
-import type { AssetAmount, Chain, StepBase } from '../model'
-import { Provider, Web3Provider } from '@ethersproject/providers'
-import { Memoize } from 'typescript-memoize'
 import assert from '../utils/assert'
-import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
+import { Memoize } from 'typescript-memoize'
+import { Provider, Web3Provider } from '@ethersproject/providers'
+import { WORKFLOW_END_STEP_ID } from '../runner/constants'
+import type { EIP1193Provider } from 'eip1193-provider'
+import type { BridgeTarget, IStepHelper, NextSteps } from './IStepHelper'
+import type { AssetAmount, Chain, StepBase } from '../model'
+import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
   protected standardProvider?: EIP1193Provider
@@ -17,7 +19,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     }
   }
 
-  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: WorkflowRunner): EncodedWorkflowStep {
+  getEncodedWorkflowStep(_chain: Chain, _stepConfig: T, _runner: IWorkflowRunner): EncodedWorkflowStep {
     throw new Error('not implemented')
   }
 
@@ -87,9 +89,9 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     if (await this.isTestNet()) {
       switch (chain) {
         case 'ethereum':
-          return '0xC2924D72d322A30F885cff51A3b8830FF5721bc1'
+          return '0xaa831AB4FccB984c46C4EA1abA0929C719E7Aa72'
         case 'arbitrum':
-          return '0x768616323F67784595114381b785072FA8C61352'
+          return '0x1a943Aa4D585cc998A0D73450EB426c7846327A3'
         default:
           throw new Error(`freemarket is not deployed on ${chain} testnet`)
       }

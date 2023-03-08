@@ -1,32 +1,26 @@
 import type { EIP1193Provider } from 'eip1193-provider'
-import { Arguments, Asset, Chain, FungibleToken, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
+import { Arguments, Chain, FungibleToken, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
 import type { StepNode } from './StepNode'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
 import { Memoize } from 'typescript-memoize'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
 import assert from '../utils/assert'
-import type { string, ZodObject, ZodType } from 'zod'
+import type { ZodObject, ZodType } from 'zod'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import cloneDeep from 'lodash.clonedeep'
 import type { DeepReadonly } from '../utils/DeepReadonly'
 import type { AssetReference } from '../model/AssetReference'
 import axios from 'axios'
 import { getStepHelper } from '../helpers'
-import type { NextSteps } from '../IStepHelper'
+import type { NextSteps } from '../helpers/IStepHelper'
+import { WORKFLOW_END_STEP_ID } from './constants'
+import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
 
-export const WORKFLOW_END_STEP_ID = '__end__'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
-type ChainOrStart = Chain | 'start-chain'
-
-export interface WorkflowSegment {
-  chains: ChainOrStart[]
-  stepIds: string[]
-}
-
-export default class WorkflowRunner {
+export class WorkflowRunner {
   private workflow: Workflow
   private providers = new Map<string, EIP1193Provider>()
   private steps: StepNode[]

@@ -1,6 +1,6 @@
 import z, { ZodTypeAny } from 'zod'
 import chalk from 'chalk'
-import WorkflowRunner from '../runner/WorkflowRunner'
+import { WorkflowRunner } from '../runner/WorkflowRunner'
 import fs from 'fs'
 import { WorkflowValidationError } from '../runner/WorkflowValidationError'
 import type { Workflow } from '../model'

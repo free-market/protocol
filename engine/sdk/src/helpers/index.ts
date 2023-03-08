@@ -1,5 +1,5 @@
 import type { EIP1193Provider } from 'eip1193-provider'
-import type { IStepHelper } from '../IStepHelper'
+import type { IStepHelper } from './IStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { AaveSupplyHelper } from './AaveSupplyHelper'
 import { AddAssetHelper } from './AddAssetHelper'

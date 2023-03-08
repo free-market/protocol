@@ -1,6 +1,6 @@
 import { EvmWorkflowStep } from '@freemarket/evm'
 import type { AddAsset } from '../model'
-import WorkflowRunner from '../runner/WorkflowRunner'
+import { IWorkflowRunner } from '../runner/IWorkflowRunner'
 import { AbstractStepHelper } from './AbstractStepHelper'
 
 export class AddAssetHelper extends AbstractStepHelper<AddAsset> {

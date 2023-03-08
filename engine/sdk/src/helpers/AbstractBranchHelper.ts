@@ -1,8 +1,8 @@
-import type { NextSteps } from '../IStepHelper'
+import type { NextSteps } from './IStepHelper'
 import type { BranchStep } from '../model/BranchStep'
-import { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
 import assert from '../utils/assert'
 import { AbstractStepHelper } from './AbstractStepHelper'
+import { WORKFLOW_END_STEP_ID } from '../runner/constants'
 
 export abstract class AbstractBranchHelper<T extends BranchStep> extends AbstractStepHelper<T> {
   getPossibleNextSteps(stepConfig: T): NextSteps | null {

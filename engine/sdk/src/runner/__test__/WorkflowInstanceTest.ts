@@ -1,8 +1,7 @@
 import test, { ExecutionContext } from 'ava'
-import WorkflowRunner from '../WorkflowRunner'
+import { WorkflowRunner } from '../WorkflowRunner'
 import type { Workflow, Arguments } from '../../model'
-import { throws } from '../../private/test-utils'
-import { assert } from '../../private/test-utils'
+import { throws, assert } from '../../private/test-utils'
 
 const testWorkflowJson = `
 {

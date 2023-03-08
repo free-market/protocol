@@ -8,14 +8,14 @@ import {
 } from '@freemarket/evm'
 import { Memoize } from 'typescript-memoize'
 import type { AssetAmount, Chain, StargateBridge } from '../model'
-// import { AbstractStepHelper } from './AbstractStepHelper'
+import { AbstractStepHelper } from './AbstractStepHelper'
 import { absoluteAmountToString } from './utils'
 import rootLogger from 'loglevel'
-import type { BridgeTarget, NextSteps } from '../IStepHelper'
+import type { BridgeTarget, NextSteps } from './IStepHelper'
 import assert from '../utils/assert'
 import { EncodedWorkflowStep } from '../EncodedWorkflow'
-import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
-import { AbstractStepHelper } from './AbstractStepHelper'
+import { WORKFLOW_END_STEP_ID } from '../runner/constants'
+// import { AbstractStepHelper } from './AbstractStepHelper'
 
 // import { EncodedWorkflowStep } from '../EncodedWorkflow'
 // import { NextSteps } from '../IStepHelper'
@@ -23,83 +23,82 @@ import { AbstractStepHelper } from './AbstractStepHelper'
 // import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
 // import assert from '../utils/assert'
 
-// const log = rootLogger.getLogger('StargateBridgeHelper')
+const log = rootLogger.getLogger('StargateBridgeHelper')
 
-// interface StargateFeeArgs {
-//   srcFrontDoorAddress: string
-//   dstAddress: string
-//   dstGasForCall: string
-//   dstNativeAmount?: string
-//   payload: string
-//   dstChainId: number
-// }
+interface StargateFeeArgs {
+  srcFrontDoorAddress: string
+  dstAddress: string
+  dstGasForCall: string
+  dstNativeAmount?: string
+  payload: string
+  dstChainId: number
+}
 
 export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   async getRequiredAssets(stepConfig: StargateBridge): Promise<AssetAmount[]> {
-    return []
-    // const dstAddress = await this.getStargateBridgeActionAddress(stepConfig.destinationChain)
-    // const dstChainId = await this.getDestinationChainId(stepConfig.destinationChain)
-    // const srcFrontDoorAddress = await this.getFrontDoorAddress()
-    // if (!stepConfig.destinationGasUnits) {
-    //   throw new Error('stargate automatic destination chain gas estimation not implemented, please provide a value for destinationGasUnits')
-    // }
+    const dstAddress = await this.getStargateBridgeActionAddress()
+    const dstChainId = await this.getDestinationChainId(stepConfig.destinationChain)
+    const srcFrontDoorAddress = await this.getFrontDoorAddress()
+    if (!stepConfig.destinationGasUnits) {
+      throw new Error('stargate automatic destination chain gas estimation not implemented, please provide a value for destinationGasUnits')
+    }
 
-    // // TODO need transitive closure and then hex encoding of continuation workflow
-    // const payload = '0x'
-    // const requiredNative = await this.getStargateRequiredNative({
-    //   srcFrontDoorAddress,
-    //   dstAddress,
-    //   dstGasForCall: absoluteAmountToString(stepConfig.destinationGasUnits),
-    //   dstNativeAmount: absoluteAmountToString(stepConfig.destinationGasUnits),
-    //   payload,
-    //   dstChainId,
-    // })
-    // return [
-    //   {
-    //     asset: { type: 'native' },
-    //     amount: requiredNative,
-    //   },
-    // ]
+    // TODO need transitive closure and then hex encoding of continuation workflow
+    const payload = '0x'
+    const requiredNative = await this.getStargateRequiredNative({
+      srcFrontDoorAddress,
+      dstAddress,
+      dstGasForCall: absoluteAmountToString(stepConfig.destinationGasUnits),
+      dstNativeAmount: absoluteAmountToString(stepConfig.destinationGasUnits),
+      payload,
+      dstChainId,
+    })
+    return [
+      {
+        asset: { type: 'native' },
+        amount: requiredNative,
+      },
+    ]
   }
 
-  // @Memoize()
-  // private async getDestinationChainId(chain: Chain): Promise<number> {
-  //   if (await this.isTestNet()) {
-  //     switch (chain) {
-  //       case 'ethereum':
-  //         return StargateChainIds.GoerliEthereum
-  //       case 'arbitrum':
-  //         return StargateChainIds.GoerliArbitrum
-  //       case 'avalanche':
-  //         return StargateChainIds.GoerliAvalanche
-  //       case 'binance':
-  //         return StargateChainIds.GoerliBinance
-  //       case 'fantom':
-  //         return StargateChainIds.GoerliFantom
-  //       case 'optimism':
-  //         return StargateChainIds.GoerliOptimism
-  //       case 'polygon':
-  //         return StargateChainIds.GoerliPolygon
-  //     }
-  //   } else {
-  //     switch (chain) {
-  //       case 'ethereum':
-  //         return StargateChainIds.Ethereum
-  //       case 'arbitrum':
-  //         return StargateChainIds.Arbitrum
-  //       case 'avalanche':
-  //         return StargateChainIds.Avalanche
-  //       case 'binance':
-  //         return StargateChainIds.Binance
-  //       case 'fantom':
-  //         return StargateChainIds.Fantom
-  //       case 'optimism':
-  //         return StargateChainIds.Optimism
-  //       case 'polygon':
-  //         return StargateChainIds.Polygon
-  //     }
-  //   }
-  // }
+  @Memoize()
+  private async getDestinationChainId(chain: Chain): Promise<number> {
+    if (await this.isTestNet()) {
+      switch (chain) {
+        case 'ethereum':
+          return StargateChainIds.GoerliEthereum
+        case 'arbitrum':
+          return StargateChainIds.GoerliArbitrum
+        case 'avalanche':
+          return StargateChainIds.GoerliAvalanche
+        case 'binance':
+          return StargateChainIds.GoerliBinance
+        case 'fantom':
+          return StargateChainIds.GoerliFantom
+        case 'optimism':
+          return StargateChainIds.GoerliOptimism
+        case 'polygon':
+          return StargateChainIds.GoerliPolygon
+      }
+    } else {
+      switch (chain) {
+        case 'ethereum':
+          return StargateChainIds.Ethereum
+        case 'arbitrum':
+          return StargateChainIds.Arbitrum
+        case 'avalanche':
+          return StargateChainIds.Avalanche
+        case 'binance':
+          return StargateChainIds.Binance
+        case 'fantom':
+          return StargateChainIds.Fantom
+        case 'optimism':
+          return StargateChainIds.Optimism
+        case 'polygon':
+          return StargateChainIds.Polygon
+      }
+    }
+  }
 
   // TODO probably not needed
   // @Memoize()
@@ -139,39 +138,39 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   //   }
   // }
 
-  // @Memoize()
-  // private async getStargateBridgeActionAddress(chain: Chain): Promise<string> {
-  //   assert(this.standardProvider)
-  //   const frontDoorAddress = await this.getFrontDoorAddress()
-  //   return StargateBridgeEvm.getStargateBridgeActionAddress(frontDoorAddress, this.standardProvider)
-  // }
+  @Memoize()
+  private async getStargateBridgeActionAddress(): Promise<string> {
+    assert(this.standardProvider)
+    const frontDoorAddress = await this.getFrontDoorAddress()
+    return StargateBridgeEvm.getStargateBridgeActionAddress(frontDoorAddress, this.standardProvider)
+  }
 
-  // @Memoize()
-  // async getStargateRouterAddress(frontDoorAddress: string): Promise<string> {
-  //   assert(this.ethersProvider)
-  //   const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
-  //   const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
-  //   log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
-  //   const sgBridgeAction = StargateBridgeAction__factory.connect(sgBridgeActionAddr, this.ethersProvider)
-  //   const sgRouterAddr = await sgBridgeAction.stargateRouterAddress()
-  //   log.debug(`StargateRouter address=${sgRouterAddr}`)
-  //   return sgRouterAddr
-  // }
+  @Memoize()
+  async getStargateRouterAddress(frontDoorAddress: string): Promise<string> {
+    assert(this.ethersProvider)
+    const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
+    const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
+    log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
+    const sgBridgeAction = StargateBridgeAction__factory.connect(sgBridgeActionAddr, this.ethersProvider)
+    const sgRouterAddr = await sgBridgeAction.stargateRouterAddress()
+    log.debug(`StargateRouter address=${sgRouterAddr}`)
+    return sgRouterAddr
+  }
 
-  // async getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
-  //   assert(this.ethersProvider)
-  //   log.debug(`getting stargate required gas=${args.dstGasForCall} airdrop=${args.dstNativeAmount}`)
-  //   const sgRouterAddress = await this.getStargateRouterAddress(args.srcFrontDoorAddress)
-  //   const sgRouter = IStargateRouter__factory.connect(sgRouterAddress, this.ethersProvider)
-  //   const quoteResult = await sgRouter.quoteLayerZeroFee(args.dstChainId, 1, args.dstAddress, args.payload, {
-  //     dstGasForCall: args.dstGasForCall,
-  //     dstNativeAmount: args.dstNativeAmount ?? 0,
-  //     dstNativeAddr: args.dstAddress,
-  //   })
-  //   const stargateFee = quoteResult['0']
-  //   log.debug(`stargate required native=${stargateFee.toString()}`)
-  //   return stargateFee.toString()
-  // }
+  async getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
+    assert(this.ethersProvider)
+    log.debug(`getting stargate required gas=${args.dstGasForCall} airdrop=${args.dstNativeAmount}`)
+    const sgRouterAddress = await this.getStargateRouterAddress(args.srcFrontDoorAddress)
+    const sgRouter = IStargateRouter__factory.connect(sgRouterAddress, this.ethersProvider)
+    const quoteResult = await sgRouter.quoteLayerZeroFee(args.dstChainId, 1, args.dstAddress, args.payload, {
+      dstGasForCall: args.dstGasForCall,
+      dstNativeAmount: args.dstNativeAmount ?? 0,
+      dstNativeAddr: args.dstAddress,
+    })
+    const stargateFee = quoteResult['0']
+    log.debug(`stargate required native=${stargateFee.toString()}`)
+    return stargateFee.toString()
+  }
 
   // getBridgeTarget(stepConfig: StargateBridge): BridgeTarget | null {
   //   assert(stepConfig.nextStepId)
