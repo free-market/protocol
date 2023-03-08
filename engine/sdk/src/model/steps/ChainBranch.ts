@@ -6,4 +6,4 @@ export const chainBranchSchema = createBranchStepSchema('chain-branch').extend({
   currentChain: chainSchema,
 })
 
-export interface ChainBranchSchema extends z.infer<typeof chainBranchSchema> {}
+export interface ChainBranch extends z.infer<typeof chainBranchSchema> {}

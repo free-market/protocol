@@ -1,7 +1,6 @@
 import { ZodError } from 'zod'
 
 export enum WorkflowArgumentProblemType {
-  // NoParameters = 'NoParameters',
   MissingParameter = 'MissingParameter',
   MissingArgument = 'MissingArgument',
   ArgumentTypeMismatch = 'ArgumentTypeMismatch',

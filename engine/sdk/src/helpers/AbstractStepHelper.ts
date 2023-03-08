@@ -1,16 +1,23 @@
 import { EIP1193Provider } from 'eip1193-provider'
-import { IStepHelper } from '../IStepHelper'
-import { AssetAmount, Chain } from '../model'
+import { BridgeTarget, IStepHelper, NextSteps } from '../IStepHelper'
+import { AssetAmount, Chain, StepBase } from '../model'
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Memoize } from 'typescript-memoize'
-export abstract class AbstractStepHelper<T> implements IStepHelper<T> {
-  protected standardProvider: EIP1193Provider
-  protected ethersProvider: Provider
+import { EvmWorkflowStep } from '@freemarket/evm'
+import assert from '../utils/assert'
+import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
+export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
+  protected standardProvider?: EIP1193Provider
+  protected ethersProvider?: Provider
 
-  constructor(provider: EIP1193Provider) {
+  constructor(provider?: EIP1193Provider) {
     this.standardProvider = provider
-    this.ethersProvider = new Web3Provider(provider)
+    if (provider) {
+      this.ethersProvider = new Web3Provider(provider)
+    }
   }
+
+  // abstract getEncodedWorkflowStep(chainType: 'evm', stepConfig: T, workflow: WorkflowRunner): EvmWorkflowStep
 
   protected async getChain(): Promise<Chain> {
     const chainId = await this.getChainId()
@@ -100,14 +107,26 @@ export abstract class AbstractStepHelper<T> implements IStepHelper<T> {
 
   @Memoize()
   protected async getChainId(): Promise<number> {
+    assert(this.ethersProvider)
     const network = await this.ethersProvider.getNetwork()
     return network.chainId
   }
 
-  abstract getRequiredAssets(stepConfig: T): Promise<AssetAmount[]>
+  getRequiredAssets(_stepConfig: T): Promise<AssetAmount[]> {
+    return Promise.resolve([])
+  }
 
-  getBridgeDestinationChain(stepConfig: T): Chain | null {
+  getBridgeTarget(_stepConfig: T): BridgeTarget | null {
     return null
   }
 
+  getPossibleNextSteps(stepConfig: T): NextSteps | null {
+    assert(stepConfig.nextStepId)
+    if (stepConfig.nextStepId === WORKFLOW_END_STEP_ID) {
+      return null
+    }
+    return {
+      sameChain: [stepConfig.nextStepId],
+    }
+  }
 }

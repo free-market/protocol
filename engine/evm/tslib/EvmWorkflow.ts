@@ -1,5 +1,5 @@
-import { WorkflowStep } from './WorkflowStep'
+import { EvmWorkflowStep } from './EvmWorkflowStep'
 
 export interface EvmWorkflow {
-  steps: WorkflowStep[]
+  steps: EvmWorkflowStep[]
 }

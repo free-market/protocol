@@ -1,7 +1,7 @@
 import { InputAsset } from './InputAsset'
 import { Asset } from './Asset'
 
-export interface WorkflowStep {
+export interface EvmWorkflowStep {
   stepId: number | string
   stepAddress: string
   inputAssets: InputAsset[]

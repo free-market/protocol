@@ -173,6 +173,7 @@ importers:
       '@ethersproject/experimental': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@freemarket/evm': workspace:../evm
+      '@types/axios': ^0.14.0
       '@types/big.js': ^6.1.6
       '@types/bs58': ^4.0.1
       '@types/chalk': ^2.2.0
@@ -183,6 +184,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.54.0
       '@typescript-eslint/parser': ^5.54.0
       ava: ^5.2.0
+      axios: ^1.2.1
       big.js: ^6.2.1
       bs58: ^5.0.0
       c8: ^7.13.0
@@ -216,6 +218,7 @@ importers:
       '@ethersproject/experimental': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@freemarket/evm': link:../evm
+      axios: 1.2.1
       big.js: 6.2.1
       bs58: 5.0.0
       eip1193-provider: 1.0.1
@@ -231,6 +234,7 @@ importers:
       '@adobe/jsonschema2md': 7.1.5
       '@ava/typescript': 3.0.1
       '@ethersproject/abstract-signer': 5.7.0
+      '@types/axios': 0.14.0
       '@types/big.js': 6.1.6
       '@types/bs58': 4.0.1
       '@types/chalk': 2.2.0
@@ -7102,6 +7106,15 @@ packages:
   /@types/aria-query/4.2.2:
     resolution: {integrity: sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==}
 
+  /@types/axios/0.14.0:
+    resolution: {integrity: sha512-KqQnQbdYE54D7oa/UmYVMZKq7CO4l8DEENzOKc4aBRwxCXSlJXGz83flFx5L7AWrOQnmuN3kVsRdt+GZPPjiVQ==}
+    deprecated: This is a stub types definition for axios (https://github.com/mzabriskie/axios). axios provides its own type definitions, so you don't need @types/axios installed!
+    dependencies:
+      axios: 1.2.1
+    transitivePeerDependencies:
+      - debug
+    dev: true
+
   /@types/babel__core/7.1.19:
     resolution: {integrity: sha512-WEOTgRsbYkvA/KCsDwVEGkd7WAr1e3g31VHQ8zy5gul/V1qKullU/BU5I68X5v7V3GnB9eotmom4v5a5gjxorw==}
     dependencies:
@@ -10599,7 +10612,6 @@ packages:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
-    dev: true
 
   /axobject-query/2.2.0:
     resolution: {integrity: sha512-Td525n+iPOOyUQIeBfcASuG6uJsDOITl7Mds5gFyerkWiX7qhUTdYUBlSgNMyVqtSJqwpt1kXGLdUt6SykLMRA==}
@@ -27467,7 +27479,6 @@ packages:
 
   /proxy-from-env/1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
-    dev: true
 
   /prr/1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}

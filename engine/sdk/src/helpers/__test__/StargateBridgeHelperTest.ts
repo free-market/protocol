@@ -35,8 +35,9 @@ test('gets required native', async t => {
   const standardProvider = createStandardProvider(ethersProvider)
   const sgHelper = new StargateBridgeHelper(standardProvider)
 
-  const asdf = await sgHelper.getRequiredAssets(stargateStepConfig)
-  t.log(asdf)
+  // const asdf = await sgHelper.getRequiredAssets(stargateStepConfig)
+  // t.log(asdf)
 
-  t.pass()
+  t.fail('asdf')
+  // t.pass()
 })

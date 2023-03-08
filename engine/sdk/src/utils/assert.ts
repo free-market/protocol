@@ -7,3 +7,6 @@ export default function assert(value: unknown, message?: string | Error): assert
     throw message
   }
 }
+
+const s = '1'
+const x = assert(s)

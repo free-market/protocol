@@ -1,19 +1,30 @@
 import { EIP1193Provider } from 'eip1193-provider'
-import { Arguments, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
+import { Arguments, Asset, Chain, FungibleToken, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
 import { StepNode } from './StepNode'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
 import { Memoize } from 'typescript-memoize'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
 import assert from '../utils/assert'
-import { ZodObject, ZodType } from 'zod'
+import { string, ZodObject, ZodType } from 'zod'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import cloneDeep from 'lodash.clonedeep'
 import { DeepReadonly } from '../utils/DeepReadonly'
+import { AssetReference } from '../model/AssetReference'
+import axios from 'axios'
+import { getStepHelper } from '../helpers'
+import { NextSteps } from '../IStepHelper'
 
 export const WORKFLOW_END_STEP_ID = '__end__'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
+
+type ChainOrStart = Chain | 'start-chain'
+
+export interface WorkflowSegment {
+  chains: ChainOrStart[]
+  stepIds: string[]
+}
 
 export default class WorkflowRunner {
   private workflow: Workflow
@@ -25,7 +36,7 @@ export default class WorkflowRunner {
     this.workflow = workflowSchema.parse(unparsedWorkflow)
     this.steps = this.addMissingStepIds(this.workflow.steps)
     this.validateWorkflowSteps()
-a    this.validateParameters()
+    this.validateParameters()
   }
 
   setStartChainProvider(provider: EIP1193Provider) {
@@ -141,6 +152,86 @@ a    this.validateParameters()
     }
     return mapStepIdToStep
   }
+
+  // can be called before arguments are applied,
+  // but may miss some if asset-refs are still not dereferenced
+  validateSymbols(startChain: Chain) {
+    const symbolPaths: string[][] = []
+    function getSymbolPaths(path: string[], obj: any) {
+      for (const key in obj) {
+        const childObj = obj[key]
+        if (key === 'symbol' && typeof childObj === 'string') {
+          symbolPaths.push(path)
+        }
+        if (typeof childObj === 'object') {
+          getSymbolPaths(path.concat(key), childObj)
+        }
+      }
+    }
+    getSymbolPaths([], this.workflow)
+  }
+
+  // chains are valid candidates for parameters, so
+  // if called before args are applied, args may show up instead of chains
+  @Memoize()
+  getWorkflowSegments(): WorkflowSegment[] {
+    const mapStepIdToNextStepInfo = new Map<string, NextSteps>()
+    const getReachableSet = (stepId: string): string[] => {
+      const seenIds = new Set<string>()
+      const toVisitIds = new Set<string>()
+      let currentStepId = stepId
+      for (;;) {
+        if (!seenIds.has(currentStepId)) {
+          seenIds.add(currentStepId)
+        }
+        const nextInfo = mapStepIdToNextStepInfo.get(currentStepId)
+        if (nextInfo) {
+          for (const otherStepId of nextInfo.sameChain) {
+            if (!seenIds.has(otherStepId)) {
+              toVisitIds.add(otherStepId)
+            }
+          }
+        }
+        if (toVisitIds.size === 0) {
+          break
+        }
+        // this looks hackish but just treating set also as a queue and dequeueing here
+        for (const nextToVisit of toVisitIds) {
+          currentStepId = nextToVisit
+          break
+        }
+        toVisitIds.delete(currentStepId)
+      }
+      return Array.from(seenIds)
+    }
+    const mapStepIdToChains = new MapWithDefault<string, Set<ChainOrStart>>(() => new Set())
+    const startStepIds = new Set<string>()
+    mapStepIdToChains.getWithDefault(this.steps[0].stepId).add('start-chain')
+    startStepIds.add(this.steps[0].stepId)
+    for (const step of this.steps) {
+      const helper = getStepHelper(step.type)
+      const result = helper.getPossibleNextSteps(step as any)
+      if (result) {
+        mapStepIdToNextStepInfo.set(step.stepId, result)
+        if (result.differentChains) {
+          for (const diffChain of result.differentChains) {
+            startStepIds.add(diffChain.stepId)
+            mapStepIdToChains.getWithDefault(diffChain.stepId).add(diffChain.chain)
+          }
+        }
+      }
+    }
+
+    const rv: WorkflowSegment[] = []
+    for (const stepId of startStepIds) {
+      rv.push({
+        chains: Array.from(mapStepIdToChains.getWithDefault(stepId)),
+        stepIds: getReachableSet(stepId),
+      })
+    }
+    return rv
+  }
+
   validateArguments(args?: Arguments) {
     const params = this.workflow.parameters
     // if (args && args.length > 0 && !params) {
@@ -252,6 +343,48 @@ a    this.validateParameters()
         callback(child, childPath)
       }
     }
+  }
+
+  async dereferenceAsset(assetRef: AssetReference, chain: Chain) {
+    assert(typeof assetRef !== 'string')
+    if (assetRef.type === 'native') {
+      return { type: 'native' }
+    }
+    const token = await this.getFungibleToken(assetRef.symbol)
+    const address = token.chains[chain]
+    // const rv: EvmWorkflowStep = {
+    //   inputAssets: [
+    //     {
+    //       asset: {
+    //         assetType: isNative ? AssetType.Native : AssetType.ERC20,
+    //         assetAddress: isNative ?
+    //       },
+    //     },
+    //   ],
+    // }
+  }
+
+  @Memoize()
+  private async getFungibleToken(symbol: string): Promise<FungibleToken> {
+    if (this.workflow.fungibleTokens) {
+      for (const asset of this.workflow.fungibleTokens) {
+        if (asset.symbol === symbol) {
+          return asset
+        }
+      }
+    }
+    const defaultTokens = await WorkflowRunner.getDefaultFungibleTokens()
+    const asset = defaultTokens[symbol]
+    if (!asset) {
+      throw new Error('Could not determine asset for symbol: ' + symbol)
+    }
+    return asset
+  }
+
+  @Memoize()
+  private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
+    const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
+    return response.data
   }
 
   @Memoize()

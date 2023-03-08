@@ -1,24 +1,28 @@
 import { EIP1193Provider } from 'eip1193-provider'
 import { IStepHelper } from '../IStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
-import { NoopStepHelper } from './NoOpStepHelper'
+import { AaveSupplyHelper } from './AaveSupplyHelper'
+import { AddAssetHelper } from './AddAssetHelper'
+// import { AddAssetHelper2 } from './AddAssetHelper2'
+import { ChainBranchHelper } from './ChainBranchHelper'
 import { StargateBridgeHelper } from './StargateBridgeHelper'
 
 interface StepHelperConstructor {
-  new (provider: EIP1193Provider): IStepHelper<any>
+  new (provider?: EIP1193Provider): IStepHelper<any>
 }
 
 const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
+  'aave-supply': AaveSupplyHelper,
+  'add-asset': AddAssetHelper,
+  'chain-branch': ChainBranchHelper,
   'stargate-bridge': StargateBridgeHelper,
 }
 
-type InnerMap = Map<EIP1193Provider, IStepHelper<any>>
-const innerMapFactory = () => new Map<EIP1193Provider, IStepHelper<any>>()
+type InnerMap = Map<EIP1193Provider | undefined, IStepHelper<any>>
+const innerMapFactory = () => new Map<EIP1193Provider | undefined, IStepHelper<any>>()
 const stepHelpersInstances = new MapWithDefault<string, InnerMap>(innerMapFactory)
 
-const noopStepHelper = new NoopStepHelper()
-
-export function getStepHelper(type: string, provider: EIP1193Provider) {
+export function getStepHelper(type: string, provider?: EIP1193Provider) {
   const ctor = stepHelpersConstructors[type]
   if (ctor) {
     const typeCache = stepHelpersInstances.getWithDefault(type)
@@ -29,5 +33,5 @@ export function getStepHelper(type: string, provider: EIP1193Provider) {
     }
     return instance
   }
-  return noopStepHelper
+  throw new Error('no helper for type: ' + type)
 }

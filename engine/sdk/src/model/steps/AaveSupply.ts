@@ -6,4 +6,4 @@ export const aaveSupplySchema = createStepSchema('aave-supply').extend({
   inputAsset: assetAmountSchema,
 })
 
-export type AaveSupply = z.infer<typeof aaveSupplySchema>
+export interface AaveSupply extends z.infer<typeof aaveSupplySchema> {}
