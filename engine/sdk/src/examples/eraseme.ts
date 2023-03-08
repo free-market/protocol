@@ -1,25 +1,24 @@
-import { Workflow } from '../model'
+import type { Workflow } from '../model'
 
 const crossChainDeposit: Workflow = {
   parameters: [
     {
-      name: "inputAsset",
+      name: 'inputAsset',
       type: 'asset-ref',
-      description: "The type of asset being deposited"
+      description: 'The type of asset being deposited',
     },
     {
-      name: "assetAmount",
-      type: "amount",
-    }
+      name: 'assetAmount',
+      type: 'amount',
+    },
   ],
 
   steps: [
     {
       stepId: 'addAsset',
       type: 'add-asset',
-      amount: "{{ inputAmount }}",
-      asset: "{{ inputAsset }}"
-      
+      amount: '{{ inputAmount }}',
+      asset: '{{ inputAsset }}',
     },
     {
       type: 'asset-balance-branch',
@@ -58,7 +57,7 @@ const crossChainDeposit: Workflow = {
         },
         amount: '100%',
       },
-      nextStepId: "__end__"
+      nextStepId: '__end__',
     },
   ],
 }

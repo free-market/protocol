@@ -1,6 +1,6 @@
 import z from 'zod'
 import { EvmWorkflowStep } from '@freemarket/evm'
-import { AaveSupply, AaveWithdrawal, StargateBridge, UniswapExactIn } from '../model'
+import type { AaveSupply, AaveWithdrawal, StargateBridge, UniswapExactIn } from '../model'
 import WorkflowRunner from '../runner/WorkflowRunner'
 import { AbstractStepHelper } from './AbstractStepHelper'
 

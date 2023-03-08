@@ -1,4 +1,4 @@
-import z from 'zod'
+import type z from 'zod'
 import { assetAmountSchema } from '../AssetAmount'
 import { createStepSchema } from '../StepBase'
 

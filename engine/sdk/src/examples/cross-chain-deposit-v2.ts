@@ -1,4 +1,4 @@
-import { Workflow } from '../model'
+import type { Workflow } from '../model'
 
 // start with any erc20 supported by Uniswap
 const crossChainDepositV2: Workflow = {

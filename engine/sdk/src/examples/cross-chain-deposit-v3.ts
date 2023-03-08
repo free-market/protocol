@@ -1,4 +1,4 @@
-import { Workflow } from '../model'
+import type { Workflow } from '../model'
 
 // starting with native instead of an fungible token
 const crossChainDepositV3: Workflow = {

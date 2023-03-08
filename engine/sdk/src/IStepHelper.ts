@@ -1,5 +1,6 @@
-// import { ChainType, EncodedWorkflowStep } from './EncodedWorkflow'
-import { AssetAmount, Chain, StepBase, Workflow } from './model'
+import type { EncodedWorkflowStep } from './EncodedWorkflow'
+import type { AssetAmount, Chain, StepBase, Workflow } from './model'
+import type WorkflowRunner from './runner/WorkflowRunner'
 // import WorkflowRunner from './runner/WorkflowRunner'
 
 export interface BridgeTarget {
@@ -20,6 +21,6 @@ export interface NextSteps {
 export interface IStepHelper<T extends StepBase> {
   getRequiredAssets(stepConfig: T, workflow: Workflow): Promise<AssetAmount[]>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
-  // getEncodedWorkflowStep(chainType: ChainType, stepConfig: T, runner: WorkflowRunner): EncodedWorkflowStep
+  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: WorkflowRunner): EncodedWorkflowStep
   getPossibleNextSteps(stepConfig: T): NextSteps | null
 }

@@ -1,11 +1,11 @@
-import { EIP1193Provider } from 'eip1193-provider'
-import { BridgeTarget, IStepHelper, NextSteps } from '../IStepHelper'
-import { AssetAmount, Chain, StepBase } from '../model'
+import type { EIP1193Provider } from 'eip1193-provider'
+import type { BridgeTarget, IStepHelper, NextSteps } from '../IStepHelper'
+import type { AssetAmount, Chain, StepBase } from '../model'
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Memoize } from 'typescript-memoize'
-import { EvmWorkflowStep } from '@freemarket/evm'
 import assert from '../utils/assert'
 import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
+import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
   protected standardProvider?: EIP1193Provider
   protected ethersProvider?: Provider
@@ -17,7 +17,9 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     }
   }
 
-  // abstract getEncodedWorkflowStep(chainType: 'evm', stepConfig: T, workflow: WorkflowRunner): EvmWorkflowStep
+  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: WorkflowRunner): EncodedWorkflowStep {
+    throw new Error('not implemented')
+  }
 
   protected async getChain(): Promise<Chain> {
     const chainId = await this.getChainId()

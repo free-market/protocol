@@ -1,4 +1,4 @@
-import { ExecutionContext } from 'ava'
+import type { ExecutionContext } from 'ava'
 
 export function shouldRunE2e() {
   return process.env['INCLUDE_E2E'] === 'true'

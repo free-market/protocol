@@ -1,4 +1,4 @@
-import { StepBase } from '../model'
+import type { StepBase } from '../model'
 
 export enum WorkflowValidationProblemType {
   NonUniqueStepId = 'NonUniqueStepId',

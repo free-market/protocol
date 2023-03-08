@@ -3,9 +3,9 @@ import chalk from 'chalk'
 import WorkflowRunner from '../runner/WorkflowRunner'
 import fs from 'fs'
 import { WorkflowValidationError } from '../runner/WorkflowValidationError'
-import { Workflow } from '../model'
+import type { Workflow } from '../model'
 import { getParameterSchema } from '../model/Parameter'
-import { DeepReadonly } from '../utils/DeepReadonly'
+import type { DeepReadonly } from '../utils/DeepReadonly'
 
 /* eslint-disable no-console */
 export function validateWorkflow(fileName: string, verbose: boolean) {

@@ -1,4 +1,4 @@
-import { AssetAmount } from '../model'
+import type { AssetAmount } from '../model'
 
 export interface RequiredAsset {
   stepId: string

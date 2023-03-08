@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from '@ethersproject/providers'
 import test from 'ava'
-import { StargateBridge } from '../../model/steps/StargateBridge'
+import type { StargateBridge } from '../../model/steps/StargateBridge'
 import { StargateBridgeHelper } from '../StargateBridgeHelper'
 import { createStandardProvider } from '../utils'
 import dotenv from 'dotenv'

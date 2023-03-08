@@ -1,6 +1,6 @@
 import test, { ExecutionContext } from 'ava'
 import WorkflowRunner from '../WorkflowRunner'
-import { Workflow, Arguments } from '../../model'
+import type { Workflow, Arguments } from '../../model'
 import { throws } from '../../private/test-utils'
 import { assert } from '../../private/test-utils'
 

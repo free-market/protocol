@@ -1,6 +1,4 @@
-import { EvmWorkflow, EvmWorkflowStep } from '@freemarket/evm'
-
-export type ChainType = 'evm' // | 'solana' | 'sui
+import type { EvmWorkflow, EvmWorkflowStep } from '@freemarket/evm'
 
 export type EncodedWorkflow = EvmWorkflow // | SolanaWorkflow | SuiWorkflow
 

@@ -1,4 +1,4 @@
-import { ZodError } from 'zod'
+import type { ZodError } from 'zod'
 
 export enum WorkflowArgumentProblemType {
   MissingParameter = 'MissingParameter',

@@ -1,5 +1,5 @@
 import { EvmWorkflowStep } from '@freemarket/evm'
-import { ChainBranch } from '../model'
+import type { ChainBranch } from '../model'
 import WorkflowRunner from '../runner/WorkflowRunner'
 import { AbstractBranchHelper } from './AbstractBranchHelper'
 

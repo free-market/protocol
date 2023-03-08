@@ -1,5 +1,5 @@
-import { NextSteps } from '../IStepHelper'
-import { BranchStep } from '../model/BranchStep'
+import type { NextSteps } from '../IStepHelper'
+import type { BranchStep } from '../model/BranchStep'
 import { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
 import assert from '../utils/assert'
 import { AbstractStepHelper } from './AbstractStepHelper'

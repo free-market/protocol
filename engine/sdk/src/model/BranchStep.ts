@@ -1,4 +1,4 @@
-import z from 'zod'
+import type z from 'zod'
 import { nonEmptyStringSchema } from './NonEmptyString'
 import { createStepSchema, stepBaseSchema } from './StepBase'
 

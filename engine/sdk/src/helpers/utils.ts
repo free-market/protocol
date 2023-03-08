@@ -1,8 +1,8 @@
-import { Provider } from '@ethersproject/providers'
-import { Signer, VoidSigner } from '@ethersproject/abstract-signer'
-
-import { AbsoluteAmount } from '../model'
-import { EIP1193Provider } from 'eip1193-provider'
+import type { Provider } from '@ethersproject/providers'
+import type { Signer } from '@ethersproject/abstract-signer'
+import { VoidSigner } from '@ethersproject/abstract-signer'
+import type { AbsoluteAmount } from '../model'
+import type { EIP1193Provider } from 'eip1193-provider'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 
 export function absoluteAmountToString(amount: AbsoluteAmount) {

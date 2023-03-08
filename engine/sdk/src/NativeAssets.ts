@@ -1,4 +1,4 @@
-import { NativeAsset } from './model/Asset'
+import type { NativeAsset } from './model/Asset'
 
 export const NATIVE_ASSET: NativeAsset = {
   type: 'native',

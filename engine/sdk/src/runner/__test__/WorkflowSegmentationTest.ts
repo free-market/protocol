@@ -1,5 +1,5 @@
 import test from 'ava'
-import { Step, Workflow } from '../../model'
+import type { Step, Workflow } from '../../model'
 import WorkflowRunner from '../WorkflowRunner'
 
 const addAssetStep: Step = {

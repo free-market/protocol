@@ -1,4 +1,4 @@
-import { Workflow } from '../model'
+import type { Workflow } from '../model'
 
 const crossChainDeposit: Workflow = {
   steps: [
