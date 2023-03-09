@@ -19,7 +19,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     }
   }
 
-  getEncodedWorkflowStep(_chain: Chain, _stepConfig: T, _runner: IWorkflowRunner): EncodedWorkflowStep {
+  getEncodedWorkflowStep(_chain: Chain, _stepConfig: T, _runner: IWorkflowRunner): Promise<EncodedWorkflowStep> {
     throw new Error('not implemented')
   }
 

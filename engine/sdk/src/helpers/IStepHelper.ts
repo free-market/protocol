@@ -21,6 +21,6 @@ export interface NextSteps {
 export interface IStepHelper<T extends StepBase> {
   getRequiredAssets(stepConfig: T, workflow: Workflow): Promise<AssetAmount[]>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
-  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: IWorkflowRunner): EncodedWorkflowStep
+  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: IWorkflowRunner): Promise<EncodedWorkflowStep>
   getPossibleNextSteps(stepConfig: T): NextSteps | null
 }

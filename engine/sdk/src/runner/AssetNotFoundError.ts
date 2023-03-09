@@ -1,20 +1,33 @@
 import type { Chain } from '../model'
 
-export class AssetNotFoundError extends Error {
+export class AssetNotFoundProblem {
   symbol: string | null
   chain: Chain | null
-  constructor(symbol: string | null, chain: Chain | null) {
+  message: string
+  path?: string[]
+  constructor(symbol: string | null, chain: Chain | null, path?: string[]) {
     if (symbol) {
-      const prefix = `Could fungible-token asset for find symbol '${symbol}'`
+      const prefix = `Could not find fungible-token asset with symbol '${symbol}'`
       if (chain) {
-        super(`${prefix} for chain '${chain}'`)
+        this.message = `${prefix} for chain '${chain}'`
       } else {
-        super(prefix)
+        this.message = prefix
       }
     } else {
-      super(`Could not find native asset for chain '${chain}'`)
+      this.message = `Could not find native asset for chain '${chain}'`
+    }
+    if (path) {
+      this.message += ` at path ${JSON.stringify(path)}`
     }
     this.symbol = symbol
     this.chain = chain
+    this.path = path
+  }
+}
+export class AssetNotFoundError extends Error {
+  problems: AssetNotFoundProblem[]
+  constructor(problems: AssetNotFoundProblem[]) {
+    super(problems.map(it => it.message).join('\n'))
+    this.problems = problems
   }
 }

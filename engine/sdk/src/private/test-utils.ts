@@ -24,3 +24,12 @@ export function throws(t: ExecutionContext<unknown>, fn: () => void) {
     t.snapshot(e)
   }
 }
+
+export async function throwsAsync(t: ExecutionContext<unknown>, fn: () => Promise<void>) {
+  try {
+    await fn()
+    t.fail('was supposed to throw')
+  } catch (e) {
+    t.snapshot(e)
+  }
+}

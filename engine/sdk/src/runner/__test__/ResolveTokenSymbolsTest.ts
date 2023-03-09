@@ -1,7 +1,7 @@
 import test from 'ava'
 import type { Step, Workflow } from '../../model'
 import type { AssetReference } from '../../model/AssetReference'
-import { assert } from '../../private/test-utils'
+import { assert, throwsAsync } from '../../private/test-utils'
 import { WorkflowRunner } from '../WorkflowRunner'
 import { addAssetStep } from './common'
 
@@ -68,7 +68,9 @@ test("throws when it can't find a symbol for a chain", async t => {
     type: 'fungible-token',
     symbol: fakeTokenSymbol,
   }
-  await t.throwsAsync(() => runner.dereferenceAsset(fakeAssetRef, 'fantom'))
+  await throwsAsync(t, async () => {
+    await runner.dereferenceAsset(fakeAssetRef, 'fantom')
+  })
 })
 
 test('dereferences a native', async t => {
@@ -79,4 +81,30 @@ test('dereferences a native', async t => {
   const asset = await runner.dereferenceAsset(nativeAssetRef, 'ethereum')
   t.is(asset.type, 'native')
   t.is(asset.symbol, 'ETH')
+})
+
+test("validates a workflow's symbols", async t => {
+  const runner = new WorkflowRunner(workflowWithCustomToken)
+  runner.validateAssetRefs('ethereum')
+  t.pass()
+})
+
+test.only('throws when a workflow has unknown symbols', async t => {
+  const workflowWithBadAsset: Workflow = {
+    steps: [
+      {
+        stepId: 'addAsset',
+        type: 'add-asset',
+        asset: {
+          type: 'fungible-token',
+          symbol: fakeTokenSymbol,
+        },
+        amount: 1,
+      },
+    ],
+  }
+  const runner = new WorkflowRunner(workflowWithBadAsset)
+  await throwsAsync(t, async () => {
+    await runner.validateAssetRefs('fantom')
+  })
 })

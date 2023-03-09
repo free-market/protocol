@@ -1,5 +1,16 @@
 import type { EIP1193Provider } from 'eip1193-provider'
-import { Arguments, Asset, Chain, FungibleToken, fungibleTokenSchema, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
+import {
+  Address,
+  Arguments,
+  Asset,
+  Chain,
+  FungibleToken,
+  fungibleTokenSchema,
+  StepBase,
+  stepSchema,
+  Workflow,
+  workflowSchema,
+} from '../model'
 import type { StepNode } from './StepNode'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
@@ -10,22 +21,24 @@ import type { ZodObject, ZodType } from 'zod'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import cloneDeep from 'lodash.clonedeep'
 import type { DeepReadonly } from '../utils/DeepReadonly'
-import type { AssetReference } from '../model/AssetReference'
+import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import axios from 'axios'
 import { getStepHelper } from '../helpers'
 import type { NextSteps } from '../helpers/IStepHelper'
 import { WORKFLOW_END_STEP_ID } from './constants'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
 import { NATIVE_ASSETS } from '../NativeAssets'
-import { AssetNotFoundError } from './AssetNotFoundError'
+import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import z from 'zod'
+import type { IWorkflowRunner } from './IWorkflowRunner'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
-export class WorkflowRunner {
+export class WorkflowRunner implements IWorkflowRunner {
   private workflow: Workflow
   private providers = new Map<string, EIP1193Provider>()
   private steps: StepNode[]
+  private userAddress?: Address
 
   constructor(workflow: Workflow | string) {
     const unparsedWorkflow = typeof workflow === 'string' ? JSON.parse(workflow) : workflow
@@ -33,6 +46,15 @@ export class WorkflowRunner {
     this.steps = this.addMissingStepIds(this.workflow.steps)
     this.validateWorkflowSteps()
     this.validateParameters()
+  }
+
+  setUserAddress(address: Address) {
+    this.userAddress = address
+  }
+
+  getUserAddress(): Address {
+    assert(this.userAddress, 'user address not set')
+    return this.userAddress
   }
 
   setStartChainProvider(provider: EIP1193Provider) {
@@ -151,20 +173,60 @@ export class WorkflowRunner {
 
   // can be called before arguments are applied,
   // but may miss some if asset-refs are still not dereferenced
-  validateSymbols(startChain: Chain) {
-    const symbolPaths: string[][] = []
-    function getSymbolPaths(path: string[], obj: any) {
+  async validateAssetRefs(startChain: Chain): Promise<void> {
+    // not sure if there is a better way to find all assetRefs in a workflow
+    const assetRefs: { path: string[]; assetRef: AssetReference }[] = []
+    const getAssetRefPaths = (path: string[], obj: any) => {
       for (const key in obj) {
         const childObj = obj[key]
-        if (key === 'symbol' && typeof childObj === 'string') {
-          symbolPaths.push(path)
+        // not sure if this is necessary, but this is intended to be a lightweight pre-check before running it through the schema
+        let looksLikeAssetRef =
+          childObj['type'] === 'native' || (childObj['type'] === 'fungible-token' && typeof childObj['symbol'] === 'string')
+        if (looksLikeAssetRef) {
+          const parseResult = assetReferenceSchema.safeParse(childObj)
+          if (parseResult.success) {
+            assetRefs.push({ path: path.concat([key]), assetRef: parseResult.data })
+          } else {
+            looksLikeAssetRef = false
+          }
         }
-        if (typeof childObj === 'object') {
-          getSymbolPaths(path.concat(key), childObj)
+        if (!looksLikeAssetRef && typeof childObj === 'object') {
+          getAssetRefPaths(path.concat(key), childObj)
+        }
+      }
+      return assetRefs
+    }
+
+    const mapStepIdToStep = this.getStepMap()
+    const segments = this.getWorkflowSegments()
+    const problems: AssetNotFoundProblem[] = []
+    for (const segment of segments) {
+      for (const segmentChain of segment.chains) {
+        const chain = segmentChain === 'start-chain' ? startChain : segmentChain
+        for (const stepId of segment.stepIds) {
+          const step = mapStepIdToStep.get(stepId)
+          assert(step)
+          assetRefs.splice(0, assetRefs.length)
+          const assetRefPaths = getAssetRefPaths([], step)
+          for (const ref of assetRefPaths) {
+            try {
+              await this.dereferenceAsset(ref.assetRef, chain)
+            } catch (e) {
+              if (e instanceof AssetNotFoundError) {
+                const pathPrefix = [stepId]
+                const currentProblems = e.problems.map(it => new AssetNotFoundProblem(it.symbol, it.chain, pathPrefix.concat(ref.path)))
+                problems.splice(problems.length, 0, ...currentProblems)
+              } else {
+                throw e
+              }
+            }
+          }
         }
       }
     }
-    getSymbolPaths([], this.workflow)
+    if (problems.length > 0) {
+      throw new AssetNotFoundError(problems)
+    }
   }
 
   // chains are valid candidates for parameters, so
@@ -346,16 +408,16 @@ export class WorkflowRunner {
     if (assetRef.type === 'native') {
       const nativeAsset = NATIVE_ASSETS[chain]
       if (!nativeAsset) {
-        throw new AssetNotFoundError(null, chain)
+        throw new AssetNotFoundError([new AssetNotFoundProblem(null, chain)])
       }
       return nativeAsset
     }
     const token = await this.getFungibleToken(assetRef.symbol)
     if (!token) {
-      throw new AssetNotFoundError(assetRef.symbol, null)
+      throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, null)])
     }
     if (!token.chains[chain]) {
-      throw new AssetNotFoundError(assetRef.symbol, chain)
+      throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, chain)])
     }
     return token
   }
