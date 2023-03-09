@@ -18,7 +18,10 @@ export function createAssetSchema<T extends string>(type: T) {
 
 export const nativeAssetSchema = createAssetSchema('native').extend({
   /** The user friendly display name of the asset. */
-  name: z.record(chainSchema, nonEmptyStringSchema),
+  name: nonEmptyStringSchema,
+  symbol: nonEmptyStringSchema,
+
+  chain: chainSchema,
 })
 
 export interface NativeAsset extends z.infer<typeof nativeAssetSchema> {}

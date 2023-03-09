@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Web3Provider } from '@ethersproject/providers'
-import { EIP1193Provider } from 'eip1193-provider'
+import type { EIP1193Provider } from 'eip1193-provider'
 import log from 'loglevel'
 import { IERC20__factory, WorkflowRunner, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { StepIds } from './StepIds'
@@ -36,7 +36,7 @@ export function waitForContinuationNonce(args: WaitForContinuationNonceArgs): Pr
     const updaterInterval = args.loggingArgs && (await waitForContinuationNonceLogging(args.loggingArgs, runner))
 
     const timeout = setTimeout(() => {
-      runner.removeAllListeners() // canceles the subscription
+      runner.removeAllListeners() // cancels the subscription
       updaterInterval && clearInterval(updaterInterval)
       reject('timeout')
     }, args.timeoutMillis)

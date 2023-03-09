@@ -1,12 +1,12 @@
 import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
 import BN from 'bn.js'
-import { AaveSupplyActionInstance, MockAavePoolInstance, MockTokenInstance } from '../types/truffle-contracts'
+import type { AaveSupplyActionInstance, MockAavePoolInstance, MockTokenInstance } from '../types/truffle-contracts'
 import { StepIds } from '../tslib/StepIds'
 import { AssetType } from '../tslib/AssetType'
 import { ADDRESS_ZERO, validateAction } from './test-utilities'
-import { AssetAmount } from '../tslib/AssetAmount'
-import { Asset } from '../tslib/Asset'
+import type { AssetAmount } from '../tslib/AssetAmount'
+import type { Asset } from '../tslib/Asset'
 
 const AaveSupplyAction = artifacts.require('AaveSupplyAction')
 const MockToken = artifacts.require('MockToken')
@@ -61,7 +61,7 @@ contract('AaveSupplyAction', function (accounts: string[]) {
     await expect(aaveSupplyAction.execute([inputAssetAmount, inputAssetAmount], [], '0x')).to.be.reverted
   })
 
-  it('reverts when sending aTokens to the user directy and there are output assets specified', async () => {
+  it('reverts when sending aTokens to the user directly and there are output assets specified', async () => {
     // just re-using the input asset as any arbitrary asset for this test
     await expect(aaveSupplyAction.execute([], [inputAssetAmount.asset], '0x')).to.be.reverted
   })

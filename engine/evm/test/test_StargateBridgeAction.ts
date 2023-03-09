@@ -1,4 +1,4 @@
-import { WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
+import type { WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
 
 const MockToken = artifacts.require('MockToken')
 const WrapEther = artifacts.require('WrapEther')
@@ -17,7 +17,7 @@ import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
 
 import { StepIds } from '../tslib/StepIds'
 import { StargateBridge, StargateBridgeActionArgs } from '../tslib/StargateBridgeAction'
-import { EvmWorkflow } from '../tslib/EvmWorkflow'
+import type { EvmWorkflow } from '../tslib/EvmWorkflow'
 import { getBridgePayload } from '../tslib/encode-workflow'
 
 contract('StargateBridgeAction', function (accounts: string[]) {

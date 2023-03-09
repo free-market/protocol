@@ -1,4 +1,4 @@
-import { AssetType } from './AssetType'
+import type { AssetType } from './AssetType'
 
 export interface Asset {
   assetType: AssetType

@@ -1,6 +1,6 @@
 import BN from 'bn.js'
-import { AddAssetActionArgs } from '../tslib/AddAssetAction'
-import { AddAssetActionInstance, WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
+import type { AddAssetActionArgs } from '../tslib/AddAssetAction'
+import type { AddAssetActionInstance, WethInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
 import { StepIds } from '../tslib/StepIds'
 import { AssetType } from '../tslib/AssetType'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
@@ -37,8 +37,8 @@ contract('AddAssetAction', function (accounts: string[]) {
   async function ensureWethBalance(inputAmount: BN) {
     let userWethBalanceBefore = await weth.balanceOf(userAddress)
     if (userWethBalanceBefore.lt(inputAmount)) {
-      const defecit = inputAmount.sub(userWethBalanceBefore)
-      await weth.deposit({ value: defecit, from: userAddress })
+      const defect = inputAmount.sub(userWethBalanceBefore)
+      await weth.deposit({ value: defect, from: userAddress })
       userWethBalanceBefore = await weth.balanceOf(userAddress)
       expect(userWethBalanceBefore.toString()).is.equal(inputAmount.toString())
     }
@@ -160,7 +160,7 @@ contract('AddAssetAction', function (accounts: string[]) {
     expect(runnerWethBalanceAfter.toString()).to.equal(expectedRunnerBalanceAfter.toString())
     expect(userWethBalanceAfter.toString()).to.equal(expectedUserBalanceAfter.toString())
     // prettier-ignore
-    console.log(`fmp blance before=${runnerWethBalanceBefore.toString()} after=${runnerWethBalanceAfter.toString()} delta=${runnerWethBalanceAfter.sub(runnerWethBalanceBefore).toString()}`
+    console.log(`fmp balance before=${runnerWethBalanceBefore.toString()} after=${runnerWethBalanceAfter.toString()} delta=${runnerWethBalanceAfter.sub(runnerWethBalanceBefore).toString()}`
     )
   })
 })

@@ -1,4 +1,4 @@
-import { WorkflowRunnerInstance } from '../types/truffle-contracts'
+import type { WorkflowRunnerInstance } from '../types/truffle-contracts'
 
 // need an instance to extract types
 function f<T1, T2>(arg1: T1, arg2: T2) {

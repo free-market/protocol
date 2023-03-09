@@ -1,4 +1,4 @@
-import { IWorkflowStepInstance, UnwrapEtherInstance, WorkflowRunnerInstance, WrapEtherInstance } from '../types/truffle-contracts'
+import type { IWorkflowStepInstance, UnwrapEtherInstance, WorkflowRunnerInstance, WrapEtherInstance } from '../types/truffle-contracts'
 
 const WrapEther = artifacts.require('WrapEther')
 const UnwrapEther = artifacts.require('UnwrapEther')
@@ -19,7 +19,7 @@ import {
   verbose,
 } from './test-utilities'
 import { getNetworkConfig, NetworkId } from '../tslib/contract-addresses'
-import { IERC20Instance } from '../types/truffle-contracts/IERC20'
+import type { IERC20Instance } from '../types/truffle-contracts/IERC20'
 import BN from 'bn.js'
 import { AllEvents } from '../types/truffle-contracts/WorkflowRunner'
 

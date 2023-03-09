@@ -1,6 +1,6 @@
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import BN from 'bn.js'
-import { EIP1193Provider } from 'eip1193-provider'
+import type { EIP1193Provider } from 'eip1193-provider'
 import Web3 from 'web3'
 import { AaveSupplyAction__factory, IAaveV3Pool__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
 import { StepIds } from './StepIds'

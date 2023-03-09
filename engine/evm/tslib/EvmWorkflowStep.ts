@@ -1,5 +1,5 @@
-import { InputAsset } from './InputAsset'
-import { Asset } from './Asset'
+import type { InputAsset } from './InputAsset'
+import type { Asset } from './Asset'
 
 export interface EvmWorkflowStep {
   stepId: number | string

@@ -1,7 +1,7 @@
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Web3Provider } from '@ethersproject/providers'
-import { EIP1193Provider } from 'eip1193-provider'
+import type { EIP1193Provider } from 'eip1193-provider'
 import log from 'loglevel'
 import {
   IStargateFactory__factory,

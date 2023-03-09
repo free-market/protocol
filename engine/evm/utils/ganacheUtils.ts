@@ -1,10 +1,10 @@
 // import { ethers, BigNumberish, BigNumber, Signer } from 'ethers'
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
-import { Provider } from '@ethersproject/providers'
+import type { Provider } from '@ethersproject/providers'
 import { Signer } from '@ethersproject/abstract-signer'
 import { Wallet } from '@ethersproject/wallet'
 import { HDNode } from '@ethersproject/hdnode'
-import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts'
+import type { ContractReceipt, ContractTransaction } from '@ethersproject/contracts'
 
 import BN from 'bn.js'
 import dotenv from 'dotenv'
@@ -12,7 +12,6 @@ import fs from 'fs'
 import Web3 from 'web3'
 
 dotenv.config()
-
 
 export function toBN(value: BigNumberish): BN {
   const hex = BigNumber.from(value).toHexString()

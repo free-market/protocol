@@ -1,5 +1,5 @@
 import { ADDRESS_ZERO } from '../tslib/contract-addresses'
-import { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
+import type { FrontDoorInstance, WorkflowRunnerInstance } from '../types/truffle-contracts'
 
 const FrontDoor = artifacts.require('FrontDoor')
 const WorkflowRunner = artifacts.require('WorkflowRunner')
@@ -39,7 +39,7 @@ contract('deploy and upgrade', function (accounts: string[]) {
     const frontDoor = await FrontDoor.deployed()
     const storageAddress = await frontDoor.eternalStorageAddress()
 
-    // ensure that the 'writer' of storeage is the frontdoor
+    // ensure that the 'writer' of storage is the frontdoor
     const storage = await EternalStorage.at(storageAddress)
     const storageWriterAddress = await storage.getWriter()
     expect(storageWriterAddress).equals(frontDoor.address)

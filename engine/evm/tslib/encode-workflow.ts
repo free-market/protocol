@@ -1,5 +1,5 @@
 import { AssetType } from './AssetType'
-import { EvmWorkflow } from './EvmWorkflow'
+import type { EvmWorkflow } from './EvmWorkflow'
 import { ethers } from 'ethers'
 import { randomHex } from 'web3-utils'
 const abiCoder = ethers.utils.defaultAbiCoder

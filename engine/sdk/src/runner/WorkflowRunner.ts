@@ -1,5 +1,5 @@
 import type { EIP1193Provider } from 'eip1193-provider'
-import { Arguments, Chain, FungibleToken, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
+import { Arguments, Asset, Chain, FungibleToken, fungibleTokenSchema, StepBase, stepSchema, Workflow, workflowSchema } from '../model'
 import type { StepNode } from './StepNode'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
@@ -16,7 +16,9 @@ import { getStepHelper } from '../helpers'
 import type { NextSteps } from '../helpers/IStepHelper'
 import { WORKFLOW_END_STEP_ID } from './constants'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
-
+import { NATIVE_ASSETS } from '../NativeAssets'
+import { AssetNotFoundError } from './AssetNotFoundError'
+import z from 'zod'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
@@ -339,27 +341,27 @@ export class WorkflowRunner {
     }
   }
 
-  async dereferenceAsset(assetRef: AssetReference, chain: Chain) {
+  async dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
     assert(typeof assetRef !== 'string')
     if (assetRef.type === 'native') {
-      return { type: 'native' }
+      const nativeAsset = NATIVE_ASSETS[chain]
+      if (!nativeAsset) {
+        throw new AssetNotFoundError(null, chain)
+      }
+      return nativeAsset
     }
     const token = await this.getFungibleToken(assetRef.symbol)
-    const address = token.chains[chain]
-    // const rv: EvmWorkflowStep = {
-    //   inputAssets: [
-    //     {
-    //       asset: {
-    //         assetType: isNative ? AssetType.Native : AssetType.ERC20,
-    //         assetAddress: isNative ?
-    //       },
-    //     },
-    //   ],
-    // }
+    if (!token) {
+      throw new AssetNotFoundError(assetRef.symbol, null)
+    }
+    if (!token.chains[chain]) {
+      throw new AssetNotFoundError(assetRef.symbol, chain)
+    }
+    return token
   }
 
   @Memoize()
-  private async getFungibleToken(symbol: string): Promise<FungibleToken> {
+  private async getFungibleToken(symbol: string): Promise<FungibleToken | undefined> {
     if (this.workflow.fungibleTokens) {
       for (const asset of this.workflow.fungibleTokens) {
         if (asset.symbol === symbol) {
@@ -368,17 +370,15 @@ export class WorkflowRunner {
       }
     }
     const defaultTokens = await WorkflowRunner.getDefaultFungibleTokens()
-    const asset = defaultTokens[symbol]
-    if (!asset) {
-      throw new Error('Could not determine asset for symbol: ' + symbol)
-    }
-    return asset
+    return defaultTokens[symbol]
   }
 
   @Memoize()
   private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
     const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
-    return response.data
+    const tokenSchema = z.record(z.string(), fungibleTokenSchema)
+    const parsed = tokenSchema.parse(response.data)
+    return parsed
   }
 
   @Memoize()
