@@ -122,7 +122,11 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     return network.chainId
   }
 
-  getRemittance(stepConfig: T): Promise<AssetAmount | null> {
+  requiresRemittance(_stepConfig: T) {
+    return false
+  }
+
+  getRemittance(_stepConfig: T): Promise<AssetAmount | null> {
     return Promise.resolve(null)
   }
 

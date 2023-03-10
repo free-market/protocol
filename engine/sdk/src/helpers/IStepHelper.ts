@@ -20,6 +20,7 @@ export interface NextSteps {
 }
 
 export interface IStepHelper<T extends StepBase> {
+  requiresRemittance(stepConfig: T): boolean
   getRemittance(stepConfig: T): Promise<AssetAmount | null>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
   encodeWorkflowStep(chain: Chain, stepConfig: T): Promise<EncodedWorkflowStep>

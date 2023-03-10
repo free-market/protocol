@@ -1,6 +1,7 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import {
   Address,
+  Amount,
   Arguments,
   Asset,
   AssetAmount,
@@ -99,8 +100,6 @@ export class WorkflowRunner implements IWorkflowRunner {
   }
 
   validateParameters() {
-    const mapStepIdToStep = this.getStepMap()
-
     const problems = [] as WorkflowValidationProblem[]
 
     const mapDeclaredParamNameToType = new Map<string, string>()
@@ -110,13 +109,23 @@ export class WorkflowRunner implements IWorkflowRunner {
       }
     }
 
+    for (const key of this.getRemittanceKeys()) {
+      if (key.endsWith('.amount')) {
+        mapDeclaredParamNameToType.set(key, 'amount')
+      } else if (key.endsWith('.asset')) {
+        mapDeclaredParamNameToType.set(key, 'asset')
+      } else {
+        mapDeclaredParamNameToType.set(key, 'asset-amount')
+      }
+    }
+
     // get all parameter references in the steps
     const mapNameToPaths = this.findAllParameterReferences()
     for (const [paramName, valuePaths] of mapNameToPaths) {
       const declaredParamType = mapDeclaredParamNameToType.get(paramName)
       for (const valuePath of valuePaths) {
         const stepId = valuePath[0]
-        const step = mapStepIdToStep.get(stepId)
+        const step = this.getStep(stepId)
         assert(step)
         if (!declaredParamType) {
           problems.push({
@@ -358,13 +367,6 @@ export class WorkflowRunner implements IWorkflowRunner {
 
   validateArguments(args?: Arguments) {
     const params = this.workflow.parameters
-    // if (args && args.length > 0 && !params) {
-    //   const problem: WorkflowArgumentProblem = {
-    //     type: WorkflowArgumentProblemType.NoParameters,
-    //     message: 'A non-empty list of arguments was given but no workflow parameters have been declared',
-    //   }
-    //   throw new WorkflowArgumentError([problem])
-    // }
     const problems = [] as WorkflowArgumentProblem[]
     const unseenParams = new Set<string>()
     const mapParamNameToSchema = new Map<string, ZodType<any>>()
@@ -418,15 +420,22 @@ export class WorkflowRunner implements IWorkflowRunner {
   //   }
   // }
 
-  applyArguments(args: Arguments): WorkflowRunner {
+  async applyArguments(args: Arguments = {}): Promise<WorkflowRunner> {
+    const argValues = cloneDeep(args)
+
+    // TODO need to validate remittances in validateParameters too
+    const remittances = await this.getRemittances()
+    for (const k in remittances) {
+      argValues[k] = remittances[k]
+    }
+
     const rv = new WorkflowRunner(cloneDeep(this.workflow))
-    const mapStepIdToStep = rv.getStepMap()
     const allParams = rv.findAllParameterReferences()
     for (const [paramName, paths] of allParams) {
-      const argValue = args[paramName]
+      const argValue = argValues[paramName]
       for (const path of paths) {
         assert(path.length > 0)
-        const step = mapStepIdToStep.get(path[0])
+        const step = rv.getStep(path[0])
         let obj = step as Record<string, any>
         for (let i = 1; i < path.length - 1; ++i) {
           obj = obj[path[i]]
@@ -438,8 +447,9 @@ export class WorkflowRunner implements IWorkflowRunner {
     return rv
   }
 
-  async getRemittances(): Promise<Record<string, AssetAmount>> {
-    const rv: Record<string, AssetAmount> = {}
+  @Memoize()
+  async getRemittances(): Promise<Record<string, AssetAmount | Amount | AssetReference>> {
+    const rv: Record<string, AssetAmount | Amount | AssetReference> = {}
     const segments = this.getWorkflowSegments()
     for (const segment of segments) {
       for (const segmentChain of segment.chains) {
@@ -448,7 +458,34 @@ export class WorkflowRunner implements IWorkflowRunner {
           const helper = this.getStepHelper(segmentChain, step.type)
           const remittance = await helper.getRemittance(step)
           if (remittance) {
-            rv[`${segmentChain}.${stepId}`] = remittance
+            rv[`remittances.${segmentChain}.${stepId}`] = remittance
+            rv[`remittances.${stepId}`] = remittance
+            rv[`remittances.${segmentChain}.${stepId}.amount`] = remittance.amount
+            rv[`remittances.${stepId}.amount`] = remittance.amount
+            rv[`remittances.${segmentChain}.${stepId}.asset`] = remittance.asset
+            rv[`remittances.${stepId}.asset`] = remittance.asset
+          }
+        }
+      }
+    }
+    return rv
+  }
+
+  private getRemittanceKeys(): Set<string> {
+    const rv = new Set<string>()
+    const segments = this.getWorkflowSegments()
+    for (const segment of segments) {
+      for (const segmentChain of segment.chains) {
+        for (const stepId of segment.stepIds) {
+          const step = this.getStep(stepId)
+          const helper = this.getStepHelper(segmentChain, step.type)
+          if (helper.requiresRemittance(step)) {
+            rv.add(`remittances.${segmentChain}.${stepId}`)
+            rv.add(`remittances.${stepId}`)
+            rv.add(`remittances.${segmentChain}.${stepId}.amount`)
+            rv.add(`remittances.${stepId}.amount`)
+            rv.add(`remittances.${segmentChain}.${stepId}.asset`)
+            rv.add(`remittances.${stepId}.asset`)
           }
         }
       }

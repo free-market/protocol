@@ -53,6 +53,10 @@ export interface StargateMinAmountOutArgs {
 }
 
 export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
+  requiresRemittance(_stepConfig: StargateBridge) {
+    return true
+  }
+
   async getRemittance(stepConfig: StargateBridge): Promise<AssetAmount> {
     const dstAddress = await this.getStargateBridgeActionAddress()
     const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)

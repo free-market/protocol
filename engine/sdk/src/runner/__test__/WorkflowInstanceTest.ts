@@ -279,11 +279,13 @@ test('validates arguments', t => {
   runner.validateArguments(argsForTwoParamWorkflow)
   t.pass()
 })
-test('applies arguments', t => {
+
+test('applies arguments', async t => {
   const originalWorkflow = new WorkflowRunner(workflowWithTwoParams)
   const workflowBefore = originalWorkflow.getWorkflow()
-  const workflowInstanceWithArgs = originalWorkflow.applyArguments(argsForTwoParamWorkflow).getWorkflow()
-  const theStep = workflowInstanceWithArgs.steps[0]
+  const workflowInstanceWithArgs = await originalWorkflow.applyArguments(argsForTwoParamWorkflow)
+  const workflowWithArgs = workflowInstanceWithArgs.getWorkflow()
+  const theStep = workflowWithArgs.steps[0]
   // assert that the workflow structure got patched with the argument values
   assert(t, theStep.type === 'add-asset')
   assert(t, typeof theStep.asset === 'object')

@@ -89,7 +89,7 @@ test("validates a workflow's symbols", async t => {
   t.pass()
 })
 
-test.only('throws when a workflow has unknown symbols', async t => {
+test('throws when a workflow has unknown symbols', async t => {
   const workflowWithBadAsset: Workflow = {
     steps: [
       {
