@@ -1,7 +1,6 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
-import type { AssetAmount, Chain, StepBase, Workflow } from '../model'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+import type { AssetAmount, Chain, StepBase } from '../model'
 // import WorkflowRunner from './runner/WorkflowRunner'
 
 export interface BridgeTarget {

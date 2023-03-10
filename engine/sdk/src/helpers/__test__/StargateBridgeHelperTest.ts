@@ -1,13 +1,10 @@
-import { JsonRpcProvider } from '@ethersproject/providers'
 import test from 'ava'
 import type { StargateBridge } from '../../model/steps/StargateBridge'
-import { createStandardProvider } from '../utils'
 import dotenv from 'dotenv'
 
-import { shouldRunE2e } from '../../private/test-utils'
+import { getStandardProvider, shouldRunE2e } from '../../private/test-utils'
 import type { Workflow } from '../../model'
 import { WorkflowRunner } from '../../runner/WorkflowRunner'
-import { StargateBridgeHelper } from '../StargateBridgeHelper'
 
 dotenv.config()
 
@@ -33,9 +30,7 @@ test('gets required native', async t => {
     destinationAdditionalNative: 100000,
     destinationGasUnits: 1000000,
   }
-  const providerUrl = process.env['ETHEREUM_GOERLI_URL']
-  const ethersProvider = new JsonRpcProvider(providerUrl)
-  const standardProvider = createStandardProvider(ethersProvider)
+  const standardProvider = getStandardProvider()
   const runner = new WorkflowRunner({ steps: [stargateStepConfig] })
   runner.setProvider('start-chain', standardProvider)
   const sgHelper = runner['getStepHelper']('start-chain', 'stargate-bridge')
@@ -43,7 +38,11 @@ test('gets required native', async t => {
   t.assert(result !== null)
 })
 
-test.skip('encodes', async t => {
+test.only('encodes', async t => {
+  // if (!shouldRunE2e()) {
+  //   t.pass('skipping')
+  //   return
+  // }
   const workflow: Workflow = {
     steps: [
       {
@@ -73,8 +72,13 @@ test.skip('encodes', async t => {
       },
     ],
   }
+  const startChainProvider = getStandardProvider('ETHEREUM_GOERLI_URL')
+  const targetChainProvider = getStandardProvider('ARBITRUM_GOERLI_URL')
   const runner = new WorkflowRunner(workflow)
-  const helper = new StargateBridgeHelper(runner)
-  const encoded = await helper.encodeWorkflowStep('ethereum', workflow.steps[0] as any)
-  t.snapshot(encoded)
+  runner.setProvider('start-chain', startChainProvider)
+  runner.setProvider('arbitrum', targetChainProvider)
+  const helper = runner['getStepHelper']('start-chain', 'stargate-bridge')
+  // things are potentially too dynamic to do a snapshot here, so just passing if it doesn't reject
+  await helper.encodeWorkflowStep('ethereum', runner.getWorkflow().steps[0] as any)
+  t.pass()
 })

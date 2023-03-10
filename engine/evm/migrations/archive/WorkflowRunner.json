@@ -588,11 +588,30 @@
         ],
         "name": "WorkflowStepExecution",
         "type": "event"
+      },
+      "0x5c250b46b4ab7901af16e469d68737ca13fe0eac242b19f323f7d3608565be7f": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "stepAddress",
+            "type": "address"
+          }
+        ],
+        "name": "StepAddressSetEvent",
+        "type": "event"
       }
     },
     "links": {},
-    "address": "0xFc01a16967E76BC3AEdbBbcD3efEf33F1c632283",
-    "transactionHash": "0xe4afdc867d02920bba85a37ed50e70a65249203f1a6e2e3c067c5141915f5251"
+    "address": "0xEfe47b025A95e954C91c05486ee24f2B33019903",
+    "transactionHash": "0xfa9c021f7dde41e05d06f4f0436ab3ffdbc083fed18c20b5ff2b90370aedc188"
   },
   "10": {
     "events": {
@@ -2785,10 +2804,29 @@
         ],
         "name": "WorkflowStepExecution",
         "type": "event"
+      },
+      "0x5c250b46b4ab7901af16e469d68737ca13fe0eac242b19f323f7d3608565be7f": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "stepId",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "stepAddress",
+            "type": "address"
+          }
+        ],
+        "name": "StepAddressSetEvent",
+        "type": "event"
       }
     },
     "links": {},
-    "address": "0x1040bE52D630dA4df00e75e44B332A1D5a67D284",
-    "transactionHash": "0x4a79fe4c506ddc80b3bc69b16daed2d9bcdcd99069917c90c06eb5be3a090535"
+    "address": "0x907B73Eb840B867957BF6ce9212467ca86e0bfdB",
+    "transactionHash": "0x2eb909d0eac476d6ec59eb6d2aa5c45147d814da593ba159209b1353ec48e626"
   }
 }

@@ -12,18 +12,18 @@ import {
   StargatePoolIds,
 } from '@freemarket/evm'
 import { Memoize } from 'typescript-memoize'
-import type { Asset, AssetAmount, Chain, StargateBridge } from '../model'
+import type { AssetAmount, Chain, StargateBridge } from '../model'
 import { AbstractStepHelper } from './AbstractStepHelper'
 import { absoluteAmountToString } from './utils'
 import rootLogger from 'loglevel'
-import type { BridgeTarget, NextSteps } from './IStepHelper'
+import type { NextSteps } from './IStepHelper'
 import assert from '../utils/assert'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 import { WORKFLOW_END_STEP_ID } from '../runner/constants'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
 import { sdkAssetAmountToEvmInputAmount } from '../utils/evm-encoding-utils'
 import type { AssetReference } from '../model/AssetReference'
 import Big from 'big.js'
+import { Web3Provider } from '@ethersproject/providers'
 // import { AbstractStepHelper } from './AbstractStepHelper'
 
 // import { EncodedWorkflowStep } from '../EncodedWorkflow'
@@ -167,9 +167,10 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
 
   @Memoize()
   async getStargateBridgeActionAddressForChain(chain: Chain): Promise<string> {
-    assert(this.ethersProvider)
+    const stdProvider = this.runner.getProvider(chain)
+    const ethersProvider = new Web3Provider(stdProvider)
     const frontDoorAddress = await this.getFrontDoorAddressForChain(chain)
-    const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
+    const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
     const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
     log.debug(`StargateBridgeAction for chain '${chain}' is ${sgBridgeActionAddr}`)
     return sgBridgeActionAddr
@@ -255,6 +256,10 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       this.getBridgeTargetAddress(stepConfig),
       this.getStargateChainId(stepConfig.destinationChain),
     ])
+    // const transferInputAsset = await sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.runner)
+    // const payload = await this.getPayload(stepConfig)
+    // const targetAddress = await this.getBridgeTargetAddress(stepConfig)
+    // const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)
 
     // TODO how to handle this
     const stargateRequiredNative = 1000000

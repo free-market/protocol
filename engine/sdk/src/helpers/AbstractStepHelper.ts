@@ -95,9 +95,9 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     if (await this.isTestNet()) {
       switch (chain) {
         case 'ethereum':
-          return '0xaa831AB4FccB984c46C4EA1abA0929C719E7Aa72'
+          return '0xF29547aF5D9545886c5e616c8Ec954b27C75bEdD'
         case 'arbitrum':
-          return '0x1a943Aa4D585cc998A0D73450EB426c7846327A3'
+          return '0xeFE6E1708b058D35d79f39cd94833fa89304B96B'
         default:
           throw new Error(`freemarket is not deployed on ${chain} testnet`)
       }
@@ -119,6 +119,11 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
   protected async getChainId(): Promise<number> {
     assert(this.ethersProvider)
     const network = await this.ethersProvider.getNetwork()
+    return network.chainId
+  }
+
+  protected static async getChainIdFromProvider(provider: Provider): Promise<number> {
+    const network = await provider.getNetwork()
     return network.chainId
   }
 

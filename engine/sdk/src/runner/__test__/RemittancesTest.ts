@@ -4,8 +4,7 @@ import { createStandardProvider } from '../../helpers/utils'
 import { WorkflowRunner } from '../WorkflowRunner'
 import type { StargateBridge, Step } from '../../model'
 import dotenv from 'dotenv'
-import { assert, shouldRunE2e } from '../../private/test-utils'
-import cloneDeep from 'lodash.clonedeep'
+import { assert, getStandardProvider, shouldRunE2e } from '../../private/test-utils'
 
 dotenv.config()
 
@@ -46,14 +45,12 @@ const addAssetStep: Step = {
   amount: '{{ remittances.stargate.amount }}',
 }
 
-test.only('validates parameters that refer to remittances', async t => {
-  // if (!shouldRunE2e()) {
-  //   t.pass('skipping')
-  //   return
-  // }
-  const providerUrl = process.env['ETHEREUM_GOERLI_URL']
-  const ethersProvider = new JsonRpcProvider(providerUrl)
-  const standardProvider = createStandardProvider(ethersProvider)
+test('validates parameters that refer to remittances', async t => {
+  if (!shouldRunE2e()) {
+    t.pass('skipping')
+    return
+  }
+  const standardProvider = getStandardProvider()
   const runner = new WorkflowRunner({ steps: [addAssetStep, stargateStep] })
   runner.setProvider('start-chain', standardProvider)
   const appliedRunner = await runner.applyArguments()

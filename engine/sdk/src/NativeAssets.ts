@@ -1,26 +1,28 @@
 import type { Chain } from './model'
 import type { NativeAsset } from './model/Asset'
 
+const ETH_ICON_URL = 'https://metadata.fmprotocol.com/icons/native/eth.png'
+
 export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
   ethereum: {
     type: 'native',
     name: 'Ethereum',
     symbol: 'ETH',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/eth.png',
+    iconUrl: ETH_ICON_URL,
     chain: 'ethereum',
   },
   optimism: {
     type: 'native',
     name: 'Ethereum',
     symbol: 'ETH',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/eth.png',
+    iconUrl: ETH_ICON_URL,
     chain: 'optimism',
   },
   arbitrum: {
     type: 'native',
     name: 'Ethereum',
     symbol: 'ETH',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/eth.png',
+    iconUrl: ETH_ICON_URL,
     chain: 'arbitrum',
   },
   polygon: {

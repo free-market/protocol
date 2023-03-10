@@ -1,14 +1,21 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "prettier", "eslint-plugin-tsdoc"],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "prettier", "eslint-plugin-tsdoc", "sonarjs", "etc"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "plugin:import/recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "plugin:sonarjs/recommended",
+    "plugin:etc/recommended"
   ],
   "settings": {
     "import/resolver": {
@@ -23,6 +30,9 @@
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "import/no-cycle": "error"
+    "import/no-cycle": "error",
+    "import/no-named-as-default": "off",
+    "sonarjs/no-duplicate-string": "off",
+    "etc/no-commented-out-code": "warn"
   }
 }

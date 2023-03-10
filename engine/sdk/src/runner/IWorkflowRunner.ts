@@ -12,5 +12,6 @@ export interface IWorkflowRunner {
   encodeSegment(startStepId: string, chain: Chain): Promise<EncodedWorkflow>
   getChains(): ChainOrStart[]
   setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider): void
+  getProvider(chainOrStart: ChainOrStart): EIP1193Provider
   getRemittances(): Promise<Record<string, AssetAmount | Amount | AssetReference>>
 }

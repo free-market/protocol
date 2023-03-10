@@ -33,12 +33,10 @@ import { NATIVE_ASSETS } from '../NativeAssets'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import z from 'zod'
 import type { IWorkflowRunner } from './IWorkflowRunner'
-import type { EncodedWorkflow, EncodedWorkflowStep } from '../EncodedWorkflow'
+import type { EncodedWorkflow } from '../EncodedWorkflow'
 import type { EvmWorkflowStep } from '@freemarket/evm'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
-
-type ReadOnlyWorkflow = DeepReadonly<Workflow>
 
 export class WorkflowRunner implements IWorkflowRunner {
   private workflow: Workflow
@@ -65,7 +63,11 @@ export class WorkflowRunner implements IWorkflowRunner {
       }
     }
   }
-
+  getProvider(chainOrStart: ChainOrStart): EIP1193Provider {
+    const rv = this.providers.get(chainOrStart)
+    assert(rv)
+    return rv
+  }
   setUserAddress(address: Address) {
     this.userAddress = address
   }
@@ -99,6 +101,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     return mapParamNameToPaths
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   validateParameters() {
     const problems = [] as WorkflowValidationProblem[]
 
@@ -199,6 +202,7 @@ export class WorkflowRunner implements IWorkflowRunner {
 
   // can be called before arguments are applied,
   // but may miss some if asset-refs are still not dereferenced
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   async validateAssetRefs(startChain: Chain): Promise<void> {
     // not sure if there is a better way to find all assetRefs in a workflow
     const assetRefs: { path: string[]; assetRef: AssetReference }[] = []
@@ -256,6 +260,7 @@ export class WorkflowRunner implements IWorkflowRunner {
   }
 
   @Memoize()
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   getReachableSet(stepId: string): string[] {
     const mapStepIdToNextStepInfo = this.getNextStepsMap()
     const seenIds = new Set<string>()
@@ -321,12 +326,10 @@ export class WorkflowRunner implements IWorkflowRunner {
     for (const step of this.steps) {
       const helper = createStepHelper(step.type, this)
       const result = helper.getPossibleNextSteps(step as any)
-      if (result) {
-        if (result.differentChains) {
-          for (const diffChain of result.differentChains) {
-            startStepIds.add(diffChain.stepId)
-            mapStepIdToChains.getWithDefault(diffChain.stepId).add(diffChain.chain)
-          }
+      if (result && result.differentChains) {
+        for (const diffChain of result.differentChains) {
+          startStepIds.add(diffChain.stepId)
+          mapStepIdToChains.getWithDefault(diffChain.stepId).add(diffChain.chain)
         }
       }
     }
@@ -567,8 +570,7 @@ export class WorkflowRunner implements IWorkflowRunner {
   private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
     const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
     const tokenSchema = z.record(z.string(), fungibleTokenSchema)
-    const parsed = tokenSchema.parse(response.data)
-    return parsed
+    return tokenSchema.parse(response.data)
   }
 
   @Memoize()

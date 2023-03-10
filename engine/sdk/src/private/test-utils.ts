@@ -1,4 +1,6 @@
+import { JsonRpcProvider } from '@ethersproject/providers'
 import type { ExecutionContext } from 'ava'
+import { createStandardProvider } from '../helpers/utils'
 
 export function shouldRunE2e() {
   return process.env['INCLUDE_E2E'] === 'true'
@@ -32,4 +34,10 @@ export async function throwsAsync(t: ExecutionContext<unknown>, fn: () => Promis
   } catch (e) {
     t.snapshot(e)
   }
+}
+
+export function getStandardProvider(envVar = 'ETHEREUM_GOERLI_URL') {
+  const providerUrl = process.env[envVar]
+  const ethersProvider = new JsonRpcProvider(providerUrl)
+  return createStandardProvider(ethersProvider)
 }
