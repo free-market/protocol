@@ -5,16 +5,25 @@ import {
   StargateBridgeAction__factory,
   StargateChainIds,
   WorkflowRunner__factory,
+  getBridgePayload,
+  ADDRESS_ZERO,
+  AssetType,
+  StargateBridge as EvmStargateBridge,
+  StargatePoolIds,
 } from '@freemarket/evm'
 import { Memoize } from 'typescript-memoize'
-import type { AssetAmount, Chain, StargateBridge } from '../model'
+import type { Asset, AssetAmount, Chain, StargateBridge } from '../model'
 import { AbstractStepHelper } from './AbstractStepHelper'
 import { absoluteAmountToString } from './utils'
 import rootLogger from 'loglevel'
 import type { BridgeTarget, NextSteps } from './IStepHelper'
 import assert from '../utils/assert'
-import { EncodedWorkflowStep } from '../EncodedWorkflow'
+import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 import { WORKFLOW_END_STEP_ID } from '../runner/constants'
+import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+import { sdkAssetAmountToEvmInputAmount } from '../utils/evm-encoding-utils'
+import type { AssetReference } from '../model/AssetReference'
+import Big from 'big.js'
 // import { AbstractStepHelper } from './AbstractStepHelper'
 
 // import { EncodedWorkflowStep } from '../EncodedWorkflow'
@@ -34,17 +43,26 @@ interface StargateFeeArgs {
   dstChainId: number
 }
 
+export interface StargateMinAmountOutArgs {
+  frontDoorAddress: string
+  inputAmount: string
+  dstChainId: number
+  srcPoolId: number
+  dstPoolId: number
+  dstUserAddress: string
+}
+
 export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
-  async getRequiredAssets(stepConfig: StargateBridge): Promise<AssetAmount[]> {
+  async getRemittance(stepConfig: StargateBridge): Promise<AssetAmount> {
     const dstAddress = await this.getStargateBridgeActionAddress()
-    const dstChainId = await this.getDestinationChainId(stepConfig.destinationChain)
+    const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)
     const srcFrontDoorAddress = await this.getFrontDoorAddress()
     if (!stepConfig.destinationGasUnits) {
       throw new Error('stargate automatic destination chain gas estimation not implemented, please provide a value for destinationGasUnits')
     }
 
-    // TODO need transitive closure and then hex encoding of continuation workflow
-    const payload = '0x'
+    const payload = await this.getPayload(stepConfig)
+
     const requiredNative = await this.getStargateRequiredNative({
       srcFrontDoorAddress,
       dstAddress,
@@ -53,16 +71,14 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       payload,
       dstChainId,
     })
-    return [
-      {
-        asset: { type: 'native' },
-        amount: requiredNative,
-      },
-    ]
+    return {
+      asset: { type: 'native' },
+      amount: requiredNative,
+    }
   }
 
   @Memoize()
-  private async getDestinationChainId(chain: Chain): Promise<number> {
+  private async getStargateChainId(chain: Chain): Promise<number> {
     if (await this.isTestNet()) {
       switch (chain) {
         case 'ethereum':
@@ -146,11 +162,20 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   }
 
   @Memoize()
+  async getStargateBridgeActionAddressForChain(chain: Chain): Promise<string> {
+    assert(this.ethersProvider)
+    const frontDoorAddress = await this.getFrontDoorAddressForChain(chain)
+    const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
+    const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
+    log.debug(`StargateBridgeAction for chain '${chain}' is ${sgBridgeActionAddr}`)
+    return sgBridgeActionAddr
+  }
+
+  @Memoize()
   async getStargateRouterAddress(frontDoorAddress: string): Promise<string> {
     assert(this.ethersProvider)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
     const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
-    log.debug(`StargateBridgeAction address=${sgBridgeActionAddr}`)
     const sgBridgeAction = StargateBridgeAction__factory.connect(sgBridgeActionAddr, this.ethersProvider)
     const sgRouterAddr = await sgBridgeAction.stargateRouterAddress()
     log.debug(`StargateRouter address=${sgRouterAddr}`)
@@ -172,31 +197,6 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     return stargateFee.toString()
   }
 
-  // getBridgeTarget(stepConfig: StargateBridge): BridgeTarget | null {
-  //   assert(stepConfig.nextStepId)
-  //   const rv: BridgeTarget = {
-  //     chain: stepConfig.destinationChain,
-  //     firstStepId: stepConfig.nextStepId,
-  //   }
-  //   return rv
-  // }
-
-  // getEncodedWorkflowStep(chainType: ChainType, stepConfig: StargateBridge, runner: WorkflowRunner): EncodedWorkflowStep {
-  //   // assert(typeof stepConfig.inputAsset !== 'string')
-  //   // assert(typeof stepConfig.inputAsset.asset !== 'string')
-  //   // const isNative = stepConfig.inputAsset.asset.type === 'native'
-  //   // const rv: EvmWorkflowStep = {
-  //   //   inputAssets: [
-  //   //     {
-  //   //       asset: {
-  //   //         assetType: isNative ? AssetType.Native : AssetType.ERC20,
-  //   //         assetAddress: isNative ?
-  //   //       },
-  //   //     },
-  //   //   ],
-  //   // }
-  //   throw new Error('not implemented')
-  // }
   getPossibleNextSteps(stepConfig: StargateBridge): NextSteps | null {
     assert(stepConfig.nextStepId)
     if (stepConfig.nextStepId === WORKFLOW_END_STEP_ID) {
@@ -212,4 +212,111 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       ],
     }
   }
+
+  private async getPayload(stepConfig: StargateBridge): Promise<string> {
+    assert(stepConfig.nextStepId)
+    if (stepConfig.nextStepId === WORKFLOW_END_STEP_ID) {
+      return '0x'
+    }
+    const encodedTargetSegment = await this.runner.encodeSegment(stepConfig.nextStepId, stepConfig.destinationChain)
+    const { nonce, encodedWorkflow } = getBridgePayload(stepConfig.destinationUserAddress, encodedTargetSegment)
+    log.debug(`generated payload for stepId '${stepConfig.stepId}' nonce='${nonce}'`)
+    return encodedWorkflow
+  }
+
+  private async getBridgeTargetAddress(stepConfig: StargateBridge): Promise<string> {
+    assert(stepConfig.nextStepId)
+    if (stepConfig.nextStepId === WORKFLOW_END_STEP_ID) {
+      return stepConfig.destinationUserAddress
+    }
+    return this.getStargateBridgeActionAddressForChain(stepConfig.destinationChain)
+  }
+
+  static getPoolId(assetRef: AssetReference): string {
+    assert(typeof assetRef !== 'string')
+    if (assetRef.type === 'native') {
+      // TODO not sure if this is required when transferring native
+      return StargatePoolIds['ETH'].toString()
+    }
+    const rv = StargatePoolIds[assetRef.symbol]
+    return rv.toString()
+  }
+
+  async encodeWorkflowStep(chain: Chain, stepConfig: StargateBridge): Promise<EncodedWorkflowStep> {
+    assert(stepConfig.nextStepId)
+    assert(typeof stepConfig.inputAsset !== 'string')
+    const [transferInputAsset, payload, targetAddress, dstChainId] = await Promise.all([
+      sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.runner),
+      this.getPayload(stepConfig),
+      this.getBridgeTargetAddress(stepConfig),
+      this.getStargateChainId(stepConfig.destinationChain),
+    ])
+
+    // TODO how to handle this
+    const stargateRequiredNative = 1000000
+    let minAmountOut: string
+    if (typeof stepConfig.inputAsset.amount === 'string' && stepConfig.inputAsset.amount.endsWith('%')) {
+      log.warn('stargate maxSlippagePercent not yet supported for relative input amounts, defaulting minAmountOut to 1')
+      minAmountOut = '1'
+    } else {
+      const p = stepConfig.maxSlippagePercent / 100
+      const x = new Big(1 - p)
+      const amount = new Big(stepConfig.inputAsset.amount.toString())
+      minAmountOut = amount.mul(x).toFixed(0)
+    }
+    // TODO required native
+
+    // TODO auto gas estimates
+    if (!stepConfig.destinationGasUnits) {
+      throw new Error('auto gas estimates are not supported')
+    }
+
+    const paymentAsset = {
+      asset: {
+        assetType: AssetType.Native,
+        assetAddress: ADDRESS_ZERO,
+      },
+      amount: stargateRequiredNative.toString(),
+      amountIsPercent: false,
+    }
+
+    const srcPoolId = StargateBridgeHelper.getPoolId(stepConfig.inputAsset.asset)
+    const dstPoolId = stepConfig.outputAsset ? StargateBridgeHelper.getPoolId(stepConfig.inputAsset.asset) : srcPoolId
+    return {
+      stepId: StepIds.stargateBridge,
+      stepAddress: ADDRESS_ZERO,
+      inputAssets: [transferInputAsset, paymentAsset],
+      outputAssets: [], // no output assets, the input asset is transferred from the caller
+      data: EvmStargateBridge.encodeStargateBridgeArgs({
+        dstActionAddress: targetAddress, // who initially gets the money and gets invoked by SG
+        dstUserAddress: stepConfig.destinationUserAddress, // dstUserAddress, // who gets the money after the continuation workflow completes
+        srcPoolId,
+        dstPoolId,
+        dstChainId: dstChainId.toString(),
+        dstGasForCall: stepConfig.destinationGasUnits.toString(), // gas units (not wei or gwei)
+        dstNativeAmount: stepConfig.destinationAdditionalNative ? stepConfig.destinationAdditionalNative.toString() : '0',
+        minAmountOut: minAmountOut,
+        minAmountOutIsPercent: false,
+        continuationWorkflow: payload,
+      }),
+    }
+  }
+  // static async getStargateMinAmountOut(args: StargateMinAmountOutArgs): Promise<string> {
+  //   const sgFeeLibraryAddr = await StargateBridge.getFeeLibraryAddress(args.frontDoorAddress, args.srcPoolId, args.provider)
+  //   const ethersProvider = new Web3Provider(args.provider)
+  //   const sgFeeLibrary = IStargateFeeLibrary__factory.connect(sgFeeLibraryAddr, ethersProvider)
+  //   const swapObj = await sgFeeLibrary.getFees(args.srcPoolId, args.dstPoolId, args.dstChainId, args.dstUserAddress, args.inputAmount)
+  //   const [_amount, eqFee, eqReward, lpFee, protocolFee, _lkbRemove] = swapObj
+  //   const inputAmount = BigNumber.from(args.inputAmount)
+  //   const minAmountOut = inputAmount
+  //     .sub(BigNumber.from(eqFee))
+  //     .sub(BigNumber.from(protocolFee))
+  //     .sub(BigNumber.from(lpFee))
+  //     .add(BigNumber.from(eqReward))
+  //     .mul(StargateBridge.fudgeFactorNumerator)
+  //     .div(StargateBridge.fudgeFactorDenominator)
+
+  //   log.debug(`stargate minAmountOut=${minAmountOut}`)
+  //   return minAmountOut.toString()
+  // }
 }

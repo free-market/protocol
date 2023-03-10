@@ -11,15 +11,21 @@ import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
   protected standardProvider?: EIP1193Provider
   protected ethersProvider?: Provider
+  protected runner: IWorkflowRunner
 
-  constructor(provider?: EIP1193Provider) {
+  constructor(runner: IWorkflowRunner, provider?: EIP1193Provider) {
+    this.runner = runner
     this.standardProvider = provider
     if (provider) {
       this.ethersProvider = new Web3Provider(provider)
     }
   }
+  setProvider(provider: EIP1193Provider): void {
+    this.standardProvider = provider
+    this.ethersProvider = new Web3Provider(provider)
+  }
 
-  getEncodedWorkflowStep(_chain: Chain, _stepConfig: T, _runner: IWorkflowRunner): Promise<EncodedWorkflowStep> {
+  encodeWorkflowStep(_chain: Chain, _stepConfig: T): Promise<EncodedWorkflowStep> {
     throw new Error('not implemented')
   }
 
@@ -116,8 +122,8 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     return network.chainId
   }
 
-  getRequiredAssets(_stepConfig: T): Promise<AssetAmount[]> {
-    return Promise.resolve([])
+  getRemittance(stepConfig: T): Promise<AssetAmount | null> {
+    return Promise.resolve(null)
   }
 
   getBridgeTarget(_stepConfig: T): BridgeTarget | null {

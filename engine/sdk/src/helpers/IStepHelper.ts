@@ -1,3 +1,4 @@
+import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 import type { AssetAmount, Chain, StepBase, Workflow } from '../model'
 import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
@@ -19,8 +20,9 @@ export interface NextSteps {
 }
 
 export interface IStepHelper<T extends StepBase> {
-  getRequiredAssets(stepConfig: T, workflow: Workflow): Promise<AssetAmount[]>
+  getRemittance(stepConfig: T): Promise<AssetAmount | null>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
-  getEncodedWorkflowStep(chain: Chain, stepConfig: T, runner: IWorkflowRunner): Promise<EncodedWorkflowStep>
+  encodeWorkflowStep(chain: Chain, stepConfig: T): Promise<EncodedWorkflowStep>
   getPossibleNextSteps(stepConfig: T): NextSteps | null
+  setProvider(provider: EIP1193Provider): void
 }

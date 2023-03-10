@@ -8,12 +8,12 @@ import { AbstractStepHelper } from './AbstractStepHelper'
 import { ADDRESS_ZERO } from './utils'
 
 export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
-  async getEncodedWorkflowStep(chain: Chain, stepConfig: AddAsset, runner: IWorkflowRunner): Promise<EncodedWorkflowStep> {
+  async encodeWorkflowStep(chain: Chain, stepConfig: AddAsset): Promise<EncodedWorkflowStep> {
     assert(typeof stepConfig.asset !== 'string')
-    const sdkAsset = await runner.dereferenceAsset(stepConfig.asset, chain)
+    const sdkAsset = await this.runner.dereferenceAsset(stepConfig.asset, chain)
     const evmAsset = sdkAssetToEvmAsset(sdkAsset, chain)
 
-    const address = stepConfig.fromAddress ?? runner.getUserAddress()
+    const address = stepConfig.fromAddress ?? this.runner.getUserAddress()
 
     // TODO CORE-16 support percentages
     let amountStr: string
@@ -28,7 +28,7 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
       amountStr = stepConfig.amount
     }
 
-    const evmStep: EvmWorkflowStep = {
+    return {
       stepId: StepIds.addAsset,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [], // no input assets
@@ -37,8 +37,6 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
         fromAddress: address,
         amount: amountStr,
       }),
-      nextStepIndex: 1,
     }
-    return evmStep
   }
 }

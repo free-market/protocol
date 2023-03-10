@@ -38,56 +38,62 @@ test('handles branch nodes', t => {
   t.snapshot(segments)
 })
 
+const aBigWorkflow: Workflow = {
+  steps: [
+    {
+      stepId: 'chainBranch',
+      type: 'chain-branch',
+      currentChain: 'optimism',
+      ifYes: 'sgArbitrum',
+      ifNo: 'sgOptimism',
+    },
+    {
+      stepId: 'sgArbitrum',
+      type: 'stargate-bridge',
+      destinationChain: 'arbitrum',
+      destinationUserAddress: '0x1234567890123456789012345678901234567890',
+      inputAsset: {
+        asset: {
+          type: 'native',
+        },
+        amount: 1,
+      },
+      maxSlippagePercent: 0.04,
+      nextStepId: 'aave',
+    },
+    {
+      stepId: 'sgOptimism',
+      type: 'stargate-bridge',
+      destinationChain: 'optimism',
+      destinationUserAddress: '0x1234567890123456789012345678901234567890',
+      inputAsset: {
+        asset: {
+          type: 'native',
+        },
+        amount: 1,
+      },
+      maxSlippagePercent: 0.04,
+      nextStepId: 'aave',
+    },
+    {
+      stepId: 'aave',
+      type: 'aave-supply',
+      inputAsset: {
+        asset: {
+          type: 'native',
+        },
+        amount: 1,
+      },
+    },
+  ],
+}
+
 test('handles the same segment appearing on two different chains', t => {
-  const workflow: Workflow = {
-    steps: [
-      {
-        stepId: 'chainBranch',
-        type: 'chain-branch',
-        currentChain: 'optimism',
-        ifYes: 'sgArbitrum',
-        ifNo: 'sgOptimism',
-      },
-      {
-        stepId: 'sgArbitrum',
-        type: 'stargate-bridge',
-        destinationChain: 'arbitrum',
-        destinationUserAddress: '0x1234567890123456789012345678901234567890',
-        inputAsset: {
-          asset: {
-            type: 'native',
-          },
-          amount: 1,
-        },
-        maxSlippagePercent: 0.04,
-        nextStepId: 'aave',
-      },
-      {
-        stepId: 'sgOptimism',
-        type: 'stargate-bridge',
-        destinationChain: 'optimism',
-        destinationUserAddress: '0x1234567890123456789012345678901234567890',
-        inputAsset: {
-          asset: {
-            type: 'native',
-          },
-          amount: 1,
-        },
-        maxSlippagePercent: 0.04,
-        nextStepId: 'aave',
-      },
-      {
-        stepId: 'aave',
-        type: 'aave-supply',
-        inputAsset: {
-          asset: {
-            type: 'native',
-          },
-          amount: 1,
-        },
-      },
-    ],
-  }
-  const segments = new WorkflowRunner(workflow).getWorkflowSegments()
+  const segments = new WorkflowRunner(aBigWorkflow).getWorkflowSegments()
   t.snapshot(segments)
+})
+
+test('gets the set of all chains', t => {
+  const chains = new WorkflowRunner(aBigWorkflow).getChains()
+  t.snapshot(chains)
 })

@@ -3,6 +3,7 @@ import {
   Address,
   Arguments,
   Asset,
+  AssetAmount,
   Chain,
   FungibleToken,
   fungibleTokenSchema,
@@ -23,29 +24,45 @@ import cloneDeep from 'lodash.clonedeep'
 import type { DeepReadonly } from '../utils/DeepReadonly'
 import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import axios from 'axios'
-import { getStepHelper } from '../helpers'
-import type { NextSteps } from '../helpers/IStepHelper'
+import { createStepHelper, getStepHelper } from '../helpers'
+import type { IStepHelper, NextSteps } from '../helpers/IStepHelper'
 import { WORKFLOW_END_STEP_ID } from './constants'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
 import { NATIVE_ASSETS } from '../NativeAssets'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import z from 'zod'
 import type { IWorkflowRunner } from './IWorkflowRunner'
+import type { EncodedWorkflow, EncodedWorkflowStep } from '../EncodedWorkflow'
+import type { EvmWorkflowStep } from '@freemarket/evm'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
+
+type ReadOnlyWorkflow = DeepReadonly<Workflow>
 
 export class WorkflowRunner implements IWorkflowRunner {
   private workflow: Workflow
   private providers = new Map<string, EIP1193Provider>()
+  private stepHelpers = new MapWithDefault<ChainOrStart, Map<string, IStepHelper<any>>>(() => new Map())
   private steps: StepNode[]
   private userAddress?: Address
 
   constructor(workflow: Workflow | string) {
     const unparsedWorkflow = typeof workflow === 'string' ? JSON.parse(workflow) : workflow
-    this.workflow = workflowSchema.parse(unparsedWorkflow)
-    this.steps = this.addMissingStepIds(this.workflow.steps)
+    const parsedWorkflow = workflowSchema.parse(unparsedWorkflow)
+    this.workflow = parsedWorkflow
+    this.steps = this.addMissingStepIds(parsedWorkflow.steps)
     this.validateWorkflowSteps()
     this.validateParameters()
+  }
+
+  setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider): void {
+    this.providers.set(chainOrStart, provider)
+    const chainMap = this.stepHelpers.get(chainOrStart)
+    if (chainMap) {
+      for (const helper of chainMap.values()) {
+        helper.setProvider(provider)
+      }
+    }
   }
 
   setUserAddress(address: Address) {
@@ -229,48 +246,73 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
+  @Memoize()
+  getReachableSet(stepId: string): string[] {
+    const mapStepIdToNextStepInfo = this.getNextStepsMap()
+    const seenIds = new Set<string>()
+    const toVisitIds = new Set<string>()
+    let currentStepId = stepId
+    for (;;) {
+      if (!seenIds.has(currentStepId)) {
+        seenIds.add(currentStepId)
+      }
+      const nextInfo = mapStepIdToNextStepInfo.get(currentStepId)
+      if (nextInfo) {
+        for (const otherStepId of nextInfo.sameChain) {
+          if (!seenIds.has(otherStepId)) {
+            toVisitIds.add(otherStepId)
+          }
+        }
+      }
+      if (toVisitIds.size === 0) {
+        break
+      }
+      // this looks hackish but just treating set also as a queue and dequeueing here
+      for (const nextToVisit of toVisitIds) {
+        currentStepId = nextToVisit
+        break
+      }
+      toVisitIds.delete(currentStepId)
+    }
+    return Array.from(seenIds)
+  }
+
+  @Memoize()
+  private getNextStepsMap() {
+    const mapStepIdToNextStepInfo = new Map<string, NextSteps>()
+    for (const step of this.steps) {
+      const helper = getStepHelper(step.type, this)
+      const result = helper.getPossibleNextSteps(step as any)
+      if (result) {
+        mapStepIdToNextStepInfo.set(step.stepId, result)
+      }
+    }
+    return mapStepIdToNextStepInfo
+  }
+
+  getChains(): ChainOrStart[] {
+    const chains = new Set<ChainOrStart>()
+    const segments = this.getWorkflowSegments()
+    for (const segment of segments) {
+      for (const chain of segment.chains) {
+        chains.add(chain)
+      }
+    }
+    return Array.from(chains)
+  }
+
   // chains are valid candidates for parameters, so
   // if called before args are applied, args may show up instead of chains
   @Memoize()
   getWorkflowSegments(): WorkflowSegment[] {
-    const mapStepIdToNextStepInfo = new Map<string, NextSteps>()
-    const getReachableSet = (stepId: string): string[] => {
-      const seenIds = new Set<string>()
-      const toVisitIds = new Set<string>()
-      let currentStepId = stepId
-      for (;;) {
-        if (!seenIds.has(currentStepId)) {
-          seenIds.add(currentStepId)
-        }
-        const nextInfo = mapStepIdToNextStepInfo.get(currentStepId)
-        if (nextInfo) {
-          for (const otherStepId of nextInfo.sameChain) {
-            if (!seenIds.has(otherStepId)) {
-              toVisitIds.add(otherStepId)
-            }
-          }
-        }
-        if (toVisitIds.size === 0) {
-          break
-        }
-        // this looks hackish but just treating set also as a queue and dequeueing here
-        for (const nextToVisit of toVisitIds) {
-          currentStepId = nextToVisit
-          break
-        }
-        toVisitIds.delete(currentStepId)
-      }
-      return Array.from(seenIds)
-    }
     const mapStepIdToChains = new MapWithDefault<string, Set<ChainOrStart>>(() => new Set())
     const startStepIds = new Set<string>()
     mapStepIdToChains.getWithDefault(this.steps[0].stepId).add('start-chain')
     startStepIds.add(this.steps[0].stepId)
     for (const step of this.steps) {
-      const helper = getStepHelper(step.type)
+      const helper = createStepHelper(step.type, this)
       const result = helper.getPossibleNextSteps(step as any)
       if (result) {
-        mapStepIdToNextStepInfo.set(step.stepId, result)
         if (result.differentChains) {
           for (const diffChain of result.differentChains) {
             startStepIds.add(diffChain.stepId)
@@ -284,10 +326,34 @@ export class WorkflowRunner implements IWorkflowRunner {
     for (const stepId of startStepIds) {
       rv.push({
         chains: Array.from(mapStepIdToChains.getWithDefault(stepId)),
-        stepIds: getReachableSet(stepId),
+        stepIds: this.getReachableSet(stepId),
       })
     }
     return rv
+  }
+
+  async encodeSegment(startStepId: string, chain: Chain): Promise<EncodedWorkflow> {
+    const reachable = this.getReachableSet(startStepId)
+
+    const mapStepIdToIndex = new Map<string, number>()
+    for (let i = 0; i < reachable.length; ++i) {
+      mapStepIdToIndex.set(reachable[i], i)
+    }
+
+    // TODO how to handle non-evm?
+    const promises = reachable.map(async stepId => {
+      const step = this.getStep(stepId)
+      const nextStepIndex = step.nextStepId === WORKFLOW_END_STEP_ID ? -1 : mapStepIdToIndex.get(step.nextStepId)
+      assert(nextStepIndex)
+      const helper = getStepHelper(step.type, this)
+      const encoded = await helper.encodeWorkflowStep(chain, step as any)
+      return {
+        ...encoded,
+        nextStepIndex,
+      }
+    })
+    const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
+    return { steps: encodedSteps }
   }
 
   validateArguments(args?: Arguments) {
@@ -345,6 +411,13 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
+  // async getRequiredPaymentAssets(): Promise<Record<string, AssetAmount>> {
+  //   for (const step of steps) {
+  //     const helper = getStepHelper(step.type, this)
+  //     const result = helper.getPossibleNextSteps(step as any)
+  //   }
+  // }
+
   applyArguments(args: Arguments): WorkflowRunner {
     const rv = new WorkflowRunner(cloneDeep(this.workflow))
     const mapStepIdToStep = rv.getStepMap()
@@ -362,6 +435,24 @@ export class WorkflowRunner implements IWorkflowRunner {
       }
     }
     delete rv.workflow.parameters
+    return rv
+  }
+
+  async getRemittances(): Promise<Record<string, AssetAmount>> {
+    const rv: Record<string, AssetAmount> = {}
+    const segments = this.getWorkflowSegments()
+    for (const segment of segments) {
+      for (const segmentChain of segment.chains) {
+        for (const stepId of segment.stepIds) {
+          const step = this.getStep(stepId)
+          const helper = this.getStepHelper(segmentChain, step.type)
+          const remittance = await helper.getRemittance(step)
+          if (remittance) {
+            rv[`${segmentChain}.${stepId}`] = remittance
+          }
+        }
+      }
+    }
     return rv
   }
 
@@ -452,6 +543,13 @@ export class WorkflowRunner implements IWorkflowRunner {
     return mapStepIdToStep
   }
 
+  @Memoize()
+  private getStep(stepId: string): StepNode {
+    const step = this.getStepMap().get(stepId)
+    assert(step)
+    return step
+  }
+
   private static getZodChild(obj: ZodObject<any>, path: string[]): ZodType<any> {
     assert(path.length > 0)
     const shape = obj._def.shape()
@@ -463,5 +561,19 @@ export class WorkflowRunner implements IWorkflowRunner {
       return child
     }
     return this.getZodChild(child, path.slice(1))
+  }
+
+  private getStepHelper(chainOrStart: ChainOrStart, type: string): IStepHelper<any> {
+    const chainMap = this.stepHelpers.getWithDefault(chainOrStart)
+    let helper = chainMap.get(type)
+    if (!helper) {
+      helper = createStepHelper(type, this)
+      const provider = this.providers.get(chainOrStart)
+      if (provider) {
+        helper.setProvider(provider)
+      }
+      chainMap.set(type, helper)
+    }
+    return helper
   }
 }
