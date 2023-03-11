@@ -1,5 +1,5 @@
 import type { Asset, AssetAmount, Chain } from '../model'
-import { Asset as EvmAsset, AssetAmount as EvmAssetAmount, AssetType, InputAsset } from '@freemarket/evm'
+import { Asset as EvmAsset, AssetType, InputAsset } from '@freemarket/evm'
 import { ADDRESS_ZERO } from '../helpers/utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
 import type { IWorkflowRunner } from '../runner/IWorkflowRunner'

@@ -25,7 +25,7 @@ import cloneDeep from 'lodash.clonedeep'
 import type { DeepReadonly } from '../utils/DeepReadonly'
 import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import axios from 'axios'
-import { createStepHelper, getStepHelper } from '../helpers'
+import { createStepHelper } from '../helpers'
 import type { IStepHelper, NextSteps } from '../helpers/IStepHelper'
 import { WORKFLOW_END_STEP_ID } from './constants'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
@@ -77,15 +77,121 @@ export class WorkflowRunner implements IWorkflowRunner {
     return this.userAddress
   }
 
-  setStartChainProvider(provider: EIP1193Provider) {
-    this.providers.set('start-chain', provider)
-  }
-
   getWorkflow(): DeepReadonly<Workflow> {
     return this.workflow
   }
 
-  findAllParameterReferences(): Map<string, ParameterPath[]> {
+  getChains(): ChainOrStart[] {
+    const chains = new Set<ChainOrStart>()
+    const segments = this.getWorkflowSegments()
+    for (const segment of segments) {
+      for (const chain of segment.chains) {
+        chains.add(chain)
+      }
+    }
+    return Array.from(chains)
+  }
+
+  validateArguments(args?: Arguments) {
+    const params = this.workflow.parameters
+    const problems = [] as WorkflowArgumentProblem[]
+    const unseenParams = new Set<string>()
+    const mapParamNameToSchema = new Map<string, ZodType<any>>()
+    if (params) {
+      for (const param of params) {
+        mapParamNameToSchema.set(param.name, getParameterSchema(param.type))
+        unseenParams.add(param.name)
+      }
+    }
+    if (args) {
+      for (const argName in args) {
+        const arg = args[argName]
+        unseenParams.delete(argName)
+        const zodType = mapParamNameToSchema.get(argName)
+        if (!zodType) {
+          problems.push({
+            type: WorkflowArgumentProblemType.MissingParameter,
+            argumentName: argName,
+            message: `Argument '${argName}' is not declared in workflow.parameters`,
+          })
+        } else {
+          const parseResult = zodType.safeParse(arg)
+          if (!parseResult.success) {
+            problems.push({
+              type: WorkflowArgumentProblemType.SchemaError,
+              message: parseResult.error.message,
+              argumentName: argName,
+              parameterName: argName,
+              zodError: parseResult.error,
+            })
+          }
+        }
+      }
+    }
+    unseenParams.forEach(unseenParamName =>
+      problems.push({
+        type: WorkflowArgumentProblemType.MissingArgument,
+        parameterName: unseenParamName,
+        message: `An argument was not provided for parameter '${unseenParamName}'`,
+      })
+    )
+    if (problems.length) {
+      throw new WorkflowArgumentError(problems)
+    }
+  }
+
+  async applyArguments(args: Arguments = {}): Promise<WorkflowRunner> {
+    const argValues = cloneDeep(args)
+
+    // TODO need to validate remittances in validateParameters too
+    const remittances = await this.getRemittances()
+    for (const k in remittances) {
+      argValues[k] = remittances[k]
+    }
+
+    const rv = new WorkflowRunner(cloneDeep(this.workflow))
+    const allParams = rv.findAllParameterReferences()
+    for (const [paramName, paths] of allParams) {
+      const argValue = argValues[paramName]
+      for (const path of paths) {
+        assert(path.length > 0)
+        const step = rv.getStep(path[0])
+        let obj = step as Record<string, any>
+        for (let i = 1; i < path.length - 1; ++i) {
+          obj = obj[path[i]]
+        }
+        obj[path[path.length - 1]] = argValue
+      }
+    }
+    delete rv.workflow.parameters
+    return rv
+  }
+
+  @Memoize()
+  async getRemittances(): Promise<Record<string, AssetAmount | Amount | AssetReference>> {
+    const rv: Record<string, AssetAmount | Amount | AssetReference> = {}
+    const segments = this.getWorkflowSegments()
+    for (const segment of segments) {
+      for (const segmentChain of segment.chains) {
+        for (const stepId of segment.stepIds) {
+          const step = this.getStep(stepId)
+          const helper = this.getStepHelper(segmentChain, step.type)
+          const remittance = await helper.getRemittance(step)
+          if (remittance) {
+            rv[`remittances.${segmentChain}.${stepId}`] = remittance
+            rv[`remittances.${stepId}`] = remittance
+            rv[`remittances.${segmentChain}.${stepId}.amount`] = remittance.amount
+            rv[`remittances.${stepId}.amount`] = remittance.amount
+            rv[`remittances.${segmentChain}.${stepId}.asset`] = remittance.asset
+            rv[`remittances.${stepId}.asset`] = remittance.asset
+          }
+        }
+      }
+    }
+    return rv
+  }
+
+  private findAllParameterReferences(): Map<string, ParameterPath[]> {
     const mapParamNameToPaths = new MapWithDefault<string, ParameterPath[]>(() => [])
     for (const step of this.steps) {
       this.visitStepValues(step, [step.stepId], (obj, path) => {
@@ -102,7 +208,7 @@ export class WorkflowRunner implements IWorkflowRunner {
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  validateParameters() {
+  private validateParameters() {
     const problems = [] as WorkflowValidationProblem[]
 
     const mapDeclaredParamNameToType = new Map<string, string>()
@@ -162,7 +268,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  validateWorkflowSteps(): Map<string, StepNode> {
+  private validateWorkflowSteps(): Map<string, StepNode> {
     const mapStepIdToStep = new Map<string, StepNode>()
     const problems = [] as WorkflowValidationProblem[]
 
@@ -203,7 +309,7 @@ export class WorkflowRunner implements IWorkflowRunner {
   // can be called before arguments are applied,
   // but may miss some if asset-refs are still not dereferenced
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  async validateAssetRefs(startChain: Chain): Promise<void> {
+  private async validateAssetRefs(startChain: Chain): Promise<void> {
     // not sure if there is a better way to find all assetRefs in a workflow
     const assetRefs: { path: string[]; assetRef: AssetReference }[] = []
     const getAssetRefPaths = (path: string[], obj: any) => {
@@ -261,7 +367,7 @@ export class WorkflowRunner implements IWorkflowRunner {
 
   @Memoize()
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  getReachableSet(stepId: string): string[] {
+  private getReachableSet(stepId: string): string[] {
     const mapStepIdToNextStepInfo = this.getNextStepsMap()
     const seenIds = new Set<string>()
     const toVisitIds = new Set<string>()
@@ -295,24 +401,13 @@ export class WorkflowRunner implements IWorkflowRunner {
   private getNextStepsMap() {
     const mapStepIdToNextStepInfo = new Map<string, NextSteps>()
     for (const step of this.steps) {
-      const helper = getStepHelper(step.type, this)
+      const helper = createStepHelper(step.type, this)
       const result = helper.getPossibleNextSteps(step as any)
       if (result) {
         mapStepIdToNextStepInfo.set(step.stepId, result)
       }
     }
     return mapStepIdToNextStepInfo
-  }
-
-  getChains(): ChainOrStart[] {
-    const chains = new Set<ChainOrStart>()
-    const segments = this.getWorkflowSegments()
-    for (const segment of segments) {
-      for (const chain of segment.chains) {
-        chains.add(chain)
-      }
-    }
-    return Array.from(chains)
   }
 
   // chains are valid candidates for parameters, so
@@ -357,7 +452,7 @@ export class WorkflowRunner implements IWorkflowRunner {
       const step = this.getStep(stepId)
       const nextStepIndex = step.nextStepId === WORKFLOW_END_STEP_ID ? -1 : mapStepIdToIndex.get(step.nextStepId)
       assert(nextStepIndex)
-      const helper = getStepHelper(step.type, this)
+      const helper = this.getStepHelper(chain, step.type)
       const encoded = await helper.encodeWorkflowStep(chain, step as any)
       return {
         ...encoded,
@@ -366,112 +461,6 @@ export class WorkflowRunner implements IWorkflowRunner {
     })
     const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
     return { steps: encodedSteps }
-  }
-
-  validateArguments(args?: Arguments) {
-    const params = this.workflow.parameters
-    const problems = [] as WorkflowArgumentProblem[]
-    const unseenParams = new Set<string>()
-    const mapParamNameToSchema = new Map<string, ZodType<any>>()
-    if (params) {
-      for (const param of params) {
-        mapParamNameToSchema.set(param.name, getParameterSchema(param.type))
-        unseenParams.add(param.name)
-      }
-    }
-    if (args) {
-      for (const argName in args) {
-        const arg = args[argName]
-        unseenParams.delete(argName)
-        const zodType = mapParamNameToSchema.get(argName)
-        if (!zodType) {
-          problems.push({
-            type: WorkflowArgumentProblemType.MissingParameter,
-            argumentName: argName,
-            message: `Argument '${argName}' is not declared in workflow.parameters`,
-          })
-        } else {
-          const parseResult = zodType.safeParse(arg)
-          if (!parseResult.success) {
-            problems.push({
-              type: WorkflowArgumentProblemType.SchemaError,
-              message: parseResult.error.message,
-              argumentName: argName,
-              parameterName: argName,
-              zodError: parseResult.error,
-            })
-          }
-        }
-      }
-    }
-    unseenParams.forEach(unseenParamName =>
-      problems.push({
-        type: WorkflowArgumentProblemType.MissingArgument,
-        parameterName: unseenParamName,
-        message: `An argument was not provided for parameter '${unseenParamName}'`,
-      })
-    )
-    if (problems.length) {
-      throw new WorkflowArgumentError(problems)
-    }
-  }
-
-  // async getRequiredPaymentAssets(): Promise<Record<string, AssetAmount>> {
-  //   for (const step of steps) {
-  //     const helper = getStepHelper(step.type, this)
-  //     const result = helper.getPossibleNextSteps(step as any)
-  //   }
-  // }
-
-  async applyArguments(args: Arguments = {}): Promise<WorkflowRunner> {
-    const argValues = cloneDeep(args)
-
-    // TODO need to validate remittances in validateParameters too
-    const remittances = await this.getRemittances()
-    for (const k in remittances) {
-      argValues[k] = remittances[k]
-    }
-
-    const rv = new WorkflowRunner(cloneDeep(this.workflow))
-    const allParams = rv.findAllParameterReferences()
-    for (const [paramName, paths] of allParams) {
-      const argValue = argValues[paramName]
-      for (const path of paths) {
-        assert(path.length > 0)
-        const step = rv.getStep(path[0])
-        let obj = step as Record<string, any>
-        for (let i = 1; i < path.length - 1; ++i) {
-          obj = obj[path[i]]
-        }
-        obj[path[path.length - 1]] = argValue
-      }
-    }
-    delete rv.workflow.parameters
-    return rv
-  }
-
-  @Memoize()
-  async getRemittances(): Promise<Record<string, AssetAmount | Amount | AssetReference>> {
-    const rv: Record<string, AssetAmount | Amount | AssetReference> = {}
-    const segments = this.getWorkflowSegments()
-    for (const segment of segments) {
-      for (const segmentChain of segment.chains) {
-        for (const stepId of segment.stepIds) {
-          const step = this.getStep(stepId)
-          const helper = this.getStepHelper(segmentChain, step.type)
-          const remittance = await helper.getRemittance(step)
-          if (remittance) {
-            rv[`remittances.${segmentChain}.${stepId}`] = remittance
-            rv[`remittances.${stepId}`] = remittance
-            rv[`remittances.${segmentChain}.${stepId}.amount`] = remittance.amount
-            rv[`remittances.${stepId}.amount`] = remittance.amount
-            rv[`remittances.${segmentChain}.${stepId}.asset`] = remittance.asset
-            rv[`remittances.${stepId}.asset`] = remittance.asset
-          }
-        }
-      }
-    }
-    return rv
   }
 
   private getRemittanceKeys(): Set<string> {

@@ -1,7 +1,6 @@
-import { encodeAddAssetArgs, EvmWorkflowStep, StepIds } from '@freemarket/evm'
+import { encodeAddAssetArgs, StepIds } from '@freemarket/evm'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 import type { AddAsset, Chain } from '../model'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
 import assert from '../utils/assert'
 import { sdkAssetToEvmAsset } from '../utils/evm-encoding-utils'
 import { AbstractStepHelper } from './AbstractStepHelper'

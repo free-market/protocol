@@ -1,7 +1,6 @@
-import { AssetType, StepIds } from '@freemarket/evm'
+import { StepIds } from '@freemarket/evm'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
-import type { AaveSupply, Chain, StargateBridge } from '../model'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+import type { AaveSupply, Chain } from '../model'
 import assert from '../utils/assert'
 import { sdkAssetAmountToEvmInputAmount } from '../utils/evm-encoding-utils'
 

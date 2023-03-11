@@ -15,7 +15,3 @@ const assetAmountStrictSchema: z.ZodType<AssetAmount> = z.object({
 })
 
 export const assetAmountSchema = registerParameterType('asset-amount', assetAmountStrictSchema)
-// export const assetAmountSchema = assetAmountStrictSchema
-
-/** An asset paired with an amount. */
-// export interface AssetAmount extends z.infer<typeof assetAmountSchema> {}

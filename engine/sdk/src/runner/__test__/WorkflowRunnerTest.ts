@@ -77,9 +77,7 @@ test('finds all parameter references in a workflow', t => {
     ],
   }
   const runner = new WorkflowRunner(workflow)
-  const map = runner.findAllParameterReferences()
-  // const rec = mapToRecord(map)
-  // t.snapshot(rec)
+  const map = runner['findAllParameterReferences']()
   t.snapshot(map)
 })
 
@@ -177,7 +175,7 @@ test('validate when everything is good', t => {
     ],
   }
   const runner = new WorkflowRunner(workflow)
-  t.notThrows(() => runner.validateParameters())
+  t.notThrows(() => runner['validateParameters']())
 })
 
 test('fails to validate when there are undeclared arguments', t => {

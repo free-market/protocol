@@ -24,13 +24,6 @@ import { sdkAssetAmountToEvmInputAmount } from '../utils/evm-encoding-utils'
 import type { AssetReference } from '../model/AssetReference'
 import Big from 'big.js'
 import { Web3Provider } from '@ethersproject/providers'
-// import { AbstractStepHelper } from './AbstractStepHelper'
-
-// import { EncodedWorkflowStep } from '../EncodedWorkflow'
-// import { NextSteps } from '../IStepHelper'
-// import { AssetAmount, StargateBridge } from '../model'
-// import WorkflowRunner, { WORKFLOW_END_STEP_ID } from '../runner/WorkflowRunner'
-// import assert from '../utils/assert'
 
 const log = rootLogger.getLogger('StargateBridgeHelper')
 
@@ -72,7 +65,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       dstAddress,
       dstGasForCall: absoluteAmountToString(stepConfig.destinationGasUnits),
       dstNativeAmount: absoluteAmountToString(stepConfig.destinationGasUnits),
-      payload,
+      payload: payload.continuationWorkflow,
       dstChainId,
     })
     return {
@@ -218,15 +211,15 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     }
   }
 
-  private async getPayload(stepConfig: StargateBridge): Promise<string> {
+  private async getPayload(stepConfig: StargateBridge): Promise<{ nonce: string; continuationWorkflow: string }> {
     assert(stepConfig.nextStepId)
     if (stepConfig.nextStepId === WORKFLOW_END_STEP_ID) {
-      return '0x'
+      return { nonce: '0', continuationWorkflow: '0x' }
     }
     const encodedTargetSegment = await this.runner.encodeSegment(stepConfig.nextStepId, stepConfig.destinationChain)
     const { nonce, encodedWorkflow } = getBridgePayload(stepConfig.destinationUserAddress, encodedTargetSegment)
     log.debug(`generated payload for stepId '${stepConfig.stepId}' nonce='${nonce}'`)
-    return encodedWorkflow
+    return { nonce, continuationWorkflow: encodedWorkflow }
   }
 
   private async getBridgeTargetAddress(stepConfig: StargateBridge): Promise<string> {
@@ -250,16 +243,12 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   async encodeWorkflowStep(chain: Chain, stepConfig: StargateBridge): Promise<EncodedWorkflowStep> {
     assert(stepConfig.nextStepId)
     assert(typeof stepConfig.inputAsset !== 'string')
-    const [transferInputAsset, payload, targetAddress, dstChainId] = await Promise.all([
+    const [transferInputAsset, { nonce, continuationWorkflow }, targetAddress, dstChainId] = await Promise.all([
       sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.runner),
       this.getPayload(stepConfig),
       this.getBridgeTargetAddress(stepConfig),
       this.getStargateChainId(stepConfig.destinationChain),
     ])
-    // const transferInputAsset = await sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.runner)
-    // const payload = await this.getPayload(stepConfig)
-    // const targetAddress = await this.getBridgeTargetAddress(stepConfig)
-    // const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)
 
     // TODO how to handle this
     const stargateRequiredNative = 1000000
@@ -306,7 +295,8 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
         dstNativeAmount: stepConfig.destinationAdditionalNative ? stepConfig.destinationAdditionalNative.toString() : '0',
         minAmountOut: minAmountOut,
         minAmountOutIsPercent: false,
-        continuationWorkflow: payload,
+        continuationWorkflow: continuationWorkflow,
+        nonce,
       }),
     }
   }

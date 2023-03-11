@@ -39,10 +39,10 @@ test('gets required native', async t => {
 })
 
 test.only('encodes', async t => {
-  // if (!shouldRunE2e()) {
-  //   t.pass('skipping')
-  //   return
-  // }
+  if (!shouldRunE2e()) {
+    t.pass('skipping')
+    return
+  }
   const workflow: Workflow = {
     steps: [
       {

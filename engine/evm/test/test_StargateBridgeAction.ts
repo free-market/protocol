@@ -82,6 +82,7 @@ contract('StargateBridgeAction', function (accounts: string[]) {
       minAmountOut: '100000',
       minAmountOutIsPercent: true,
       continuationWorkflow: '0xdeadbeef',
+      nonce: '6',
     }
     const params = StargateBridge.encodeStargateBridgeArgs(sgbParams)
 

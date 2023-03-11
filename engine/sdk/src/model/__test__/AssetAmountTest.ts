@@ -33,5 +33,3 @@ test('validates native', t => {
   assetAmountSchema.parse(assetAmount)
   t.pass()
 })
-
-// test('reads ')

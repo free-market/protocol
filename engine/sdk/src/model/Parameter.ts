@@ -37,37 +37,3 @@ export function getParameterSchema(parameterTypeName: ParameterType): ZodTypeAny
   assert(rv)
   return rv
 }
-
-// export const amountParameterSchema = parameterBaseSchema.extend({
-//   type: z.literal('amount'),
-//   amount: amountSchema,
-// })
-// export interface AmountParameter extends z.infer<typeof amountParameterSchema> {}
-
-// export const addressParameterSchema = parameterBaseSchema.extend({
-//   type: z.literal('address'),
-//   address: hexStringSchema,
-// })
-// export interface AddressParameter extends z.infer<typeof addressParameterSchema> {}
-
-// export const assetParameterSchema = parameterBaseSchema.extend({
-//   type: z.literal('asset'),
-//   asset: assetSchema,
-// })
-// export interface AssetParameter extends z.infer<typeof assetParameterSchema> {}
-
-// export const assetAmountParameterSchema = parameterBaseSchema.extend({
-//   type: z.literal('asset-amount'),
-//   assetAmount: assetAmountSchema,
-// })
-
-// export interface AssetAmountParameter extends z.infer<typeof assetAmountParameterSchema> {}
-
-// export const parameterSchema = z.discriminatedUnion('type', [
-//   amountParameterSchema,
-//   addressParameterSchema,
-//   assetParameterSchema,
-//   assetAmountParameterSchema,
-// ])
-
-// export type Parameter = z.infer<typeof parameterSchema>

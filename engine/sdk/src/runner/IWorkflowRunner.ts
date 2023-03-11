@@ -8,7 +8,6 @@ export interface IWorkflowRunner {
   getWorkflowSegments(): WorkflowSegment[]
   dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset>
   getUserAddress(): Address
-  validateAssetRefs(startChain: Chain): Promise<void>
   encodeSegment(startStepId: string, chain: Chain): Promise<EncodedWorkflow>
   getChains(): ChainOrStart[]
   setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider): void

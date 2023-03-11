@@ -9,7 +9,13 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import { encodeAddAssetArgs } from '../tslib/AddAssetAction'
 import type { EvmWorkflow } from '../tslib/EvmWorkflow'
-import { FrontDoor__factory, IERC20__factory, WorkflowRunner__factory } from '../types/ethers-contracts'
+import {
+  FrontDoor__factory,
+  IERC20__factory,
+  StargateBridgeAction,
+  StargateBridgeAction__factory,
+  WorkflowRunner__factory,
+} from '../types/ethers-contracts'
 import { getATokenAddress } from '../tslib/AaveSupplyAction'
 import { getBridgePayload } from '../tslib/encode-workflow'
 import { getContractAddressViaNetworkId, getWalletFromMnemonic } from '../utils/ethers-utils'
@@ -23,18 +29,18 @@ const truffleConfig = eval(fs.readFileSync('./truffle-config.js').toString())
 rootLogger.setLevel('debug')
 const log = rootLogger.getLogger('e2e')
 
-// const SRC_CHAIN = 'ethereumGoerli'
-// const DST_CHAIN = 'arbitrumGoerli'
-// const SRC_PROVIDER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
-// const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
-// const DST_CHAIN_ID= StargateChainIds.GoerliArbitrum,
+const SRC_CHAIN = 'ethereumGoerli'
+const DST_CHAIN = 'arbitrumGoerli'
+const SRC_PROVIDER_URL_ENVVAR = 'ETHEREUM_GOERLI_URL'
+const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_GOERLI_WS_URL'
+const DST_STARGATE_CHAIN_ID = StargateChainIds.GoerliArbitrum
 // const SRC_CHAIN = 'optimism'
-const SRC_CHAIN = 'avalanche'
-const DST_CHAIN = 'arbitrum'
+// const SRC_CHAIN = 'avalanche'
+// const DST_CHAIN = 'arbitrum'
 // const SRC_PROVIDER_URL_ENVVAR = 'OPTIMISM_MAINNET_URL'
-const SRC_PROVIDER_URL_ENVVAR = 'AVALANCHE_MAINNET_URL'
-const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
-const DST_STARGATE_CHAIN_ID = StargateChainIds.Arbitrum
+// const SRC_PROVIDER_URL_ENVVAR = 'AVALANCHE_MAINNET_URL'
+// const DST_PROVIDER_URL_ENVVAR = 'ARBITRUM_MAINNET_WS_URL'
+// const DST_STARGATE_CHAIN_ID = StargateChainIds.Arbitrum
 
 interface WorkflowCostItem {
   description: string
@@ -207,6 +213,7 @@ test('does a stargate swap in a workflow', async (t) => {
           minAmountOut: minAmountOut,
           minAmountOutIsPercent: false,
           continuationWorkflow: dstEncodedWorkflow,
+          nonce,
         }),
         nextStepIndex: -1,
       },
@@ -268,6 +275,20 @@ test('does a stargate swap in a workflow', async (t) => {
     gasLimit: explicitGasLimit,
   })
   const txReceipt = await txResponse.wait(1)
+  const isg = StargateBridgeAction__factory.createInterface()
+
+  const eventTopic = isg.getEventTopic(isg.events['WorkflowBridged(uint256,uint256)'])
+  for (const log of txReceipt.logs) {
+    if (log.topics[0] === eventTopic) {
+      try {
+        const x = isg.parseLog(log)
+        console.log(x)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
+
   log.debug('source chain workflow completed, waiting for continuation workflow...')
   log.debug(`tx=${txReceipt.transactionHash}`)
   const startMillis = Date.now()

@@ -1,5 +1,5 @@
 import test from 'ava'
-import type { Step, Workflow } from '../../model'
+import type { Workflow } from '../../model'
 import type { AssetReference } from '../../model/AssetReference'
 import { assert, throwsAsync } from '../../private/test-utils'
 import { WorkflowRunner } from '../WorkflowRunner'
@@ -85,7 +85,7 @@ test('dereferences a native', async t => {
 
 test("validates a workflow's symbols", async t => {
   const runner = new WorkflowRunner(workflowWithCustomToken)
-  runner.validateAssetRefs('ethereum')
+  runner['validateAssetRefs']('ethereum')
   t.pass()
 })
 
@@ -105,6 +105,6 @@ test('throws when a workflow has unknown symbols', async t => {
   }
   const runner = new WorkflowRunner(workflowWithBadAsset)
   await throwsAsync(t, async () => {
-    await runner.validateAssetRefs('fantom')
+    await runner['validateAssetRefs']('fantom')
   })
 })

@@ -14,7 +14,6 @@ test('validates a stargate step', t => {
       },
       amount: 100,
     },
-    // firstStepOnDestinationChain: 'arbitrum-start',
   }
   stepSchema.parse(step)
 

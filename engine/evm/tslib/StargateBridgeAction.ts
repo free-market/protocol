@@ -76,6 +76,7 @@ export interface StargateBridgeActionArgs {
   minAmountOut: string
   minAmountOutIsPercent: boolean
   continuationWorkflow: string
+  nonce: string
 }
 
 export class StargateBridge {
@@ -167,7 +168,8 @@ export class StargateBridge {
         uint256 dstNativeAmount,
         uint256 minAmountOut,
         bool minAmountOutIsPercent,
-        bytes continuationWorkflow
+        bytes continuationWorkflow,
+        uint256 nonce
       )`,
       ],
       [args]

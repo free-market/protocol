@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import '../../IWorkflowStep.sol';
+import './BridgeBase.sol';
 import '../../IWorkflowRunner.sol';
 import '../../LibAsset.sol';
 import '../../LibActionHelpers.sol';
@@ -34,9 +34,11 @@ struct StargateBridgeActionArgs {
   bool minAmountOutIsPercent;
   // the abi-encoded workflow that will execute on the destination chain
   bytes continuationWorkflow;
+  // the value used to correlate the source chain transaction with the target chain transaction
+  uint256 nonce;
 }
 
-contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
+contract StargateBridgeAction is BridgeBase, IStargateReceiver {
   address public immutable frontDoorAddress;
   address public immutable stargateRouterAddress;
 
@@ -124,21 +126,23 @@ contract StargateBridgeAction is IWorkflowStep, IStargateReceiver {
       locals.sgParams.continuationWorkflow
     );
 
-    IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
-      locals.sgParams.dstChainId,
-      locals.sgParams.srcPoolId,
-      locals.sgParams.dstPoolId,
-      payable(msg.sender), // refundAddreess
-      locals.erc20InputAsset.amount,
-      locals.minAmountOut,
-      IStargateRouter.lzTxObj(
-        locals.sgParams.dstGasForCall,
-        locals.sgParams.dstNativeAmount,
-        abi.encodePacked(locals.sgParams.dstUserAddress)
-      ),
-      locals.dstActionAddressEncoded,
-      locals.sgParams.continuationWorkflow
-    );
+    // IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
+    //   locals.sgParams.dstChainId,
+    //   locals.sgParams.srcPoolId,
+    //   locals.sgParams.dstPoolId,
+    //   payable(msg.sender), // refundAddreess
+    //   locals.erc20InputAsset.amount,
+    //   locals.minAmountOut,
+    //   IStargateRouter.lzTxObj(
+    //     locals.sgParams.dstGasForCall,
+    //     locals.sgParams.dstNativeAmount,
+    //     abi.encodePacked(locals.sgParams.dstUserAddress)
+    //   ),
+    //   locals.dstActionAddressEncoded,
+    //   locals.sgParams.continuationWorkflow
+    // );
+    emit WorkflowBridged(locals.sgParams.dstChainId, locals.sgParams.nonce);
+
     return LibActionHelpers.noOutputAssetsResult();
   }
 

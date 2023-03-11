@@ -127,7 +127,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner /*IU
   /// @param userAmount The portion of the total amount that is sent to the user.
   event RemainingAsset(Asset asset, uint256 totalAmount, uint256 feeAmount, uint256 userAmount);
 
-  /// @notice This event is emitted when this is a continuation of a workflow from another chain.abi
+  /// @notice This event is emitted when this is a continuation of a workflow from another chain
   /// @param nonce The nonce provided by the caller on the source chain, used to correlate the source chain workflow segment with this segment.
   /// @param startingAsset The asset that was transferred from the source chain to this chain
   event WorkflowContinuation(uint256 nonce, address userAddress, AssetAmount startingAsset);
