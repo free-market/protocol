@@ -1,6 +1,6 @@
 import test from 'ava'
 import type { Step, Workflow } from '../../model'
-import { WorkflowRunner } from '../../runner/WorkflowRunner'
+import { WorkflowInstance } from '../../runner/WorkflowInstance'
 import { AaveSupplyHelper } from '../AaveSupplyHelper'
 
 test('encodes', async t => {
@@ -18,9 +18,12 @@ test('encodes', async t => {
   const flow: Workflow = {
     steps: [step],
   }
-  const runner = new WorkflowRunner(flow)
-  runner.setUserAddress('0x1234567890123456789012345678901234567890')
-  const helper = new AaveSupplyHelper(runner)
-  const encoded = await helper.encodeWorkflowStep('ethereum', step)
+  const instance = new WorkflowInstance(flow)
+  const helper = new AaveSupplyHelper(instance)
+  const encoded = await helper.encodeWorkflowStep({
+    chain: 'ethereum',
+    stepConfig: step,
+    userAddress: '0x1234567890123456789012345678901234567890',
+  })
   t.snapshot(encoded)
 })

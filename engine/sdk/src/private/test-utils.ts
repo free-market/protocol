@@ -1,5 +1,6 @@
-import { JsonRpcProvider } from '@ethersproject/providers'
-import type { ExecutionContext } from 'ava'
+import { JsonRpcProvider, WebSocketProvider } from '@ethersproject/providers'
+import type { ExecutionContext, Implementation } from 'ava'
+import test from 'ava'
 import { createStandardProvider } from '../helpers/utils'
 
 export function shouldRunE2e() {
@@ -39,5 +40,11 @@ export async function throwsAsync(t: ExecutionContext<unknown>, fn: () => Promis
 export function getStandardProvider(envVar = 'ETHEREUM_GOERLI_URL') {
   const providerUrl = process.env[envVar]
   const ethersProvider = new JsonRpcProvider(providerUrl)
+  return createStandardProvider(ethersProvider)
+}
+export function getStandardWebSocketProvider(envVar = 'ETHEREUM_GOERLI_WS_URL') {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const providerUrl = process.env[envVar]!
+  const ethersProvider = new WebSocketProvider(providerUrl)
   return createStandardProvider(ethersProvider)
 }

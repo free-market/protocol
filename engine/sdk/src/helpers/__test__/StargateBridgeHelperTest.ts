@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 
 import { getStandardProvider, shouldRunE2e } from '../../private/test-utils'
 import type { Workflow } from '../../model'
-import { WorkflowRunner } from '../../runner/WorkflowRunner'
+import { WorkflowInstance } from '../../runner/WorkflowInstance'
 
 dotenv.config()
 
@@ -31,14 +31,14 @@ test('gets required native', async t => {
     destinationGasUnits: 1000000,
   }
   const standardProvider = getStandardProvider()
-  const runner = new WorkflowRunner({ steps: [stargateStepConfig] })
+  const runner = new WorkflowInstance({ steps: [stargateStepConfig] })
   runner.setProvider('start-chain', standardProvider)
   const sgHelper = runner['getStepHelper']('start-chain', 'stargate-bridge')
   const result = await sgHelper.getRemittance(runner['steps'][0])
   t.assert(result !== null)
 })
 
-test.only('encodes', async t => {
+test('encodes', async t => {
   if (!shouldRunE2e()) {
     t.pass('skipping')
     return
@@ -74,11 +74,11 @@ test.only('encodes', async t => {
   }
   const startChainProvider = getStandardProvider('ETHEREUM_GOERLI_URL')
   const targetChainProvider = getStandardProvider('ARBITRUM_GOERLI_URL')
-  const runner = new WorkflowRunner(workflow)
+  const runner = new WorkflowInstance(workflow)
   runner.setProvider('start-chain', startChainProvider)
   runner.setProvider('arbitrum', targetChainProvider)
   const helper = runner['getStepHelper']('start-chain', 'stargate-bridge')
   // things are potentially too dynamic to do a snapshot here, so just passing if it doesn't reject
-  await helper.encodeWorkflowStep('ethereum', runner.getWorkflow().steps[0] as any)
+  await helper.encodeWorkflowStep({ chain: 'ethereum', stepConfig: runner.getWorkflow().steps[0] as any, userAddress: '' })
   t.pass()
 })

@@ -17,11 +17,17 @@ export interface NextSteps {
   ]
 }
 
+export interface EncodingContext<T> {
+  userAddress: string
+  chain: Chain
+  stepConfig: T
+}
+
 export interface IStepHelper<T extends StepBase> {
   requiresRemittance(stepConfig: T): boolean
   getRemittance(stepConfig: T): Promise<AssetAmount | null>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
-  encodeWorkflowStep(chain: Chain, stepConfig: T): Promise<EncodedWorkflowStep>
+  encodeWorkflowStep(context: EncodingContext<T>): Promise<EncodedWorkflowStep>
   getPossibleNextSteps(stepConfig: T): NextSteps | null
   setProvider(provider: EIP1193Provider): void
 }

@@ -1,6 +1,18 @@
 import type { Workflow } from '../model'
 
-const crossChainDeposit: Workflow = {
+export const crossChainAaveDeposit: Workflow = {
+  parameters: [
+    {
+      name: 'targetChainUserAddress',
+      type: 'address',
+      label: 'Target Chain User Address',
+    },
+    {
+      name: 'inputAmount',
+      type: 'amount',
+      label: 'USDC Input Amount',
+    },
+  ],
   steps: [
     {
       type: 'add-asset',
@@ -8,19 +20,28 @@ const crossChainDeposit: Workflow = {
         type: 'fungible-token',
         symbol: 'USDC',
       },
-      amount: '1000000',
+      amount: '{{ inputAmount }}',
     },
     {
+      type: 'add-asset',
+      asset: {
+        type: 'native',
+      },
+      amount: '{{ remittances.stargate.amount }}',
+    },
+    {
+      stepId: 'stargate',
       type: 'stargate-bridge',
       destinationChain: 'arbitrum',
-      destinationUserAddress: '0xabc123',
+      destinationUserAddress: '{{ targetChainUserAddress }}',
       maxSlippagePercent: 0.05,
+      destinationGasUnits: 1000000,
       inputAsset: {
         asset: {
           type: 'fungible-token',
           symbol: 'USDC',
         },
-        amount: 1000000,
+        amount: '{{ inputAmount }}',
       },
     },
     {
@@ -36,6 +57,3 @@ const crossChainDeposit: Workflow = {
     },
   ],
 }
-
-// eslint-disable-next-line no-console
-console.log(JSON.stringify(crossChainDeposit))

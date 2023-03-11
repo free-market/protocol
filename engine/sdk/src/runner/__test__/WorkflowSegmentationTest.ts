@@ -1,13 +1,13 @@
 import test from 'ava'
 import type { Workflow } from '../../model'
-import { WorkflowRunner } from '../WorkflowRunner'
+import { WorkflowInstance } from '../WorkflowInstance'
 import { addAssetStep, aaveSupplyStep, stargateBridgeStep, chainBranchStep } from './common'
 
 test('processes a single chain single node workflow', t => {
   const workflow1: Workflow = {
     steps: [addAssetStep],
   }
-  const runner = new WorkflowRunner(workflow1)
+  const runner = new WorkflowInstance(workflow1)
   const segments = runner.getWorkflowSegments()
   t.snapshot(segments)
 })
@@ -16,7 +16,7 @@ test('processes a single chain multi node workflow', t => {
   const workflow2: Workflow = {
     steps: [addAssetStep, aaveSupplyStep],
   }
-  const runner = new WorkflowRunner(workflow2)
+  const runner = new WorkflowInstance(workflow2)
   const segments = runner.getWorkflowSegments()
   t.snapshot(segments)
 })
@@ -25,7 +25,7 @@ test('processes a multi chain workflow', t => {
   const workflow: Workflow = {
     steps: [addAssetStep, stargateBridgeStep, aaveSupplyStep],
   }
-  const runner = new WorkflowRunner(workflow)
+  const runner = new WorkflowInstance(workflow)
   const segments = runner.getWorkflowSegments()
   t.snapshot(segments)
 })
@@ -34,7 +34,7 @@ test('handles branch nodes', t => {
   const workflow: Workflow = {
     steps: [addAssetStep, chainBranchStep, stargateBridgeStep, aaveSupplyStep],
   }
-  const segments = new WorkflowRunner(workflow).getWorkflowSegments()
+  const segments = new WorkflowInstance(workflow).getWorkflowSegments()
   t.snapshot(segments)
 })
 
@@ -51,6 +51,7 @@ const aBigWorkflow: Workflow = {
       stepId: 'sgArbitrum',
       type: 'stargate-bridge',
       destinationChain: 'arbitrum',
+      destinationGasUnits: 1000000,
       destinationUserAddress: '0x1234567890123456789012345678901234567890',
       inputAsset: {
         asset: {
@@ -65,6 +66,7 @@ const aBigWorkflow: Workflow = {
       stepId: 'sgOptimism',
       type: 'stargate-bridge',
       destinationChain: 'optimism',
+      destinationGasUnits: 1000000,
       destinationUserAddress: '0x1234567890123456789012345678901234567890',
       inputAsset: {
         asset: {
@@ -89,11 +91,11 @@ const aBigWorkflow: Workflow = {
 }
 
 test('handles the same segment appearing on two different chains', t => {
-  const segments = new WorkflowRunner(aBigWorkflow).getWorkflowSegments()
+  const segments = new WorkflowInstance(aBigWorkflow).getWorkflowSegments()
   t.snapshot(segments)
 })
 
 test('gets the set of all chains', t => {
-  const chains = new WorkflowRunner(aBigWorkflow).getChains()
+  const chains = new WorkflowInstance(aBigWorkflow).getChains()
   t.snapshot(chains)
 })

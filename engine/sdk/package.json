@@ -27,7 +27,6 @@
     "big.js": "^6.2.1",
     "bs58": "^5.0.0",
     "eip1193-provider": "^1.0.1",
-    "ethers": "^6.0.8",
     "lodash.clonedeep": "^4.5.0",
     "loglevel": "^1.8.1",
     "not-a-log": "^1.0.1",

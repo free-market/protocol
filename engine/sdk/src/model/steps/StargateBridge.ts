@@ -9,8 +9,8 @@ import { assetReferenceSchema } from '../AssetReference'
 export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
   maxSlippagePercent: z.number().gt(0).lt(100).describe('The maximum amount of loss during the swap.'),
   destinationChain: chainSchema,
-  destinationGasUnits: amountSchema.optional(),
-  destinationUserAddress: addressSchema,
+  destinationGasUnits: amountSchema,
+  destinationUserAddress: addressSchema.optional(),
   destinationAdditionalNative: amountSchema.optional(),
   inputAsset: assetAmountSchema,
   outputAsset: assetReferenceSchema.optional(),

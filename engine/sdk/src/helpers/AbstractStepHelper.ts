@@ -3,18 +3,18 @@ import { Memoize } from 'typescript-memoize'
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import { WORKFLOW_END_STEP_ID } from '../runner/constants'
 import type { EIP1193Provider } from 'eip1193-provider'
-import type { BridgeTarget, IStepHelper, NextSteps } from './IStepHelper'
+import type { BridgeTarget, EncodingContext, IStepHelper, NextSteps } from './IStepHelper'
 import type { AssetAmount, Chain, StepBase } from '../model'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+import type { IWorkflowInstance } from '../runner/IWorkflowInstance'
 
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
 export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
   protected standardProvider?: EIP1193Provider
   protected ethersProvider?: Provider
-  protected runner: IWorkflowRunner
+  protected instance: IWorkflowInstance
 
-  constructor(runner: IWorkflowRunner, provider?: EIP1193Provider) {
-    this.runner = runner
+  constructor(runner: IWorkflowInstance, provider?: EIP1193Provider) {
+    this.instance = runner
     this.standardProvider = provider
     if (provider) {
       this.ethersProvider = new Web3Provider(provider)
@@ -25,9 +25,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     this.ethersProvider = new Web3Provider(provider)
   }
 
-  encodeWorkflowStep(_chain: Chain, _stepConfig: T): Promise<EncodedWorkflowStep> {
-    throw new Error('not implemented')
-  }
+  abstract encodeWorkflowStep(context: EncodingContext<T>): Promise<EncodedWorkflowStep>
 
   protected async getChain(): Promise<Chain> {
     const chainId = await this.getChainId()

@@ -6,6 +6,7 @@ test('validates a stargate step', t => {
     type: 'stargate-bridge',
     maxSlippagePercent: 0.01,
     destinationChain: 'arbitrum',
+    destinationGasUnits: 1000000,
     destinationUserAddress: '0x1234',
     inputAsset: {
       asset: {
@@ -18,6 +19,6 @@ test('validates a stargate step', t => {
   stepSchema.parse(step)
 
   const badStep: any = { ...step }
-  delete badStep.destinationUserAddress
+  delete badStep.destinationChain
   t.throws(() => stepSchema.parse(badStep))
 })

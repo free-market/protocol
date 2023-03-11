@@ -4,10 +4,10 @@ import { AaveSupplyHelper } from './AaveSupplyHelper'
 import { AddAssetHelper } from './AddAssetHelper'
 import { ChainBranchHelper } from './ChainBranchHelper'
 import { StargateBridgeHelper } from './StargateBridgeHelper'
-import type { IWorkflowRunner } from '../runner/IWorkflowRunner'
+import type { IWorkflowInstance } from '../runner/IWorkflowInstance'
 
 interface StepHelperConstructor {
-  new (runner: IWorkflowRunner, provider?: EIP1193Provider): IStepHelper<any>
+  new (runner: IWorkflowInstance, provider?: EIP1193Provider): IStepHelper<any>
 }
 
 const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
@@ -17,7 +17,7 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'stargate-bridge': StargateBridgeHelper,
 }
 
-export function createStepHelper(type: string, runner: IWorkflowRunner) {
+export function createStepHelper(type: string, runner: IWorkflowInstance) {
   const ctor = stepHelpersConstructors[type]
   if (ctor) {
     return new ctor(runner)

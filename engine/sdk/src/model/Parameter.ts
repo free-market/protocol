@@ -18,6 +18,7 @@ export type ParameterType = z.infer<typeof parameterTypeSchema>
 
 export const parameterSchema = z.object({
   name: nonEmptyStringSchema.regex(new RegExp(PARAMETER_NAME_REGEX)),
+  label: z.string().optional(),
   description: z.string().optional(),
   type: parameterTypeSchema,
 })

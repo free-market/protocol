@@ -1,7 +1,11 @@
-import test, { ExecutionContext } from 'ava'
-import { WorkflowRunner } from '../WorkflowRunner'
+import test, { ExecutionContext, Implementation } from 'ava'
+import { WorkflowInstance } from '../WorkflowInstance'
 import type { Workflow, Arguments } from '../../model'
-import { throws, assert } from '../../private/test-utils'
+import { throws, assert, shouldRunE2e, getStandardProvider, getStandardWebSocketProvider } from '../../private/test-utils'
+import { crossChainAaveDeposit } from '../../examples/cross-chain-deposit'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const testWorkflowJson = `
 {
@@ -17,7 +21,7 @@ const testWorkflowJson = `
 `
 
 test('instantiates a workflow from a json string', t => {
-  new WorkflowRunner(testWorkflowJson)
+  new WorkflowInstance(testWorkflowJson)
   t.pass()
 })
 
@@ -43,7 +47,7 @@ test('throws an error when there are duplicate stepIds', t => {
       },
     ],
   }
-  t.throws(() => new WorkflowRunner(workflow), { message: message => validateExceptionMessage(t, message, 1, /is not unique/) })
+  t.throws(() => new WorkflowInstance(workflow), { message: message => validateExceptionMessage(t, message, 1, /is not unique/) })
 })
 test('throws an error when there nextStepId refers to a non-existent step', t => {
   const workflow: Workflow = {
@@ -58,7 +62,7 @@ test('throws an error when there nextStepId refers to a non-existent step', t =>
       },
     ],
   }
-  t.throws(() => new WorkflowRunner(workflow), { message: message => validateExceptionMessage(t, message, 1, /does not exist/) })
+  t.throws(() => new WorkflowInstance(workflow), { message: message => validateExceptionMessage(t, message, 1, /does not exist/) })
 })
 
 test('finds all parameter references in a workflow', t => {
@@ -76,7 +80,7 @@ test('finds all parameter references in a workflow', t => {
       },
     ],
   }
-  const runner = new WorkflowRunner(workflow)
+  const runner = new WorkflowInstance(workflow)
   const map = runner['findAllParameterReferences']()
   t.snapshot(map)
 })
@@ -98,7 +102,7 @@ test('fails to validate when a parameter reference is not found in the declared 
     ],
   }
   try {
-    new WorkflowRunner(workflow)
+    new WorkflowInstance(workflow)
     t.fail('it was supposed to throw')
   } catch (e) {
     t.snapshot(e)
@@ -136,7 +140,7 @@ test('fails to validate when a parameter reference should be a different type th
     ],
   }
   try {
-    new WorkflowRunner(workflow)
+    new WorkflowInstance(workflow)
     t.fail('it was supposed to throw')
   } catch (e) {
     t.snapshot(e)
@@ -174,7 +178,7 @@ test('validate when everything is good', t => {
       },
     ],
   }
-  const runner = new WorkflowRunner(workflow)
+  const runner = new WorkflowInstance(workflow)
   t.notThrows(() => runner['validateParameters']())
 })
 
@@ -193,7 +197,7 @@ test('fails to validate when there are undeclared arguments', t => {
   const args: Arguments = {
     foo: 1,
   }
-  throws(t, () => new WorkflowRunner(workflow).validateArguments(args))
+  throws(t, () => new WorkflowInstance(workflow).validateArguments(args))
 })
 
 test('fails to validate when there are zod problems in the workflow', t => {
@@ -208,7 +212,7 @@ test('fails to validate when there are zod problems in the workflow', t => {
       },
     ],
   }
-  throws(t, () => new WorkflowRunner(workflow))
+  throws(t, () => new WorkflowInstance(workflow))
 })
 
 const workflowWithOneParam: Workflow = {
@@ -233,12 +237,12 @@ test('fails to validate when there are zod problems in the arguments', t => {
   const args: Arguments = {
     addAssetAmount: 'xyz',
   }
-  const runner = new WorkflowRunner(workflowWithOneParam)
+  const runner = new WorkflowInstance(workflowWithOneParam)
 
   throws(t, () => runner.validateArguments(args))
 })
 test('fails to validate when arguments are not provided for all parameters', t => {
-  const runner = new WorkflowRunner(workflowWithOneParam)
+  const runner = new WorkflowInstance(workflowWithOneParam)
   throws(t, () => runner.validateArguments({}))
 })
 
@@ -273,15 +277,15 @@ const argsForTwoParamWorkflow: Arguments = {
 }
 
 test('validates arguments', t => {
-  const runner = new WorkflowRunner(workflowWithTwoParams)
+  const runner = new WorkflowInstance(workflowWithTwoParams)
   runner.validateArguments(argsForTwoParamWorkflow)
   t.pass()
 })
 
 test('applies arguments', async t => {
-  const originalWorkflow = new WorkflowRunner(workflowWithTwoParams)
+  const originalWorkflow = new WorkflowInstance(workflowWithTwoParams)
   const workflowBefore = originalWorkflow.getWorkflow()
-  const workflowInstanceWithArgs = await originalWorkflow.applyArguments(argsForTwoParamWorkflow)
+  const workflowInstanceWithArgs = originalWorkflow['applyArguments'](true, argsForTwoParamWorkflow)
   const workflowWithArgs = workflowInstanceWithArgs.getWorkflow()
   const theStep = workflowWithArgs.steps[0]
   // assert that the workflow structure got patched with the argument values
@@ -292,5 +296,22 @@ test('applies arguments', async t => {
   assert(t, theStep.amount === 1000000)
   // assert  that the original workflow structure did not get modified
   t.deepEqual(workflowBefore, originalWorkflow.getWorkflow())
+  t.pass()
+})
+
+test('creates a WorkflowRunner', async t => {
+  if (!shouldRunE2e()) {
+    t.pass('skipping')
+    return
+  }
+  const instance = new WorkflowInstance(crossChainAaveDeposit)
+  instance.setProvider('start-chain', getStandardProvider('ETHEREUM_GOERLI_URL'))
+  instance.setProvider('arbitrum', getStandardWebSocketProvider('ARBITRUM_GOERLI_WS_URL'))
+  const userAddr = '0x242b2eeCE36061FF84EC0Ea69d4902373858fB2F'
+  const args: Arguments = {
+    targetChainUserAddress: userAddr,
+    inputAmount: '1000000',
+  }
+  await instance.getRunner(userAddr, args)
   t.pass()
 })

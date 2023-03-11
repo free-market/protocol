@@ -1,18 +1,20 @@
 import { encodeAddAssetArgs, StepIds } from '@freemarket/evm'
 import type { EncodedWorkflowStep } from '../EncodedWorkflow'
-import type { AddAsset, Chain } from '../model'
+import type { AddAsset } from '../model'
 import assert from '../utils/assert'
-import { sdkAssetToEvmAsset } from '../utils/evm-encoding-utils'
+import { sdkAssetToEvmAsset } from '../utils/evm-utils'
 import { AbstractStepHelper } from './AbstractStepHelper'
+import type { EncodingContext } from './IStepHelper'
 import { ADDRESS_ZERO } from './utils'
 
 export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
-  async encodeWorkflowStep(chain: Chain, stepConfig: AddAsset): Promise<EncodedWorkflowStep> {
+  async encodeWorkflowStep(context: EncodingContext<AddAsset>): Promise<EncodedWorkflowStep> {
+    const { stepConfig, chain } = context
     assert(typeof stepConfig.asset !== 'string')
-    const sdkAsset = await this.runner.dereferenceAsset(stepConfig.asset, chain)
+    const sdkAsset = await this.instance.dereferenceAsset(stepConfig.asset, chain)
     const evmAsset = sdkAssetToEvmAsset(sdkAsset, chain)
 
-    const address = stepConfig.fromAddress ?? this.runner.getUserAddress()
+    const address = stepConfig.fromAddress ?? context.userAddress
 
     // TODO CORE-16 support percentages
     let amountStr: string

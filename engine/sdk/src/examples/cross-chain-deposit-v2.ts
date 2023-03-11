@@ -39,6 +39,7 @@ const crossChainDepositV2: Workflow = {
       destinationChain: 'arbitrum',
       destinationUserAddress: '0xabc123',
       maxSlippagePercent: 0.05,
+      destinationGasUnits: 1000000,
       inputAsset: {
         asset: {
           type: 'fungible-token',

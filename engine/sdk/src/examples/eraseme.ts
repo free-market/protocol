@@ -41,6 +41,7 @@ const crossChainDeposit: Workflow = {
       stepId: 'stargateBridge',
       type: 'stargate-bridge',
       destinationChain: 'arbitrum',
+      destinationGasUnits: 1000000,
       destinationUserAddress: '0x0000001234',
       maxSlippagePercent: 0.03,
       inputAsset: {
