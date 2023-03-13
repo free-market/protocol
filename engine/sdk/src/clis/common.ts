@@ -5,7 +5,7 @@ import fs from 'fs'
 import { WorkflowValidationError } from '../runner/WorkflowValidationError'
 import type { Workflow } from '../model'
 import { getParameterSchema } from '../model/Parameter'
-import type { DeepReadonly } from '../utils/DeepReadonly'
+import type { ReadonlyDeep } from 'type-fest'
 
 /* eslint-disable no-console */
 export function validateWorkflow(fileName: string, verbose: boolean) {
@@ -37,7 +37,7 @@ export function validateWorkflow(fileName: string, verbose: boolean) {
   }
 }
 
-export function createArgumentsSchema(workflow: DeepReadonly<Workflow>) {
+export function createArgumentsSchema(workflow: ReadonlyDeep<Workflow>) {
   if (!workflow.parameters) {
     console.log(`workflow doesn't declare any parameters`)
     return null

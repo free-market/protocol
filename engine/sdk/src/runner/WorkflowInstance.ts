@@ -5,7 +5,7 @@ import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import { createStepHelper } from '../helpers'
-import { getChain } from '../utils/evm-utils'
+import { getChain, getEthersProvider } from '../utils/evm-utils'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { Memoize } from 'typescript-memoize'
@@ -16,7 +16,6 @@ import { WorkflowRunner } from './WorkflowRunner'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
 import type { EIP1193Provider } from 'eip1193-provider'
 import {
-  Address,
   Amount,
   Arguments,
   Asset,
@@ -24,6 +23,7 @@ import {
   Chain,
   FungibleToken,
   fungibleTokenSchema,
+  Step,
   StepBase,
   stepSchema,
   Workflow,
@@ -31,13 +31,16 @@ import {
 } from '../model'
 import type { StepNode } from './StepNode'
 import type { ZodObject, ZodType } from 'zod'
-import type { DeepReadonly } from '../utils/DeepReadonly'
+import type { ReadonlyDeep } from 'type-fest'
 import type { IStepHelper, NextSteps } from '../helpers/IStepHelper'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { EncodedWorkflow } from '../EncodedWorkflow'
-import type { EvmWorkflowStep } from '@freemarket/evm'
+import { EvmWorkflowStep, IERC20__factory } from '@freemarket/evm'
 import type { IWorkflowRunner } from './IWorkflowRunner'
+import Big from 'big.js'
+import type { Provider } from '@ethersproject/providers'
+import type { AddAssetInfo, Erc20Info } from './AddAssetInfo'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
@@ -56,6 +59,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     this.steps = this.addMissingStepIds(parsedWorkflow.steps)
     this.validateWorkflowSteps()
     this.validateParameters()
+
+    // TODO validateAssetRefs -- but may need to skip unresolved parameters
   }
 
   setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider): void {
@@ -81,10 +86,127 @@ export class WorkflowInstance implements IWorkflowInstance {
     appliedInstance = appliedInstance.applyArguments(false, remittances)
     const firstNodeStepId = appliedInstance.steps[0].stepId
     const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress)
-    return new WorkflowRunner(this, encoded, startChain)
+    const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
+    return new WorkflowRunner(this, encoded, startChain, addAssetInfo)
   }
 
-  getWorkflow(): DeepReadonly<Workflow> {
+  private async getAddAssetFungibleTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
+    const symbols = new Set<string>()
+    for (const step of this.steps as Step[]) {
+      if (step.type === 'add-asset') {
+        assert(typeof step.asset !== 'string')
+        if (step.asset.type !== 'native') {
+          symbols.add(step.asset.symbol)
+        }
+      }
+    }
+    const rv = new Map<string, Erc20Info>()
+    if (symbols.size === 0) {
+      return rv
+    }
+    const chain = await this.resolveChain('start-chain')
+    const frontDoorAddress = await this.getFrontDoorAddressForChain(chain)
+    const symbolsArray = Array.from(symbols)
+    const promises = symbolsArray.map(symbol => this.getErc20InfoForSymbol(userAddress, chain, provider, frontDoorAddress, symbol))
+    const results = await Promise.all(promises)
+    for (let i = 0; i < symbolsArray.length; ++i) {
+      rv.set(symbolsArray[i], results[i])
+    }
+    return rv
+  }
+
+  private async getErc20InfoForSymbol(
+    userAddress: string,
+    chain: Chain,
+    provider: EIP1193Provider,
+    frontDoorAddress: string,
+    symbol: string
+  ): Promise<Erc20Info> {
+    const token = await this.getFungibleToken(symbol)
+    const erc20Address = token?.chains[chain]?.address
+    assert(erc20Address)
+    const erc20 = IERC20__factory.connect(erc20Address, getEthersProvider(provider))
+    const [allowance, balance] = await Promise.all([erc20.allowance(userAddress, frontDoorAddress), erc20.balanceOf(userAddress)])
+    return {
+      balance: new Big(balance.toString()),
+      currentAllowance: new Big(allowance.toString()),
+      requiredAllowance: new Big(0),
+    }
+  }
+
+  private getAddAssetAmountsMap() {
+    type Amounts = { absolute: Big; percent: number }
+    const amountsMap = new MapWithDefault<string, Amounts>(() => ({ absolute: Big(0), percent: 0 }))
+
+    for (const step of this.steps as Step[]) {
+      if (step.type === 'add-asset') {
+        assert(typeof step.asset !== 'string')
+        const key = step.asset.type === 'native' ? '__native__' : step.asset.symbol
+        const amounts = amountsMap.getWithDefault(key)
+        if (typeof step.amount === 'string' && step.amount.endsWith('%')) {
+          amounts.percent += parseFloat(step.amount.slice(0, step.amount.length - 1))
+        } else {
+          amounts.absolute = amounts.absolute.plus(step.amount.toString())
+        }
+      }
+    }
+    return amountsMap
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  private async getAddAssetInfo(userAddress: string): Promise<AddAssetInfo> {
+    const startChainProvider = this.getProvider('start-chain')
+    const erc20Info = await this.getAddAssetFungibleTokenInfo(userAddress, startChainProvider)
+
+    const rv: AddAssetInfo = {
+      native: new Big(0),
+      erc20s: new Map<string, Erc20Info>(),
+    }
+
+    const amountsMap = this.getAddAssetAmountsMap()
+
+    for (const [symbol, amounts] of amountsMap) {
+      if (amounts.percent > 100) {
+        // TODO this needs to be a validation error
+        const assetStr = symbol === '__native__' ? 'native' : symbol
+        throw new Error(`add-asset steps for '${assetStr}' are > 100%`)
+      }
+
+      let totalRequired = amounts.absolute
+      if (amounts.percent !== 0) {
+        let balance = new Big(0)
+        if (symbol === '__native__') {
+          const b = await startChainProvider.request({
+            method: 'eth_getBalance',
+            params: [userAddress, 'latest'],
+          })
+          balance = new Big(b as string)
+        } else {
+          const x = erc20Info.get(symbol)
+          assert(x)
+          balance = x.balance
+        }
+        if (balance.lt(amounts.absolute)) {
+          throw new Error('user does not have enough native for add-asset step(s)')
+        }
+        const remaining = balance.minus(amounts.absolute)
+        const relativeAmount = remaining.mul(amounts.percent / 100)
+        totalRequired = amounts.absolute.plus(relativeAmount)
+      }
+      if (symbol === '__native__') {
+        rv.native = totalRequired
+      } else {
+        const x = erc20Info.get(symbol)
+        assert(x)
+        x.requiredAllowance = totalRequired
+        rv.erc20s.set(symbol, x)
+      }
+    }
+
+    return rv
+  }
+
+  getWorkflow(): ReadonlyDeep<Workflow> {
     return this.workflow
   }
 
@@ -462,36 +584,80 @@ export class WorkflowInstance implements IWorkflowInstance {
       mapStepIdToIndex.set(reachable[i], i)
     }
 
-    // TODO how to handle non-evm?
-    // const promises = reachable.map(async stepId => {
-    //   const step = this.getStep(stepId)
-    //   const nextStepIndex = step.nextStepId === WORKFLOW_END_STEP_ID ? -1 : mapStepIdToIndex.get(step.nextStepId)
-    //   assert(nextStepIndex)
-    //   const helper = this.getStepHelper(chain, step.type)
-    //   const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress })
-    //   return {
-    //     ...encoded,
-    //     nextStepIndex,
-    //   }
-    // })
-    // const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
     const chain = await this.resolveChain(chainOrStart)
-    const encodedSteps: EvmWorkflowStep[] = []
-    for (const stepId of reachable) {
+    // TODO how to handle non-evm?
+    const promises = reachable.map(async stepId => {
       const step = this.getStep(stepId)
       let nextStepIndex = step.nextStepId === WORKFLOW_END_STEP_ID ? -1 : mapStepIdToIndex.get(step.nextStepId)
-      if (nextStepIndex === undefined) {
+      if (!nextStepIndex) {
         nextStepIndex = -1
       }
       const helper = this.getStepHelper(chainOrStart, step.type)
       const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress })
-      encodedSteps.push({
+      return {
         ...encoded,
         nextStepIndex,
-      })
-    }
-
+      }
+    })
+    const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
     return { steps: encodedSteps }
+  }
+
+  static async getChainIdFromProvider(provider: Provider): Promise<number> {
+    const network = await provider.getNetwork()
+    return network.chainId
+  }
+
+  @Memoize()
+  async isTestNet(): Promise<boolean> {
+    const provider = getEthersProvider(this.getProvider('start-chain'))
+    const chainId = await WorkflowInstance.getChainIdFromProvider(provider)
+    switch (chainId) {
+      case 1:
+      case 56:
+      case 42161:
+      case 137:
+      case 43114:
+      case 10:
+      case 250:
+        return false
+      case 5:
+      case 97:
+      case 421613:
+      case 80001:
+      case 43113:
+      case 420:
+      case 4002:
+        return true
+
+      default:
+        throw new Error('unknown chainId: ' + chainId)
+    }
+  }
+
+  @Memoize()
+  async getFrontDoorAddressForChain(chain: Chain): Promise<string> {
+    if (await this.isTestNet()) {
+      switch (chain) {
+        case 'ethereum':
+          return '0xF29547aF5D9545886c5e616c8Ec954b27C75bEdD'
+        case 'arbitrum':
+          return '0xeFE6E1708b058D35d79f39cd94833fa89304B96B'
+        default:
+          throw new Error(`freemarket is not deployed on ${chain} testnet`)
+      }
+    } else {
+      switch (chain) {
+        case 'arbitrum':
+          return '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299'
+        case 'avalanche':
+          return '0xADA59A35A302E3AC5d6d4862BEb51aE473DD3ee7'
+        case 'optimism':
+          return '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299'
+        default:
+          throw new Error(`freemarket is not deployed on ${chain} mainnet`)
+      }
+    }
   }
 
   private getRemittanceKeys(): Set<string> {
@@ -574,7 +740,7 @@ export class WorkflowInstance implements IWorkflowInstance {
   }
 
   @Memoize()
-  private async getFungibleToken(symbol: string): Promise<FungibleToken | undefined> {
+  async getFungibleToken(symbol: string): Promise<FungibleToken | undefined> {
     if (this.workflow.fungibleTokens) {
       for (const asset of this.workflow.fungibleTokens) {
         if (asset.symbol === symbol) {

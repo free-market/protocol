@@ -126,22 +126,22 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
       locals.sgParams.continuationWorkflow
     );
 
-    // IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
-    //   locals.sgParams.dstChainId,
-    //   locals.sgParams.srcPoolId,
-    //   locals.sgParams.dstPoolId,
-    //   payable(msg.sender), // refundAddreess
-    //   locals.erc20InputAsset.amount,
-    //   locals.minAmountOut,
-    //   IStargateRouter.lzTxObj(
-    //     locals.sgParams.dstGasForCall,
-    //     locals.sgParams.dstNativeAmount,
-    //     abi.encodePacked(locals.sgParams.dstUserAddress)
-    //   ),
-    //   locals.dstActionAddressEncoded,
-    //   locals.sgParams.continuationWorkflow
-    // );
-    emit WorkflowBridged(locals.sgParams.dstChainId, locals.sgParams.nonce);
+    IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
+      locals.sgParams.dstChainId,
+      locals.sgParams.srcPoolId,
+      locals.sgParams.dstPoolId,
+      payable(msg.sender), // refundAddreess
+      locals.erc20InputAsset.amount,
+      locals.minAmountOut,
+      IStargateRouter.lzTxObj(
+        locals.sgParams.dstGasForCall,
+        locals.sgParams.dstNativeAmount,
+        abi.encodePacked(locals.sgParams.dstUserAddress)
+      ),
+      locals.dstActionAddressEncoded,
+      locals.sgParams.continuationWorkflow
+    );
+    emit WorkflowBridged('Stargate', locals.sgParams.dstChainId, locals.sgParams.nonce);
 
     return LibActionHelpers.noOutputAssetsResult();
   }

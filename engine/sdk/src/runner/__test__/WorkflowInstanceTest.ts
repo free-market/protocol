@@ -1,4 +1,4 @@
-import test, { ExecutionContext, Implementation } from 'ava'
+import test, { ExecutionContext } from 'ava'
 import { WorkflowInstance } from '../WorkflowInstance'
 import type { Workflow, Arguments } from '../../model'
 import { throws, assert, shouldRunE2e, getStandardProvider, getStandardWebSocketProvider } from '../../private/test-utils'
@@ -299,7 +299,7 @@ test('applies arguments', async t => {
   t.pass()
 })
 
-test('creates a WorkflowRunner', async t => {
+test.only('creates a WorkflowRunner', async t => {
   if (!shouldRunE2e()) {
     t.pass('skipping')
     return

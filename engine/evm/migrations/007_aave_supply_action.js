@@ -18,6 +18,7 @@ module.exports = async (deployer) => {
     const pool = await MockAavePool.new()
     await sleep(SLEEPMS)
     poolAddr = pool.address
+    console.log(`mock Aave Pool address: ${poolAddr}`)
   } else {
     poolAddr = networkConfig.aavePool
   }

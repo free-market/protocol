@@ -41,7 +41,7 @@ export const crossChainAaveDeposit: Workflow = {
           type: 'fungible-token',
           symbol: 'USDC',
         },
-        amount: '{{ inputAmount }}',
+        amount: '100%',
       },
     },
     {

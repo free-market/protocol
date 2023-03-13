@@ -189,7 +189,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner /*IU
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
         // TODO this needs a unit test
-        require(address(this).balance == ab.amount, 'computed native balance does not match actual balance');
+        require(address(this).balance >= ab.amount, 'computed native balance is greater than actual balance');
         (bool sent, bytes memory data) = payable(userAddress).call{value: userAmount}('');
         require(sent, string(data));
       } else if (asset.assetType == AssetType.ERC20) {

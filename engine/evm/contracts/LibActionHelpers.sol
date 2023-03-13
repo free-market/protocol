@@ -4,14 +4,10 @@ import './model/AssetType.sol';
 import './model/WorkflowStepResult.sol';
 
 library LibActionHelpers {
-  function singleAssetResult(
-    AssetType assetType,
-    address assetAddress,
-    uint256 amount
-  ) internal pure returns (WorkflowStepResult memory) {
-    Asset memory wethAsset = Asset(assetType, assetAddress);
+  function singleAssetResult(AssetType assetType, address assetAddress, uint256 amount) internal pure returns (WorkflowStepResult memory) {
+    Asset memory asset = Asset(assetType, assetAddress);
     AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](1);
-    ouputAssetAmounts[0] = AssetAmount(wethAsset, amount);
+    ouputAssetAmounts[0] = AssetAmount(asset, amount);
     return WorkflowStepResult(ouputAssetAmounts, -1);
   }
 

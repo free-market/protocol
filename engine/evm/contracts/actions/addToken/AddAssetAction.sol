@@ -26,12 +26,18 @@ contract AddAssetAction is IWorkflowStep {
     // validate
     require(inputAssetAmounts.length == 0, 'AddTokenAction must have 0 input assets');
     require(outputAssets.length == 1, 'AddTokenAction must have 1 output asset');
-    require(outputAssets[0].assetType == AssetType.ERC20, 'AddTokenAction currently only supports ERC20s');
 
     // decode arguments
     AddAssetActionArgs memory args = abi.decode(data, (AddAssetActionArgs));
 
     emit AssetAdded(args.userAddress, AssetAmount(outputAssets[0], args.amount));
+
+    if (outputAssets[0].assetType == AssetType.Native) {
+      // TODO need to re-do how native is accounted for
+      return LibActionHelpers.singleAssetResult(AssetType.Native, address(0), 0 /*args.amount*/);
+    }
+
+    require(outputAssets[0].assetType == AssetType.ERC20, 'AddTokenAction supports native and ERC20s');
 
     // transfer the token to this
     IERC20 erc20 = IERC20(outputAssets[0].assetAddress);

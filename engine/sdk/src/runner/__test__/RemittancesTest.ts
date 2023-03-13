@@ -4,7 +4,7 @@ import { createStandardProvider } from '../../helpers/utils'
 import { WorkflowInstance } from '../WorkflowInstance'
 import type { StargateBridge, Step } from '../../model'
 import dotenv from 'dotenv'
-import { assert, getStandardProvider, shouldRunE2e } from '../../private/test-utils'
+import { shouldRunE2e } from '../../private/test-utils'
 
 dotenv.config()
 

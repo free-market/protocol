@@ -1,6 +1,6 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedWorkflow } from '../EncodedWorkflow'
-import type { Amount, Arguments, Asset, AssetAmount, Chain } from '../model'
+import type { Amount, Arguments, Asset, AssetAmount, Chain, FungibleToken } from '../model'
 import type { AssetReference } from '../model/AssetReference'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
@@ -21,4 +21,7 @@ export interface IWorkflowInstance {
   dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset>
   encodeSegment(startStepId: string, chain: Chain, userAddress: string): Promise<EncodedWorkflow>
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider
+  getFrontDoorAddressForChain(chain: Chain): Promise<string>
+  isTestNet(): Promise<boolean>
+  getFungibleToken(symbol: string): Promise<FungibleToken | undefined>
 }

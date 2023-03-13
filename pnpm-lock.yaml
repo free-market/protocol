@@ -170,12 +170,17 @@ importers:
       '@adobe/jsonschema2md': ^7.1.5
       '@ava/typescript': ^3.0.1
       '@ethersproject/abstract-signer': ^5.7.0
+      '@ethersproject/bignumber': ^5.7.0
+      '@ethersproject/contracts': ^5.7.0
       '@ethersproject/experimental': ^5.7.0
+      '@ethersproject/hdnode': ^5.7.0
       '@ethersproject/providers': ^5.7.2
+      '@ethersproject/wallet': ^5.7.0
       '@freemarket/evm': workspace:../evm
       '@types/big.js': ^6.1.6
       '@types/bs58': ^4.0.1
       '@types/lodash.clonedeep': ^4.5.7
+      '@types/lodash.merge': ^4.6.7
       '@types/node': ^18.14.2
       '@types/treeify': ^1.0.0
       '@typescript-eslint/eslint-plugin': ^5.54.0
@@ -197,7 +202,9 @@ importers:
       eslint-plugin-tsdoc: ^0.2.17
       eslint-watch: ^8.0.0
       lodash.clonedeep: ^4.5.0
+      lodash.merge: ^4.6.2
       loglevel: ^1.8.1
+      loglevel-plugin-prefix: ^0.8.4
       markdown-toc: ^1.2.0
       nodemon: ^2.0.20
       not-a-log: ^1.0.1
@@ -206,6 +213,7 @@ importers:
       source-map-support: ^0.5.21
       treeify: ^1.1.0
       ts-node: ^10.9.1
+      type-fest: ^3.6.1
       typedoc: ^0.23.26
       typedoc-plugin-markdown: ^3.14.0
       typescript: ^4.9.5
@@ -214,6 +222,8 @@ importers:
       zod-to-json-schema: ^3.20.4
       zod-to-ts: ^1.1.2
     dependencies:
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/contracts': 5.7.0
       '@ethersproject/experimental': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@freemarket/evm': link:../evm
@@ -222,19 +232,25 @@ importers:
       bs58: 5.0.0
       eip1193-provider: 1.0.1
       lodash.clonedeep: 4.5.0
+      lodash.merge: 4.6.2
       loglevel: 1.8.1
+      loglevel-plugin-prefix: 0.8.4
       not-a-log: 1.0.1
       source-map-support: 0.5.21
       treeify: 1.1.0
+      type-fest: 3.6.1
       typescript-memoize: 1.1.1
       zod: 3.20.6
     devDependencies:
       '@adobe/jsonschema2md': 7.1.5
       '@ava/typescript': 3.0.1
       '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/hdnode': 5.7.0
+      '@ethersproject/wallet': 5.7.0
       '@types/big.js': 6.1.6
       '@types/bs58': 4.0.1
       '@types/lodash.clonedeep': 4.5.7
+      '@types/lodash.merge': 4.6.7
       '@types/node': 18.14.2
       '@types/treeify': 1.0.0
       '@typescript-eslint/eslint-plugin': 5.54.0_6mj2wypvdnknez7kws2nfdgupi
@@ -7376,6 +7392,12 @@ packages:
 
   /@types/lodash.clonedeep/4.5.7:
     resolution: {integrity: sha512-ccNqkPptFIXrpVqUECi60/DFxjNKsfoQxSQsgcBJCX/fuX1wgyQieojkcWH/KpE3xzLoWN/2k+ZeGqIN3paSvw==}
+    dependencies:
+      '@types/lodash': 4.14.182
+    dev: true
+
+  /@types/lodash.merge/4.6.7:
+    resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
     dependencies:
       '@types/lodash': 4.14.182
     dev: true
@@ -23268,7 +23290,6 @@ packages:
 
   /loglevel-plugin-prefix/0.8.4:
     resolution: {integrity: sha512-WpG9CcFAOjz/FtNht+QJeGpvVl/cdR6P0z6OcXSkr8wFJOsV2GRj2j10JLfjuA4aYkcKCNIEqRGCyTife9R8/g==}
-    dev: true
 
   /loglevel/1.8.0:
     resolution: {integrity: sha512-G6A/nJLRgWOuuwdNuA6koovfEV1YpqqAG4pRUlFaz3jj2QNZ8M4vBqnVA+HBTmU/AMNUtlOsMmSpF6NyOjztbA==}
@@ -32023,6 +32044,11 @@ packages:
   /type-fest/2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
+
+  /type-fest/3.6.1:
+    resolution: {integrity: sha512-htXWckxlT6U4+ilVgweNliPqlsVSSucbxVexRYllyMVJDtf5rTjv6kF/s+qAd4QSL1BZcnJPEJavYBPQiWuZDA==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /type-is/1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}

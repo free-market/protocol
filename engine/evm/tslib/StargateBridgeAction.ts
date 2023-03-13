@@ -141,7 +141,7 @@ export class StargateBridge {
   }
 
   static async getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
-    log.debug(`getting stargate required gas=${args.dstGasForCall} airdrop=${args.dstNativeAmount}`)
+    log.debug(`getting stargate required gas=${args.dstGasForCall} airdrop=${args.dstNativeAmount} payloadLen=${args.payload.length}`)
     const sgRouterAddress = await StargateBridge.getStargateRouterAddress(args.frontDoorAddress, args.provider)
     const ethersProvider = new Web3Provider(args.provider)
     const sgRouter = IStargateRouter__factory.connect(sgRouterAddress, ethersProvider)

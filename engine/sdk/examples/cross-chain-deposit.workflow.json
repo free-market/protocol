@@ -1,51 +1,69 @@
 {
   "parameters": [
     {
-      "name": "startAmount",
+      "name": "targetChainUserAddress",
+      "type": "address",
+      "label": "Target Chain User Address",
+      "description": "The address that funds will be sent to on the destintion chain"
+    },
+    {
+      "name": "inputAmount",
       "type": "amount",
-      "description": "The amount of USDC that will be deposited into Aave."
+      "label": "USDC Input Amount",
+      "description": "The amount of USDC to use in the workflow"
     }
   ],
   "steps": [
     {
-      "stepId": "addAsset",
       "type": "add-asset",
-      "asset": { "type": "fungible-token", "symbol": "aUSDC" },
-      "amount": "{{ startAmount }}"
+      "asset": {
+        "type": "fungible-token",
+        "symbol": "USDC"
+      },
+      "amount": "{{ inputAmount }}"
     },
     {
-      "type": "aave-withdrawal",
+      "type": "add-asset",
+      "asset": {
+        "type": "native"
+      },
+      "amount": "{{ remittances.stargate.amount }}"
+    },
+    {
+      "stepId": "stargate",
+      "type": "stargate-bridge",
+      "destinationChain": "arbitrum",
+      "destinationUserAddress": "{{ targetChainUserAddress }}",
+      "maxSlippagePercent": 0.05,
+      "destinationGasUnits": 1000000,
       "inputAsset": {
         "asset": {
           "type": "fungible-token",
-          "symbol": "aUSDC"
+          "symbol": "USDC"
         },
-        "amount": "100%"
+        "amount": "{{ inputAmount }}"
       }
-    },
-    {
-      "type": "pay-gelato-relay",
-      "paymentAsset": {
-        "type": "fungible-token",
-        "symbol": "USDC"
-      }
-    },
-    {
-      "stepId": "sg",
-      "type": "stargate-bridge",
-      "destinationChain": "arbitrum",
-      "inputAsset": {
-        "asset": { "type": "fungible-token", "symbol": "USDC" },
-        "amount": "100%"
-      },
-      "maxSlippagePercent": 0.05,
-      "destinationUserAddress": "0xabc1234"
     },
     {
       "type": "aave-supply",
+      "stepId": "aave-supply",
       "inputAsset": {
-        "asset": { "type": "fungible-token", "symbol": "USDC" },
+        "asset": {
+          "type": "fungible-token",
+          "symbol": "USDC"
+        },
         "amount": "100%"
+      }
+    }
+  ],
+  "fungibleTokens": [
+    {
+      "type": "fungible-token",
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "chains": {
+        "ethereum": { "address": "0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620" },
+        "arbitrum": { "address": "0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291" }
       }
     }
   ]

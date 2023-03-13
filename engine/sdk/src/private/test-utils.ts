@@ -1,6 +1,8 @@
+import type { Signer } from '@ethersproject/abstract-signer'
+import { HDNode } from '@ethersproject/hdnode'
 import { JsonRpcProvider, WebSocketProvider } from '@ethersproject/providers'
-import type { ExecutionContext, Implementation } from 'ava'
-import test from 'ava'
+import { Wallet } from '@ethersproject/wallet'
+import type { ExecutionContext } from 'ava'
 import { createStandardProvider } from '../helpers/utils'
 
 export function shouldRunE2e() {
@@ -37,14 +39,25 @@ export async function throwsAsync(t: ExecutionContext<unknown>, fn: () => Promis
   }
 }
 
-export function getStandardProvider(envVar = 'ETHEREUM_GOERLI_URL') {
+export function getStandardProvider(envVar = 'ETHEREUM_GOERLI_URL', mnemonic?: string) {
   const providerUrl = process.env[envVar]
   const ethersProvider = new JsonRpcProvider(providerUrl)
-  return createStandardProvider(ethersProvider)
+  let signer: Signer | undefined = undefined
+  if (mnemonic) {
+    const account = HDNode.fromMnemonic(mnemonic).derivePath(`m/44'/60'/0'/0/0`)
+    signer = new Wallet(account, ethersProvider)
+  }
+  return createStandardProvider(ethersProvider, signer)
 }
-export function getStandardWebSocketProvider(envVar = 'ETHEREUM_GOERLI_WS_URL') {
+
+export function getStandardWebSocketProvider(envVar = 'ETHEREUM_GOERLI_WS_URL', mnemonic?: string) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const providerUrl = process.env[envVar]!
   const ethersProvider = new WebSocketProvider(providerUrl)
-  return createStandardProvider(ethersProvider)
+  let signer: Signer | undefined = undefined
+  if (mnemonic) {
+    const account = HDNode.fromMnemonic(mnemonic).derivePath(`m/44'/60'/0'/0/0`)
+    signer = new Wallet(account, ethersProvider)
+  }
+  return createStandardProvider(ethersProvider, signer)
 }

@@ -192,7 +192,7 @@ test('does a stargate swap in a workflow', async (t) => {
         inputAssets: [
           {
             asset: srcUsdcAsset,
-            amount: '1000000',
+            amount: '10000000',
             amountIsPercent: true,
           },
           {
@@ -219,6 +219,10 @@ test('does a stargate swap in a workflow', async (t) => {
       },
     ],
   }
+
+  console.log('---------------')
+  console.log(JSON.stringify(srcWorkflow, null, 4))
+  console.log('---------------')
 
   const srcWorkflowGasEstimate = await srcRunner.estimateGas.executeWorkflow(srcWorkflow, {
     value: stargateRequiredNative,
@@ -276,18 +280,6 @@ test('does a stargate swap in a workflow', async (t) => {
   })
   const txReceipt = await txResponse.wait(1)
   const isg = StargateBridgeAction__factory.createInterface()
-
-  const eventTopic = isg.getEventTopic(isg.events['WorkflowBridged(uint256,uint256)'])
-  for (const log of txReceipt.logs) {
-    if (log.topics[0] === eventTopic) {
-      try {
-        const x = isg.parseLog(log)
-        console.log(x)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-  }
 
   log.debug('source chain workflow completed, waiting for continuation workflow...')
   log.debug(`tx=${txReceipt.transactionHash}`)

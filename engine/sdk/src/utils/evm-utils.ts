@@ -4,7 +4,9 @@ import { ADDRESS_ZERO } from '../helpers/utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
 import type { IWorkflowInstance } from '../runner/IWorkflowInstance'
 import type { EIP1193Provider } from 'eip1193-provider'
-import { Web3Provider } from '@ethersproject/providers'
+import { Eip1193Bridge } from '@ethersproject/experimental'
+import type { Signer } from '@ethersproject/abstract-signer'
+import { Provider, Web3Provider } from '@ethersproject/providers'
 
 export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
   if (asset.type === 'native') {
@@ -53,7 +55,7 @@ export async function sdkAssetAmountToEvmInputAmount(
 }
 
 export async function getChainId(provider: EIP1193Provider): Promise<number> {
-  const ethersProvider = new Web3Provider(provider)
+  const ethersProvider = getEthersProvider(provider)
   const network = await ethersProvider.getNetwork()
   return network.chainId
 }
@@ -110,4 +112,17 @@ export async function isTestNet(provider: EIP1193Provider): Promise<boolean> {
     default:
       throw new Error('unknown chainId: ' + chainId)
   }
+}
+
+export function getEthersSigner(provider: EIP1193Provider): Signer | null {
+  if (provider instanceof Eip1193Bridge) {
+    return provider.signer
+  }
+  return null
+}
+export function getEthersProvider(provider: EIP1193Provider): Provider {
+  if (provider instanceof Eip1193Bridge) {
+    return provider.provider
+  }
+  return new Web3Provider(provider)
 }
