@@ -55,7 +55,8 @@ export class WorkflowRunner implements IWorkflowRunner {
       await this.doErc20Approvals(startChainSigner)
       await this.submitWorkflow(startChainSigner)
     } catch (e) {
-      log.error(`Workflow unsuccessful: ${e.message}`)
+      const s = e instanceof Error ? e.message : (e as any)
+      log.error(`Workflow unsuccessful: ${s}`)
     }
   }
 

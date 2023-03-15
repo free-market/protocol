@@ -1,6 +1,6 @@
 {
-  "name": "@fmp/sdk",
-  "version": "0.0.2",
+  "name": "@freemarket/sdk",
+  "version": "0.1.1",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
