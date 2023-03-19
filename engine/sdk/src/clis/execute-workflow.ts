@@ -2,7 +2,8 @@
 /* eslint-disable no-console */
 import rootLogger from 'loglevel'
 rootLogger.setLevel('debug')
-import '../utils/init-logger'
+import { initLogger } from '../utils/init-logger'
+initLogger()
 import fs from 'fs'
 import chalk from 'chalk'
 import type { ExecutionEvent } from '../runner/ExecutionEvent'
@@ -27,7 +28,7 @@ const argumentsFileName = process.argv[3]
 const sourceChain = process.argv[4]
 
 function myEventListener(event: ExecutionEvent) {
-  log.info(`${chalk.cyan('Workflow Event')} ${chalk.yellow(event.code)} ${event.getMessage()}`)
+  log.info(`${chalk.cyan('Workflow Event')} ${chalk.yellow(event.code)} ${event.message}`)
 }
 
 function getEthersSigner(mnemonic: string, ethersProvider: Provider): Signer {

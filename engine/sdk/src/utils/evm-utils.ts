@@ -39,7 +39,7 @@ export async function sdkAssetAmountToEvmInputAmount(
   } else {
     if (assetAmount.amount.endsWith('%')) {
       const s = assetAmount.amount.slice(0, assetAmount.amount.length - 1)
-      const n = parseFloat(s) * 100000 // to decibips
+      const n = parseFloat(s) * 1000 // to decibips
       amountStr = n.toFixed(0)
       amountIsPercent = true
     } else {
@@ -60,8 +60,12 @@ export async function getChainId(provider: EIP1193Provider): Promise<number> {
   return network.chainId
 }
 
-export async function getChain(provider: EIP1193Provider): Promise<Chain> {
+export async function getChainFromProvider(provider: EIP1193Provider): Promise<Chain> {
   const chainId = await getChainId(provider)
+  return getChainFromId(chainId)
+}
+
+export function getChainFromId(chainId: number): Chain {
   switch (chainId) {
     case 1:
     case 5:
@@ -89,8 +93,50 @@ export async function getChain(provider: EIP1193Provider): Promise<Chain> {
   }
 }
 
-export async function isTestNet(provider: EIP1193Provider): Promise<boolean> {
+export function getChainIdFromChain(chain: Chain, isTestNet: boolean) {
+  if (isTestNet) {
+    switch (chain) {
+      case 'ethereum':
+        return 5
+      case 'binance':
+        return 97
+      case 'arbitrum':
+        return 421613
+      case 'polygon':
+        return 80001
+      case 'avalanche':
+        return 43113
+      case 'optimism':
+        return 420
+      case 'fantom':
+        return 4002
+    }
+  } else {
+    switch (chain) {
+      case 'ethereum':
+        return 1
+      case 'binance':
+        return 56
+      case 'arbitrum':
+        return 42161
+      case 'polygon':
+        return 137
+      case 'avalanche':
+        return 43114
+      case 'optimism':
+        return 10
+      case 'fantom':
+        return 250
+    }
+  }
+}
+
+export async function isTestNetByProvider(provider: EIP1193Provider): Promise<boolean> {
   const chainId = await getChainId(provider)
+  return isTestNetById(chainId)
+}
+
+export function isTestNetById(chainId: number) {
   switch (chainId) {
     case 1:
     case 56:
@@ -114,11 +160,11 @@ export async function isTestNet(provider: EIP1193Provider): Promise<boolean> {
   }
 }
 
-export function getEthersSigner(provider: EIP1193Provider): Signer | null {
+export function getEthersSigner(provider: EIP1193Provider): Signer {
   if (provider instanceof Eip1193Bridge) {
     return provider.signer
   }
-  return null
+  return new Web3Provider(provider).getSigner()
 }
 export function getEthersProvider(provider: EIP1193Provider): Provider {
   if (provider instanceof Eip1193Bridge) {

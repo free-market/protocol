@@ -4,7 +4,7 @@
       "name": "targetChainUserAddress",
       "type": "address",
       "label": "Target Chain User Address",
-      "description": "The address that funds will be sent to on the destintion chain"
+      "description": "The address that funds will be sent to on the destination chain"
     },
     {
       "name": "inputAmount",

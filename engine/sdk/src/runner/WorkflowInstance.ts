@@ -5,7 +5,7 @@ import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import { createStepHelper } from '../helpers'
-import { getChain, getEthersProvider } from '../utils/evm-utils'
+import { getChainFromProvider, getEthersProvider } from '../utils/evm-utils'
 import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { Memoize } from 'typescript-memoize'
@@ -79,8 +79,9 @@ export class WorkflowInstance implements IWorkflowInstance {
   }
 
   async getRunner(userAddress: string, args?: Arguments): Promise<IWorkflowRunner> {
+    // TODO can this be parallelized?
     const startChainProvider = this.getProvider('start-chain')
-    const startChain = await getChain(startChainProvider)
+    const startChain = await getChainFromProvider(startChainProvider)
     let appliedInstance = this.applyArguments(true, args)
     const remittances = await appliedInstance.getRemittances()
     appliedInstance = appliedInstance.applyArguments(false, remittances)
@@ -571,7 +572,7 @@ export class WorkflowInstance implements IWorkflowInstance {
   async resolveChain(chainOrStart: ChainOrStart): Promise<Chain> {
     if (chainOrStart === 'start-chain') {
       const startChainProvider = this.getProvider('start-chain')
-      return getChain(startChainProvider)
+      return getChainFromProvider(startChainProvider)
     }
     return chainOrStart
   }

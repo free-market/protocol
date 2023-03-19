@@ -7,7 +7,7 @@ test('validates a stargate step', t => {
     maxSlippagePercent: 0.01,
     destinationChain: 'arbitrum',
     destinationGasUnits: 1000000,
-    destinationUserAddress: '0x1234',
+    destinationUserAddress: '0x1234567890123456789012345678901234567890',
     inputAsset: {
       asset: {
         type: 'fungible-token',

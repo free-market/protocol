@@ -1,3 +1,5 @@
+import type { Chain } from '../model'
+
 export enum ExecutionEventCode {
   Erc20ApprovalsSubmitting = 'Erc20ApprovalsSubmitting',
   Erc20ApprovalsSubmittingAll = 'Erc20ApprovalsSubmittingAll',
@@ -10,37 +12,92 @@ export enum ExecutionEventCode {
   Completed = 'Completed',
 }
 
-export class ExecutionEvent {
-  code: ExecutionEventCode
-  args: Record<string, any>
-  transactionHash?: string
-  constructor(code: ExecutionEventCode, args: Record<string, any>, transactionHash?: string) {
-    this.code = code
-    this.args = args
-    this.transactionHash = transactionHash
-  }
+export interface ExecutionEventBase {
+  code: string
+  // message: string
+}
 
-  getMessage() {
-    switch (this.code) {
-      case ExecutionEventCode.Erc20ApprovalsSubmittingAll:
-        return `Submitting approvals for ERC20: ${this.args.symbols.join(', ')}`
-      case ExecutionEventCode.Erc20ApprovalsSubmitting:
-        return `Submitting approvals for ERC20 '${this.args.symbol}' amount=${this.args.amount} `
-      case ExecutionEventCode.Erc20ApprovalsConfirmed:
-        return `Approvals for ${this.args.symbol} confirmed, tx=${this.transactionHash}`
-      case ExecutionEventCode.Erc20ApprovalsConfirmedAll:
-        return `All approvals for ERC20s confirmed`
-      case ExecutionEventCode.WorkflowSubmitting:
-        return `Submitting workflow to ${this.args.chain}`
-      case ExecutionEventCode.WorkflowSubmitted:
-        return `Workflow submitted, waiting for confirmation`
-      case ExecutionEventCode.WorkflowConfirmed:
-        return `Workflow confirmed on ${this.args.chain} tx=${this.args.transactionHash}`
-      case ExecutionEventCode.WaitingForBridge:
-        return `Waiting for ${this.args.bridge} to bridge funds from ${this.args.source} to ${this.args.target}`
-      case ExecutionEventCode.Completed:
-        return `Workflow has completed successfully`
-    }
+export interface Erc20ApprovalsSubmitting {
+  code: 'Erc20ApprovalsSubmitting'
+  symbols: string[]
+}
+export interface Erc20ApprovalsConfirmed {
+  code: 'Erc20ApprovalsConfirmed'
+  symbols: string[]
+}
+
+export interface Erc20ApprovalSubmitting {
+  code: 'Erc20ApprovalSubmitting'
+  symbol: string
+  amount: string
+}
+export interface Erc20ApprovalConfirmed {
+  code: 'Erc20ApprovalConfirmed'
+  symbol: string
+  transactionHash: string
+}
+
+export interface WorkflowSubmitting {
+  code: 'WorkflowSubmitting'
+  chain: Chain
+}
+
+export interface WorkflowSubmitted {
+  code: 'WorkflowSubmitted'
+  chain: Chain
+}
+
+export interface WorkflowConfirmed {
+  code: 'WorkflowConfirmed'
+  chain: Chain
+  transactionHash: string
+}
+
+export interface WorkflowWaitingForBridge {
+  code: 'WorkflowWaitingForBridge'
+  bridgeName: string
+  sourceChain: Chain
+  sourceChainTransactionHash: string
+  targetChain: Chain
+}
+export interface WorkflowComplete {
+  code: 'WorkflowComplete'
+}
+
+export type CreateExecutionEventArg =
+  | Erc20ApprovalsSubmitting
+  | Erc20ApprovalSubmitting
+  | Erc20ApprovalsConfirmed
+  | Erc20ApprovalConfirmed
+  | WorkflowSubmitting
+  | WorkflowSubmitted
+  | WorkflowConfirmed
+  | WorkflowWaitingForBridge
+  | WorkflowComplete
+
+export type ExecutionEvent = CreateExecutionEventArg & { message: string }
+
+export function createExecutionEvent(event: CreateExecutionEventArg): ExecutionEvent {
+  switch (event.code) {
+    case 'Erc20ApprovalsSubmitting':
+      return { ...event, message: `Submitting approvals for ERC20: ${event.symbols.join(', ')}` }
+    case 'Erc20ApprovalSubmitting':
+      return { ...event, message: `Submitting approval for ERC20 '${event.symbol}' amount=${event.amount}` }
+
+    case 'Erc20ApprovalConfirmed':
+      return { ...event, message: `Approval for ${event.symbol} confirmed, tx=${event.transactionHash}` }
+    case 'Erc20ApprovalsConfirmed':
+      return { ...event, message: `All approvals for ERC20s confirmed` }
+    case 'WorkflowSubmitting':
+      return { ...event, message: `Submitting workflow to ${event.chain}` }
+    case 'WorkflowSubmitted':
+      return { ...event, message: `Workflow submitted, waiting for confirmation` }
+    case 'WorkflowConfirmed':
+      return { ...event, message: `Workflow confirmed on ${event.chain} tx=${event.transactionHash}` }
+    case 'WorkflowWaitingForBridge':
+      return { ...event, message: `Waiting for ${event.bridgeName} to bridge funds from ${event.sourceChain} to ${event.targetChain}` }
+    case 'WorkflowComplete':
+      return { ...event, message: `Workflow has completed successfully` }
   }
 }
 

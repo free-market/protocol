@@ -36,18 +36,3 @@ export function validateWorkflow(fileName: string, verbose: boolean) {
     process.exit(1)
   }
 }
-
-export function createArgumentsSchema(workflow: ReadonlyDeep<Workflow>) {
-  if (!workflow.parameters) {
-    console.log(`workflow doesn't declare any parameters`)
-    return null
-  }
-
-  const workflowArgsSchema: Record<string, ZodTypeAny> = {}
-  for (const param of workflow.parameters) {
-    const schema = getParameterSchema(param.type)
-    workflowArgsSchema[param.name] = schema.describe(schema._def.description)
-  }
-
-  return z.object(workflowArgsSchema)
-}

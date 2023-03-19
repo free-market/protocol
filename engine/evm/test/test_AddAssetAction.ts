@@ -116,7 +116,7 @@ contract('AddAssetAction', function (accounts: string[]) {
   it('transfers an ERC20 in a workflow', async () => {
     // percentages have 4 decimals of precision (1/10th of a basis point)
     const feePercentage = new BN('300')
-    const expectedFee = inputAmount.mul(feePercentage).div(new BN('1000000'))
+    const expectedFee = inputAmount.mul(feePercentage).div(new BN('100000'))
 
     // ensure WETH balance
     const userWethBalanceBefore = await ensureWethBalance(inputAmount)

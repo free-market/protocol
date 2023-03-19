@@ -2,7 +2,7 @@ import type { ContractReceipt } from '@ethersproject/contracts'
 import type { EncodedWorkflow } from '../EncodedWorkflow'
 import type { Chain } from '../model'
 import type { AddAssetInfo } from './AddAssetInfo'
-import { ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
+import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
@@ -51,12 +51,12 @@ export class WorkflowRunner implements IWorkflowRunner {
     try {
       const stdProvider = this.instance.getProvider('start-chain')
       const startChainSigner = getEthersSigner(stdProvider)
-      assert(startChainSigner)
       await this.doErc20Approvals(startChainSigner)
       await this.submitWorkflow(startChainSigner)
     } catch (e) {
-      const s = e instanceof Error ? e.message : (e as any)
+      const s = e instanceof Error ? e.stack : (e as any)
       log.error(`Workflow unsuccessful: ${s}`)
+      throw e
     }
   }
 
@@ -64,7 +64,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(this.startChain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddr, signer)
 
-    this.sendEvent(new ExecutionEvent(ExecutionEventCode.WorkflowSubmitting, { chain: this.startChain }))
+    this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
     const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
@@ -72,11 +72,9 @@ export class WorkflowRunner implements IWorkflowRunner {
     })
     const gasLimit = srcWorkflowGasEstimate.mul(11).div(10)
     const tx = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
-    this.sendEvent(new ExecutionEvent(ExecutionEventCode.WorkflowSubmitted, { chain: this.startChain }))
+    this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
     const txReceipt = await tx.wait(1)
-    this.sendEvent(
-      new ExecutionEvent(ExecutionEventCode.WorkflowConfirmed, { chain: this.startChain, transactionHash: txReceipt.transactionHash })
-    )
+    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash })
 
     // const eraseme = getStargateBridgeParamsEvent(txReceipt)
 
@@ -88,20 +86,22 @@ export class WorkflowRunner implements IWorkflowRunner {
         break
       }
 
-      this.sendEvent(
-        new ExecutionEvent(ExecutionEventCode.WaitingForBridge, {
-          bridge: continuationInfo.bridgeName,
-          source: sourceChain,
-          target: continuationInfo.targetChain,
-        })
-      )
+      this.sendEvent({
+        code: 'WorkflowWaitingForBridge',
+        bridgeName: continuationInfo.bridgeName,
+        sourceChain,
+        sourceChainTransactionHash: txReceipt.transactionHash,
+        targetChain: continuationInfo.targetChain,
+      })
       await this.waitForContinuation(continuationInfo)
 
-      // TODO get next txReceipt
+      // TODO get next txReceipt https://freemarket.atlassian.net/browse/CORE-24
       //  provider.getTransaction(transactionHash)
+
+      break
     }
 
-    this.sendEvent(new ExecutionEvent(ExecutionEventCode.Completed, {}))
+    this.sendEvent({ code: 'WorkflowComplete' })
   }
 
   getContinuationInfoFromEvents(txReceipt: ContractReceipt): ContinuationInfo | null {
@@ -122,7 +122,8 @@ export class WorkflowRunner implements IWorkflowRunner {
     return null
   }
 
-  private sendEvent(event: ExecutionEvent) {
+  private sendEvent(eventArg: CreateExecutionEventArg) {
+    const event = createExecutionEvent(eventArg)
     for (const handler of this.eventHandlers) {
       handler(event)
     }
@@ -139,23 +140,23 @@ export class WorkflowRunner implements IWorkflowRunner {
       return
     }
 
-    this.sendEvent(new ExecutionEvent(ExecutionEventCode.Erc20ApprovalsSubmittingAll, { symbols }))
+    this.sendEvent({ code: 'Erc20ApprovalsSubmitting', symbols })
 
     const promises: Promise<ContractReceipt>[] = []
     for (const symbol of symbols) {
       const amounts = this.addAssetInfo.erc20s.get(symbol)
       assert(amounts)
       const amount = amounts.requiredAllowance
-      this.sendEvent(new ExecutionEvent(ExecutionEventCode.Erc20ApprovalsSubmitting, { symbol, amount }))
+      this.sendEvent({ code: 'Erc20ApprovalSubmitting', symbol, amount: amount.toFixed(0) })
       promises.push(this.doErc20Approval(signer, symbol, amount))
     }
     const results = await Promise.all(promises)
     for (let i = 0; i < results.length; ++i) {
       const symbol = symbols[i]
       const txReceipt = results[i]
-      this.sendEvent(new ExecutionEvent(ExecutionEventCode.Erc20ApprovalsConfirmed, { symbol }, txReceipt.transactionHash))
+      this.sendEvent({ code: 'Erc20ApprovalConfirmed', symbol, transactionHash: txReceipt.transactionHash })
     }
-    this.sendEvent(new ExecutionEvent(ExecutionEventCode.Erc20ApprovalsConfirmedAll, {}))
+    this.sendEvent({ code: 'Erc20ApprovalsConfirmed', symbols })
   }
 
   private async doErc20Approval(signer: Signer, symbol: string, amount: Big) {

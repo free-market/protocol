@@ -104,7 +104,7 @@ contract('Wrap/UnwrapEtherAction', function (accounts: string[]) {
     // verify eth balances
     expect(endingBalanceEth.lt(beginningBalanceEth)).to.be.true
     const feePercent = new BN('300')
-    const fee = testAmount.mul(feePercent).div(new BN(1000000))
+    const fee = testAmount.mul(feePercent).div(new BN(100000))
     const ethDelta = beginningBalanceEth.sub(endingBalanceEth).sub(fee)
     const expectedEth = beginningBalanceEth.sub(testAmount).sub(gasInWei)
 

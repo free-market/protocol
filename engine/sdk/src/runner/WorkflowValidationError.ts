@@ -4,7 +4,7 @@ export enum WorkflowValidationProblemType {
   NonUniqueStepId = 'NonUniqueStepId',
   NonExistentNextStepId = 'NonExistentNextStepId',
   ParameterTypeMismatch = 'ParameterTypeMismatch',
-  InvalidParameterReference = 'InvalidParameterReference',
+  // InvalidParameterReference = 'InvalidParameterReference',
   UndeclaredParameter = 'UndeclaredParameter',
 }
 

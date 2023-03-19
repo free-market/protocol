@@ -23,6 +23,8 @@ export const parameterSchema = z.object({
   type: parameterTypeSchema,
 })
 
+export interface Parameter extends z.infer<typeof parameterSchema> {}
+
 const parameterTypeRegistry = new Map<string, ZodTypeAny>()
 
 export function registerParameterType<T>(parameterTypeName: ParameterType, obj: ZodType<T>) {

@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 
-import { createArgumentsSchema, validateWorkflow } from './common'
+import { validateWorkflow } from './common'
 import fs from 'fs'
 import chalk from 'chalk'
+import { createParametersSchema } from '../utils'
 if (process.argv.length != 4) {
   console.log('usage: node validate-arguments.js <workflow-filename> <arguments.filename>')
 }
@@ -12,7 +13,7 @@ const argumentsFileName = process.argv[3]
 
 const workflow = validateWorkflow(workflowFileName, false).getWorkflow()
 
-const zodType = createArgumentsSchema(workflow)
+const zodType = createParametersSchema(workflow)
 if (!zodType) {
   process.exit(1)
 }

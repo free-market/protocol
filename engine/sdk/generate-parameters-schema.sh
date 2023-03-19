@@ -6,4 +6,4 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-node build/clis/generate-argument-schema.js $1
+node build/clis/generate-parameters-schema.js $1

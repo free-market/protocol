@@ -13,6 +13,7 @@ import {
   IStargateFactory__factory,
   IStargatePool__factory,
   IStargateFeeLibrary__factory,
+  StargateBridgeActionArgs,
 } from '@freemarket/evm'
 import { Memoize } from 'typescript-memoize'
 import type { AssetAmount, Chain, StargateBridge } from '../model'
@@ -162,6 +163,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   async getStargateBridgeActionAddressForChain(chain: Chain): Promise<string> {
     const stdProvider = this.instance.getProvider(chain)
     const ethersProvider = getEthersProvider(stdProvider)
+    const x = await ethersProvider.getNetwork()
     const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(chain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
     const sgBridgeActionAddr = await runner.getStepAddress(StepIds.stargateBridge)
@@ -224,6 +226,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       stepConfig.destinationChain,
       targetChainUserAddress
     )
+    log.debug('encoded target segment:\n' + JSON.stringify(encodedTargetSegment, null, 2))
     const { nonce, encodedWorkflow } = getBridgePayload(targetChainUserAddress, encodedTargetSegment)
     log.debug(`generated payload for stepId '${stepConfig.stepId}' nonce='${nonce}'`)
     return { nonce, continuationWorkflow: encodedWorkflow }
@@ -259,6 +262,12 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       this.getStargateChainId(stepConfig.destinationChain),
       this.getRemittance(context.stepConfig),
     ])
+    // const transferInputAsset = await sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.instance)
+    // const payload = await this.getPayload(stepConfig, userAddress)
+    // const targetAddress = await this.getBridgeTargetAddress(context)
+    // const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)
+    // const remittance = await this.getRemittance(context.stepConfig)
+
     const { nonce, continuationWorkflow } = payload
 
     const stargateRequiredNative = remittance.amount.toString()
@@ -301,24 +310,27 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
 
     minAmountOut = minOut
 
+    const sgArgs: StargateBridgeActionArgs = {
+      dstActionAddress: targetAddress, // who initially gets the money and gets invoked by SG
+      dstUserAddress: stepConfig.destinationUserAddress ?? context.userAddress, // dstUserAddress, // who gets the money after the continuation workflow completes
+      srcPoolId,
+      dstPoolId,
+      dstChainId: dstChainId.toString(),
+      dstGasForCall: stepConfig.destinationGasUnits.toString(), // gas units (not wei or gwei)
+      dstNativeAmount: stepConfig.destinationAdditionalNative ? stepConfig.destinationAdditionalNative.toString() : '0',
+      minAmountOut: minAmountOut,
+      minAmountOutIsPercent: false,
+      continuationWorkflow: continuationWorkflow,
+      nonce,
+    }
+    log.debug(`stargate args:\n${JSON.stringify(sgArgs, null, 2)}`)
+
     return {
       stepId: StepIds.stargateBridge,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [transferInputAsset, paymentAsset],
       outputAssets: [], // no output assets, the input asset is transferred from the caller
-      data: EvmStargateBridge.encodeStargateBridgeArgs({
-        dstActionAddress: targetAddress, // who initially gets the money and gets invoked by SG
-        dstUserAddress: stepConfig.destinationUserAddress ?? context.userAddress, // dstUserAddress, // who gets the money after the continuation workflow completes
-        srcPoolId,
-        dstPoolId,
-        dstChainId: dstChainId.toString(),
-        dstGasForCall: stepConfig.destinationGasUnits.toString(), // gas units (not wei or gwei)
-        dstNativeAmount: stepConfig.destinationAdditionalNative ? stepConfig.destinationAdditionalNative.toString() : '0',
-        minAmountOut: minAmountOut,
-        minAmountOutIsPercent: false,
-        continuationWorkflow: continuationWorkflow,
-        nonce,
-      }),
+      data: EvmStargateBridge.encodeStargateBridgeArgs(sgArgs),
     }
   }
 

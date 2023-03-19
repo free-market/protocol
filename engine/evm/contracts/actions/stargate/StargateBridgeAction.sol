@@ -162,7 +162,7 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
     require(msg.sender == stargateRouterAddress, 'only Stargate is permitted to call sgReceive');
     BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
     emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
-    // TODO maybe we do delegateProxy here instead to avoid having this xfer
+
     IERC20 startingToken = IERC20(tokenAddress);
     SafeERC20.safeTransfer(startingToken, frontDoorAddress, amount);
 

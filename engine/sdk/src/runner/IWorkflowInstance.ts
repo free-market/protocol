@@ -1,12 +1,14 @@
 import type { EIP1193Provider } from 'eip1193-provider'
+import type { ReadonlyDeep } from 'type-fest'
 import type { EncodedWorkflow } from '../EncodedWorkflow'
-import type { Amount, Arguments, Asset, AssetAmount, Chain, FungibleToken } from '../model'
+import type { Amount, Arguments, Asset, AssetAmount, Chain, FungibleToken, Workflow } from '../model'
 import type { AssetReference } from '../model/AssetReference'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
 
 // TODO this can be split into functions that only helpers are interested in
 export interface IWorkflowInstance {
+  getWorkflow(): ReadonlyDeep<Workflow>
   validateArguments(args?: Arguments): void
 
   // used by client to call setProvider
