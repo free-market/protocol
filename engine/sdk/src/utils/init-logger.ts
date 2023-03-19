@@ -1,8 +1,8 @@
-import log from 'loglevel'
+import log, { LogLevelNames } from 'loglevel'
 import chalk from 'chalk'
 import prefix from 'loglevel-plugin-prefix'
 
-export function initLogger() {
+export function initLogger(level?: LogLevelNames) {
   const colors: any = {
     TRACE: chalk.magenta,
     DEBUG: chalk.cyan,
@@ -12,7 +12,11 @@ export function initLogger() {
   }
 
   prefix.reg(log)
-  log.enableAll()
+  if (!level) {
+    log.enableAll()
+  } else {
+    log.setLevel(level)
+  }
 
   const timestampFormatter = (date: Date) => {
     return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, `$1.`) + date.getMilliseconds().toString().padStart(3, '0')

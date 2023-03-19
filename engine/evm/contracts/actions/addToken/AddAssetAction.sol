@@ -38,6 +38,7 @@ contract AddAssetAction is IWorkflowStep {
     }
 
     require(outputAssets[0].assetType == AssetType.ERC20, 'AddTokenAction supports native and ERC20s');
+    require(args.userAddress != address(this), 'AddAsset cannot pull from FrontDoor');
 
     // transfer the token to this
     IERC20 erc20 = IERC20(outputAssets[0].assetAddress);
