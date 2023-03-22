@@ -1,6 +1,5 @@
 import z from 'zod'
-import { fungibleTokenSchema } from './Asset'
-import { parameterSchema } from './Parameter'
+import { fungibleTokenSchema, parameterSchema } from '@freemarket/core'
 import { stepSchema } from './Step'
 
 export const workflowSchema = z

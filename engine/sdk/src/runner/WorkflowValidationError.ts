@@ -1,4 +1,4 @@
-import type { StepBase } from '../model'
+import type { StepBase } from '@freemarket/core'
 
 export enum WorkflowValidationProblemType {
   NonUniqueStepId = 'NonUniqueStepId',

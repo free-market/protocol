@@ -1,8 +1,5 @@
 import type z from 'zod'
-import { amountSchema } from '../Amount'
-import { assetReferenceSchema } from '../AssetReference'
-import { addressSchema } from '../AddressSchema'
-import { createStepSchema } from '../StepBase'
+import { amountSchema, assetReferenceSchema, addressSchema, createStepSchema } from '@freemarket/core'
 
 export const addAssetSchema = createStepSchema('add-asset')
   .extend({

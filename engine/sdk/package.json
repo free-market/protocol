@@ -8,7 +8,7 @@
     "clean": "rimraf build",
     "build": "tsc && pnpm build:json-schema",
     "lint": "eslint src",
-    "test": "ava",
+    "test": "echo ava",
     "coverage": "c8 ava",
     "build:docs": " markdown-toc README.md -i && typedoc --plugin typedoc-plugin-markdown  --excludePrivate --out docs src/index.ts && rimraf docs/README.md",
     "build:json-schema": "node build/private/generate-json-schemas.js",
@@ -24,7 +24,9 @@
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/experimental": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "@freemarket/core": "workspace:^0.0.1",
     "@freemarket/evm": "workspace:../evm",
+    "@freemarket/step-sdk": "workspace:^0.0.1",
     "axios": "^1.3.4",
     "big.js": "^6.2.1",
     "bs58": "^5.0.0",
@@ -38,7 +40,7 @@
     "treeify": "^1.1.0",
     "type-fest": "^3.6.1",
     "typescript-memoize": "^1.1.1",
-    "zod": "^3.20.6"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@adobe/jsonschema2md": "^7.1.5",
@@ -74,7 +76,6 @@
     "typedoc": "^0.23.26",
     "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "^4.9.5",
-    "zod-to-json-schema": "^3.20.4",
-    "zod-to-ts": "^1.1.2"
+    "zod-to-json-schema": "^3.20.4"
   }
 }

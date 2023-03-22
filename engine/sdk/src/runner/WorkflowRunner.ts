@@ -1,20 +1,18 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
-import type { EncodedWorkflow } from '../EncodedWorkflow'
-import type { Chain } from '../model'
 import type { AddAssetInfo } from './AddAssetInfo'
 import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
-import type { IWorkflowInstance } from './IWorkflowInstance'
+import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
-import { getEthersSigner, getEthersProvider } from '../utils/evm-utils'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 
 import rootLogger from 'loglevel'
 import { getStargateBridgeParamsEvent } from '../private/debug-utils'
+import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner } from '@freemarket/core'
 const log = rootLogger.getLogger('WorkflowRunner')
 
 interface ContinuationInfo {
@@ -32,11 +30,11 @@ export interface WaitForContinuationResult {
 export class WorkflowRunner implements IWorkflowRunner {
   private startChainWorkflow: EncodedWorkflow
   private eventHandlers: ExecutionEventHandler[] = []
-  private instance: IWorkflowInstance
+  private instance: ISDKWorkflowInstance
   private startChain: Chain
   private addAssetInfo: AddAssetInfo
 
-  constructor(instance: IWorkflowInstance, startChainWorkflow: EncodedWorkflow, startChain: Chain, addAssetInfo: AddAssetInfo) {
+  constructor(instance: ISDKWorkflowInstance, startChainWorkflow: EncodedWorkflow, startChain: Chain, addAssetInfo: AddAssetInfo) {
     this.startChainWorkflow = startChainWorkflow
     this.instance = instance
     this.startChain = startChain
@@ -80,6 +78,7 @@ export class WorkflowRunner implements IWorkflowRunner {
 
     const sourceChain = this.startChain
 
+    // eslint-disable-next-line sonarjs/no-one-iteration-loop
     for (;;) {
       const continuationInfo = this.getContinuationInfoFromEvents(txReceipt)
       if (!continuationInfo) {

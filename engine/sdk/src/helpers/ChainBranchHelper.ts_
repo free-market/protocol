@@ -1,0 +1,8 @@
+import type { ChainBranch } from '../model'
+import { EncodedWorkflowStep, AbstractBranchHelper, EncodingContext } from '@freemarket/core'
+
+export class ChainBranchHelper extends AbstractBranchHelper<ChainBranch> {
+  encodeWorkflowStep(_context: EncodingContext<ChainBranch>): Promise<EncodedWorkflowStep> {
+    throw new Error('Method not implemented.')
+  }
+}

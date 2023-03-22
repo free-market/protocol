@@ -3,10 +3,7 @@ import axios from 'axios'
 import cloneDeep from 'lodash.clonedeep'
 import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
-import { AssetReference, assetReferenceSchema } from '../model/AssetReference'
 import { createStepHelper } from '../helpers'
-import { getChainFromProvider, getEthersProvider } from '../utils/evm-utils'
-import { getParameterSchema, PARAMETER_REFERENCE_REGEXP } from '../model/Parameter'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { Memoize } from 'typescript-memoize'
 import { NATIVE_ASSETS } from '../NativeAssets'
@@ -15,36 +12,41 @@ import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblem
 import { WorkflowRunner } from './WorkflowRunner'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
 import type { EIP1193Provider } from 'eip1193-provider'
-import {
-  Amount,
-  Arguments,
-  Asset,
-  AssetAmount,
-  Chain,
-  FungibleToken,
-  fungibleTokenSchema,
-  Step,
-  StepBase,
-  stepSchema,
-  Workflow,
-  workflowSchema,
-} from '../model'
+import { Arguments, Step, stepSchema, Workflow, workflowSchema } from '../model'
 import type { StepNode } from './StepNode'
 import type { ZodObject, ZodType } from 'zod'
 import type { ReadonlyDeep } from 'type-fest'
-import type { IStepHelper, NextSteps } from '../helpers/IStepHelper'
-import type { ChainOrStart, WorkflowSegment } from './WorkflowSegment'
-import type { IWorkflowInstance } from './IWorkflowInstance'
-import type { EncodedWorkflow } from '../EncodedWorkflow'
-import { EvmWorkflowStep, IERC20__factory } from '@freemarket/evm'
+import type { WorkflowSegment } from './WorkflowSegment'
+import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
+import { IERC20__factory } from '@freemarket/evm'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import Big from 'big.js'
 import type { Provider } from '@ethersproject/providers'
 import type { AddAssetInfo, Erc20Info } from './AddAssetInfo'
+import {
+  Asset,
+  AssetAmount,
+  getParameterSchema,
+  PARAMETER_REFERENCE_REGEXP,
+  getChainFromProvider,
+  getEthersProvider,
+  AssetReference,
+  assetReferenceSchema,
+  type ChainOrStart,
+  type IStepHelper,
+  type Chain,
+  type Amount,
+  type NextSteps,
+  type EncodedWorkflow,
+  type StepBase,
+  type FungibleToken,
+  fungibleTokenSchema,
+  EvmWorkflowStep,
+} from '@freemarket/core'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
-export class WorkflowInstance implements IWorkflowInstance {
+export class WorkflowInstance implements ISDKWorkflowInstance {
   private workflow: Workflow
   private providers = new Map<ChainOrStart, EIP1193Provider>()
   private stepHelpers = new MapWithDefault<ChainOrStart, Map<string, IStepHelper<any>>>(() => new Map())

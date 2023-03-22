@@ -1,5 +1,4 @@
-import type { Chain } from './model'
-import type { NativeAsset } from './model/Asset'
+import type { Chain, NativeAsset } from '@freemarket/core'
 
 const ETH_ICON_URL = 'https://metadata.fmprotocol.com/icons/native/eth.png'
 

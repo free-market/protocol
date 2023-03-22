@@ -1,4 +1,4 @@
-import type { Chain } from '../model'
+import type { Chain } from '@freemarket/core'
 
 export enum ExecutionEventCode {
   Erc20ApprovalsSubmitting = 'Erc20ApprovalsSubmitting',

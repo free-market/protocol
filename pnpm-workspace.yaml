@@ -2,4 +2,3 @@ packages:
   - 'apps/**'
   - 'types/**'
   - 'engine/**'
-  - 'ui2'

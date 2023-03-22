@@ -14,7 +14,7 @@ import { Wallet } from '@ethersproject/wallet'
 import { JsonRpcProvider, Provider, WebSocketProvider } from '@ethersproject/providers'
 import assert from '../utils/assert'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { createStandardProvider } from '../helpers/utils'
+import { createStandardProvider } from '@freemarket/core'
 
 dotenv.config()
 const log = rootLogger.getLogger('execute-workflow')

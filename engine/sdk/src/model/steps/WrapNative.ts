@@ -1,6 +1,5 @@
 import type z from 'zod'
-import { amountSchema } from '../Amount'
-import { createStepSchema } from '../StepBase'
+import { amountSchema, createStepSchema } from '@freemarket/core'
 
 export const wrapNativeSchema = createStepSchema('wrap-native').extend({
   amount: amountSchema,

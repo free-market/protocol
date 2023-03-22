@@ -1,6 +1,6 @@
 import test from 'ava'
 import type { Workflow } from '../../model'
-import type { AssetReference } from '../../model/AssetReference'
+import type { AssetReference } from '@freemarket/core'
 import { assert, throwsAsync } from '../../private/test-utils'
 import { WorkflowInstance } from '../WorkflowInstance'
 import { addAssetStep } from './common'

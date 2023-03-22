@@ -1,6 +1,5 @@
 import type z from 'zod'
-import { createBranchStepSchema } from '../BranchStep'
-import { chainSchema } from '../Chain'
+import { createBranchStepSchema, chainSchema } from '@freemarket/core'
 
 export const chainBranchSchema = createBranchStepSchema('chain-branch').extend({
   currentChain: chainSchema,

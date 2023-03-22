@@ -1,6 +1,4 @@
-import type { Chain } from '../model'
-
-export type ChainOrStart = Chain | 'start-chain'
+import type { ChainOrStart } from '@freemarket/core'
 
 export interface WorkflowSegment {
   chains: ChainOrStart[]

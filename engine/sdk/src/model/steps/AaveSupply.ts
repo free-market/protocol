@@ -1,6 +1,5 @@
 import type z from 'zod'
-import { assetAmountSchema } from '../AssetAmount'
-import { createStepSchema } from '../StepBase'
+import { assetAmountSchema, createStepSchema } from '@freemarket/core'
 
 export const aaveSupplySchema = createStepSchema('aave-supply').extend({
   inputAsset: assetAmountSchema,

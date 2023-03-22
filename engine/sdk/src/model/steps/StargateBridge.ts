@@ -1,10 +1,5 @@
 import z from 'zod'
-import { amountSchema } from '../Amount'
-import { assetAmountSchema } from '../AssetAmount'
-import { chainSchema } from '../Chain'
-import { addressSchema } from '../AddressSchema'
-import { createStepSchema } from '../StepBase'
-import { assetReferenceSchema } from '../AssetReference'
+import { amountSchema, assetAmountSchema, chainSchema, addressSchema, createStepSchema, assetReferenceSchema } from '@freemarket/core'
 
 export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
   maxSlippagePercent: z.number().gt(0).lt(100).describe('The maximum amount of loss during the swap.'),

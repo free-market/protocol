@@ -1,7 +1,5 @@
 import z from 'zod'
-import { amountSchema } from '../Amount'
-import { nonEmptyStringSchema } from '../NonEmptyString'
-import { createStepSchema } from '../StepBase'
+import { amountSchema, nonEmptyStringSchema, createStepSchema } from '@freemarket/core'
 
 export const uniswapExactInSchema = createStepSchema('uniswap-exact-in').extend({
   inputAsset: nonEmptyStringSchema,

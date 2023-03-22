@@ -1,10 +1,10 @@
 import test from 'ava'
 import { JsonRpcProvider } from '@ethersproject/providers'
-import { createStandardProvider } from '../../helpers/utils'
 import { WorkflowInstance } from '../WorkflowInstance'
 import type { StargateBridge, Step } from '../../model'
 import dotenv from 'dotenv'
 import { shouldRunE2e } from '../../private/test-utils'
+import { createStandardProvider } from '@freemarket/core'
 
 dotenv.config()
 
