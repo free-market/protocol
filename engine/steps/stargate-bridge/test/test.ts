@@ -2,7 +2,7 @@
 // rootLogger.enableAll()
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { AddAssetAction, StargateBridgeAction } from '../typechain-types'
+import { StargateBridgeAction } from '../typechain-types'
 import { StargateBridgeHelper, STEP_TYPE_ID } from '../tslib/helper'
 import { createStandardProvider, EncodingContext, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { TestErc20__factory, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk'
@@ -55,7 +55,7 @@ describe('StargateBridge', async () => {
     expect(actualRouterAddress).to.eq(expectedRouterAddress)
   })
 
-  it.only('executes', async () => {
+  it('executes', async () => {
     const {
       contracts: { stargateBridgeAction, testUsdc },
       mockWorkflowInstance,

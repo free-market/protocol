@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@freemarket/core/contracts/LibPercent.sol";
 import "@freemarket/core/contracts/IWorkflowStep.sol";
-import "@freemarket/core/contracts/LibActionHelpers.sol";
 import "@freemarket/core/contracts/model/Asset.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
+import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 
 struct AddAssetActionArgs {
     address userAddress;

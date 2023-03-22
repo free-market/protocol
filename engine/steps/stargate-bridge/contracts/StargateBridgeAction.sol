@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import "./BridgeBase.sol";
-import "@freemarket/core/contracts/LibActionHelpers.sol";
 import "@freemarket/core/contracts/model/Asset.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@freemarket/core/contracts/model/BridgePayload.sol";
 import "@freemarket/core/contracts/IWorkflowRunner.sol";
+import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 import "./IStargateRouter.sol";
 import "./IStargateReceiver.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
