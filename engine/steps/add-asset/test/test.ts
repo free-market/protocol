@@ -62,7 +62,7 @@ describe('AddAsset', async () => {
       stepConfig: stepConfig,
     }
     const encoded = await helper.encodeWorkflowStep(context)
-    console.log(encoded)
+    // console.log(encoded)
 
     const { inputAssets, outputAssets, data } = encoded
     await expect(addAssetAction.execute(inputAssets, outputAssets, data)).to.changeTokenBalances(

@@ -14,9 +14,16 @@ export class MockWorkflowInstance implements IWorkflowInstance {
   // map symbol to erc20 contract address
   private erc20s = new Map<string, string>()
 
+  testNet = false
+  frontDoorAddress?: string
+
   getFrontDoorAddressForChain(chain: Chain): Promise<string> {
-    throw new Error('not implemented')
+    if (!this.frontDoorAddress) {
+      throw new Error('frontDoorAddress not set in not MockWorkflowInstance')
+    }
+    return Promise.resolve(this.frontDoorAddress)
   }
+
   dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
     if (typeof assetRef === 'string') {
       throw new Error('dereferencing string asset refs is not supported')
@@ -42,7 +49,7 @@ export class MockWorkflowInstance implements IWorkflowInstance {
     return Promise.resolve(rv)
   }
   isTestNet(): Promise<boolean> {
-    throw new Error('not implemented')
+    return Promise.resolve(this.testNet)
   }
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider {
     throw new Error('not implemented')

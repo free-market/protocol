@@ -4,32 +4,6 @@ import { expect } from 'chai'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { Signer } from 'ethers'
 
-// export const createBaseFixture = async () => {
-//   console.log('aaaaaaaaaaaaaaaaa')
-//   const [_frontDoorDeployment, _workflowRunnerDeployment, users] = await Promise.all([
-//     deployments.fixture('FrontDoor'),
-//     deployments.fixture('WorkflowRunner'),
-//     getNamedAccounts(),
-//   ])
-//   const frontDoor = <FrontDoor>await ethers.getContract('FrontDoor')
-//   const [deployerSigner, otherUserSigner] = await Promise.all([ethers.getSigner(users.deployer), ethers.getSigner(users.otherUser)])
-//   const workflowRunner = WorkflowRunner__factory.connect(frontDoor.address, deployerSigner)
-
-//   const signers = {
-//     deployer: deployerSigner,
-//     otherUser: otherUserSigner,
-//   }
-//   const contracts = {
-//     frontDoor,
-//     workflowRunner,
-//   }
-//   return {
-//     contracts,
-//     users,
-//     signers,
-//   } as const
-// }
-
 interface BaseTestFixture {
   contracts: {
     frontDoor: FrontDoor
@@ -40,14 +14,17 @@ interface BaseTestFixture {
     deployer: string
     otherUser: string
   }
-  signers: Record<string, Signer>
+  signers: {
+    deployerSigner: Signer
+    otherUserSigner: Signer
+  }
 }
 
 export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc: (baseFixture: BaseTestFixture) => Promise<T>) {
   const { ethers, deployments, getNamedAccounts } = hardhat
   return deployments.createFixture(async () => {
     {
-      const [_dep, users] = await Promise.all([deployments.fixture('WorkflowRunner'), getNamedAccounts()])
+      const [_deployResult, users] = await Promise.all([deployments.fixture('WorkflowRunner'), getNamedAccounts()])
       const [frontDoor, deployerSigner, otherUserSigner] = await Promise.all([
         <Promise<FrontDoor>>ethers.getContract('FrontDoor'),
         ethers.getSigner(users.deployer),
@@ -57,7 +34,7 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
       const userWorkflowRunner = WorkflowRunner__factory.connect(frontDoor.address, otherUserSigner)
 
       const baseFixture: BaseTestFixture = {
-        signers: { deployer: deployerSigner, otherUser: otherUserSigner },
+        signers: { deployerSigner, otherUserSigner },
         contracts: { frontDoor, workflowRunner, userWorkflowRunner },
         users: { deployer: users.deployer, otherUser: users.otherUser },
       }
