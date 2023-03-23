@@ -1,4 +1,4 @@
-export function getTriCrypto2Address(chainId: string | number) {
+export function getCurveTriCrypto2Address(chainId: string | number) {
   switch (chainId.toString()) {
     // ethereum
     case '1':

@@ -1,5 +1,5 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
-import { StargateBridgeAction__factory } from '@freemarket/evm'
+import { StargateBridgeAction__factory } from '@freemarket/stargate-bridge'
 
 export function getStargateBridgeParamsEvent(txReceipt: ContractReceipt): any {
   const iface = StargateBridgeAction__factory.createInterface()

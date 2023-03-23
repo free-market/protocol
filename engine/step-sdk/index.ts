@@ -1,2 +1,2 @@
 export * from './typechain-types'
-export * from './tslib'
+export * from './tslib/helpers'

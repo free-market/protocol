@@ -5,9 +5,10 @@ import hardhat, { ethers, deployments } from 'hardhat'
 import { StargateBridgeAction } from '../typechain-types'
 import { StargateBridgeHelper, STEP_TYPE_ID } from '../tslib/helper'
 import { createStandardProvider, EncodingContext, WORKFLOW_END_STEP_ID } from '@freemarket/core'
-import { TestErc20__factory, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk'
+import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { getRouterAddress } from '../tslib/getRouterAddress'
 import { StargateBridge } from '../tslib/model'
+import { TestErc20__factory } from '@freemarket/step-sdk'
 
 const testAmount = 100
 

@@ -1,8 +1,10 @@
 import { FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
 import merge from 'lodash.merge'
 import { expect } from 'chai'
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { Signer } from 'ethers'
+import type { HardhatRuntimeEnvironment } from 'hardhat/types'
+import type { BigNumberish, Signer } from 'ethers'
+import { getCurveTriCrypto2Address } from './curve'
+import { IERC20__factory, ITriCrypto2__factory } from '../../typechain-types'
 
 interface BaseTestFixture {
   contracts: {
@@ -63,4 +65,15 @@ export async function validateAction(runner: WorkflowRunner, stepId: number, ste
     }
   }
   expect(found).to.be.true
+}
+
+export async function getUsdt(hardhat: HardhatRuntimeEnvironment, wei: BigNumberish, signer: Signer) {
+  const [chainId, signerAddr] = await Promise.all([hardhat.getChainId(), signer.getAddress()])
+  const triCryptoAddress = getCurveTriCrypto2Address(chainId)
+  const triCrypto = ITriCrypto2__factory.connect(triCryptoAddress, signer)
+  const usdtAddress = await triCrypto.coins(0)
+  await (await triCrypto.exchange(2, 0, wei, 1, true, { value: wei })).wait()
+  const usdt = IERC20__factory.connect(usdtAddress, signer)
+  const usdtBalance = await usdt.balanceOf(signerAddr)
+  return { usdtAddress, usdtBalance, usdt }
 }

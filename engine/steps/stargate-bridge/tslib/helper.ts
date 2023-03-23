@@ -2,15 +2,10 @@ import { AbstractStepHelper, getBridgePayload } from '@freemarket/step-sdk'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { Memoize } from 'typescript-memoize'
 import {
-  addressSchema,
-  amountSchema,
-  assetReferenceSchema,
-  createStepSchema,
   ADDRESS_ZERO,
   assert,
   EncodedWorkflowStep,
   EncodingContext,
-  sdkAssetToEvmAsset,
   AssetAmount,
   absoluteAmountToString,
   Chain,
@@ -21,9 +16,8 @@ import {
   sdkAssetAmountToEvmInputAmount,
   EvmAssetType,
 } from '@freemarket/core'
-import type z from 'zod'
 import rootLogger from 'loglevel'
-import { StargateBridge } from './model'
+import type { StargateBridge } from './model'
 import { StargateChainIds } from './StargateChainIds'
 import { WorkflowRunner__factory } from '@freemarket/runner'
 import {
@@ -35,7 +29,7 @@ import {
 } from '../typechain-types'
 import { StargatePoolIds } from './StargatePoolIds'
 import Big from 'big.js'
-import { StargateBridgeActionArgs } from './StargateBridgeActionArgs'
+import type { StargateBridgeActionArgs } from './StargateBridgeActionArgs'
 import { BigNumber } from 'ethers'
 
 export const STEP_TYPE_ID = 101

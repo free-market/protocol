@@ -1,11 +1,11 @@
-import { HardhatUserConfig } from 'hardhat/config'
+import type { HardhatUserConfig } from 'hardhat/config'
 import os from 'os'
 import path from 'path'
 import dotenv from 'dotenv'
 
 dotenv.config({ path: path.join(os.homedir(), '.env') })
 
-export const coreHardhatConfig: HardhatUserConfig = {
+export const coreHardhatConfig: any = {
   solidity: '0.8.18',
 
   networks: {
@@ -15,6 +15,18 @@ export const coreHardhatConfig: HardhatUserConfig = {
       accounts: {
         mnemonic: process.env.WALLET_MNEMONIC,
       },
+    },
+    arbitrumGoerli: {
+      chainId: 421613,
+      url: 'https://goerli-rollup.arbitrum.io/rpc',
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    },
+    // for testing deployments with local hh node, but not named 'localhost' so is considered 'live' by hardhat-deploy
+    local: {
+      url: 'http://127.0.0.1:8545/',
+      chainId: 31337,
     },
   },
 

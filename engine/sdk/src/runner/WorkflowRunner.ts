@@ -3,7 +3,7 @@ import type { AddAssetInfo } from './AddAssetInfo'
 import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
 import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
-import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
+// import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
 import type { Signer } from '@ethersproject/abstract-signer'
@@ -12,7 +12,9 @@ import { getFreeMarketConfig } from '../config'
 
 import rootLogger from 'loglevel'
 import { getStargateBridgeParamsEvent } from '../private/debug-utils'
-import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner } from '@freemarket/core'
+import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner, IERC20__factory } from '@freemarket/core'
+import { WorkflowRunner__factory } from '@freemarket/runner'
+import { BridgeBase__factory } from '@freemarket/stargate-bridge'
 const log = rootLogger.getLogger('WorkflowRunner')
 
 interface ContinuationInfo {

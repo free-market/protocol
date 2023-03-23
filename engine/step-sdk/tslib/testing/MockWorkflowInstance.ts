@@ -1,4 +1,4 @@
-import {
+import type {
   Asset,
   AssetReference,
   Chain,
@@ -8,7 +8,7 @@ import {
   FungibleToken,
   IWorkflowInstance,
 } from '@freemarket/core'
-import EIP1193Provider from 'eip1193-provider'
+import type EIP1193Provider from 'eip1193-provider'
 
 export class MockWorkflowInstance implements IWorkflowInstance {
   // map symbol to erc20 contract address

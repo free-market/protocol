@@ -4,6 +4,6 @@ import 'hardhat-deploy'
 import '@nomiclabs/hardhat-ethers'
 import '@nomicfoundation/hardhat-chai-matchers'
 
-import { stepHardhatConfig } from '@freemarket/step-sdk'
+import { stepHardhatConfig } from '@freemarket/step-sdk/tslib/hardhat-config'
 
 export default stepHardhatConfig

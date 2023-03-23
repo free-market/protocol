@@ -1,6 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types'
 import { STEP_TYPE_ID } from '../tslib/helper'
-import { deployStep } from '@freemarket/step-sdk'
+import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getRouterAddress } from '../tslib/getRouterAddress'
 
 const func: DeployFunction = async function (hardhatRuntimeEnv) {

@@ -1,27 +1,11 @@
-// import rootLogger from 'loglevel'
-// rootLogger.enableAll()
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { AaveSupplyAction, AaveSupplyAction__factory } from '../typechain-types'
+import { AaveSupplyAction } from '../typechain-types'
 import { AaveSupplyHelper, STEP_TYPE_ID } from '../tslib/helper'
-import { createStandardProvider, EncodingContext, WORKFLOW_END_STEP_ID } from '@freemarket/core'
-import { IERC20__factory, TestErc20__factory, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk'
-import { AaveSupply, aaveSupplySchema } from '../tslib/model'
-import { ITriCrypto2__factory, getTriCrypto2Address } from '@freemarket/curve'
-import { BigNumberish, Signer } from 'ethers'
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
+import { EncodingContext } from '@freemarket/core'
+import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt } from '@freemarket/step-sdk/tslib/testing'
+import { AaveSupply } from '../tslib/model'
 const testAmount = 99
-
-async function getUsdt(hardhat: HardhatRuntimeEnvironment, wei: BigNumberish, signer: Signer) {
-  const [chainId, signerAddr] = await Promise.all([hardhat.getChainId(), signer.getAddress()])
-  const triCryptoAddress = getTriCrypto2Address(chainId)
-  const triCrypto = ITriCrypto2__factory.connect(triCryptoAddress, signer)
-  const usdtAddress = await triCrypto.coins(0)
-  await (await triCrypto.exchange(2, 0, wei, 1, true, { value: wei })).wait()
-  const usdt = IERC20__factory.connect(usdtAddress, signer)
-  const usdtBalance = await usdt.balanceOf(signerAddr)
-  return { usdtAddress, usdtBalance, usdt }
-}
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
@@ -36,8 +20,8 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   // get a reference to the deployed contract with otherUser as the signer
   const aaveSupplyAction = <AaveSupplyAction>await ethers.getContract('AaveSupplyAction', otherUserSigner)
 
+  // get some USDT
   const { usdt, usdtAddress } = await getUsdt(hardhat, '1000000000000000000', otherUserSigner)
-  // console.log('usdt balance', usdtBalance.toString())
 
   // transfer to stargateBridgeAction
   await (await usdt.transfer(aaveSupplyAction.address, testAmount)).wait()
@@ -49,7 +33,7 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   return { contracts: { aaveSupplyAction }, mockWorkflowInstance, usdt, usdtAddress }
 })
 
-describe('StargateBridge', async () => {
+describe('AaveSupply', async () => {
   it('deploys', async () => {
     const {
       contracts: { userWorkflowRunner, aaveSupplyAction },
@@ -66,6 +50,7 @@ describe('StargateBridge', async () => {
       mockWorkflowInstance,
       usdt,
     } = await setup()
+
     const stepConfig: AaveSupply = {
       type: 'aave-supply',
       inputAsset: {
@@ -77,16 +62,13 @@ describe('StargateBridge', async () => {
       },
     }
     const helper = new AaveSupplyHelper(mockWorkflowInstance)
+
     const context: EncodingContext<AaveSupply> = {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig,
     }
     const encoded = await helper.encodeWorkflowStep(context)
-    console.log(JSON.stringify(encoded, null, 4))
-
-    // const ret = await aaveSupplyAction.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)
-    // const rec = await ret.wait()
 
     await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)).to.changeTokenBalance(
       usdt,

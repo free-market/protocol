@@ -2,5 +2,5 @@ packages:
   - 'apps/**'
   - 'types/**'
   - 'engine/**'
-  - '!engine/sdk'
+  - 'engine/sdk'
   - '!engine/evm'

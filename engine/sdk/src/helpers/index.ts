@@ -1,20 +1,21 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { IStepHelper } from '@freemarket/core'
-// import { AaveSupplyHelper } from './AaveSupplyHelper'
-// import { AddAssetHelper } from './AddAssetHelper'
-// import { ChainBranchHelper } from './ChainBranchHelper'
-// import { StargateBridgeHelper } from './StargateBridgeHelper'
+import { ChainBranchHelper } from './ChainBranchHelper'
+
 import type { ISDKWorkflowInstance } from '../runner/ISDKWorkflowInstance'
+import { AaveSupplyHelper } from '@freemarket/aave'
+import { AddAssetHelper } from '@freemarket/add-asset'
+import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
 
 interface StepHelperConstructor {
   new (runner: ISDKWorkflowInstance, provider?: EIP1193Provider): IStepHelper<any>
 }
 
 const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
-  // 'aave-supply': AaveSupplyHelper,
-  // 'add-asset': AddAssetHelper,
-  // 'chain-branch': ChainBranchHelper,
-  // 'stargate-bridge': StargateBridgeHelper,
+  'aave-supply': AaveSupplyHelper,
+  'add-asset': AddAssetHelper,
+  'chain-branch': ChainBranchHelper,
+  'stargate-bridge': StargateBridgeHelper,
 }
 
 export function createStepHelper(type: string, runner: ISDKWorkflowInstance) {

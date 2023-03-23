@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import './model/AssetAmount.sol';
-import './model/Workflow.sol';
+import "./model/AssetAmount.sol";
+import "./model/Workflow.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 interface IWorkflowRunner {
-  function executeWorkflow(Workflow calldata workflow) external payable;
+    function executeWorkflow(Workflow calldata workflow) external payable;
 
-  function continueWorkflow(
-    address userAddress,
-    uint256 nonce,
-    Workflow memory workflow,
-    AssetAmount memory startingAsset
-  ) external payable;
+    function continueWorkflow(
+        address userAddress,
+        uint256 nonce,
+        Workflow memory workflow,
+        AssetAmount memory startingAsset
+    ) external payable;
 }

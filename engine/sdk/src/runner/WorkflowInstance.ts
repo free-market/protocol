@@ -18,7 +18,6 @@ import type { ZodObject, ZodType } from 'zod'
 import type { ReadonlyDeep } from 'type-fest'
 import type { WorkflowSegment } from './WorkflowSegment'
 import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
-import { IERC20__factory } from '@freemarket/evm'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import Big from 'big.js'
 import type { Provider } from '@ethersproject/providers'
@@ -42,6 +41,7 @@ import {
   type FungibleToken,
   fungibleTokenSchema,
   EvmWorkflowStep,
+  IERC20__factory,
 } from '@freemarket/core'
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void

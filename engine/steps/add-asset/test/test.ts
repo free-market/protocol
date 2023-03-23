@@ -3,7 +3,8 @@ import hardhat, { ethers, deployments } from 'hardhat'
 import { AddAssetAction } from '../typechain-types'
 import { AddAsset, AddAssetHelper, STEP_TYPE_ID } from '../tslib/helper'
 import { EncodingContext } from '@freemarket/core'
-import { TestErc20__factory, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk'
+import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
+import { TestErc20__factory } from '@freemarket/step-sdk/typechain-types'
 
 const testAmount = 100
 

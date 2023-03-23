@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 const abiCoder = ethers.utils.defaultAbiCoder
 import createKeccakHash from 'keccak'
-import { EvmWorkflow } from '@freemarket/core'
+import type { EvmWorkflow } from '@freemarket/core'
 
 const AssetSchema = `
   tuple(
