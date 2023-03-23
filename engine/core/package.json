@@ -4,7 +4,7 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "clean": "rimraf .turbo artifacts build cache typechain-types",
+    "clean": "rimraf artifacts build cache typechain-types",
     "build": "hardhat compile && tsc",
     "test": "hardhat test"
   },

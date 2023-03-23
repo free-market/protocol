@@ -6,11 +6,14 @@ import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 import "./IAaveV3Pool.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 // import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 // import {DataTypes} from '@aave/core-v3/contracts/protocol/libraries/types/DataTypes.sol';
 
 contract AaveSupplyAction is IWorkflowStep {
+    using SafeERC20 for IERC20;
+
     address public immutable poolAddress;
 
     /// @notice This event is emitted when an Aave 'supply' action is executed.
@@ -34,7 +37,8 @@ contract AaveSupplyAction is IWorkflowStep {
         emit AaveSupplyActionEvent(inputAssetAmounts[0]);
 
         // approve aave to take the asset
-        IERC20(inputAssetAmounts[0].asset.assetAddress).approve(poolAddress, inputAssetAmounts[0].amount);
+        IERC20 inputToken = IERC20(inputAssetAmounts[0].asset.assetAddress);
+        inputToken.safeApprove(poolAddress, inputAssetAmounts[0].amount);
 
         // get the aToken
         IAaveV3Pool pool = IAaveV3Pool(poolAddress);

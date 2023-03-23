@@ -16,14 +16,6 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  external: {
-    contracts: [
-      ...stepHardhatConfig.external!.contracts!,
-      {
-        artifacts: 'node_modules/@freemarket/curve/artifacts',
-      },
-    ],
-  },
 }
 
 export default config

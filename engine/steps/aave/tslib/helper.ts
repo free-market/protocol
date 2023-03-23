@@ -2,7 +2,7 @@ import { EncodingContext, EncodedWorkflowStep, sdkAssetAmountToEvmInputAmount, a
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveSupply } from './model'
 
-export const STEP_TYPE_ID = 101
+export const STEP_TYPE_ID = 102
 
 export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
   async encodeWorkflowStep(context: EncodingContext<AaveSupply>): Promise<EncodedWorkflowStep> {
