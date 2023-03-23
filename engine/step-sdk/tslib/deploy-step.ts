@@ -13,7 +13,7 @@ function copyRunnerDeployments(networkName: string, contractNames: string[]) {
   }
 }
 
-async function getFrontDoorAddress(hre: HardhatRuntimeEnvironment) {
+export async function getFrontDoorAddress(hre: HardhatRuntimeEnvironment) {
   if (hre.network.live) {
     const relativePath = `node_modules/@freemarket/runner/deployments/${hre.network.name}/FrontDoor.json`
     const absolutePath = path.resolve(relativePath)
@@ -33,6 +33,7 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
   const { deployments, getNamedAccounts, ethers } = hre
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
+  const frontDoorAddress = await getFrontDoorAddress(hre)
   const deployResult = await deploy(stepName, {
     from: deployer,
     log: true,
@@ -41,7 +42,6 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
   })
   if (deployResult.newlyDeployed) {
     const signer = await ethers.getSigner(deployer)
-    const frontDoorAddress = await getFrontDoorAddress(hre)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, signer)
     const result = await runner.setStepAddress(stepTypeId, deployResult.address)
     await result.wait()

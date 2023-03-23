@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rimraf artifacts build cache typechain-types",
     "build": "hardhat compile && tsc",
-    "test": "hardhat test --deploy-fixture"
+    "test": "hardhat test --deploy-fixture",
+    "deploy-contracts": "hardhat deploy --tags StargateBridgeAction"
   },
   "keywords": [],
   "author": "",
