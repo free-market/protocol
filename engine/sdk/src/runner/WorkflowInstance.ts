@@ -643,9 +643,9 @@ export class WorkflowInstance implements ISDKWorkflowInstance {
     if (await this.isTestNet()) {
       switch (chain) {
         case 'ethereum':
-          return '0xF29547aF5D9545886c5e616c8Ec954b27C75bEdD'
+          return '0xe6513ebDaED868CF776C46a580b2f5F50ef514bA'
         case 'arbitrum':
-          return '0xeFE6E1708b058D35d79f39cd94833fa89304B96B'
+          return '0x83Ca601eA4C897C6f6e2722554EF622002a6DeB8'
         default:
           throw new Error(`freemarket is not deployed on ${chain} testnet`)
       }
