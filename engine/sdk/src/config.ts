@@ -6,7 +6,7 @@ interface FreeMarketConfig {
 }
 
 const defaultConfig = {
-  bridgeTimeoutSeconds: 60 * 5,
+  bridgeTimeoutSeconds: 60 * 15,
 }
 
 let activeConfig = defaultConfig
