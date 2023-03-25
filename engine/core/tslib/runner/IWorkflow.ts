@@ -4,7 +4,7 @@ import type { Asset, Chain } from '../model'
 import type { AssetReference } from '../model/AssetReference'
 import type { ChainOrStart } from './ChainOrStart'
 
-export interface IWorkflowInstance {
+export interface IWorkflow {
   getFrontDoorAddressForChain(chain: Chain): Promise<string>
   dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset>
   isTestNet(): Promise<boolean>

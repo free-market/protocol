@@ -2,7 +2,7 @@ import type { Asset, AssetAmount, Chain } from '../model'
 import { EvmAsset, EvmAssetType, EvmInputAsset } from '../evm'
 import { ADDRESS_ZERO } from '../utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
-import type { IWorkflowInstance } from '../runner/IWorkflowInstance'
+import type { IWorkflow } from '../runner/IWorkflow'
 import type { EIP1193Provider } from 'eip1193-provider'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
@@ -28,7 +28,7 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
 export async function sdkAssetAmountToEvmInputAmount(
   assetAmount: AssetAmount,
   chain: Chain,
-  runner: IWorkflowInstance
+  runner: IWorkflow
 ): Promise<EvmInputAsset> {
   let amountStr: string
   let amountIsPercent = false

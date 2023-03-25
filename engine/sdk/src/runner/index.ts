@@ -1,3 +1,3 @@
-export * from './ISDKWorkflowInstance'
+export * from './IWorkflowInstance'
 export * from './WorkflowInstance'
 export * from './WorkflowValidationError'

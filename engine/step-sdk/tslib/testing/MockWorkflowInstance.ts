@@ -6,11 +6,11 @@ import type {
   EncodedWorkflow,
   EvmWorkflow,
   FungibleToken,
-  IWorkflowInstance,
+  IWorkflow,
 } from '@freemarket/core'
 import type EIP1193Provider from 'eip1193-provider'
 
-export class MockWorkflowInstance implements IWorkflowInstance {
+export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
   private erc20s = new Map<string, string>()
 

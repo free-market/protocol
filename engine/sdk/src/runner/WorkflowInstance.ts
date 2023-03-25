@@ -17,7 +17,7 @@ import type { StepNode } from './StepNode'
 import type { ZodObject, ZodType } from 'zod'
 import type { ReadonlyDeep } from 'type-fest'
 import type { WorkflowSegment } from './WorkflowSegment'
-import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
+import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import Big from 'big.js'
 import type { Provider } from '@ethersproject/providers'
@@ -46,7 +46,7 @@ import {
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
-export class WorkflowInstance implements ISDKWorkflowInstance {
+export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
   private providers = new Map<ChainOrStart, EIP1193Provider>()
   private stepHelpers = new MapWithDefault<ChainOrStart, Map<string, IStepHelper<any>>>(() => new Map())

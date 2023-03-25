@@ -8,7 +8,7 @@ import {
   AssetAmount,
   Chain,
   StepBase,
-  IWorkflowInstance,
+  IWorkflow,
   EncodedWorkflowStep,
   getEthersProvider,
 } from '@freemarket/core'
@@ -20,9 +20,9 @@ import type { EIP1193Provider } from 'eip1193-provider'
 export abstract class AbstractStepHelper<T extends StepBase> implements IStepHelper<T> {
   protected standardProvider?: EIP1193Provider
   protected ethersProvider?: Provider
-  protected instance: IWorkflowInstance
+  protected instance: IWorkflow
 
-  constructor(instance: IWorkflowInstance, provider?: EIP1193Provider) {
+  constructor(instance: IWorkflow, provider?: EIP1193Provider) {
     this.instance = instance
     this.standardProvider = provider
     if (provider) {

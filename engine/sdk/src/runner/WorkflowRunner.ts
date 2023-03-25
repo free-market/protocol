@@ -1,7 +1,7 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
 import type { AddAssetInfo } from './AddAssetInfo'
 import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
-import type { ISDKWorkflowInstance } from './ISDKWorkflowInstance'
+import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 // import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
@@ -32,11 +32,11 @@ export interface WaitForContinuationResult {
 export class WorkflowRunner implements IWorkflowRunner {
   private startChainWorkflow: EncodedWorkflow
   private eventHandlers: ExecutionEventHandler[] = []
-  private instance: ISDKWorkflowInstance
+  private instance: IWorkflowInstance
   private startChain: Chain
   private addAssetInfo: AddAssetInfo
 
-  constructor(instance: ISDKWorkflowInstance, startChainWorkflow: EncodedWorkflow, startChain: Chain, addAssetInfo: AddAssetInfo) {
+  constructor(instance: IWorkflowInstance, startChainWorkflow: EncodedWorkflow, startChain: Chain, addAssetInfo: AddAssetInfo) {
     this.startChainWorkflow = startChainWorkflow
     this.instance = instance
     this.startChain = startChain
