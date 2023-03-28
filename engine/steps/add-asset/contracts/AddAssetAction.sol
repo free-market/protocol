@@ -7,6 +7,9 @@ import "@freemarket/core/contracts/IWorkflowStep.sol";
 import "@freemarket/core/contracts/model/Asset.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
+import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+
+using LibStepResultBuilder for StepResultBuilder;
 
 struct AddAssetActionArgs {
     address userAddress;
@@ -46,6 +49,6 @@ contract AddAssetAction is IWorkflowStep {
         SafeERC20.safeTransferFrom(erc20, args.userAddress, address(this), args.amount);
 
         // return amount transferred
-        return LibActionHelpers.singleTokenResult(outputAssets[0].assetAddress, args.amount);
+        return LibStepResultBuilder.create(0, 1).addOutputToken(outputAssets[0].assetAddress, args.amount).result;
     }
 }

@@ -8,6 +8,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "hardhat/console.sol";
 
+import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+
+using LibStepResultBuilder for StepResultBuilder;
+
 using SafeERC20 for IERC20;
 
 import {ITriCrypto2} from "./ITriCrypto2.sol";
@@ -105,7 +109,10 @@ contract UniswapExactInAction is IWorkflowStep {
         }
         locals.outputAmountDelta = locals.outputAmountAfter - locals.outputAmountBefore;
         require(locals.outputAmountDelta > 0, "output balance did not increase");
-        return LibActionHelpers.singleTokenResult(locals.outputTokenAddress, locals.outputAmountDelta);
+
+        return LibStepResultBuilder.create(1, 1).addInputAssetAmount(inputAssetAmounts[0]).addOutputToken(
+            locals.outputTokenAddress, locals.outputAmountDelta
+        ).result;
     }
 
     function getTokenIndex(address tokenAddress) internal view returns (uint256) {

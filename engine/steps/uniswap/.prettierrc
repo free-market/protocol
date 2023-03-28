@@ -4,5 +4,18 @@
   "tabWidth": 2,
   "semi": false,
   "singleQuote": true,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": "*.sol",
+      "options": {
+        "printWidth": 140,
+        "tabWidth": 2,
+        "useTabs": false,
+        "singleQuote": true,
+        "bracketSpacing": false,
+        "explicitTypes": "preserve"
+      }
+    }
+  ]
 }

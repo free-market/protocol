@@ -7,6 +7,9 @@ import "./IAaveV3Pool.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+
+using LibStepResultBuilder for StepResultBuilder;
 
 // import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 // import {DataTypes} from '@aave/core-v3/contracts/protocol/libraries/types/DataTypes.sol';
@@ -24,6 +27,15 @@ contract AaveSupplyAction is IWorkflowStep {
         poolAddress = _aavePoolAddress;
     }
 
+    struct Locals {
+        IERC20 inputToken;
+        IAaveV3Pool pool;
+        IERC20 aToken;
+        uint256 aTokenBalanceBefore;
+        uint256 aTokenBalanceAfter;
+        ReserveData reserveData;
+    }
+
     function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata, bytes calldata)
         public
         payable
@@ -35,24 +47,26 @@ contract AaveSupplyAction is IWorkflowStep {
         // require(outputAssets.length == 1, 'there must be exactly 1 output asset when keeping the aToken in the engine');
 
         emit AaveSupplyActionEvent(inputAssetAmounts[0]);
-
+        Locals memory locals;
         // approve aave to take the asset
-        IERC20 inputToken = IERC20(inputAssetAmounts[0].asset.assetAddress);
-        inputToken.safeApprove(poolAddress, inputAssetAmounts[0].amount);
+        locals.inputToken = IERC20(inputAssetAmounts[0].asset.assetAddress);
+        locals.inputToken.safeApprove(poolAddress, inputAssetAmounts[0].amount);
 
         // get the aToken
-        IAaveV3Pool pool = IAaveV3Pool(poolAddress);
-        ReserveData memory reserveData = pool.getReserveData(inputAssetAmounts[0].asset.assetAddress);
-        IERC20 aToken = IERC20(reserveData.aTokenAddress);
+        locals.pool = IAaveV3Pool(poolAddress);
+        locals.reserveData = locals.pool.getReserveData(inputAssetAmounts[0].asset.assetAddress);
+        locals.aToken = IERC20(locals.reserveData.aTokenAddress);
 
         // take note of the before balance
-        uint256 aTokenBalanceBefore = aToken.balanceOf(address(this));
+        locals.aTokenBalanceBefore = locals.aToken.balanceOf(address(this));
 
         // invoke supply
-        pool.supply(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount, address(this), 0);
-        uint256 aTokenBalanceAfter = aToken.balanceOf(address(this));
-        require(aTokenBalanceAfter > aTokenBalanceBefore, "aToken balance did not increase");
+        locals.pool.supply(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount, address(this), 0);
+        locals.aTokenBalanceAfter = locals.aToken.balanceOf(address(this));
+        require(locals.aTokenBalanceAfter > locals.aTokenBalanceBefore, "aToken balance did not increase");
 
-        return LibActionHelpers.singleTokenResult(reserveData.aTokenAddress, aTokenBalanceAfter - aTokenBalanceBefore);
+        return LibStepResultBuilder.create(1, 1).addInputAssetAmount(inputAssetAmounts[0]).addOutputToken(
+            locals.reserveData.aTokenAddress, locals.aTokenBalanceAfter - locals.aTokenBalanceBefore
+        ).result;
     }
 }

@@ -11,6 +11,9 @@ import "./IStargateRouter.sol";
 import "./IStargateReceiver.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+
+using LibStepResultBuilder for StepResultBuilder;
 
 // StargateBridgeAction specific arguments
 struct StargateBridgeActionArgs {
@@ -144,7 +147,12 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
         );
         emit WorkflowBridged("Stargate", locals.sgParams.dstChainId, locals.sgParams.nonce);
 
-        return LibActionHelpers.noOutputAssetsResult();
+        return WorkflowStepResult(inputAssetAmounts, new AssetAmount[](0), -2);
+        // return LibStepResultBuilder.create(2, 0).addInputAssetAmount(inputAssetAmounts[0]).addInputAssetAmount(
+        //     locals.outputTokenAddress, locals.outputAmountDelta
+        // ).result;
+
+        // return LibActionHelpers.noOutputAssetsResult();
     }
 
     function approveErc20(address tokenAddress, uint256 amount) internal {
