@@ -84,6 +84,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
   private async getStargateChainId(chain: Chain): Promise<number> {
     if (await this.instance.isTestNet()) {
       switch (chain) {
+        case 'hardhat':
         case 'ethereum':
           return StargateChainIds.GoerliEthereum
         case 'arbitrum':
@@ -101,6 +102,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       }
     } else {
       switch (chain) {
+        case 'hardhat':
         case 'ethereum':
           return StargateChainIds.Ethereum
         case 'arbitrum':
@@ -294,7 +296,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     log.debug(`stargate args:\n${JSON.stringify(sgArgs, null, 2)}`)
 
     return {
-      stepId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [transferInputAsset, paymentAsset],
       outputAssets: [], // no output assets, the input asset is transferred from the caller

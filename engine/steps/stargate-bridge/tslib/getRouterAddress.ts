@@ -2,6 +2,7 @@ export function getRouterAddress(chainId: string) {
   switch (chainId) {
     // ethereum
     case '1':
+    case '31337':
       return '0x8731d54E9D02c286767d56ac03e8037C07e01e98'
     // binance
     case '56':

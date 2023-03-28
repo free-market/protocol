@@ -48,7 +48,7 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
     }
 
     return {
-      stepId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [], // no input assets
       outputAssets: [evmAsset],

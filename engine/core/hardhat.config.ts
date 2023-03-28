@@ -21,6 +21,20 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.WALLET_MNEMONIC,
       },
     },
+    hardhat: {
+      // chainId: 1,
+      forking: {
+        url: 'https://rpc.ankr.com/eth',
+        blockNumber: 16889307,
+      },
+    },
+    local: {
+      // chainId: 1,
+      url: 'http://127.0.0.1:8545/',
+      // accounts: {
+      //   mnemonic: process.env.WALLET_MNEMONIC,
+      // },
+    },
   },
 
   // for hardhat-deployer

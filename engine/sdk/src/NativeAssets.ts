@@ -52,4 +52,11 @@ export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
     iconUrl: 'https://metadata.fmprotocol.com/icons/native/ftm.png',
     chain: 'fantom',
   },
+  hardhat: {
+    type: 'native',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    iconUrl: ETH_ICON_URL,
+    chain: 'ethereum',
+  },
 }

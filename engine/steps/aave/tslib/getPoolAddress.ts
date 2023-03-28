@@ -2,6 +2,7 @@ export function getPoolAddress(chainId: string) {
   switch (chainId) {
     // ethereum
     case '1':
+    case '31337':
       return '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2'
     // avalanche
     case '43114':

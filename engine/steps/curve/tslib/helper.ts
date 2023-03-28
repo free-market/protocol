@@ -1,4 +1,13 @@
-import { EncodingContext, EncodedWorkflowStep, sdkAssetAmountToEvmInputAmount, assert, ADDRESS_ZERO } from '@freemarket/core'
+import {
+  EncodingContext,
+  EncodedWorkflowStep,
+  sdkAssetAmountToEvmInputAmount,
+  assert,
+  ADDRESS_ZERO,
+  AssetAmount,
+  AssetReference,
+  sdkAssetToEvmAsset,
+} from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'
 
@@ -11,14 +20,23 @@ export const STEP_TYPE_ID = 103
 
 export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto2Swap> {
   async encodeWorkflowStep(context: EncodingContext<CurveTriCrypto2Swap>): Promise<EncodedWorkflowStep> {
-    assert(typeof context.stepConfig.inputAsset !== 'string')
-    const inputAsset = await sdkAssetAmountToEvmInputAmount(context.stepConfig.inputAsset, context.chain, this.instance)
-    // TODO implement me
+    const { chain, stepConfig } = context
+    const { inputAsset, outputAsset, inputAmount } = stepConfig
+
+    const inputAssetAmount: AssetAmount = {
+      asset: inputAsset,
+      amount: context.stepConfig.inputAmount,
+    }
+
+    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
+    const asset = await this.instance.dereferenceAsset(outputAsset, chain)
+    const evmOutputAsset = sdkAssetToEvmAsset(asset, chain)
+
     return {
-      stepId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
-      inputAssets: [],
-      outputAssets: [],
+      inputAssets: [evmInputAmount],
+      outputAssets: [evmOutputAsset],
       data: '0x',
     }
   }

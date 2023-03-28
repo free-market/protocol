@@ -2,6 +2,7 @@ export function getCurveTriCrypto2Address(chainId: string | number) {
   switch (chainId.toString()) {
     // ethereum
     case '1':
+    case '31337':
       return '0xd51a44d3fae010294c616388b506acda1bfaae46'
     // arbitrum
     case '42161':

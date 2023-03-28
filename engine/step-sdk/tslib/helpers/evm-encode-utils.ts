@@ -20,7 +20,7 @@ const InputAssetSchema = `
 
 const WorkflowStepSchema = `
   tuple(
-    uint16 stepId,
+    uint16 stepTypeId,
     address stepAddress,
     ${InputAssetSchema}[] inputAssets,
     ${AssetSchema}[] outputAssets,

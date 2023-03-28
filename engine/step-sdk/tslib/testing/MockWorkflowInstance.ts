@@ -1,4 +1,4 @@
-import type {
+import {
   Asset,
   AssetReference,
   Chain,
@@ -7,6 +7,7 @@ import type {
   EvmWorkflow,
   FungibleToken,
   IWorkflow,
+  nonEmptyStringSchema,
 } from '@freemarket/core'
 import type EIP1193Provider from 'eip1193-provider'
 
@@ -29,7 +30,15 @@ export class MockWorkflowInstance implements IWorkflow {
       throw new Error('dereferencing string asset refs is not supported')
     }
     if (assetRef.type === 'native') {
-      throw new Error('dereferencing native assets is not supported')
+      if (chain !== 'ethereum') {
+        throw new Error('dereferencing native assets is not supported on chain: ' + chain)
+      }
+      return Promise.resolve({
+        type: 'native',
+        name: 'Ether',
+        symbol: 'ETH',
+        chain,
+      })
     }
     const address = this.erc20s.get(assetRef.symbol)
     if (!address) {

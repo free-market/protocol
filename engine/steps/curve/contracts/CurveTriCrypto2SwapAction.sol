@@ -5,6 +5,11 @@ import "@freemarket/core/contracts/IWorkflowStep.sol";
 import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
+using SafeERC20 for IERC20;
+
+import {ITriCrypto2} from "./ITriCrypto2.sol";
 
 struct CurveTriCryptoSwapArgs {
     uint256 fromIndex;
@@ -12,40 +17,102 @@ struct CurveTriCryptoSwapArgs {
 }
 
 contract CurveTriCrypto2SwapAction is IWorkflowStep {
+    event TriCryptoSwap2Event(address from, address to, uint256 amount, bool useNative);
+
     address public immutable triCryptoAddress;
+    address public immutable coin0;
+    address public immutable coin1;
+    address public immutable coin2;
 
     constructor(address _triCryptoAddress) {
         triCryptoAddress = _triCryptoAddress;
+        ITriCrypto2 iTriCrypto = ITriCrypto2(triCryptoAddress);
+        coin0 = iTriCrypto.coins(0);
+        coin1 = iTriCrypto.coins(1);
+        coin2 = iTriCrypto.coins(2);
     }
 
-    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata, bytes calldata)
+    struct Locals {
+        address inputTokenAddress;
+        address outputTokenAddress;
+        uint256 i;
+        uint256 j;
+        IERC20 outputToken;
+        uint256 outputAmountBefore;
+        uint256 outputAmountAfter;
+        uint256 outputAmountDelta;
+        bool useNative;
+        uint256 nativeInputAmount;
+    }
+
+    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata outputAssets, bytes calldata)
         public
         payable
         returns (WorkflowStepResult memory)
     {
-        // // validate
-        // require(inputAssetAmounts.length == 1, "there must be exactly 1 input asset");
-        // require(inputAssetAmounts[0].asset.assetType == AssetType.ERC20, "the input asset must be an ERC20");
-        // // require(outputAssets.length == 1, 'there must be exactly 1 output asset when keeping the aToken in the engine');
+        // validate
+        require(inputAssetAmounts.length == 1, "there must be exactly 1 input asset");
+        require(outputAssets.length == 1, "there must be exactly 1 output asset");
 
-        // emit AaveSupplyActionEvent(inputAssetAmounts[0]);
+        Locals memory locals;
+        locals.useNative = false;
 
-        // // approve aave to take the asset
-        // IERC20(inputAssetAmounts[0].asset.assetAddress).approve(poolAddress, inputAssetAmounts[0].amount);
+        locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
+        locals.outputTokenAddress = outputAssets[0].assetAddress;
+        if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
+            locals.inputTokenAddress = coin2;
+            locals.i = 2;
+            locals.useNative = true;
+            locals.nativeInputAmount = inputAssetAmounts[0].amount;
+        } else {
+            locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
+            IERC20(locals.inputTokenAddress).safeApprove(triCryptoAddress, inputAssetAmounts[0].amount);
+            locals.i = getTokenIndex(locals.inputTokenAddress);
+        }
 
-        // // get the aToken
-        // IAaveV3Pool pool = IAaveV3Pool(poolAddress);
-        // ReserveData memory reserveData = pool.getReserveData(inputAssetAmounts[0].asset.assetAddress);
-        // IERC20 aToken = IERC20(reserveData.aTokenAddress);
+        if (outputAssets[0].assetType == AssetType.Native) {
+            locals.outputTokenAddress = coin2;
+            locals.useNative = true;
+            locals.j = 2;
+            locals.outputAmountBefore = address(this).balance;
+        } else {
+            locals.outputTokenAddress = outputAssets[0].assetAddress;
+            locals.j = getTokenIndex(locals.outputTokenAddress);
+            locals.outputAmountBefore = IERC20(locals.outputTokenAddress).balanceOf(address(this));
+        }
 
-        // // take note of the before balance
-        // uint256 aTokenBalanceBefore = aToken.balanceOf(address(this));
+        emit TriCryptoSwap2Event(
+            locals.inputTokenAddress, locals.outputTokenAddress, inputAssetAmounts[0].amount, locals.useNative
+            );
 
-        // // invoke supply
-        // pool.supply(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount, address(this), 0);
-        // uint256 aTokenBalanceAfter = aToken.balanceOf(address(this));
-        // require(aTokenBalanceAfter > aTokenBalanceBefore, "aToken balance did not increase");
+        // TODO allow user to provide minOut as absolute or relative
 
-        return LibActionHelpers.noOutputAssetsResult();
+        // do the swap
+        ITriCrypto2(triCryptoAddress).exchange{value: locals.nativeInputAmount}(
+            locals.i, locals.j, inputAssetAmounts[0].amount, 1, locals.useNative
+        );
+
+        // deal with output
+        if (outputAssets[0].assetType == AssetType.Native) {
+            locals.outputAmountAfter = address(this).balance;
+        } else {
+            locals.outputAmountAfter = IERC20(locals.outputTokenAddress).balanceOf(address(this));
+        }
+        locals.outputAmountDelta = locals.outputAmountAfter - locals.outputAmountBefore;
+        require(locals.outputAmountDelta > 0, "output balance did not increase");
+        return LibActionHelpers.singleTokenResult(locals.outputTokenAddress, locals.outputAmountDelta);
+    }
+
+    function getTokenIndex(address tokenAddress) internal view returns (uint256) {
+        if (tokenAddress == coin0) {
+            return 0;
+        }
+        if (tokenAddress == coin1) {
+            return 1;
+        }
+        if (tokenAddress == coin2) {
+            return 2;
+        }
+        revert("unknown token address");
     }
 }

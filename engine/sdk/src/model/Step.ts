@@ -2,12 +2,12 @@ import z from 'zod'
 import { aaveSupplySchema } from '@freemarket/aave'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { addAssetSchema } from '@freemarket/add-asset'
-import { aaveWithdrawalSchema, payGelatoRelaySchema, uniswapExactOutSchema } from './steps'
+import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
+import { aaveWithdrawalSchema, payGelatoRelaySchema } from './steps'
 import { chainBranchSchema } from './steps/ChainBranch'
 import { assetBalanceBranchSchema } from './steps/AssetBalanceBranch'
-import { uniswapExactInSchema } from './steps/UniswapExactAmountIn'
-import { wrapNativeSchema } from './steps/WrapNative'
-import { unwrapNativeSchema } from './steps/UnwrapNative'
+import { wrapNativeSchema, unwrapNativeSchema } from '@freemarket/wrapped-native'
+
 export const stepSchema = z.discriminatedUnion('type', [
   // actions
   aaveSupplySchema,

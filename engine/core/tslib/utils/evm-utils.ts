@@ -15,7 +15,8 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
       assetAddress: ADDRESS_ZERO,
     }
   }
-  const tokenAddress = asset.chains[chain]
+  const c = chain === 'hardhat' ? 'ethereum' : chain
+  const tokenAddress = asset.chains[c]
   if (!tokenAddress) {
     throw new AssetNotFoundError([new AssetNotFoundProblem(asset.symbol, chain)])
   }
@@ -25,11 +26,7 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
   }
 }
 
-export async function sdkAssetAmountToEvmInputAmount(
-  assetAmount: AssetAmount,
-  chain: Chain,
-  runner: IWorkflow
-): Promise<EvmInputAsset> {
+export async function sdkAssetAmountToEvmInputAmount(assetAmount: AssetAmount, chain: Chain, instance: IWorkflow): Promise<EvmInputAsset> {
   let amountStr: string
   let amountIsPercent = false
   if (typeof assetAmount.amount === 'number') {
@@ -46,7 +43,7 @@ export async function sdkAssetAmountToEvmInputAmount(
       amountStr = assetAmount.amount
     }
   }
-  const asset = await runner.dereferenceAsset(assetAmount.asset, chain)
+  const asset = await instance.dereferenceAsset(assetAmount.asset, chain)
   return {
     asset: sdkAssetToEvmAsset(asset, chain),
     amount: amountStr,
@@ -88,6 +85,8 @@ export function getChainFromId(chainId: number): Chain {
     case 250:
     case 4002:
       return 'fantom'
+    case 31337:
+      return 'hardhat'
     default:
       throw new Error('unknown chainId: ' + chainId)
   }
@@ -127,6 +126,8 @@ export function getChainIdFromChain(chain: Chain, isTestNet: boolean) {
         return 10
       case 'fantom':
         return 250
+      case 'hardhat':
+        return 31337
     }
   }
 }
@@ -139,6 +140,7 @@ export async function isTestNetByProvider(provider: EIP1193Provider): Promise<bo
 export function isTestNetById(chainId: number) {
   switch (chainId) {
     case 1:
+    case 31337:
     case 56:
     case 42161:
     case 137:

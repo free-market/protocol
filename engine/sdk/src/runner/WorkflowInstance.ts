@@ -43,6 +43,10 @@ import {
   EvmWorkflowStep,
   IERC20__factory,
 } from '@freemarket/core'
+
+import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
+const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
+
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
 
@@ -617,6 +621,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     const chainId = await WorkflowInstance.getChainIdFromProvider(provider)
     switch (chainId) {
       case 1:
+      case 31337:
       case 56:
       case 42161:
       case 137:
@@ -640,27 +645,21 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   @Memoize()
   async getFrontDoorAddressForChain(chain: Chain): Promise<string> {
-    if (await this.isTestNet()) {
-      switch (chain) {
-        case 'ethereum':
-          return '0xe6513ebDaED868CF776C46a580b2f5F50ef514bA'
-        case 'arbitrum':
-          return '0x83Ca601eA4C897C6f6e2722554EF622002a6DeB8'
-        default:
-          throw new Error(`freemarket is not deployed on ${chain} testnet`)
-      }
+    let address: string | undefined = undefined
+    const isTestnet = await this.isTestNet()
+    if (chain === 'hardhat') {
+      address = frontDoorAddresses['local']
     } else {
-      switch (chain) {
-        case 'arbitrum':
-          return '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299'
-        case 'avalanche':
-          return '0xADA59A35A302E3AC5d6d4862BEb51aE473DD3ee7'
-        case 'optimism':
-          return '0x6Bd12615CDdE14Da29641C9e90b11091AD39B299'
-        default:
-          throw new Error(`freemarket is not deployed on ${chain} mainnet`)
+      if (isTestnet) {
+        address = frontDoorAddresses[chain + 'Goerli']
+      } else {
+        address = frontDoorAddresses[chain]
       }
     }
+    if (address === undefined) {
+      throw new Error(`freemarket is not deployed on ${chain} ${isTestnet ? 'testnet' : 'mainnet'}`)
+    }
+    return address
   }
 
   private getRemittanceKeys(): Set<string> {
@@ -736,7 +735,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     if (!token) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, null)])
     }
-    if (!token.chains[chain]) {
+    const c = chain === 'hardhat' ? 'ethereum' : chain
+    if (!token.chains[c]) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, chain)])
     }
     return token

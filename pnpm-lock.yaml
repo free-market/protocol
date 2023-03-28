@@ -183,6 +183,8 @@ importers:
       '@freemarket/runner': workspace:^0.0.1
       '@freemarket/stargate-bridge': workspace:^0.0.1
       '@freemarket/step-sdk': workspace:^0.0.1
+      '@freemarket/uniswap': workspace:^0.0.1
+      '@freemarket/wrapped-native': workspace:^0.0.1
       '@types/big.js': ^6.1.6
       '@types/bs58': ^4.0.1
       '@types/lodash.clonedeep': ^4.5.7
@@ -192,7 +194,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.54.0
       '@typescript-eslint/parser': ^5.54.0
       ava: ^5.2.0
-      axios: ^1.3.4
+      axios: 0.27.2
       big.js: ^6.2.1
       bs58: ^5.0.0
       c8: ^7.13.0
@@ -237,7 +239,9 @@ importers:
       '@freemarket/runner': link:../runner
       '@freemarket/stargate-bridge': link:../steps/stargate-bridge
       '@freemarket/step-sdk': link:../step-sdk
-      axios: 1.3.4
+      '@freemarket/uniswap': link:../steps/uniswap
+      '@freemarket/wrapped-native': link:../steps/wrapped-native
+      axios: 0.27.2
       big.js: 6.2.1
       bs58: 5.0.0
       eip1193-provider: 1.0.1
@@ -624,6 +628,176 @@ importers:
       typescript: 4.9.5
 
   engine/steps/stargate-bridge:
+    specifiers:
+      '@ethersproject/abi': ^5.4.7
+      '@ethersproject/bytes': ^5.0.0
+      '@ethersproject/providers': ^5.4.7
+      '@freemarket/core': workspace:^0.0.1
+      '@freemarket/runner': workspace:^0.0.1
+      '@freemarket/step-sdk': workspace:^0.0.1
+      '@nomicfoundation/hardhat-chai-matchers': ^1.0.6
+      '@nomicfoundation/hardhat-network-helpers': ^1.0.0
+      '@nomicfoundation/hardhat-toolbox': ^2.0.0
+      '@nomiclabs/hardhat-ethers': npm:hardhat-deploy-ethers@0.3.0-beta.13
+      '@nomiclabs/hardhat-etherscan': ^3.0.0
+      '@openzeppelin/contracts': ^4.8.0
+      '@typechain/ethers-v5': ^10.2.0
+      '@typechain/hardhat': ^6.1.2
+      '@types/big.js': ^6.1.6
+      '@types/chai': ^4.2.0
+      '@types/mocha': '>=9.1.0'
+      '@types/node': '>=12.0.0'
+      '@typescript-eslint/eslint-plugin': ^5.55.0
+      '@typescript-eslint/parser': ^5.55.0
+      big.js: ^6.2.1
+      chai: ^4.2.0
+      eslint: ^8.36.0
+      eslint-config-prettier: ^8.7.0
+      eslint-plugin-prettier: ^4.2.1
+      ethers: ^5.7.2
+      hardhat: ^2.13.0
+      hardhat-deploy: ^0.11.25
+      hardhat-gas-reporter: ^1.0.8
+      lodash.merge: ^4.6.2
+      loglevel: ^1.8.1
+      mocha: ^10.2.0
+      prettier: ^2.8.5
+      rimraf: ^4.4.0
+      solidity-coverage: ^0.8.0
+      ts-node: '>=8.0.0'
+      typechain: ^8.1.0
+      typescript: '>=4.5.0'
+      typescript-memoize: ^1.1.1
+      zod: ^3.21.4
+    dependencies:
+      '@ethersproject/bytes': 5.7.0
+      '@freemarket/core': link:../../core
+      '@freemarket/runner': link:../../runner
+      '@freemarket/step-sdk': link:../../step-sdk
+      '@openzeppelin/contracts': 4.8.0
+      big.js: 6.2.1
+      loglevel: 1.8.1
+      typescript-memoize: 1.1.1
+      zod: 3.21.4
+    devDependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@nomicfoundation/hardhat-chai-matchers': 1.0.6_4nzcwdy3vlxgqnxb5pars6hfay
+      '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.13.0
+      '@nomicfoundation/hardhat-toolbox': 2.0.2_czdrddn6zwcvvq6mvc7hjo7r7i
+      '@nomiclabs/hardhat-ethers': /hardhat-deploy-ethers/0.3.0-beta.13_wknqauzjtp3mhprkntsmqpccee
+      '@nomiclabs/hardhat-etherscan': 3.1.7_hardhat@2.13.0
+      '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
+      '@typechain/hardhat': 6.1.5_i2fwc4p7n2iltkzqmr3qbux6yq
+      '@types/big.js': 6.1.6
+      '@types/chai': 4.3.3
+      '@types/mocha': 10.0.1
+      '@types/node': 18.14.2
+      '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri
+      '@typescript-eslint/parser': 5.55.0_vgl77cfdswitgr47lm5swmv43m
+      chai: 4.3.6
+      eslint: 8.36.0
+      eslint-config-prettier: 8.7.0_eslint@8.36.0
+      eslint-plugin-prettier: 4.2.1_e4jq4ivnnnwcsomlcyj2qoljy4
+      ethers: 5.7.2
+      hardhat: 2.13.0_6qtx7vkbdhwvdm4crzlegk4mvi
+      hardhat-deploy: 0.11.25
+      hardhat-gas-reporter: 1.0.9_hardhat@2.13.0
+      lodash.merge: 4.6.2
+      mocha: 10.2.0
+      prettier: 2.8.5
+      rimraf: 4.4.0
+      solidity-coverage: 0.8.2_hardhat@2.13.0
+      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      typechain: 8.1.1_typescript@4.9.5
+      typescript: 4.9.5
+
+  engine/steps/uniswap:
+    specifiers:
+      '@ethersproject/abi': ^5.4.7
+      '@ethersproject/bytes': ^5.0.0
+      '@ethersproject/providers': ^5.4.7
+      '@freemarket/core': workspace:^0.0.1
+      '@freemarket/runner': workspace:^0.0.1
+      '@freemarket/step-sdk': workspace:^0.0.1
+      '@nomicfoundation/hardhat-chai-matchers': ^1.0.6
+      '@nomicfoundation/hardhat-network-helpers': ^1.0.0
+      '@nomicfoundation/hardhat-toolbox': ^2.0.0
+      '@nomiclabs/hardhat-ethers': npm:hardhat-deploy-ethers@0.3.0-beta.13
+      '@nomiclabs/hardhat-etherscan': ^3.0.0
+      '@openzeppelin/contracts': ^4.8.0
+      '@typechain/ethers-v5': ^10.2.0
+      '@typechain/hardhat': ^6.1.2
+      '@types/big.js': ^6.1.6
+      '@types/chai': ^4.2.0
+      '@types/mocha': '>=9.1.0'
+      '@types/node': '>=12.0.0'
+      '@typescript-eslint/eslint-plugin': ^5.55.0
+      '@typescript-eslint/parser': ^5.55.0
+      big.js: ^6.2.1
+      chai: ^4.2.0
+      eslint: ^8.36.0
+      eslint-config-prettier: ^8.7.0
+      eslint-plugin-prettier: ^4.2.1
+      ethers: ^5.7.2
+      hardhat: ^2.13.0
+      hardhat-deploy: ^0.11.25
+      hardhat-gas-reporter: ^1.0.8
+      lodash.merge: ^4.6.2
+      loglevel: ^1.8.1
+      mocha: ^10.2.0
+      prettier: ^2.8.5
+      rimraf: ^4.4.0
+      solidity-coverage: ^0.8.0
+      ts-node: '>=8.0.0'
+      typechain: ^8.1.0
+      typescript: '>=4.5.0'
+      typescript-memoize: ^1.1.1
+      zod: ^3.21.4
+    dependencies:
+      '@ethersproject/bytes': 5.7.0
+      '@freemarket/core': link:../../core
+      '@freemarket/runner': link:../../runner
+      '@freemarket/step-sdk': link:../../step-sdk
+      '@openzeppelin/contracts': 4.8.0
+      big.js: 6.2.1
+      loglevel: 1.8.1
+      typescript-memoize: 1.1.1
+      zod: 3.21.4
+    devDependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@nomicfoundation/hardhat-chai-matchers': 1.0.6_4nzcwdy3vlxgqnxb5pars6hfay
+      '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.13.0
+      '@nomicfoundation/hardhat-toolbox': 2.0.2_czdrddn6zwcvvq6mvc7hjo7r7i
+      '@nomiclabs/hardhat-ethers': /hardhat-deploy-ethers/0.3.0-beta.13_wknqauzjtp3mhprkntsmqpccee
+      '@nomiclabs/hardhat-etherscan': 3.1.7_hardhat@2.13.0
+      '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
+      '@typechain/hardhat': 6.1.5_i2fwc4p7n2iltkzqmr3qbux6yq
+      '@types/big.js': 6.1.6
+      '@types/chai': 4.3.3
+      '@types/mocha': 10.0.1
+      '@types/node': 18.14.2
+      '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri
+      '@typescript-eslint/parser': 5.55.0_vgl77cfdswitgr47lm5swmv43m
+      chai: 4.3.6
+      eslint: 8.36.0
+      eslint-config-prettier: 8.7.0_eslint@8.36.0
+      eslint-plugin-prettier: 4.2.1_e4jq4ivnnnwcsomlcyj2qoljy4
+      ethers: 5.7.2
+      hardhat: 2.13.0_6qtx7vkbdhwvdm4crzlegk4mvi
+      hardhat-deploy: 0.11.25
+      hardhat-gas-reporter: 1.0.9_hardhat@2.13.0
+      lodash.merge: 4.6.2
+      mocha: 10.2.0
+      prettier: 2.8.5
+      rimraf: 4.4.0
+      solidity-coverage: 0.8.2_hardhat@2.13.0
+      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      typechain: 8.1.1_typescript@4.9.5
+      typescript: 4.9.5
+
+  engine/steps/wrapped-native:
     specifiers:
       '@ethersproject/abi': ^5.4.7
       '@ethersproject/bytes': ^5.0.0
@@ -2710,12 +2884,11 @@ packages:
       - debug
     dev: true
 
-  /axios/1.3.4:
-    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
-      proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -7222,10 +7395,6 @@ packages:
     dependencies:
       asap: 2.0.6
     dev: true
-
-  /proxy-from-env/1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
-    dev: false
 
   /psl/1.8.0:
     resolution: {integrity: sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==}

@@ -6,6 +6,8 @@ import type { IWorkflowInstance } from '../runner/IWorkflowInstance'
 import { AaveSupplyHelper } from '@freemarket/aave'
 import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
+import { WrapNativeHelper } from '@freemarket/wrapped-native'
+import { UniswapExactInHelper } from '@freemarket/uniswap'
 
 interface StepHelperConstructor {
   new (runner: IWorkflowInstance, provider?: EIP1193Provider): IStepHelper<any>
@@ -16,6 +18,8 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'add-asset': AddAssetHelper,
   'chain-branch': ChainBranchHelper,
   'stargate-bridge': StargateBridgeHelper,
+  'wrap-native': WrapNativeHelper,
+  'uniswap-exact-in': UniswapExactInHelper,
 }
 
 export function createStepHelper(type: string, runner: IWorkflowInstance) {

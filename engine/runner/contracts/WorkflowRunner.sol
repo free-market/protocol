@@ -26,45 +26,45 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
         )
     {}
 
-    // latestStepAddresses maps stepId to latest and greatest version of that step
+    // latestStepAddresses maps stepTypeId to latest and greatest version of that step
     bytes32 constant latestStepAddresses = 0xc94d198e6194ea38dbd900920351d7f8e6c6d85b1d3b803fb93c54be008e11fd; // keccak256('latestActionAddresses')
 
-    event StepAddressSetEvent(uint16 stepId, address stepAddress);
+    event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
 
-    function getStepWhitelistKey(uint16 stepId) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked("stepWhiteList", stepId));
+    function getStepWhitelistKey(uint16 stepTypeId) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked("stepWhiteList", stepTypeId));
     }
 
-    function getStepBlacklistKey(uint16 stepId) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked("stepBlackList", stepId));
+    function getStepBlacklistKey(uint16 stepTypeId) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked("stepBlackList", stepTypeId));
     }
 
-    function setStepAddress(uint16 stepId, address stepAddress) external onlyOwner {
+    function setStepAddress(uint16 stepTypeId, address stepAddress) external onlyOwner {
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-        eternalStorage.setEnumerableMapUintToAddress(latestStepAddresses, stepId, stepAddress);
+        eternalStorage.setEnumerableMapUintToAddress(latestStepAddresses, stepTypeId, stepAddress);
         // using the white list map like a set, we only care about the keys
-        eternalStorage.setEnumerableMapAddressToUint(getStepWhitelistKey(stepId), stepAddress, 0);
-        eternalStorage.removeEnumerableMapAddressToUint(getStepBlacklistKey(stepId), stepAddress);
-        emit StepAddressSetEvent(stepId, stepAddress);
+        eternalStorage.setEnumerableMapAddressToUint(getStepWhitelistKey(stepTypeId), stepAddress, 0);
+        eternalStorage.removeEnumerableMapAddressToUint(getStepBlacklistKey(stepTypeId), stepAddress);
+        emit StepAddressSetEvent(stepTypeId, stepAddress);
     }
 
-    function removeStepAddress(uint16 stepId, address stepAddress) external onlyOwner {
+    function removeStepAddress(uint16 stepTypeId, address stepAddress) external onlyOwner {
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-        address latest = eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepId);
+        address latest = eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepTypeId);
         require(stepAddress != latest, "cannot remove latest step address");
-        eternalStorage.setEnumerableMapAddressToUint(getStepBlacklistKey(stepId), stepAddress, 0);
-        eternalStorage.removeEnumerableMapAddressToUint(getStepWhitelistKey(stepId), stepAddress);
-        emit StepAddressSetEvent(stepId, stepAddress);
+        eternalStorage.setEnumerableMapAddressToUint(getStepBlacklistKey(stepTypeId), stepAddress, 0);
+        eternalStorage.removeEnumerableMapAddressToUint(getStepWhitelistKey(stepTypeId), stepAddress);
+        emit StepAddressSetEvent(stepTypeId, stepAddress);
     }
 
-    function getStepAddress(uint16 stepId) external view returns (address) {
+    function getStepAddress(uint16 stepTypeId) external view returns (address) {
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-        return eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepId);
+        return eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepTypeId);
     }
 
-    function getStepAddressInternal(uint16 stepId) internal view returns (address) {
+    function getStepAddressInternal(uint16 stepTypeId) internal view returns (address) {
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-        return eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepId);
+        return eternalStorage.getEnumerableMapUintToAddress(latestStepAddresses, stepTypeId);
     }
 
     function getStepCount() external view returns (uint256) {
@@ -74,9 +74,10 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
 
     function getStepInfoAt(uint256 index) public view returns (StepInfo memory) {
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-        (uint256 stepId, address stepAddress) = eternalStorage.atEnumerableMapUintToAddress(latestStepAddresses, index);
+        (uint256 stepTypeId, address stepAddress) =
+            eternalStorage.atEnumerableMapUintToAddress(latestStepAddresses, index);
 
-        bytes32 whitelistKey = getStepWhitelistKey(uint16(stepId));
+        bytes32 whitelistKey = getStepWhitelistKey(uint16(stepTypeId));
         uint256 whitelistCount = eternalStorage.lengthEnumerableMapAddressToUint(whitelistKey);
         address[] memory whitelist = new address[](whitelistCount);
         for (uint256 i = 0; i < whitelistCount; ++i) {
@@ -84,7 +85,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
             whitelist[i] = whitelistedAddress;
         }
 
-        bytes32 blacklistKey = getStepBlacklistKey(uint16(stepId));
+        bytes32 blacklistKey = getStepBlacklistKey(uint16(stepTypeId));
         uint256 blacklistCount = eternalStorage.lengthEnumerableMapAddressToUint(blacklistKey);
         address[] memory blacklist = new address[](blacklistCount);
         for (uint256 i = 0; i < blacklistCount; ++i) {
@@ -92,7 +93,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
             blacklist[i] = blacklistedAddress;
         }
 
-        return StepInfo(uint16(stepId), stepAddress, whitelist, blacklist);
+        return StepInfo(uint16(stepTypeId), stepAddress, whitelist, blacklist);
     }
 
     /// @notice This event is emitted when a workflow execution begins.
@@ -103,14 +104,14 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
     /// @notice This event is emitted when immediately after invoking a step in the workflow.
     /// @param stepIndex The index of the step in the Workflow.steps array.
     /// @param step The step configuration.
-    /// @param stepId The logical id of the step (also repeated in the step param but duplicated here for convenience).
+    /// @param stepTypeId The logical id of the step (also repeated in the step param but duplicated here for convenience).
     /// @param stepAddress The address of the step used for this invocation.
     /// @param inputAssetAmounts The input assets, with the absolute amount of each asset.
     /// @param result The result returned form the step invocation.
     event WorkflowStepExecution(
         uint16 stepIndex,
         WorkflowStep step,
-        uint16 stepId,
+        uint16 stepTypeId,
         address stepAddress,
         AssetAmount[] inputAssetAmounts,
         WorkflowStepResult result
@@ -162,7 +163,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
             WorkflowStepResult memory stepResult =
                 invokeStep(stepAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
             emit WorkflowStepExecution(
-                currentStepIndex, currentStep, currentStep.stepId, stepAddress, inputAssetAmounts, stepResult
+                currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult
                 );
 
             // debit input assets
@@ -216,16 +217,16 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
     }
 
     function resolveStepAddress(WorkflowStep memory currentStep) internal view returns (address) {
-        // non-zero stepAddress means override/ignore the stepId
-        // TODO do we want a white list of addresses for a given stepId?
+        // non-zero stepAddress means override/ignore the stepTypeId
+        // TODO do we want a white list of addresses for a given stepTypeId?
         if (currentStep.stepAddress == address(0)) {
-            return getStepAddressInternal(currentStep.stepId);
+            return getStepAddressInternal(currentStep.stepTypeId);
         }
-        // ensure given address is in the whitelist for given stepId
+        // ensure given address is in the whitelist for given stepTypeId
         EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
         require(
             eternalStorage.containsEnumerableMapAddressToUint(
-                getStepWhitelistKey(currentStep.stepId), currentStep.stepAddress
+                getStepWhitelistKey(currentStep.stepTypeId), currentStep.stepAddress
             ),
             "step address not in white list"
         );

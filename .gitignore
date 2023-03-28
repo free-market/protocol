@@ -48,3 +48,4 @@ npm-debug.log
 deployment-artifacts
 /.gtm/
 **/eraseme*
+**/deployments/local

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo build",
     "test": "turbo build test --filter=!@fmp/codeless-builder",
+    "deploy-contracts": "turbo run deploy-contracts --concurrency=1",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -15,11 +16,6 @@
     "husky": "7.0.4",
     "lint-staged": "^13.1.1",
     "turbo": "^1.5.4"
-  },
-  "lint-staged": {
-    "./ui2/**/*.(js|ts|jsx|tsx)": [
-      "./node_modules/.bin/prettier --write -u"
-    ]
   },
   "workspaces": [
     "evm",

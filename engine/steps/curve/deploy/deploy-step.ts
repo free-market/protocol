@@ -4,10 +4,9 @@ import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getCurveTriCrypto2Address } from '@freemarket/step-sdk/tslib/testing'
 
 const func: DeployFunction = async function (hardhatRuntimeEnv) {
-  const frontDoor = await hardhatRuntimeEnv.ethers.getContract('FrontDoor')
   const chainId = await hardhatRuntimeEnv.getChainId()
-  const poolAddress = getCurveTriCrypto2Address(chainId)
-  return deployStep('CurveTriCrypto2SwapAction', STEP_TYPE_ID, hardhatRuntimeEnv, [poolAddress])
+  const contractAddress = getCurveTriCrypto2Address(chainId)
+  return deployStep('CurveTriCrypto2SwapAction', STEP_TYPE_ID, hardhatRuntimeEnv, [contractAddress])
 }
 
 func.tags = ['AaveSupplyAction']

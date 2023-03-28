@@ -9,7 +9,7 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
     assert(typeof context.stepConfig.inputAsset !== 'string')
     const inputAsset = await sdkAssetAmountToEvmInputAmount(context.stepConfig.inputAsset, context.chain, this.instance)
     return {
-      stepId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [inputAsset],
       outputAssets: [],

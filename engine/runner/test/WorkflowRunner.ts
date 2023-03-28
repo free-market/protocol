@@ -43,7 +43,7 @@ describe('WorkflowRunner', async () => {
     count = await workflowRunner.getStepCount()
     expect(count).to.eq(1)
     const stepInfo = await workflowRunner.getStepInfoAt(0)
-    expect(stepInfo.stepId).to.eq(1000)
+    expect(stepInfo.stepTypeId).to.eq(1000)
     expect(stepInfo.latest.toLowerCase()).to.eq(someAddress)
   })
 })

@@ -6,6 +6,8 @@ import type { BigNumberish, Signer } from 'ethers'
 import { getCurveTriCrypto2Address } from './curve'
 import { IERC20__factory, ITriCrypto2__factory } from '../../typechain-types'
 
+export const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+
 interface BaseTestFixture {
   contracts: {
     frontDoor: FrontDoor
@@ -48,9 +50,9 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
   })
 }
 
-export async function validateAction(runner: WorkflowRunner, stepId: number, stepAddress: string) {
+export async function validateAction(runner: WorkflowRunner, stepTypeId: number, stepAddress: string) {
   // should be there when you ask for the address directly
-  const registeredAddress = await runner.getStepAddress(stepId)
+  const registeredAddress = await runner.getStepAddress(stepTypeId)
   expect(registeredAddress).to.equal(stepAddress)
 
   // should be present in the enumeration
@@ -58,7 +60,7 @@ export async function validateAction(runner: WorkflowRunner, stepId: number, ste
   const actionCount = (await runner.getStepCount()).toNumber()
   for (let i = 0; i < actionCount; ++i) {
     const actionInfo = await runner.getStepInfoAt(i)
-    if (Number(actionInfo.stepId) === stepId) {
+    if (Number(actionInfo.stepTypeId) === stepTypeId) {
       expect(actionInfo.whitelist.includes(stepAddress)).to.be.true
       found = true
       break
