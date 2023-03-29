@@ -74,8 +74,8 @@ describe('Uniswap Exact In', async () => {
     let encoded = await helper.encodeWorkflowStep(context)
 
     const tetherBalanceBefore = await usdt.balanceOf(uniswapExactInAction.address)
-    let { inputAssets, outputAssets, data } = encoded
-    await (await uniswapExactInAction.execute(inputAssets, outputAssets, data)).wait()
+    let { inputAssets, argData } = encoded
+    await (await uniswapExactInAction.execute(inputAssets, argData)).wait()
     let tetherBalanceAfter = await usdt.balanceOf(uniswapExactInAction.address)
     expect(tetherBalanceAfter).to.be.greaterThan(tetherBalanceBefore)
 

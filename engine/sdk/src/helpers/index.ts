@@ -8,6 +8,7 @@ import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
 import { WrapNativeHelper } from '@freemarket/wrapped-native'
 import { UniswapExactInHelper } from '@freemarket/uniswap'
+import { CurveTriCrypto2SwapHelper } from '@freemarket/curve'
 
 interface StepHelperConstructor {
   new (runner: IWorkflowInstance, provider?: EIP1193Provider): IStepHelper<any>
@@ -20,6 +21,7 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'stargate-bridge': StargateBridgeHelper,
   'wrap-native': WrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
+  'curve-tricrypto2-swap': CurveTriCrypto2SwapHelper,
 }
 
 export function createStepHelper(type: string, runner: IWorkflowInstance) {

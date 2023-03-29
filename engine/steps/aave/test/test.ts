@@ -69,8 +69,7 @@ describe('AaveSupply', async () => {
       stepConfig,
     }
     const encoded = await helper.encodeWorkflowStep(context)
-    const gasEstimate = await aaveSupplyAction.estimateGas.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)
-    await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)).to.changeTokenBalance(
+    await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData)).to.changeTokenBalance(
       usdt,
       aaveSupplyAction.address,
       testAmount * -1

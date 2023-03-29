@@ -9,46 +9,53 @@ import "@freemarket/core/contracts/model/AssetAmount.sol";
 import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
 
-using LibStepResultBuilder for StepResultBuilder;
+// import 'hardhat/console.sol';
 
-struct AddAssetActionArgs {
-    address userAddress;
-    uint256 amount;
-}
+using LibStepResultBuilder for StepResultBuilder;
+using SafeERC20 for IERC20;
 
 contract AddAssetAction is IWorkflowStep {
     /// @notice This event is emitted when AddAssetAction is executed
-    /// @param fromAddress The address from which the asset is transferred into this workflow instance
     /// @param assetAmount The asset and amount that is transferred into this workflow instance
-    event AssetAdded(address fromAddress, AssetAmount assetAmount);
+    event AssetAdded(AssetAmount assetAmount);
 
-    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata outputAssets, bytes calldata data)
+    function execute(AssetAmount[] calldata assetAmounts, bytes calldata)
         external
         payable
         returns (WorkflowStepResult memory)
     {
         // validate
-        require(inputAssetAmounts.length == 0, "AddTokenAction must have 0 input assets");
-        require(outputAssets.length == 1, "AddTokenAction must have 1 output asset");
+        require(assetAmounts.length == 1, "AddTokenAction must have 1 AssetAmount");
 
-        // decode arguments
-        AddAssetActionArgs memory args = abi.decode(data, (AddAssetActionArgs));
+        // console.log('addAsset', assetAmounts[0].amount);
 
-        emit AssetAdded(args.userAddress, AssetAmount(outputAssets[0], args.amount));
+        emit AssetAdded(assetAmounts[0]);
 
-        if (outputAssets[0].assetType == AssetType.Native) {
-            // TODO need to re-do how native is accounted for
-            return LibActionHelpers.singleAssetResult(AssetType.Native, address(0), 0 /*args.amount*/ );
+        if (assetAmounts[0].asset.assetType == AssetType.Native) {
+            require(msg.value == assetAmounts[0].amount, "native amount should match msg.value");
+            // returning 0 inputs 0 outputs because this is really a no-op
+            // native coming in is already accounted for 
+            return LibStepResultBuilder.create(0, 0).result;
         }
 
-        require(outputAssets[0].assetType == AssetType.ERC20, "AddTokenAction supports native and ERC20s");
-        require(args.userAddress != address(this), "AddAsset cannot pull from FrontDoor");
+        require(assetAmounts[0].asset.assetType == AssetType.ERC20, "AddTokenAction supports native and ERC20s");
 
         // transfer the token to this
-        IERC20 erc20 = IERC20(outputAssets[0].assetAddress);
-        SafeERC20.safeTransferFrom(erc20, args.userAddress, address(this), args.amount);
+        IERC20 erc20 = IERC20(assetAmounts[0].asset.assetAddress);
+        erc20.safeTransferFrom(msg.sender, address(this), assetAmounts[0].amount);
+        
+        // WorkflowStepResult memory asdf = LibStepResultBuilder.create(0, 1).addOutputToken(
+        //     assetAmounts[0].asset.assetAddress, assetAmounts[0].amount
+        // ).result;
+
+        // console.log('result', asdf.outputAssetAmounts.length);
+        // console.log('result1', assetAmounts[0].asset.assetAddress);
+        // console.log('result11', assetAmounts[0].amount);
+        // console.log('result2', asdf.outputAssetAmounts[0].amount);
 
         // return amount transferred
-        return LibStepResultBuilder.create(0, 1).addOutputToken(outputAssets[0].assetAddress, args.amount).result;
+        return LibStepResultBuilder.create(0, 1).addOutputToken(
+            assetAmounts[0].asset.assetAddress, assetAmounts[0].amount
+        ).result;
     }
 }

@@ -72,8 +72,8 @@ describe('Curve Tricrypo2 swap', async () => {
     let encoded = await helper.encodeWorkflowStep(context)
 
     const tetherBalanceBefore = await usdt.balanceOf(triCryptoAction.address)
-    let { inputAssets, outputAssets, data } = encoded
-    await expect(triCryptoAction.execute(inputAssets, outputAssets, data, { value: testAmount })).not.to.be.reverted
+    let { inputAssets, argData } = encoded
+    await expect(triCryptoAction.execute(inputAssets, argData, { value: testAmount })).not.to.be.reverted
     let tetherBalanceAfter = await usdt.balanceOf(triCryptoAction.address)
     expect(tetherBalanceAfter).to.be.greaterThan(tetherBalanceBefore)
 
@@ -96,7 +96,7 @@ describe('Curve Tricrypo2 swap', async () => {
     }
     encoded = await helper.encodeWorkflowStep(context)
     // await expect(triCryptoAction.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)).not.to.be.reverted
-    await (await triCryptoAction.execute(encoded.inputAssets, encoded.outputAssets, encoded.data)).wait()
+    await (await triCryptoAction.execute(encoded.inputAssets, encoded.argData)).wait()
     tetherBalanceAfter = await usdt.balanceOf(triCryptoAction.address)
     expect(tetherBalanceAfter).to.equal(0)
   })

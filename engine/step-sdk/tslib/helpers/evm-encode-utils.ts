@@ -3,7 +3,7 @@ const abiCoder = ethers.utils.defaultAbiCoder
 import createKeccakHash from 'keccak'
 import type { EvmWorkflow } from '@freemarket/core'
 
-const AssetSchema = `
+export const AssetSchema = `
   tuple(
     uint8 assetType,
     address assetAddress

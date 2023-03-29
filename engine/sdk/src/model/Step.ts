@@ -7,12 +7,14 @@ import { aaveWithdrawalSchema, payGelatoRelaySchema } from './steps'
 import { chainBranchSchema } from './steps/ChainBranch'
 import { assetBalanceBranchSchema } from './steps/AssetBalanceBranch'
 import { wrapNativeSchema, unwrapNativeSchema } from '@freemarket/wrapped-native'
+import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 
 export const stepSchema = z.discriminatedUnion('type', [
   // actions
   aaveSupplySchema,
   aaveWithdrawalSchema,
   addAssetSchema,
+  curveTriCrypto2SwapSchema,
   payGelatoRelaySchema,
   uniswapExactInSchema,
   uniswapExactOutSchema,

@@ -3,6 +3,8 @@ import '@nomicfoundation/hardhat-toolbox'
 import 'hardhat-deploy'
 import '@nomiclabs/hardhat-ethers'
 import '@nomicfoundation/hardhat-chai-matchers'
+import 'solidity-docgen'
+
 // import 'hardhat-deploy-ethers'
 import os from 'os'
 import path from 'path'

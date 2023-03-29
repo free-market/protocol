@@ -31,8 +31,7 @@ export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
-      outputAssets: [],
-      data: '0x',
+      argData: '0x',
     }
   }
 }

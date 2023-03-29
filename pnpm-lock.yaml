@@ -46,6 +46,7 @@ importers:
       prettier: ^2.8.5
       rimraf: ^4.4.0
       solidity-coverage: ^0.8.0
+      solidity-docgen: 0.6.0-beta.35
       ts-node: '>=8.0.0'
       typechain: ^8.1.0
       typescript: '>=4.5.0'
@@ -75,6 +76,72 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri
       '@typescript-eslint/parser': 5.55.0_vgl77cfdswitgr47lm5swmv43m
       ava: 5.2.0
+      chai: 4.3.6
+      dotenv: 16.0.3
+      eslint: 8.36.0
+      eslint-config-prettier: 8.7.0_eslint@8.36.0
+      eslint-plugin-prettier: 4.2.1_e4jq4ivnnnwcsomlcyj2qoljy4
+      ethers: 5.7.2
+      hardhat: 2.13.0_6qtx7vkbdhwvdm4crzlegk4mvi
+      hardhat-deploy: 0.11.25
+      hardhat-gas-reporter: 1.0.9_hardhat@2.13.0
+      prettier: 2.8.5
+      rimraf: 4.4.0
+      solidity-coverage: 0.8.2_hardhat@2.13.0
+      solidity-docgen: 0.6.0-beta.35_hardhat@2.13.0
+      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      typechain: 8.1.1_typescript@4.9.5
+      typescript: 4.9.5
+
+  engine/end-to-end:
+    specifiers:
+      '@ethersproject/abi': ^5.4.7
+      '@ethersproject/providers': ^5.4.7
+      '@freemarket/aave': workspace:^0.0.1
+      '@freemarket/core': workspace:^0.0.1
+      '@freemarket/runner': workspace:^0.0.1
+      '@freemarket/sdk': workspace:^0.1.1
+      '@nomicfoundation/hardhat-chai-matchers': ^1.0.0
+      '@nomicfoundation/hardhat-network-helpers': ^1.0.0
+      '@nomicfoundation/hardhat-toolbox': ^2.0.0
+      '@nomiclabs/hardhat-ethers': npm:hardhat-deploy-ethers@0.3.0-beta.13
+      '@types/chai': ^4.2.0
+      '@types/mocha': '>=9.1.0'
+      '@types/node': '>=12.0.0'
+      '@typescript-eslint/eslint-plugin': ^5.55.0
+      '@typescript-eslint/parser': ^5.55.0
+      chai: ^4.2.0
+      dotenv: ^16.0.3
+      eslint: ^8.36.0
+      eslint-config-prettier: ^8.7.0
+      eslint-plugin-prettier: ^4.2.1
+      ethers: ^5.7.2
+      hardhat: ^2.13.0
+      hardhat-deploy: ^0.11.25
+      hardhat-gas-reporter: ^1.0.8
+      prettier: ^2.8.5
+      rimraf: ^4.4.0
+      solidity-coverage: ^0.8.0
+      ts-node: '>=8.0.0'
+      typechain: ^8.1.0
+      typescript: '>=4.5.0'
+    dependencies:
+      '@freemarket/aave': link:../steps/aave
+      '@freemarket/core': link:../core
+      '@freemarket/runner': link:../runner
+    devDependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@freemarket/sdk': link:../sdk
+      '@nomicfoundation/hardhat-chai-matchers': 1.0.6_4nzcwdy3vlxgqnxb5pars6hfay
+      '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.13.0
+      '@nomicfoundation/hardhat-toolbox': 2.0.2_czdrddn6zwcvvq6mvc7hjo7r7i
+      '@nomiclabs/hardhat-ethers': /hardhat-deploy-ethers/0.3.0-beta.13_wknqauzjtp3mhprkntsmqpccee
+      '@types/chai': 4.3.3
+      '@types/mocha': 10.0.1
+      '@types/node': 18.14.2
+      '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri
+      '@typescript-eslint/parser': 5.55.0_vgl77cfdswitgr47lm5swmv43m
       chai: 4.3.6
       dotenv: 16.0.3
       eslint: 8.36.0
@@ -180,6 +247,7 @@ importers:
       '@freemarket/aave': workspace:^0.0.1
       '@freemarket/add-asset': workspace:^0.0.1
       '@freemarket/core': workspace:^0.0.1
+      '@freemarket/curve': workspace:^0.0.1
       '@freemarket/runner': workspace:^0.0.1
       '@freemarket/stargate-bridge': workspace:^0.0.1
       '@freemarket/step-sdk': workspace:^0.0.1
@@ -236,6 +304,7 @@ importers:
       '@freemarket/aave': link:../steps/aave
       '@freemarket/add-asset': link:../steps/add-asset
       '@freemarket/core': link:../core
+      '@freemarket/curve': link:../steps/curve
       '@freemarket/runner': link:../runner
       '@freemarket/stargate-bridge': link:../steps/stargate-bridge
       '@freemarket/step-sdk': link:../step-sdk
@@ -3830,7 +3899,7 @@ packages:
       es-to-primitive: 1.2.1
       function-bind: 1.1.1
       function.prototype.name: 1.1.5
-      get-intrinsic: 1.1.1
+      get-intrinsic: 1.2.0
       get-symbol-description: 1.0.0
       has: 1.0.3
       has-property-descriptors: 1.0.0
@@ -3842,7 +3911,7 @@ packages:
       is-shared-array-buffer: 1.0.2
       is-string: 1.0.7
       is-weakref: 1.0.2
-      object-inspect: 1.12.2
+      object-inspect: 1.12.3
       object-keys: 1.1.1
       object.assign: 4.1.4
       regexp.prototype.flags: 1.4.3
@@ -4822,14 +4891,6 @@ packages:
     resolution: {integrity: sha512-Hm0ixYtaSZ/V7C8FJrtZIuBBI+iSgL+1Aq82zSu8VQNB4S3Gk8e7Qs3VwBDJAhmRZcFqkl3tQu36g/Foh5I5ig==}
     dev: true
 
-  /get-intrinsic/1.1.1:
-    resolution: {integrity: sha512-kWZrnVM42QCiEA2Ig1bG8zjoIMOgxWwYCEeNdwY6Tv/cOSeGpcoX4pXHfKUxNKVoArnrEr2e9srnAxxGIraS9Q==}
-    dependencies:
-      function-bind: 1.1.1
-      has: 1.0.3
-      has-symbols: 1.0.3
-    dev: true
-
   /get-intrinsic/1.2.0:
     resolution: {integrity: sha512-L049y6nFOuom5wGyRc3/gdTLO94dySVKRACj1RmJZBQXlbTMhtNIgkWkUHq+jYmZvKf14EW1EoJnnjbmoHij0Q==}
     dependencies:
@@ -5441,7 +5502,7 @@ packages:
     resolution: {integrity: sha512-O0DB1JC/sPyZl7cIo78n5dR7eUSwwpYPiXRhTzNxZVAMUuB8vlnRFyLxdrVToks6XPLVnFfbzaVd5WLjhgg+vA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      get-intrinsic: 1.1.1
+      get-intrinsic: 1.2.0
       has: 1.0.3
       side-channel: 1.0.4
     dev: true
@@ -8011,6 +8072,10 @@ packages:
       - debug
     dev: true
 
+  /solidity-ast/0.4.46:
+    resolution: {integrity: sha512-MlPZQfPhjWXqh7YxWcBGDXaPZIfMYCOHYoLEhGDWulNwEPIQQZuB7mA9eP17CU0jY/bGR4avCEUVVpvHtT2gbA==}
+    dev: true
+
   /solidity-coverage/0.8.2_hardhat@2.13.0:
     resolution: {integrity: sha512-cv2bWb7lOXPE9/SSleDO6czkFiMHgP4NXPj+iW9W7iEKLBk7Cj0AGBiNmGX3V1totl9wjPrT0gHmABZKZt65rQ==}
     hasBin: true
@@ -8040,6 +8105,16 @@ packages:
       web3-utils: 1.8.1
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /solidity-docgen/0.6.0-beta.35_hardhat@2.13.0:
+    resolution: {integrity: sha512-9QdwK1THk/MWIdq1PEW/6dvtND0pUqpFTsbKwwU9YQIMYuRhH1lek9SsgnsGGYtdJ0VTrXXcVT30q20a8Y610A==}
+    peerDependencies:
+      hardhat: ^2.8.0
+    dependencies:
+      handlebars: 4.7.7
+      hardhat: 2.13.0_6qtx7vkbdhwvdm4crzlegk4mvi
+      solidity-ast: 0.4.46
     dev: true
 
   /source-map-support/0.5.21:
@@ -8168,7 +8243,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.21.2
     dev: true
 
   /string.prototype.trimend/1.0.6:
@@ -8184,7 +8259,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.21.2
     dev: true
 
   /string.prototype.trimstart/1.0.6:

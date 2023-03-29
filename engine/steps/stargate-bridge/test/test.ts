@@ -103,7 +103,7 @@ describe('StargateBridge', async () => {
 
     // invoke stargate
     await expect(
-      stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.outputAssets, encodedStep.data, {
+      stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.argData, {
         value: remittance.amount,
       })
     ).to.changeTokenBalance(testUsdc, stargateBridgeAction.address, testAmount * -1)

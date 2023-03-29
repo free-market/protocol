@@ -71,14 +71,14 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
     //  need to gather things up into a struct to prevent 'Stack too deep'
     struct Locals {
         uint256 lengthPrefix;
-        StargateBridgeActionArgs sgParams;
+        StargateBridgeActionArgs args;
         bytes dstActionAddressEncoded;
         uint256 minAmountOut;
         AssetAmount nativeInputAsset;
         AssetAmount erc20InputAsset;
     }
 
-    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata, bytes calldata data)
+    function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData)
         public
         payable
         returns (WorkflowStepResult memory)
@@ -107,52 +107,45 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
             approveErc20(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount);
         }
 
-        locals.sgParams = abi.decode(data, (StargateBridgeActionArgs));
+        locals.args = abi.decode(argData, (StargateBridgeActionArgs));
 
         // address payable refundAddress = payable(msg.sender);
-        locals.dstActionAddressEncoded = abi.encodePacked(locals.sgParams.dstActionAddress);
-        if (locals.sgParams.minAmountOutIsPercent) {
-            locals.minAmountOut = (inputAssetAmounts[0].amount * locals.sgParams.minAmountOut) / 100_000;
+        locals.dstActionAddressEncoded = abi.encodePacked(locals.args.dstActionAddress);
+        if (locals.args.minAmountOutIsPercent) {
+            locals.minAmountOut = (inputAssetAmounts[0].amount * locals.args.minAmountOut) / 100_000;
         } else {
-            locals.minAmountOut = locals.sgParams.minAmountOut;
+            locals.minAmountOut = locals.args.minAmountOut;
         }
 
         emit StargateBridgeParamsEvent(
             locals.nativeInputAsset.amount, // native amount
             locals.erc20InputAsset.amount, // token amount
-            locals.sgParams.dstActionAddress, // dest addr for money and sgReceive
-            locals.sgParams.dstChainId,
-            locals.sgParams.srcPoolId,
-            locals.sgParams.dstPoolId,
-            locals.sgParams.dstGasForCall,
-            locals.sgParams.dstNativeAmount,
+            locals.args.dstActionAddress, // dest addr for money and sgReceive
+            locals.args.dstChainId,
+            locals.args.srcPoolId,
+            locals.args.dstPoolId,
+            locals.args.dstGasForCall,
+            locals.args.dstNativeAmount,
             locals.minAmountOut,
-            locals.sgParams.continuationWorkflow
+            locals.args.continuationWorkflow
             );
 
         IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
-            locals.sgParams.dstChainId,
-            locals.sgParams.srcPoolId,
-            locals.sgParams.dstPoolId,
+            locals.args.dstChainId,
+            locals.args.srcPoolId,
+            locals.args.dstPoolId,
             payable(msg.sender), // refundAddreess
             locals.erc20InputAsset.amount,
             locals.minAmountOut,
             IStargateRouter.lzTxObj(
-                locals.sgParams.dstGasForCall,
-                locals.sgParams.dstNativeAmount,
-                abi.encodePacked(locals.sgParams.dstUserAddress)
+                locals.args.dstGasForCall, locals.args.dstNativeAmount, abi.encodePacked(locals.args.dstUserAddress)
             ),
             locals.dstActionAddressEncoded,
-            locals.sgParams.continuationWorkflow
+            locals.args.continuationWorkflow
         );
-        emit WorkflowBridged("Stargate", locals.sgParams.dstChainId, locals.sgParams.nonce);
+        emit WorkflowBridged("Stargate", locals.args.dstChainId, locals.args.nonce);
 
         return WorkflowStepResult(inputAssetAmounts, new AssetAmount[](0), -2);
-        // return LibStepResultBuilder.create(2, 0).addInputAssetAmount(inputAssetAmounts[0]).addInputAssetAmount(
-        //     locals.outputTokenAddress, locals.outputAmountDelta
-        // ).result;
-
-        // return LibActionHelpers.noOutputAssetsResult();
     }
 
     function approveErc20(address tokenAddress, uint256 amount) internal {

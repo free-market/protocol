@@ -27,6 +27,7 @@
     "@freemarket/aave": "workspace:^0.0.1",
     "@freemarket/add-asset": "workspace:^0.0.1",
     "@freemarket/core": "workspace:^0.0.1",
+    "@freemarket/curve": "workspace:^0.0.1",
     "@freemarket/runner": "workspace:^0.0.1",
     "@freemarket/stargate-bridge": "workspace:^0.0.1",
     "@freemarket/step-sdk": "workspace:^0.0.1",

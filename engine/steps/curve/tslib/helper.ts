@@ -7,9 +7,11 @@ import {
   AssetAmount,
   AssetReference,
   sdkAssetToEvmAsset,
+  EvmAsset,
 } from '@freemarket/core'
-import { AbstractStepHelper } from '@freemarket/step-sdk'
+import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'
+import { defaultAbiCoder } from '@ethersproject/abi'
 
 export const STEP_TYPE_ID = 103
 
@@ -30,14 +32,25 @@ export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto
 
     const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
     const asset = await this.instance.dereferenceAsset(outputAsset, chain)
-    const evmOutputAsset = sdkAssetToEvmAsset(asset, chain)
+    const toAsset = sdkAssetToEvmAsset(asset, chain)
 
     return {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
-      outputAssets: [evmOutputAsset],
-      data: '0x',
+      argData: CurveTriCrypto2SwapHelper.encodeAddAssetArgs(toAsset),
     }
+  }
+
+  private static encodeAddAssetArgs(toAsset: EvmAsset) {
+    const encodedArgs = defaultAbiCoder.encode(
+      [
+        `tuple(
+          ${AssetSchema} toAsset
+         )`,
+      ],
+      [{ toAsset }]
+    )
+    return encodedArgs
   }
 }

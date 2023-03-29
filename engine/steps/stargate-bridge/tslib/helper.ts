@@ -299,8 +299,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [transferInputAsset, paymentAsset],
-      outputAssets: [], // no output assets, the input asset is transferred from the caller
-      data: StargateBridgeHelper.encodeStargateBridgeArgs(sgArgs),
+      argData: StargateBridgeHelper.encodeStargateBridgeArgs(sgArgs),
     }
   }
 

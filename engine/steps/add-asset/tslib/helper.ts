@@ -10,6 +10,9 @@ import {
   EncodedWorkflowStep,
   EncodingContext,
   sdkAssetToEvmAsset,
+  EvmAssetAmount,
+  EvmAssetType,
+  EvmInputAsset,
 } from '@freemarket/core'
 import type z from 'zod'
 
@@ -47,24 +50,17 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
       amountStr = stepConfig.amount
     }
 
+    const evmAssetAmount: EvmInputAsset = {
+      asset: evmAsset,
+      amount: amountStr,
+      amountIsPercent: false,
+    }
+
     return {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
-      inputAssets: [], // no input assets
-      outputAssets: [evmAsset],
-      data: AddAssetHelper.encodeAddAssetArgs(address, amountStr),
+      inputAssets: [evmAssetAmount],
+      argData: '0x',
     }
-  }
-  static encodeAddAssetArgs(fromAddress: string, amount: string) {
-    const encodedArgs = defaultAbiCoder.encode(
-      [
-        `tuple(
-           address fromAddress,
-           uint256 amount
-         )`,
-      ],
-      [{ fromAddress, amount }]
-    )
-    return encodedArgs
   }
 }

@@ -12,8 +12,7 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [inputAsset],
-      outputAssets: [],
-      data: '0x',
+      argData: '0x',
     }
   }
 }

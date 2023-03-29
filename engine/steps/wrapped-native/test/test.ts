@@ -74,8 +74,8 @@ describe('Wrapped Native', async () => {
     const encoded = await helper.encodeWorkflowStep(context)
     // console.log(JSON.stringify(encoded, null, 4))
 
-    const { inputAssets, outputAssets, data } = encoded
-    await expect(wrapNativeAction.execute(inputAssets, outputAssets, data, { value: testAmount }))
+    const { inputAssets, argData } = encoded
+    await expect(wrapNativeAction.execute(inputAssets, argData, { value: testAmount }))
       .to.changeEtherBalance(otherUser, testAmount * -1)
       .and.changeTokenBalance(wrapContract, wrapNativeAction.address, testAmount)
   })

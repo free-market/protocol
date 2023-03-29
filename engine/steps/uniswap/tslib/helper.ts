@@ -9,9 +9,11 @@ import {
   Asset,
   sdkAssetToEvmAsset,
   AssetReference,
+  EvmAsset,
 } from '@freemarket/core'
-import { AbstractStepHelper } from '@freemarket/step-sdk'
+import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { UniswapExactIn, UniswapExactOut } from './model'
+import { defaultAbiCoder } from '@ethersproject/abi'
 
 export const STEP_TYPE_ID = 104
 
@@ -46,8 +48,19 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
-      outputAssets: [evmOutputAsset],
-      data: '0x',
+      argData: UniswapExactInHelper.encodeArgs(evmOutputAsset),
     }
+  }
+
+  private static encodeArgs(toAsset: EvmAsset) {
+    const encodedArgs = defaultAbiCoder.encode(
+      [
+        `tuple(
+          ${AssetSchema} toAsset
+         )`,
+      ],
+      [{ toAsset }]
+    )
+    return encodedArgs
   }
 }

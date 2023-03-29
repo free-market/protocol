@@ -5,6 +5,7 @@ import "@freemarket/core/contracts/IWorkflowStep.sol";
 import "@freemarket/step-sdk/contracts/LibActionHelpers.sol";
 import "./Weth.sol";
 import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+import "hardhat/console.sol";
 
 using LibStepResultBuilder for StepResultBuilder;
 
@@ -17,12 +18,13 @@ contract UnwrapNativeAction is IWorkflowStep {
         wethContractAddress = wrappedEtherContractAddress;
     }
 
-    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata, bytes calldata)
+    function execute(AssetAmount[] calldata assetAmounts, bytes calldata)
         external
         payable
         returns (WorkflowStepResult memory)
     {
-        uint256 amount = inputAssetAmounts[0].amount;
+        console.log("unwrap", assetAmounts[0].amount);
+        uint256 amount = assetAmounts[0].amount;
         emit NativeUnwrapped(address(this), amount);
         Weth weth = Weth(wethContractAddress);
         weth.withdraw(amount);

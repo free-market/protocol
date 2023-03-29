@@ -16,6 +16,10 @@ using SafeERC20 for IERC20;
 
 import {ITriCrypto2} from "./ITriCrypto2.sol";
 
+struct UniswapExactInActionParams {
+    Asset toAsset;
+}
+
 contract UniswapExactInAction is IWorkflowStep {
     event TriCryptoSwap2Event(address from, address to, uint256 amount, bool useNative);
 
@@ -33,6 +37,7 @@ contract UniswapExactInAction is IWorkflowStep {
     }
 
     struct Locals {
+        UniswapExactInActionParams args;
         address inputTokenAddress;
         address outputTokenAddress;
         uint256 i;
@@ -45,20 +50,20 @@ contract UniswapExactInAction is IWorkflowStep {
         uint256 nativeInputAmount;
     }
 
-    function execute(AssetAmount[] calldata inputAssetAmounts, Asset[] calldata outputAssets, bytes calldata)
+    function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData)
         public
         payable
         returns (WorkflowStepResult memory)
     {
         // validate
         require(inputAssetAmounts.length == 1, "there must be exactly 1 input asset");
-        require(outputAssets.length == 1, "there must be exactly 1 output asset");
 
         Locals memory locals;
         locals.useNative = false;
+        locals.args = abi.decode(argData, (UniswapExactInActionParams));
 
         locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
-        locals.outputTokenAddress = outputAssets[0].assetAddress;
+        locals.outputTokenAddress = locals.args.toAsset.assetAddress;
         if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
             locals.inputTokenAddress = coin2;
             locals.i = 2;
@@ -70,13 +75,13 @@ contract UniswapExactInAction is IWorkflowStep {
             locals.i = getTokenIndex(locals.inputTokenAddress);
         }
 
-        if (outputAssets[0].assetType == AssetType.Native) {
+        if (locals.args.toAsset.assetType == AssetType.Native) {
             locals.outputTokenAddress = coin2;
             locals.useNative = true;
             locals.j = 2;
             locals.outputAmountBefore = address(this).balance;
         } else {
-            locals.outputTokenAddress = outputAssets[0].assetAddress;
+            locals.outputTokenAddress = locals.args.toAsset.assetAddress;
             locals.j = getTokenIndex(locals.outputTokenAddress);
             locals.outputAmountBefore = IERC20(locals.outputTokenAddress).balanceOf(address(this));
         }
@@ -102,7 +107,7 @@ contract UniswapExactInAction is IWorkflowStep {
         );
 
         // deal with output
-        if (outputAssets[0].assetType == AssetType.Native) {
+        if (locals.args.toAsset.assetType == AssetType.Native) {
             locals.outputAmountAfter = address(this).balance;
         } else {
             locals.outputAmountAfter = IERC20(locals.outputTokenAddress).balanceOf(address(this));

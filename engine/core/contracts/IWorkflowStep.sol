@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import './model/Asset.sol';
-import './model/AssetAmount.sol';
-import './model/WorkflowStepResult.sol';
 
+import "./model/Asset.sol";
+import "./model/AssetAmount.sol";
+import "./model/WorkflowStepResult.sol";
+
+/// @title The interface between WorkflowRunner and each Step implementation.abi
+/// @author Marty Saxton
+/// @notice All steps must implement this interface.
 interface IWorkflowStep {
-  function execute(
-    // input assets paired with amounts of each
-    AssetAmount[] calldata inputAssetAmounts,
-    // expected output assets (amounts not known yet)
-    Asset[] calldata outputAssets,
-    // additional arguments specific to this step
-    bytes calldata data
-  ) external payable returns (WorkflowStepResult memory);
+    /// @notice called by WorkflowRunner to execute a workflow step.
+    /// @param assetAmounts AssetAmounts to be used by the step
+    /// @param argData Step specific arguments in ABI encoding
+    /// @return the outcome of the step invocation
+    function execute(AssetAmount[] calldata assetAmounts, bytes calldata argData)
+        external
+        payable
+        returns (WorkflowStepResult memory);
 }

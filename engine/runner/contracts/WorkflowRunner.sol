@@ -16,6 +16,8 @@ import "./LibStorageWriter.sol";
 import "./EternalStorage.sol";
 import "./LibAsset.sol";
 
+import "hardhat/console.sol";
+
 contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*IUserProxyManager,*/ IStepManager {
     constructor(address payable frontDoorAddress)
         FreeMarketBase(
@@ -142,12 +144,13 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
         emit WorkflowExecution(userAddress, workflow);
         // workflow starts on the step with index 0
         uint16 currentStepIndex = 0;
-        // used to keep track of asset balances
+        // keep track of asset balances
         LibAssetBalances.AssetBalances memory assetBalances;
         // credit ETH if sent with this call
         if (msg.value != 0) {
             // TODO add event
-            assetBalances.credit(0, uint256(msg.value));
+            console.log("crediting native", msg.value);
+            assetBalances.credit(0, msg.value);
         }
         // credit any starting assets (if this is a continutation workflow with assets sent by a bridge)
         if (startingAsset.amount > 0) {
@@ -159,19 +162,43 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
             address stepAddress = resolveStepAddress(currentStep);
             AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
 
+            console.log("calling id", currentStep.stepTypeId);
+            console.log("calling addr", stepAddress);
+            console.log("assetAmounts", inputAssetAmounts.length);
+            for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
+                console.log(
+                    "  input type", inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? "erc20" : "native"
+                );
+                console.log("  input addr", inputAssetAmounts[i].asset.assetAddress);
+                console.log("  input amount", inputAssetAmounts[i].amount);
+            }
+
             // invoke the step
-            WorkflowStepResult memory stepResult =
-                invokeStep(stepAddress, inputAssetAmounts, currentStep.outputAssets, currentStep.data);
+            WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
+
+            console.log("stepResult.ouptputs", stepResult.outputAssetAmounts.length);
+            for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+                console.log("output amount", stepResult.outputAssetAmounts[i].amount);
+            }
+
             emit WorkflowStepExecution(
                 currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult
                 );
 
             // debit input assets
-            for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-                assetBalances.debit(inputAssetAmounts[i].asset, inputAssetAmounts[i].amount);
+            console.log("result inputs", stepResult.inputAssetAmounts.length);
+            for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
+                console.log("  debit", i);
+                console.log("  debit addr", stepResult.inputAssetAmounts[i].asset.assetAddress);
+                console.log("  debit amt", stepResult.inputAssetAmounts[i].amount);
+                assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
             }
             // credit output assets
+            console.log("result outputs", stepResult.outputAssetAmounts.length);
             for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+                console.log("  credit", i);
+                console.log("  credit addr", stepResult.outputAssetAmounts[i].asset.assetAddress);
+                console.log("  credit amt", stepResult.outputAssetAmounts[i].amount);
                 assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
             }
             if (currentStep.nextStepIndex == -1) {
@@ -203,15 +230,12 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
         }
     }
 
-    function invokeStep(
-        address stepAddress,
-        AssetAmount[] memory inputAssetAmounts,
-        Asset[] memory outputAssets,
-        bytes memory data
-    ) internal returns (WorkflowStepResult memory) {
-        (bool success, bytes memory returnData) = stepAddress.delegatecall(
-            abi.encodeWithSelector(IWorkflowStep.execute.selector, inputAssetAmounts, outputAssets, data)
-        );
+    function invokeStep(address stepAddress, AssetAmount[] memory inputAssetAmounts, bytes memory data)
+        internal
+        returns (WorkflowStepResult memory)
+    {
+        (bool success, bytes memory returnData) =
+            stepAddress.delegatecall(abi.encodeWithSelector(IWorkflowStep.execute.selector, inputAssetAmounts, data));
         require(success, string(returnData));
         return abi.decode(returnData, (WorkflowStepResult));
     }

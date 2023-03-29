@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
   return deployStep('CurveTriCrypto2SwapAction', STEP_TYPE_ID, hardhatRuntimeEnv, [contractAddress])
 }
 
-func.tags = ['AaveSupplyAction']
+func.tags = ['CurveTriCrypto2SwapAction']
 func.dependencies = ['WorkflowRunner']
 
 export default func
