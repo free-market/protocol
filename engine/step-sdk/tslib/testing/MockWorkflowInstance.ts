@@ -7,9 +7,11 @@ import {
   EvmWorkflow,
   FungibleToken,
   IWorkflow,
+  getDefaultFungibleTokens,
   nonEmptyStringSchema,
 } from '@freemarket/core'
 import type EIP1193Provider from 'eip1193-provider'
+import { Memoize } from 'typescript-memoize'
 
 export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
@@ -25,7 +27,7 @@ export class MockWorkflowInstance implements IWorkflow {
     return Promise.resolve(this.frontDoorAddress)
   }
 
-  dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
+  async dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
     if (typeof assetRef === 'string') {
       throw new Error('dereferencing string asset refs is not supported')
     }
@@ -33,29 +35,41 @@ export class MockWorkflowInstance implements IWorkflow {
       if (chain !== 'ethereum') {
         throw new Error('dereferencing native assets is not supported on chain: ' + chain)
       }
-      return Promise.resolve({
+      return {
         type: 'native',
         name: 'Ether',
         symbol: 'ETH',
         chain,
-      })
+      }
     }
+
     const address = this.erc20s.get(assetRef.symbol)
-    if (!address) {
-      throw new Error('could not deference asset, symbol not found: ' + assetRef.symbol)
+    if (address) {
+      const chains: FungibleToken['chains'] = {}
+      chains[chain] = {
+        address,
+        decimals: 18,
+      }
+
+      const rv: FungibleToken = {
+        chains,
+        symbol: assetRef.symbol,
+        type: 'fungible-token',
+      }
+      return rv
     }
 
-    const chains: FungibleToken['chains'] = {}
-    chains[chain] = {
-      address,
+    const defaults = await this.getDefaultFungibleTokens()
+    const ft = defaults[assetRef.symbol]
+    if (ft) {
+      return ft
     }
+    throw new Error('could not deference asset, symbol not found: ' + assetRef.symbol)
+  }
 
-    const rv: FungibleToken = {
-      chains,
-      symbol: assetRef.symbol,
-      type: 'fungible-token',
-    }
-    return Promise.resolve(rv)
+  @Memoize()
+  getDefaultFungibleTokens() {
+    return getDefaultFungibleTokens()
   }
   isTestNet(): Promise<boolean> {
     return Promise.resolve(this.testNet)

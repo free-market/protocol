@@ -29,6 +29,8 @@ export interface NativeAsset extends z.infer<typeof nativeAssetSchema> {}
 export const assetChainInfoSchema = z.object({
   /** The address of the asset.  */
   address: addressSchema,
+  usd: z.number().optional(),
+  decimals: z.number(),
 })
 
 /** Chain specific asset information. */

@@ -33,6 +33,7 @@ const workflowWithCustomToken: Workflow = {
       chains: {
         ethereum: {
           address: fakeTokenAddress,
+          decimals: 18,
         },
       },
     },

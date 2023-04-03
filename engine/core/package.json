@@ -53,6 +53,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/experimental": "^5.7.0",
     "@openzeppelin/contracts": "^4.8.0",
+    "axios": "0.27.2",
     "eip1193-provider": "^1.0.1",
     "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"

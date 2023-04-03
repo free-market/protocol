@@ -41,6 +41,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     switch (chainId) {
       case 1:
       case 5:
+      case 31337:
         return 'ethereum'
       case 56:
       case 97:

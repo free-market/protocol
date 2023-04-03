@@ -4,7 +4,7 @@ import { expect } from 'chai'
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
 import type { BigNumberish, Signer } from 'ethers'
 import { getCurveTriCrypto2Address } from './curve'
-import { IERC20__factory, ITriCrypto2__factory } from '../../typechain-types'
+import { IERC20__factory, ITriCrypto2__factory, Weth__factory } from '../../typechain-types'
 
 export const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
@@ -78,4 +78,8 @@ export async function getUsdt(hardhat: HardhatRuntimeEnvironment, wei: BigNumber
   const usdt = IERC20__factory.connect(usdtAddress, signer)
   const usdtBalance = await usdt.balanceOf(signerAddr)
   return { usdtAddress, usdtBalance, usdt }
+}
+export async function getWeth(wei: BigNumberish, signer: Signer) {
+  const weth = Weth__factory.connect(WETH_ADDRESS, signer)
+  await (await weth.deposit({ value: wei })).wait()
 }

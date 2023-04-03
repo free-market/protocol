@@ -9,127 +9,112 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "hardhat/console.sol";
 
 import "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol";
+import "@freemarket/step-sdk/contracts/LibErc20.sol";
+import "@freemarket/step-sdk/contracts/ABDKMathQuad.sol";
+import "./IV3SwapRouter.sol";
 
+using ABDKMathQuad for bytes16;
 using LibStepResultBuilder for StepResultBuilder;
+using LibErc20 for IERC20;
 
-using SafeERC20 for IERC20;
-
-import {ITriCrypto2} from "./ITriCrypto2.sol";
+struct UniswapRoute {
+    bytes encodedPath;
+    int256 portion; // like percent but already divided by 100
+        // uint256 minExchangeRate;
+}
 
 struct UniswapExactInActionParams {
     Asset toAsset;
+    UniswapRoute[] routes;
+    int256 minExchangeRate;
+    int256 twoPointFive;
 }
 
 contract UniswapExactInAction is IWorkflowStep {
-    event TriCryptoSwap2Event(address from, address to, uint256 amount, bool useNative);
+    event UniswapExactInActionEvent(address from, address to, uint256 amount, bool useNative);
 
-    address public immutable triCryptoAddress;
-    address public immutable coin0;
-    address public immutable coin1;
-    address public immutable coin2;
+    address public immutable routerAddress;
 
-    constructor(address _triCryptoAddress) {
-        triCryptoAddress = _triCryptoAddress;
-        ITriCrypto2 iTriCrypto = ITriCrypto2(triCryptoAddress);
-        coin0 = iTriCrypto.coins(0);
-        coin1 = iTriCrypto.coins(1);
-        coin2 = iTriCrypto.coins(2);
+    constructor(address _routerAddress) {
+        routerAddress = _routerAddress;
     }
 
-    struct Locals {
-        UniswapExactInActionParams args;
-        address inputTokenAddress;
-        address outputTokenAddress;
-        uint256 i;
-        uint256 j;
-        IERC20 outputToken;
-        uint256 outputAmountBefore;
-        uint256 outputAmountAfter;
-        uint256 outputAmountDelta;
-        bool useNative;
-        uint256 nativeInputAmount;
-    }
+    // struct Locals {}
 
     function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData)
         public
         payable
         returns (WorkflowStepResult memory)
     {
+        console.log("omg I'm in the uniswap action");
         // validate
         require(inputAssetAmounts.length == 1, "there must be exactly 1 input asset");
 
-        Locals memory locals;
-        locals.useNative = false;
-        locals.args = abi.decode(argData, (UniswapExactInActionParams));
+        // Locals memory locals;
+        IERC20 inputAsset = IERC20(inputAssetAmounts[0].asset.assetAddress);
+        inputAsset.safeApprove(routerAddress, inputAssetAmounts[0].amount);
 
-        locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
-        locals.outputTokenAddress = locals.args.toAsset.assetAddress;
-        if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
-            locals.inputTokenAddress = coin2;
-            locals.i = 2;
-            locals.useNative = true;
-            locals.nativeInputAmount = inputAssetAmounts[0].amount;
-        } else {
-            locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
-            IERC20(locals.inputTokenAddress).safeApprove(triCryptoAddress, inputAssetAmounts[0].amount);
-            locals.i = getTokenIndex(locals.inputTokenAddress);
+        UniswapExactInActionParams memory args = abi.decode(argData, (UniswapExactInActionParams));
+
+        bytes16 n = ABDKMathQuad.fromUInt(1000);
+        bytes16 twoPointFive = ABDKMathQuad.from128x128(args.twoPointFive);
+        bytes16 m = n.mul(twoPointFive);
+        console.log("m", m.toUInt());
+
+        // logArgs(args);
+
+        IERC20 outputAsset = IERC20(args.toAsset.assetAddress);
+        uint256 outputAssetBalanceBefore = outputAsset.balanceOf(address(this));
+        console.log("outputAssetBalanceBefore", outputAssetBalanceBefore);
+
+        uint256 amountRemaining = inputAssetAmounts[0].amount;
+        bytes16 amountInFloat = ABDKMathQuad.fromUInt(inputAssetAmounts[0].amount);
+        console.log("routes", args.routes.length);
+
+        for (uint256 i = 0; i < args.routes.length; i++) {
+            console.log("route", i);
+            console.log("  input balance  ", inputAsset.balanceOf(address(this)));
+            console.log("  output balance ", outputAsset.balanceOf(address(this)));
+
+            UniswapRoute memory route = args.routes[i];
+            bytes16 portion = ABDKMathQuad.from128x128(route.portion);
+            uint256 amount;
+            // if this is the last route, use the remaining amount to avoid rounding errors
+            if (i < args.routes.length - 1) {
+                amount = portion.mul(amountInFloat).toUInt();
+                console.log("  amount computed from portion", amount);
+            } else {
+                amount = amountRemaining;
+                console.log("  amount computed from remaining", amount);
+            }
+            // minAmoutOut is zero because we're doing it ourself after all routes have been executed
+            IV3SwapRouter.ExactInputParams memory routerArgs =
+                IV3SwapRouter.ExactInputParams(route.encodedPath, address(this), amount, 0);
+            IV3SwapRouter(routerAddress).exactInput(routerArgs);
+            amountRemaining -= amount;
         }
 
-        if (locals.args.toAsset.assetType == AssetType.Native) {
-            locals.outputTokenAddress = coin2;
-            locals.useNative = true;
-            locals.j = 2;
-            locals.outputAmountBefore = address(this).balance;
-        } else {
-            locals.outputTokenAddress = locals.args.toAsset.assetAddress;
-            locals.j = getTokenIndex(locals.outputTokenAddress);
-            locals.outputAmountBefore = IERC20(locals.outputTokenAddress).balanceOf(address(this));
-        }
+        // check the amount received vs minExchangeRate
+        uint256 outputAssetBalanceAfter = outputAsset.balanceOf(address(this));
+        console.log("this address", address(this));
+        console.log("outputAsset address", address(outputAsset));
+        console.log("outputAssetBalanceAfter", outputAssetBalanceAfter);
+        // bytes16 minExchangRate = ABDKMathQuad.from128x128(args.minExchangeRate);
+        // bytes16 amountOutMinimum = minExchangRate.mul(amountInFloat);
+        // bytes16 actualAmountOut = ABDKMathQuad.fromUInt(outputAssetBalanceAfter - outputAssetBalanceBefore);
+        // int8 compareResult = actualAmountOut.cmp(amountOutMinimum);
+        // require(compareResult >= 0, "amount received is less than minExchangeRate");
 
-        emit TriCryptoSwap2Event(
-            locals.inputTokenAddress, locals.outputTokenAddress, inputAssetAmounts[0].amount, locals.useNative
-            );
-
-        // TODO allow user to provide minOut as absolute or relative
-
-        console.log("i", locals.i);
-        console.log("j", locals.j);
-        console.log("amount", inputAssetAmounts[0].amount);
-        console.log("locals.nativeInputAmount", locals.nativeInputAmount);
-        console.log("msg.value", msg.value);
-        console.log("locals.useNative", locals.useNative);
-        console.log("triCryptoAddress", triCryptoAddress);
-        console.log("this.balance", address(this).balance);
-
-        // do the swap
-        ITriCrypto2(triCryptoAddress).exchange{value: locals.nativeInputAmount}(
-            locals.i, locals.j, inputAssetAmounts[0].amount, 1, locals.useNative
-        );
-
-        // deal with output
-        if (locals.args.toAsset.assetType == AssetType.Native) {
-            locals.outputAmountAfter = address(this).balance;
-        } else {
-            locals.outputAmountAfter = IERC20(locals.outputTokenAddress).balanceOf(address(this));
-        }
-        locals.outputAmountDelta = locals.outputAmountAfter - locals.outputAmountBefore;
-        require(locals.outputAmountDelta > 0, "output balance did not increase");
-
-        return LibStepResultBuilder.create(1, 1).addInputAssetAmount(inputAssetAmounts[0]).addOutputToken(
-            locals.outputTokenAddress, locals.outputAmountDelta
-        ).result;
+        return LibStepResultBuilder.create(0, 0).result;
     }
 
-    function getTokenIndex(address tokenAddress) internal view returns (uint256) {
-        if (tokenAddress == coin0) {
-            return 0;
+    function logArgs(UniswapExactInActionParams memory args) internal {
+        console.log("toAsset address", args.toAsset.assetAddress);
+        console.log("minExchangeRate", uint256(args.minExchangeRate));
+        for (uint256 i = 0; i < args.routes.length; i++) {
+            console.log("  route", i);
+            // console.log("  encodedPath", args.routes[i].encodedPath);
+            console.log("  portion", uint256(args.routes[i].portion));
         }
-        if (tokenAddress == coin1) {
-            return 1;
-        }
-        if (tokenAddress == coin2) {
-            return 2;
-        }
-        revert("unknown token address");
     }
 }
