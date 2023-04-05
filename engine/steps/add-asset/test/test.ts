@@ -61,6 +61,7 @@ describe('AddAsset', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig: stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
     }
     const encoded = await helper.encodeWorkflowStep(context)
     // console.log(encoded)

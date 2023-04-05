@@ -26,6 +26,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@freemarket/aave": "workspace:^0.0.1",
     "@freemarket/add-asset": "workspace:^0.0.1",
+    "@freemarket/base-branches": "workspace:^",
     "@freemarket/core": "workspace:^0.0.1",
     "@freemarket/curve": "workspace:^0.0.1",
     "@freemarket/runner": "workspace:^0.0.1",

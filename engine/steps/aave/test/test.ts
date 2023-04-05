@@ -67,6 +67,7 @@ describe('AaveSupply', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
     }
     const encoded = await helper.encodeWorkflowStep(context)
     await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData)).to.changeTokenBalance(

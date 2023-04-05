@@ -70,6 +70,7 @@ describe('Wrapped Native', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig: stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
     }
     const encoded = await helper.encodeWorkflowStep(context)
     // console.log(JSON.stringify(encoded, null, 4))

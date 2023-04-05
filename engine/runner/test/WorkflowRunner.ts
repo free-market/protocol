@@ -31,6 +31,7 @@ describe('WorkflowRunner', async () => {
     const workflowRunnerStorageAddress = await workflowRunner.eternalStorageAddress()
     expect(workflowRunnerStorageAddress).is.eq(frontDoorStorageAddress)
   })
+
   it('manages step addresses', async () => {
     const {
       contracts: { frontDoor, workflowRunner },
@@ -46,4 +47,6 @@ describe('WorkflowRunner', async () => {
     expect(stepInfo.stepTypeId).to.eq(1000)
     expect(stepInfo.latest.toLowerCase()).to.eq(someAddress)
   })
+
+  it('determines ')
 })

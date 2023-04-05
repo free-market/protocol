@@ -68,6 +68,7 @@ describe('Curve Tricrypo2 swap', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
     }
     let encoded = await helper.encodeWorkflowStep(context)
 

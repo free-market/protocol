@@ -53,8 +53,7 @@ const UniswapExactInActionParamsSchema = `
   tuple(
     ${AssetSchema} toAsset,
     ${UniswapRouteSchema}[] routes,
-    int256 minExchangeRate,
-    int256 twoPointFive
+    int256 minExchangeRate
   )`
 
 const abiCoder = ethers.utils.defaultAbiCoder
@@ -92,13 +91,11 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     }
     const minExchangeRate = UniswapExactInHelper.getMinExchangeRate(inputAmountStr, route.quote, parseFloat(slippageTolerancePct))
 
-    const twoPointFive = new Big(2.5)
-    const twoPointFiveFloat = UniswapExactInHelper.toQuadFloat(twoPointFive)
     return {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
-      argData: abiCoder.encode([UniswapExactInActionParamsSchema], [{ toAsset, routes, minExchangeRate, twoPointFive: twoPointFiveFloat }]),
+      argData: abiCoder.encode([UniswapExactInActionParamsSchema], [{ toAsset, routes, minExchangeRate }]),
     }
   }
 

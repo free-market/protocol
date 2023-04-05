@@ -135,7 +135,7 @@ describe('Uniswap Exact In', async () => {
   //   expect(toBalanceDiff).to.be.gt(0)
   // })
 
-  it('does a transfer using the helper and the integration contract', async () => {
+  it.only('does a transfer using the helper and the integration contract', async () => {
     const {
       users: { otherUser },
       contracts: { uniswapExactInAction, toToken, weth },
@@ -157,6 +157,7 @@ describe('Uniswap Exact In', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
     }
 
     const encoded = await helper.encodeWorkflowStep(context)

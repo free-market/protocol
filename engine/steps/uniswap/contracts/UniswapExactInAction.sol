@@ -27,7 +27,6 @@ struct UniswapExactInActionParams {
     Asset toAsset;
     UniswapRoute[] routes;
     int256 minExchangeRate;
-    int256 twoPointFive;
 }
 
 contract UniswapExactInAction is IWorkflowStep {
@@ -55,11 +54,6 @@ contract UniswapExactInAction is IWorkflowStep {
         inputAsset.safeApprove(routerAddress, inputAssetAmounts[0].amount);
 
         UniswapExactInActionParams memory args = abi.decode(argData, (UniswapExactInActionParams));
-
-        bytes16 n = ABDKMathQuad.fromUInt(1000);
-        bytes16 twoPointFive = ABDKMathQuad.from128x128(args.twoPointFive);
-        bytes16 m = n.mul(twoPointFive);
-        console.log("m", m.toUInt());
 
         // logArgs(args);
 
@@ -108,7 +102,7 @@ contract UniswapExactInAction is IWorkflowStep {
         return LibStepResultBuilder.create(0, 0).result;
     }
 
-    function logArgs(UniswapExactInActionParams memory args) internal {
+    function logArgs(UniswapExactInActionParams memory args) internal view {
         console.log("toAsset address", args.toAsset.assetAddress);
         console.log("minExchangeRate", uint256(args.minExchangeRate));
         for (uint256 i = 0; i < args.routes.length; i++) {

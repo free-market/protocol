@@ -4,10 +4,9 @@ import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { addAssetSchema } from '@freemarket/add-asset'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { aaveWithdrawalSchema, payGelatoRelaySchema } from './steps'
-import { chainBranchSchema } from './steps/ChainBranch'
-import { assetBalanceBranchSchema } from './steps/AssetBalanceBranch'
 import { wrapNativeSchema, unwrapNativeSchema } from '@freemarket/wrapped-native'
 import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
+import { assetBalanceBranchSchema, chainBranchSchema } from '@freemarket/base-branches'
 
 export const stepSchema = z.discriminatedUnion('type', [
   // actions

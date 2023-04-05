@@ -3,7 +3,7 @@ import axios from 'axios'
 import cloneDeep from 'lodash.clonedeep'
 import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
-import { createStepHelper } from '../helpers'
+import { createStepHelper } from './createStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { Memoize } from 'typescript-memoize'
 import { NATIVE_ASSETS } from '../NativeAssets'
@@ -600,7 +600,7 @@ export class WorkflowInstance implements IWorkflowInstance {
         nextStepIndex = -1
       }
       const helper = this.getStepHelper(chainOrStart, step.type)
-      const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress })
+      const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress, mapStepIdToIndex })
       return {
         ...encoded,
         nextStepIndex,

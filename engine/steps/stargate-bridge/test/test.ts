@@ -89,6 +89,7 @@ describe('StargateBridge', async () => {
       userAddress: otherUser,
       chain: 'ethereum',
       stepConfig: step,
+      mapStepIdToIndex: new Map<string, number>(),
     }
 
     const remittance = await helper.getRemittance(step)

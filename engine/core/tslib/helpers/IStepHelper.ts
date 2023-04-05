@@ -21,6 +21,7 @@ export interface EncodingContext<T> {
   userAddress: string
   chain: Chain
   stepConfig: T
+  mapStepIdToIndex: Map<string, number>
 }
 
 export interface IStepHelper<T extends StepBase> {

@@ -15,8 +15,12 @@ import "./LibAssetBalances.sol";
 import "./LibStorageWriter.sol";
 import "./EternalStorage.sol";
 import "./LibAsset.sol";
-
+import "./ChainBranch.sol";
+import "./AssetBalanceBranch.sol";
 import "hardhat/console.sol";
+
+uint16 constant STEP_TYPE_ID_CHAIN_BRANCH = 1;
+uint16 constant STEP_TYPE_ID_ASSET_AMOUNT_BRANCH = 2;
 
 contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*IUserProxyManager,*/ IStepManager {
     constructor(address payable frontDoorAddress)
@@ -159,6 +163,24 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
         while (true) {
             // prepare to invoke the step
             WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
+
+            // ChainBranch and AssetAmountBranch are special
+            if (
+                currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH
+                    || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH
+            ) {
+                int16 nextStepIndex;
+                if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH) {
+                    nextStepIndex = ChainBranch.getNextStepIndex(currentStep);
+                } else {
+                    nextStepIndex = AssetBalanceBranch.getNextStepIndex(currentStep, assetBalances);
+                }
+                if (nextStepIndex == -1) {
+                    break;
+                }
+                currentStepIndex = uint16(nextStepIndex);
+            }
+
             address stepAddress = resolveStepAddress(currentStep);
             AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
 
