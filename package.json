@@ -6,7 +6,7 @@
   "scripts": {
     "build": "turbo build",
     "test": "turbo build test --filter=!@fmp/codeless-builder",
-    "deploy-contracts": "turbo run deploy-contracts --concurrency=1",
+    "deploy-contracts": "turbo run deploy-contracts --force --concurrency=1",
     "prepare": "husky install"
   },
   "keywords": [],

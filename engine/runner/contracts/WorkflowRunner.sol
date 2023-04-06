@@ -179,6 +179,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
                     break;
                 }
                 currentStepIndex = uint16(nextStepIndex);
+                continue;
             }
 
             address stepAddress = resolveStepAddress(currentStep);
@@ -223,6 +224,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
                 console.log("  credit amt", stepResult.outputAssetAmounts[i].amount);
                 assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
             }
+            console.log("currentStep.nextStepIndex");
+            console.logInt(currentStep.nextStepIndex);
             if (currentStep.nextStepIndex == -1) {
                 break;
             }
@@ -232,8 +235,12 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
     }
 
     function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
+        console.log("entering refundUser, numAssets", assetBalances.getAssetCount());
         for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
             AssetAmount memory ab = assetBalances.getAssetAt(i);
+            console.log("  refunding asset", i);
+            console.log("  refunding asset addr", ab.asset.assetAddress);
+            console.log("  refunding asset amt", ab.amount);
             Asset memory asset = ab.asset;
             uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
             uint256 userAmount = ab.amount - feeAmount;
@@ -245,6 +252,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner, /*I
                 require(sent, string(data));
             } else if (asset.assetType == AssetType.ERC20) {
                 IERC20 token = IERC20(asset.assetAddress);
+                uint256 balance = token.balanceOf(address(this));
+                console.log("  refunding erc20 balance", balance);
                 SafeERC20.safeTransfer(token, userAddress, userAmount);
             } else {
                 revert("unknown asset type in assetBalances");

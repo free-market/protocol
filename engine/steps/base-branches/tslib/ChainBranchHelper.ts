@@ -1,7 +1,7 @@
 import type { ChainBranch } from './model'
-import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain } from '@freemarket/core'
+import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, assert, getChainIdFromChain } from '@freemarket/core'
 import { AbstractBranchHelper, AssetSchema } from '@freemarket/step-sdk'
-import { assert } from 'console'
+
 import * as ethers from 'ethers'
 
 const abiCoder = ethers.utils.defaultAbiCoder

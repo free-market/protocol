@@ -1,7 +1,7 @@
 import type { AssetBalanceBranch, ComparisonOperator } from './model'
-import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain, sdkAssetToEvmAsset } from '@freemarket/core'
+import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, assert, getChainIdFromChain, sdkAssetToEvmAsset } from '@freemarket/core'
 import { AbstractBranchHelper, AssetSchema } from '@freemarket/step-sdk'
-import { assert } from 'console'
+
 import * as ethers from 'ethers'
 
 const abiCoder = ethers.utils.defaultAbiCoder

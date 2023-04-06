@@ -99,7 +99,9 @@ contract UniswapExactInAction is IWorkflowStep {
         // int8 compareResult = actualAmountOut.cmp(amountOutMinimum);
         // require(compareResult >= 0, "amount received is less than minExchangeRate");
 
-        return LibStepResultBuilder.create(0, 0).result;
+        return LibStepResultBuilder.create(1, 1).addInputAssetAmount(inputAssetAmounts[0]).addOutputToken(
+            args.toAsset.assetAddress, outputAssetBalanceAfter - outputAssetBalanceBefore
+        ).result;
     }
 
     function logArgs(UniswapExactInActionParams memory args) internal view {
