@@ -47,3 +47,5 @@ npm-debug.log
 *.tsbuildinfo
 deployment-artifacts
 /.gtm/
+**/eraseme*
+**/deployments/local

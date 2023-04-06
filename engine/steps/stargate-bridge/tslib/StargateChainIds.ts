@@ -1,0 +1,16 @@
+export const StargateChainIds: { [index: string]: number } = {
+  Ethereum: 101,
+  BNB: 102,
+  Avalanche: 106,
+  Polygon: 109,
+  Arbitrum: 110,
+  Optimism: 111,
+  Fantom: 112,
+  GoerliEthereum: 10121,
+  GoerliArbitrum: 10143,
+  GoerliOptimism: 10132,
+  GoerliBNB: 10102,
+  GoerliAvalanche: 10106,
+  GoerliMumbai: 10109,
+  GoerliFantom: 10112,
+} as const

@@ -8,15 +8,19 @@ import fs from 'fs'
 import chalk from 'chalk'
 import type { ExecutionEvent } from '../runner/ExecutionEvent'
 import { WorkflowInstance } from '../runner/WorkflowInstance'
-import dotenv from 'dotenv'
 import { HDNode } from '@ethersproject/hdnode'
 import { Wallet } from '@ethersproject/wallet'
 import { JsonRpcProvider, Provider, WebSocketProvider } from '@ethersproject/providers'
 import assert from '../utils/assert'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { createStandardProvider } from '../helpers/utils'
+import { createStandardProvider } from '@freemarket/core'
 
-dotenv.config()
+import dotenv from 'dotenv'
+import os from 'os'
+import path from 'path'
+
+dotenv.config({ path: path.join(os.homedir(), '.env') })
+
 const log = rootLogger.getLogger('execute-workflow')
 
 if (process.argv.length != 5) {

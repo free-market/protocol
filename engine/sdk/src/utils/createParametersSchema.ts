@@ -1,8 +1,8 @@
 import z, { ZodTypeAny } from 'zod'
 import type { Workflow } from '../model'
-import { getParameterSchema } from '../model/Parameter'
 import type { ReadonlyDeep } from 'type-fest'
 import rootLogger from 'loglevel'
+import { getParameterSchema } from '@freemarket/core'
 
 const log = rootLogger.getLogger('createParametersSchema')
 

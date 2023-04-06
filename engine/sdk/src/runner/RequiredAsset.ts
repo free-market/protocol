@@ -1,4 +1,4 @@
-import type { AssetAmount } from '../model'
+import type { AssetAmount } from '@freemarket/core'
 
 export interface RequiredAsset {
   stepId: string

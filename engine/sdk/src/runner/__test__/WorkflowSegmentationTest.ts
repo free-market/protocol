@@ -45,7 +45,7 @@ const aBigWorkflow: Workflow = {
       type: 'chain-branch',
       currentChain: 'optimism',
       ifYes: 'sgArbitrum',
-      ifNo: 'sgOptimism',
+      nextStepId: 'sgOptimism',
     },
     {
       stepId: 'sgArbitrum',

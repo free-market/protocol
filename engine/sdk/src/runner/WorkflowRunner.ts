@@ -1,20 +1,20 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
-import type { EncodedWorkflow } from '../EncodedWorkflow'
-import type { Chain } from '../model'
 import type { AddAssetInfo } from './AddAssetInfo'
 import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
-import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
+// import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
-import { getEthersSigner, getEthersProvider } from '../utils/evm-utils'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 
 import rootLogger from 'loglevel'
 import { getStargateBridgeParamsEvent } from '../private/debug-utils'
+import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner, IERC20__factory } from '@freemarket/core'
+import { WorkflowRunner__factory } from '@freemarket/runner'
+import { BridgeBase__factory } from '@freemarket/stargate-bridge'
 const log = rootLogger.getLogger('WorkflowRunner')
 
 interface ContinuationInfo {
@@ -80,6 +80,7 @@ export class WorkflowRunner implements IWorkflowRunner {
 
     const sourceChain = this.startChain
 
+    // eslint-disable-next-line sonarjs/no-one-iteration-loop
     for (;;) {
       const continuationInfo = this.getContinuationInfoFromEvents(txReceipt)
       if (!continuationInfo) {

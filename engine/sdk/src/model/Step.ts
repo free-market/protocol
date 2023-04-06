@@ -1,18 +1,19 @@
 import z from 'zod'
-import { stargateBridgeSchema } from './steps/StargateBridge'
-import { addAssetSchema } from './steps/AddAsset'
-import { aaveSupplySchema, aaveWithdrawalSchema, payGelatoRelaySchema, uniswapExactOutSchema } from './steps'
-import { chainBranchSchema } from './steps/ChainBranch'
-import { assetBalanceBranchSchema } from './steps/AssetBalanceBranch'
-import { uniswapExactInSchema } from './steps/UniswapExactAmountIn'
-import { wrapNativeSchema } from './steps/WrapNative'
-import { unwrapNativeSchema } from './steps/UnwrapNative'
+import { aaveSupplySchema } from '@freemarket/aave'
+import { aaveWithdrawalSchema, payGelatoRelaySchema } from './steps'
+import { addAssetSchema } from '@freemarket/add-asset'
+import { assetBalanceBranchSchema, chainBranchSchema } from '@freemarket/base-branches'
+import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
+import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
+import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
+import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'
 
 export const stepSchema = z.discriminatedUnion('type', [
   // actions
   aaveSupplySchema,
   aaveWithdrawalSchema,
   addAssetSchema,
+  curveTriCrypto2SwapSchema,
   payGelatoRelaySchema,
   uniswapExactInSchema,
   uniswapExactOutSchema,

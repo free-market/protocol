@@ -2,8 +2,8 @@ import type { Signer } from '@ethersproject/abstract-signer'
 import { HDNode } from '@ethersproject/hdnode'
 import { JsonRpcProvider, WebSocketProvider } from '@ethersproject/providers'
 import { Wallet } from '@ethersproject/wallet'
+import { createStandardProvider } from '@freemarket/core'
 import type { ExecutionContext } from 'ava'
-import { createStandardProvider } from '../helpers/utils'
 
 export function shouldRunE2e() {
   return process.env['INCLUDE_E2E'] === 'true'

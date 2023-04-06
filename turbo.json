@@ -1,8 +1,10 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "extends": ["//"],
   "pipeline": {
     "clean": {},
     "build": {
+      "inputs": ["**", "!./deployments/**"],
       "dependsOn": ["^build"]
     },
     "test": {
@@ -10,6 +12,13 @@
     },
     "lint": {
       "outputs": []
+    },
+    "deploy-contracts": {
+      "cache": false,
+      "dependsOn": ["build", "^deploy-contracts"]
+    },
+    "post-deploy-contracts": {
+      "cache": false
     }
   }
 }
