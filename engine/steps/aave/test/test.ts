@@ -36,11 +36,11 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('AaveSupply', async () => {
   it('deploys', async () => {
     const {
-      contracts: { userWorkflowRunner, aaveSupplyAction },
+      contracts: { configManager, aaveSupplyAction },
       mockWorkflowInstance,
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(userWorkflowRunner, STEP_TYPE_ID, aaveSupplyAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, aaveSupplyAction.address)
   })
 
   it('executes', async () => {

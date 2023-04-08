@@ -45,10 +45,10 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('StargateBridge', async () => {
   it('deploys', async () => {
     const {
-      contracts: { userWorkflowRunner, stargateBridgeAction },
+      contracts: { configManager, stargateBridgeAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(userWorkflowRunner, STEP_TYPE_ID, stargateBridgeAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, stargateBridgeAction.address)
 
     const networkInfo = await stargateBridgeAction.provider.getNetwork()
     const expectedRouterAddress = getRouterAddress(networkInfo.chainId.toString())

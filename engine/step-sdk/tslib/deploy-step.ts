@@ -1,5 +1,5 @@
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { WorkflowRunner__factory } from '@freemarket/runner'
+import { ConfigManager, ConfigManager__factory, EternalStorage } from '@freemarket/runner'
 import fs from 'fs'
 import path from 'path'
 
@@ -41,13 +41,12 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
     args: ctorArgs,
   })
   if (deployResult.newlyDeployed) {
-    const signer = await ethers.getSigner(deployer)
-    const runner = WorkflowRunner__factory.connect(frontDoorAddress, signer)
-    const result = await runner.setStepAddress(stepTypeId, deployResult.address)
+    const configManager = <ConfigManager>await ethers.getContract('ConfigManager')
+    const result = await configManager.setStepAddress(stepTypeId, deployResult.address)
     await result.wait()
   }
 
   // if (hre.network.live) {
-  //   copyRunnerDeployments(hre.network.name, ['FrontDoor', 'WorkflowRunner'])
+  //   copyRunnerDeployments(hre.network.name, ['FrontDoor', 'ConfigManager'])
   // }
 }

@@ -1,0 +1,50 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Current TS File",
+      "type": "node",
+      "request": "launch",
+      "args": ["${relativeFile}"],
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Current AVA test file",
+      "program": "${workspaceFolder}/node_modules/ava/entrypoints/cli.mjs",
+      "args": ["${file}"],
+      "outputCapture": "std",
+      "env": {
+        "INCLUDE_E2E": "true"
+      },
+      "stopOnEntry": true,
+      // "console": "integratedTerminal", // optional
+      "outFiles": ["${workspaceFolder}/build/**/*.js"],
+      "skipFiles": ["<node_internals>/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "foo",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/build/clis/execute-workflow.js",
+      "args": ["examples/cross-chain-deposit.workflow.json", "examples/cross-chain-deposit-args.json", "ethereum"],
+      "outFiles": ["${workspaceFolder}/build/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "eraseme",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/build/eraseme.js",
+      // "args": ["examples/cross-chain-deposit.workflow.json", "examples/cross-chain-deposit-args.json", "ethereum"],
+      "outFiles": ["${workspaceFolder}/build/**/*.js"]
+    }
+  ]
+}

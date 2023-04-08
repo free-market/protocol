@@ -4,7 +4,6 @@ import { EternalStorage__factory, FrontDoor, WorkflowRunner, WorkflowRunner__fac
 const { ethers, deployments, getNamedAccounts } = hardhat
 
 const setup = deployments.createFixture(async () => {
-  await deployments.fixture('FrontDoor')
   await deployments.fixture('WorkflowRunner')
   const { deployer, otherUser } = await getNamedAccounts()
   const contracts = {
@@ -23,11 +22,6 @@ describe('FrontDoor', async () => {
   it('deploys', async () => {
     const { frontDoor, workflowRunner, provider } = await setup()
     const storageAddress = await frontDoor.eternalStorageAddress()
-
-    // ensure that the 'writer' of storage is the front door
-    const storage = EternalStorage__factory.connect(storageAddress, provider)
-    const storageWriterAddress = await storage.getWriter()
-    expect(storageWriterAddress).equals(frontDoor.address)
 
     // ensure that the upstream of frontdoor is the deployed workflowRunner
     const frontDoorUpstreamAddress = await frontDoor.upstreamAddress()

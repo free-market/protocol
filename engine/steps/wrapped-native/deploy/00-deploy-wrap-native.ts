@@ -10,6 +10,6 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
 }
 
 func.tags = ['WrapNativeAction']
-func.dependencies = ['WorkflowRunner']
+func.dependencies = ['ConfigManager']
 
 export default func

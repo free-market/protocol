@@ -1,0 +1,45 @@
+{
+  "folders": [
+    {
+      "name": "core",
+      "path": "../engine/core"
+    },
+    {
+      "name": "runner",
+      "path": "../engine/runner"
+    },
+    {
+      "name": "step-sdk",
+      "path": "../engine/step-sdk"
+    },
+    {
+      "name": "[step] step-sdk",
+      "path": "../engine/steps/aave"
+    },
+    {
+      "name": "[step] add-asset",
+      "path": "../engine/steps/add-asset"
+    },
+    {
+      "name": "[step] base-branches",
+      "path": "../engine/steps/base-branches"
+    },
+    {
+      "name": "[step] curve",
+      "path": "../engine/steps/curve"
+    },
+    {
+      "name": "[step] stargate-bridge",
+      "path": "../engine/steps/stargate-bridge"
+    },
+    {
+      "name": "[step] uniswap",
+      "path": "../engine/steps/uniswap"
+    },
+    {
+      "name": "[step] wrapped-native",
+      "path": "../engine/steps/wrapped-native"
+    }
+  ],
+  "settings": {}
+}

@@ -40,10 +40,10 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('Curve Tricrypo2 swap', async () => {
   it('deploys', async () => {
     const {
-      contracts: { userWorkflowRunner, triCryptoAction },
+      contracts: { configManager, triCryptoAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(userWorkflowRunner, STEP_TYPE_ID, triCryptoAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, triCryptoAction.address)
   })
 
   it('transfers native to tether', async () => {

@@ -54,10 +54,10 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('Uniswap Exact In', async () => {
   it('deploys', async () => {
     const {
-      contracts: { userWorkflowRunner, uniswapExactInAction },
+      contracts: { configManager, uniswapExactInAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(userWorkflowRunner, STEP_TYPE_ID, uniswapExactInAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, uniswapExactInAction.address)
   })
 
   it('computes exchange rates with slippage', () => {

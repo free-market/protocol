@@ -1,13 +1,6 @@
-# Sample Hardhat Project
+# Free Market Protocol / Base Branches
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+`@freemarket/base-branches` is a collection of basic workflow branches. It includes the following workflow steps:
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+- chain-branch: Take an alternate path based on the current chainId of the chain the workflow is executing on
+- asset-balance-branch: Take an alternate path based on the current balance of a workflow asset

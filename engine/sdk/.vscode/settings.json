@@ -1,0 +1,30 @@
+{
+  "cSpell.words": [
+    "aave",
+    "Aave",
+    "ABCXYZ",
+    "bignumber",
+    "bleh",
+    "clonedeep",
+    "decibips",
+    "hdnode",
+    "IERC",
+    "ISDK",
+    "Parameterizable",
+    "qwer",
+    "sonarjs",
+    "treeify",
+    "tricrypto",
+    "tsdoc"
+  ],
+  "json.schemas": [
+    {
+      "fileMatch": ["**/*.workflow.json"],
+      "url": "/build/workflow.schema.json"
+    },
+    {
+      "fileMatch": ["**/*.workflow.arguments.json"],
+      "url": "/build/workflow.arguments.json"
+    }
+  ]
+}

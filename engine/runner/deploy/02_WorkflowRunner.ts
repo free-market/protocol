@@ -20,4 +20,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 }
 export default func
 func.tags = ['WorkflowRunner']
-func.dependencies = ['FrontDoor']
+func.dependencies = ['FrontDoor', 'ConfigManager']

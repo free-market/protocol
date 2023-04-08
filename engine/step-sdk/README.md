@@ -1,13 +1,13 @@
-# Sample Hardhat Project
+# Free Market Protocol / step-sdk
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+`@freemarket/step-sdk` contains useful code for Solidity and TypeScript developers to create Workflow Steps for Free Market Protocol.
 
-Try running some of the following tasks:
+This module is set up in the conventional way for a Hardhat project, with the following directories:
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+### `/contracts`
+
+Useful libraries used to implement Workflow Steps. There are are no deployable production contracts, but there are a few contracts intended for help test workflow steps.
+
+### `/tslib`
+
+This directory contains TypeScript code that is used by Workflow Step implementations.

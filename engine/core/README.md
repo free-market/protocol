@@ -1,13 +1,15 @@
-# Sample Hardhat Project
+# Free Market Protocol / Core
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+`@freemarket/core` is the core module of Free Market Protocol.
 
-Try running some of the following tasks:
+This module contains the foundational components of Free Market Protocol and is required for all other modules to build and function.
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+This module is set up in the conventional way for a Hardhat project, with the following directories:
+
+### `/contracts`
+
+This directory contains the base Solidity code contracts of Free Market Protocol. There are no deployable contracts in this module, but it does contain interfaces and commonly used data structures.
+
+### `/tslib`
+
+This directory contains TypeScript code that is used by the other modules. It contains base interfaces, data structures, and other common code.

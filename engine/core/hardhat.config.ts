@@ -25,7 +25,6 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       // chainId: 1,
-      allowUnlimitedContractSize: true,
       forking: {
         url: 'https://rpc.ankr.com/eth',
         blockNumber: 16889307,

@@ -2,6 +2,8 @@ import type { HardhatUserConfig } from 'hardhat/config'
 import os from 'os'
 import path from 'path'
 import dotenv from 'dotenv'
+import 'hardhat-preprocessor'
+import { removeConsoleLog } from 'hardhat-preprocessor'
 
 dotenv.config({ path: path.join(os.homedir(), '.env') })
 
@@ -44,5 +46,8 @@ export const coreHardhatConfig: any = {
   namedAccounts: {
     deployer: 0,
     otherUser: 1,
+  },
+  preprocess: {
+    eachLine: removeConsoleLog(hre => hre.network.name !== 'hardhat' && hre.network.name !== 'localhost'),
   },
 }

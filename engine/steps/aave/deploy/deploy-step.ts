@@ -17,6 +17,6 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
 }
 
 func.tags = ['AaveSupplyAction']
-func.dependencies = ['WorkflowRunner']
+func.dependencies = ['ConfigManager']
 
 export default func

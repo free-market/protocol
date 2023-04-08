@@ -33,7 +33,6 @@ yarn-error.log*
 .cache
 .next
 .idea
-.vscode
 *.log
 build
 coverage

@@ -1,13 +1,3 @@
-# Sample Hardhat Project
+# Free Market Protocol / End-to-End
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+`@freemarket/end-to-end` is the home of some end to end integration tests for the protocol and Client SDK

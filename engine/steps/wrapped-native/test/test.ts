@@ -43,11 +43,11 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('Wrapped Native', async () => {
   it('deploys', async () => {
     const {
-      contracts: { workflowRunner, wrapNativeAction },
+      contracts: { configManager, wrapNativeAction },
     } = await setup()
 
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(workflowRunner, STEP_TYPE_ID, wrapNativeAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, wrapNativeAction.address)
     // const chainId = await hardhat.getChainId()
     // const contractAddress = getWrappedNativeAddress(chainId)
   })

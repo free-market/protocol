@@ -1,4 +1,4 @@
-import { FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
+import { ConfigManager, FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
 import merge from 'lodash.merge'
 import { expect } from 'chai'
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
@@ -13,6 +13,7 @@ interface BaseTestFixture {
     frontDoor: FrontDoor
     workflowRunner: WorkflowRunner
     userWorkflowRunner: WorkflowRunner
+    configManager: ConfigManager
   }
   users: {
     deployer: string
@@ -29,8 +30,9 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
   return deployments.createFixture(async () => {
     {
       const [_deployResult, users] = await Promise.all([deployments.fixture('WorkflowRunner'), getNamedAccounts()])
-      const [frontDoor, deployerSigner, otherUserSigner] = await Promise.all([
+      const [frontDoor, configManager, deployerSigner, otherUserSigner] = await Promise.all([
         <Promise<FrontDoor>>ethers.getContract('FrontDoor'),
+        <Promise<ConfigManager>>ethers.getContract('ConfigManager'),
         ethers.getSigner(users.deployer),
         ethers.getSigner(users.otherUser),
       ])
@@ -39,7 +41,7 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
 
       const baseFixture: BaseTestFixture = {
         signers: { deployerSigner, otherUserSigner },
-        contracts: { frontDoor, workflowRunner, userWorkflowRunner },
+        contracts: { frontDoor, workflowRunner, userWorkflowRunner, configManager },
         users: { deployer: users.deployer, otherUser: users.otherUser },
       }
 
@@ -50,16 +52,16 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
   })
 }
 
-export async function validateAction(runner: WorkflowRunner, stepTypeId: number, stepAddress: string) {
+export async function validateAction(configManager: ConfigManager, stepTypeId: number, stepAddress: string) {
   // should be there when you ask for the address directly
-  const registeredAddress = await runner.getStepAddress(stepTypeId)
+  const registeredAddress = await configManager.getStepAddress(stepTypeId)
   expect(registeredAddress).to.equal(stepAddress)
 
   // should be present in the enumeration
   let found = false
-  const actionCount = (await runner.getStepCount()).toNumber()
+  const actionCount = (await configManager.getStepCount()).toNumber()
   for (let i = 0; i < actionCount; ++i) {
-    const actionInfo = await runner.getStepInfoAt(i)
+    const actionInfo = await configManager.getStepInfoAt(i)
     if (Number(actionInfo.stepTypeId) === stepTypeId) {
       expect(actionInfo.whitelist.includes(stepAddress)).to.be.true
       found = true

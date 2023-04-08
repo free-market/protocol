@@ -1,11 +1,11 @@
 {
-  "name": "@fmp/root",
+  "name": "@freemarket/root",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "turbo build",
-    "test": "turbo build test --filter=!@fmp/codeless-builder",
+    "test": "turbo build test",
     "deploy-contracts": "turbo run deploy-contracts --force --concurrency=1",
     "prepare": "husky install"
   },

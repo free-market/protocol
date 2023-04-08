@@ -33,10 +33,10 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 describe('AddAsset', async () => {
   it('deploys', async () => {
     const {
-      contracts: { userWorkflowRunner, addAssetAction },
+      contracts: { configManager, addAssetAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(userWorkflowRunner, STEP_TYPE_ID, addAssetAction.address)
+    await validateAction(configManager, STEP_TYPE_ID, addAssetAction.address)
   })
 
   it('can execute', async () => {
