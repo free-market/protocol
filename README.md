@@ -17,21 +17,13 @@
   </p>
 </div>
 
-Free Market is a protocol designed to extend arbitrary message passing protocols with a ruleset that ensures requisite conditions are sequentially met throughout complex transactions that involve multiple blockchains. The protocol is anchored by a workflow engine that follows paths through onchain branch nodes.
-Interoperability remains in its nascent stage and presents difficulties for builders in planning and execution. This results in a cumbersome user experience, where end-users are faced with significant challenges in determining the appropriate steps and sequence of actions to reach a desired outcome.
+Free Market Protocol seeks to revolutionize on-chain user experience by providing the middleware infrastructure to automate, integrate, and execute workflows. As an orchestration layer, Free Market runs air-traffic control for multi-step workflows, allowing seamless execution between multiple dapps, even in cross-chain transactions.
+Our flexible and extensible workflow engine gives protocols, users, traders, and builders the ability to create their own automated workflows. Available through our SDK and our no-code platform, Free Market serves as the foundation for a range of user types to build the quality of life improvements they need in the on-chain world.
 
-This monoreop consists of 3 components:
+This monorepo consists of 3 components:
 
-- [evm](/evm) The EVM implementation of the protocol (a.k.a. Workflow Engine, or just Engine)
-- [sdk](/sdk) A typescript layer that abstracts the low level details of the Engine and enables easy authoring of workflows
-- [ui2](/ui2) Reusable React web components
-
-## Road Map
-- SDK: Author workflows using a high-level DSL
-- More integrations, for example swapping via Uniswap/Sushiswap or 1inch
-- Gelato Relay support:  pay for transaction gas using any asset, not just native
-- Branch nodes:  enable on-chain decisions at transaction time to take different paths through your workflows
-- Action Developer Kit:  extend the protocol by adding new actions
+- [engine](/engine) The workflow engine. This is the core of the protocol and is responsible for executing workflows.
+- [client-sdk](/client-sdk) A typescript library that abstracts the low level details of the Engine and enables easy authoring of workflows
 
 ## License
 
@@ -41,4 +33,4 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Marty Saxton - marty@fmprotocol.com
 
-Project Link: [https://github.com/free-market/platform/](https://github.com/free-market/platform/)
+Project Link: [https://github.com/free-market/protocol/](https://github.com/free-market/protocol/)

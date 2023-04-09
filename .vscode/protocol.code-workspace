@@ -1,6 +1,10 @@
 {
   "folders": [
     {
+      "name": "root",
+      "path": ".."
+    },
+    {
       "name": "core",
       "path": "../engine/core"
     },

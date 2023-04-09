@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import hardhat from 'hardhat'
 import { IERC20__factory, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
-import { createStandardProvider, Workflow, WorkflowInstance } from '@freemarket/sdk'
+import { createStandardProvider, Workflow, WorkflowInstance } from '@freemarket/client-sdk'
 const { ethers, deployments, getNamedAccounts } = hardhat
 import { AaveSupplyAction__factory, IAaveV3Pool__factory } from '@freemarket/aave'
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'

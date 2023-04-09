@@ -21,7 +21,7 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
     "@ethersproject/providers": "^5.4.7",
-    "@freemarket/sdk": "workspace:^0.1.1",
+    "@freemarket/client-sdk": "workspace:^0.1.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
