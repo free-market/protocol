@@ -1,11 +1,12 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "extends": ["//"],
   "pipeline": {
-    "clean": {},
+    "clean": {
+      "cache": false
+    },
     "build": {
-      "inputs": ["**", "!./deployments/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "deployments/**", "artifacts/**", "typechain-types/**", "cache/**"]
     },
     "test": {
       "outputs": []

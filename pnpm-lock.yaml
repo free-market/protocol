@@ -14,6 +14,196 @@ importers:
         specifier: ^1.8.8
         version: 1.8.8
 
+  client-sdk:
+    dependencies:
+      '@ethersproject/bignumber':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/contracts':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/experimental':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
+      '@freemarket/aave':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/aave
+      '@freemarket/add-asset':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/add-asset
+      '@freemarket/base-branches':
+        specifier: workspace:^
+        version: link:../engine/steps/base-branches
+      '@freemarket/core':
+        specifier: workspace:^0.0.1
+        version: link:../engine/core
+      '@freemarket/curve':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/curve
+      '@freemarket/runner':
+        specifier: workspace:^0.0.1
+        version: link:../engine/runner
+      '@freemarket/stargate-bridge':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/stargate-bridge
+      '@freemarket/step-sdk':
+        specifier: workspace:^0.0.1
+        version: link:../engine/step-sdk
+      '@freemarket/uniswap':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/uniswap
+      '@freemarket/wrapped-native':
+        specifier: workspace:^0.0.1
+        version: link:../engine/steps/wrapped-native
+      axios:
+        specifier: 0.27.2
+        version: 0.27.2
+      big.js:
+        specifier: ^6.2.1
+        version: 6.2.1
+      bs58:
+        specifier: ^5.0.0
+        version: 5.0.0
+      eip1193-provider:
+        specifier: ^1.0.1
+        version: 1.0.1
+      lodash.clonedeep:
+        specifier: ^4.5.0
+        version: 4.5.0
+      lodash.merge:
+        specifier: ^4.6.2
+        version: 4.6.2
+      loglevel:
+        specifier: ^1.8.1
+        version: 1.8.1
+      loglevel-plugin-prefix:
+        specifier: ^0.8.4
+        version: 0.8.4
+      not-a-log:
+        specifier: ^1.0.1
+        version: 1.0.1
+      source-map-support:
+        specifier: ^0.5.21
+        version: 0.5.21
+      treeify:
+        specifier: ^1.1.0
+        version: 1.1.0
+      type-fest:
+        specifier: ^3.6.1
+        version: 3.7.0
+      typescript-memoize:
+        specifier: ^1.1.1
+        version: 1.1.1
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@adobe/jsonschema2md':
+        specifier: ^7.1.5
+        version: 7.1.5
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@ethersproject/abstract-signer':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/hdnode':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/wallet':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@types/big.js':
+        specifier: ^6.1.6
+        version: 6.1.6
+      '@types/bs58':
+        specifier: ^4.0.1
+        version: 4.0.1
+      '@types/lodash.clonedeep':
+        specifier: ^4.5.7
+        version: 4.5.7
+      '@types/lodash.merge':
+        specifier: ^4.6.7
+        version: 4.6.7
+      '@types/node':
+        specifier: ^18.14.2
+        version: 18.14.2
+      '@types/treeify':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^5.54.0
+        version: 5.55.0(@typescript-eslint/parser@5.55.0)(eslint@8.36.0)(typescript@4.9.5)
+      '@typescript-eslint/parser':
+        specifier: ^5.54.0
+        version: 5.55.0(eslint@8.36.0)(typescript@4.9.5)
+      ava:
+        specifier: ^5.2.0
+        version: 5.2.0(@ava/typescript@3.0.1)
+      c8:
+        specifier: ^7.13.0
+        version: 7.13.0
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      eslint:
+        specifier: ^8.35.0
+        version: 8.36.0
+      eslint-config-prettier:
+        specifier: ^8.6.0
+        version: 8.7.0(eslint@8.36.0)
+      eslint-import-resolver-typescript:
+        specifier: ^3.5.3
+        version: 3.5.3(eslint-plugin-import@2.27.5)(eslint@8.36.0)
+      eslint-plugin-etc:
+        specifier: ^2.0.2
+        version: 2.0.2(eslint@8.36.0)(typescript@4.9.5)
+      eslint-plugin-prettier:
+        specifier: ^4.2.1
+        version: 4.2.1(eslint-config-prettier@8.7.0)(eslint@8.36.0)(prettier@2.8.5)
+      eslint-plugin-sonarjs:
+        specifier: ^0.18.0
+        version: 0.18.0(eslint@8.36.0)
+      eslint-plugin-tsdoc:
+        specifier: ^0.2.17
+        version: 0.2.17
+      eslint-watch:
+        specifier: ^8.0.0
+        version: 8.0.0(eslint@8.36.0)
+      markdown-toc:
+        specifier: ^1.2.0
+        version: 1.2.0
+      nodemon:
+        specifier: ^2.0.20
+        version: 2.0.22
+      prettier:
+        specifier: ^2.8.4
+        version: 2.8.5
+      rimraf:
+        specifier: ^4.1.2
+        version: 4.4.0
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.14.2)(typescript@4.9.5)
+      typedoc:
+        specifier: ^0.23.26
+        version: 0.23.28(typescript@4.9.5)
+      typedoc-plugin-markdown:
+        specifier: ^3.14.0
+        version: 3.14.0(typedoc@0.23.28)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+      zod-to-json-schema:
+        specifier: ^3.20.4
+        version: 3.20.4(zod@3.21.4)
+
   engine/core:
     dependencies:
       '@ethersproject/abstract-signer':
@@ -156,9 +346,9 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.4.7
         version: 5.7.2
-      '@freemarket/sdk':
+      '@freemarket/client-sdk':
         specifier: workspace:^0.1.1
-        version: link:../../sdk
+        version: link:../../client-sdk
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^1.0.0
         version: 1.0.6(chai@4.3.6)(ethers@5.7.2)(hardhat-deploy-ethers@0.3.0-beta.13)(hardhat@2.13.0)
@@ -1335,196 +1525,6 @@ importers:
       typescript:
         specifier: '>=4.5.0'
         version: 4.9.5
-
-  sdk:
-    dependencies:
-      '@ethersproject/bignumber':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/contracts':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/experimental':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
-      '@freemarket/aave':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/aave
-      '@freemarket/add-asset':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/add-asset
-      '@freemarket/base-branches':
-        specifier: workspace:^
-        version: link:../engine/steps/base-branches
-      '@freemarket/core':
-        specifier: workspace:^0.0.1
-        version: link:../engine/core
-      '@freemarket/curve':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/curve
-      '@freemarket/runner':
-        specifier: workspace:^0.0.1
-        version: link:../engine/runner
-      '@freemarket/stargate-bridge':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/stargate-bridge
-      '@freemarket/step-sdk':
-        specifier: workspace:^0.0.1
-        version: link:../engine/step-sdk
-      '@freemarket/uniswap':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/uniswap
-      '@freemarket/wrapped-native':
-        specifier: workspace:^0.0.1
-        version: link:../engine/steps/wrapped-native
-      axios:
-        specifier: 0.27.2
-        version: 0.27.2
-      big.js:
-        specifier: ^6.2.1
-        version: 6.2.1
-      bs58:
-        specifier: ^5.0.0
-        version: 5.0.0
-      eip1193-provider:
-        specifier: ^1.0.1
-        version: 1.0.1
-      lodash.clonedeep:
-        specifier: ^4.5.0
-        version: 4.5.0
-      lodash.merge:
-        specifier: ^4.6.2
-        version: 4.6.2
-      loglevel:
-        specifier: ^1.8.1
-        version: 1.8.1
-      loglevel-plugin-prefix:
-        specifier: ^0.8.4
-        version: 0.8.4
-      not-a-log:
-        specifier: ^1.0.1
-        version: 1.0.1
-      source-map-support:
-        specifier: ^0.5.21
-        version: 0.5.21
-      treeify:
-        specifier: ^1.1.0
-        version: 1.1.0
-      type-fest:
-        specifier: ^3.6.1
-        version: 3.7.0
-      typescript-memoize:
-        specifier: ^1.1.1
-        version: 1.1.1
-      zod:
-        specifier: ^3.21.4
-        version: 3.21.4
-    devDependencies:
-      '@adobe/jsonschema2md':
-        specifier: ^7.1.5
-        version: 7.1.5
-      '@ava/typescript':
-        specifier: ^3.0.1
-        version: 3.0.1
-      '@ethersproject/abstract-signer':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/hdnode':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/wallet':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@types/big.js':
-        specifier: ^6.1.6
-        version: 6.1.6
-      '@types/bs58':
-        specifier: ^4.0.1
-        version: 4.0.1
-      '@types/lodash.clonedeep':
-        specifier: ^4.5.7
-        version: 4.5.7
-      '@types/lodash.merge':
-        specifier: ^4.6.7
-        version: 4.6.7
-      '@types/node':
-        specifier: ^18.14.2
-        version: 18.14.2
-      '@types/treeify':
-        specifier: ^1.0.0
-        version: 1.0.0
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^5.54.0
-        version: 5.55.0(@typescript-eslint/parser@5.55.0)(eslint@8.36.0)(typescript@4.9.5)
-      '@typescript-eslint/parser':
-        specifier: ^5.54.0
-        version: 5.55.0(eslint@8.36.0)(typescript@4.9.5)
-      ava:
-        specifier: ^5.2.0
-        version: 5.2.0(@ava/typescript@3.0.1)
-      c8:
-        specifier: ^7.13.0
-        version: 7.13.0
-      chalk:
-        specifier: 4.1.2
-        version: 4.1.2
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
-      eslint:
-        specifier: ^8.35.0
-        version: 8.36.0
-      eslint-config-prettier:
-        specifier: ^8.6.0
-        version: 8.7.0(eslint@8.36.0)
-      eslint-import-resolver-typescript:
-        specifier: ^3.5.3
-        version: 3.5.3(eslint-plugin-import@2.27.5)(eslint@8.36.0)
-      eslint-plugin-etc:
-        specifier: ^2.0.2
-        version: 2.0.2(eslint@8.36.0)(typescript@4.9.5)
-      eslint-plugin-prettier:
-        specifier: ^4.2.1
-        version: 4.2.1(eslint-config-prettier@8.7.0)(eslint@8.36.0)(prettier@2.8.5)
-      eslint-plugin-sonarjs:
-        specifier: ^0.18.0
-        version: 0.18.0(eslint@8.36.0)
-      eslint-plugin-tsdoc:
-        specifier: ^0.2.17
-        version: 0.2.17
-      eslint-watch:
-        specifier: ^8.0.0
-        version: 8.0.0(eslint@8.36.0)
-      markdown-toc:
-        specifier: ^1.2.0
-        version: 1.2.0
-      nodemon:
-        specifier: ^2.0.20
-        version: 2.0.22
-      prettier:
-        specifier: ^2.8.4
-        version: 2.8.5
-      rimraf:
-        specifier: ^4.1.2
-        version: 4.4.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.1(@types/node@18.14.2)(typescript@4.9.5)
-      typedoc:
-        specifier: ^0.23.26
-        version: 0.23.28(typescript@4.9.5)
-      typedoc-plugin-markdown:
-        specifier: ^3.14.0
-        version: 3.14.0(typedoc@0.23.28)
-      typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
-      zod-to-json-schema:
-        specifier: ^3.20.4
-        version: 3.20.4(zod@3.21.4)
 
 packages:
 
