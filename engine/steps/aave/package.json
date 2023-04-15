@@ -19,6 +19,7 @@
     "@openzeppelin/contracts": "^4.8.0",
     "big.js": "^6.2.1",
     "loglevel": "^1.8.1",
+    "react": "^18.2.0",
     "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
   },
@@ -37,6 +38,7 @@
     "@types/chai": "^4.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": ">=12.0.0",
+    "@types/react": "^18.0.35",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
     "chai": "^4.2.0",

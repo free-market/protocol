@@ -6,14 +6,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outDir": "./build",
+    "resolveJsonModule": true,
     "jsx": "react",
-    "declaration": true,
-    "resolveJsonModule": true
-  },
-  "files": ["./index.ts"],
-  "include": ["hardhat.config.ts", "./typechain-types", "./tslib", "./scripts", "./deploy", "./test"]
+    "declaration": true
+  }
 }

@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const storageAddr = await frontDoor.eternalStorageAddress()
   const deployerSigner = await ethers.getNamedSigner('deployer')
   const storage = EternalStorage__factory.connect(storageAddr, deployerSigner)
-  storage.setWriter(deployResult.address)
+  await storage.setWriter(deployResult.address)
   // console.log('config manager deployed at', deployResult.address)
 }
 export default func

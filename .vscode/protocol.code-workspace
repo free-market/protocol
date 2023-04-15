@@ -5,6 +5,10 @@
       "path": ".."
     },
     {
+      "name": "client-sdk",
+      "path": "../client-sdk"
+    },
+    {
       "name": "core",
       "path": "../engine/core"
     },
@@ -17,7 +21,7 @@
       "path": "../engine/step-sdk"
     },
     {
-      "name": "[step] step-sdk",
+      "name": "[step] aave",
       "path": "../engine/steps/aave"
     },
     {
