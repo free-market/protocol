@@ -6,7 +6,7 @@ export const stepInfo: StepInfo = {
   nodeType: 'stepNode',
   name: 'Add Asset',
   description: 'Adds an asset to the workflow',
-  platform: 'None',
+  platform: 'No Platform',
   categories: ['Utilities'],
   icon: AddAssetIcon,
 }

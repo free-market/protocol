@@ -1,4 +1,4 @@
-import z from 'zod'
+import z, { ZodObject } from 'zod'
 import { aaveSupplySchema } from '@freemarket/aave'
 import { aaveWithdrawalSchema, payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
@@ -7,6 +7,7 @@ import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'
+import { assert } from '@freemarket/core'
 
 export const stepSchema = z.discriminatedUnion('type', [
   // actions
@@ -29,3 +30,9 @@ export const stepSchema = z.discriminatedUnion('type', [
 ])
 
 export type Step = z.infer<typeof stepSchema>
+
+export function getSchemaForType(type: string): ZodObject<any> {
+  const schema = stepSchema._def.optionsMap.get(type)
+  assert(schema)
+  return schema
+}

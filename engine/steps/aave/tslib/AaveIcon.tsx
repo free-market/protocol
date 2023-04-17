@@ -1,6 +1,7 @@
+import { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
 import { SVGProps } from 'react'
-const SvgAaveGhostGradient = (props: SVGProps<SVGSVGElement>) => (
+const SvgAaveGhostGradient = (props: SVGProps<SVGSVGElement> & IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"

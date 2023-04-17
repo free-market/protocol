@@ -1,6 +1,7 @@
+import { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
 import { SVGProps } from 'react'
-const SvgChainLinksSvgrepoCom = (props: SVGProps<SVGSVGElement>) => {
+const ChainBranchIcon = (props: SVGProps<SVGSVGElement> & IconProps) => {
   const { fill, stroke, color } = props
   const f = fill || color || 'currentColor'
   const s = stroke || color || 'currentColor'
@@ -19,4 +20,4 @@ const SvgChainLinksSvgrepoCom = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   )
 }
-export default SvgChainLinksSvgrepoCom
+export default ChainBranchIcon

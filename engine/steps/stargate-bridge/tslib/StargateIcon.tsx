@@ -1,7 +1,8 @@
+import { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
 import { SVGProps } from 'react'
-const StargateIcon = (props: SVGProps<SVGSVGElement> & { light?: boolean }) => {
-  const fg = props.light ? '#fff' : '#000'
+const StargateIcon = (props: SVGProps<SVGSVGElement> & IconProps) => {
+  const fg = props.dark ? '#000' : '#fff'
 
   return (
     <svg

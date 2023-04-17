@@ -1,10 +1,11 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { AddAssetAction } from '../typechain-types'
-import { AddAsset, AddAssetHelper, STEP_TYPE_ID } from '../tslib/helper'
+import { AddAssetHelper, STEP_TYPE_ID } from '../tslib/helper'
 import { EncodingContext } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk/typechain-types'
+import { AddAsset } from '../tslib/model'
 
 const testAmount = 100
 

@@ -5,6 +5,8 @@
   "main": "./build/index.js",
   "scripts": {
     "clean": "rimraf artifacts build cache typechain-types",
+    "build-ts": "tsc",
+    "dev": "tsc --watch",
     "build": "hardhat compile && tsc",
     "test": "hardhat test",
     "deploy-contracts": "hardhat deploy",

@@ -1,6 +1,7 @@
+import { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
 import { SVGProps } from 'react'
-const SvgAssetBalanceBranch = (props: SVGProps<SVGSVGElement>) => (
+const SvgAssetBalanceBranch = (props: SVGProps<SVGSVGElement> & IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" width="24px" height="24px" viewBox="0 0 512 512" {...props}>
     <mask id="asset-balance-branch_svg__a">
       <path fill="#fff" d="M0 0h512v512H0z" />

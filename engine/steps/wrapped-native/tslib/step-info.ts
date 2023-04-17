@@ -6,7 +6,7 @@ export const wrapNativeStepInfo: StepInfo = {
   nodeType: 'stepNode',
   name: 'Wrap Native',
   description: 'Exchanges native asset for wrapped asset',
-  platform: 'None',
+  platform: 'No Platform',
   categories: ['Utilities'],
   icon: WethIcon,
 }
@@ -15,7 +15,7 @@ export const unwrapNativeStepInfo: StepInfo = {
   nodeType: 'stepNode',
   name: 'Unwrap Native',
   description: 'Exchanges a wrapped asset for a native asset',
-  platform: 'None',
+  platform: 'No Platform',
   categories: ['Utilities'],
   icon: WethIcon,
 }

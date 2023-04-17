@@ -1,13 +1,8 @@
-import * as React from "react";
-import { SVGProps } from "react";
-const SvgWeth = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 64 64"
-    width="24px"
-    height="24px"
-    {...props}
-  >
+import { IconProps } from '@freemarket/step-sdk'
+import * as React from 'react'
+import { SVGProps } from 'react'
+const SvgWeth = (props: SVGProps<SVGSVGElement> & IconProps) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24px" height="24px" {...props}>
     <g fill="none" fillRule="evenodd">
       <path
         fill="#000"
@@ -45,6 +40,5 @@ const SvgWeth = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-);
-export default SvgWeth;
-
+)
+export default SvgWeth

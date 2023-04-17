@@ -5,6 +5,9 @@
   "main": "./build/index.js",
   "scripts": {
     "clean": "rimraf build",
+    "build-sol": "hardhat compile --quiet",
+    "build-ts": "tsc",
+    "dev": "tsc --watch",
     "build": "tsc",
     "test": "hardhat test --deploy-fixture"
   },
