@@ -28,8 +28,8 @@ export class ChainBranchHelper extends AbstractBranchHelper<ChainBranch> {
   encodeWorkflowStep(context: EncodingContext<ChainBranch>): Promise<EncodedWorkflowStep> {
     const { stepConfig, mapStepIdToIndex } = context
     const { ifYes, currentChain } = stepConfig
-    const ifYesIndex = mapStepIdToIndex.get(ifYes)
-    assert(ifYesIndex !== undefined, `Could not find step with id ${ifYes}`)
+    const ifYesIndex = ifYes ? mapStepIdToIndex.get(ifYes) : -1
+    // assert(ifYesIndex !== undefined, `Could not find step with id ${ifYes}`)
 
     const chainId = getChainIdFromChain(currentChain, false)
     // console.log('current chain', currentChain, chainId)

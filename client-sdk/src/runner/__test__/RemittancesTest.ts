@@ -15,12 +15,10 @@ const stargateStep: StargateBridge = {
   destinationChain: 'arbitrum',
   destinationUserAddress: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   inputAsset: {
-    asset: {
-      type: 'fungible-token',
-      symbol: 'USDC',
-    },
-    amount: 1000000,
+    type: 'fungible-token',
+    symbol: 'USDC',
   },
+  inputAmount: 1000000,
   maxSlippagePercent: 0.05,
   destinationAdditionalNative: 100000,
   destinationGasUnits: 1000000,

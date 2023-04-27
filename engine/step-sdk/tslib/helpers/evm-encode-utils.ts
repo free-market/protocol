@@ -23,8 +23,7 @@ const WorkflowStepSchema = `
     uint16 stepTypeId,
     address stepAddress,
     ${InputAssetSchema}[] inputAssets,
-    ${AssetSchema}[] outputAssets,
-    bytes data,
+    bytes argData,
     int16 nextStepIndex
   )
 `

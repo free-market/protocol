@@ -1,5 +1,20 @@
+import * as React from 'react'
 import { StepInfo } from '@freemarket/step-sdk'
 import AaveIcon from './AaveIcon'
+import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
+
+function AaveSummary(props: any) {
+  return (
+    <span style={{ ...props.labelStyle }}>
+      {props.operation}&nbsp;
+      <span style={{ ...props.infoStyle }}>
+        {props.step.amount.toString()}
+        &nbsp;
+        <AssetReferenceView assetRef={props.step.asset} />
+      </span>
+    </span>
+  )
+}
 
 export const stepInfos: StepInfo[] = [
   {
@@ -10,6 +25,8 @@ export const stepInfos: StepInfo[] = [
     platform: 'Aave',
     categories: ['Lending', 'Yield'],
     icon: AaveIcon,
+    operation: 'Supply',
+    summary: p => <AaveSummary {...p} operation="Supply" />,
   },
   {
     stepType: 'aave-withdrawal',
@@ -19,6 +36,9 @@ export const stepInfos: StepInfo[] = [
     platform: 'Aave',
     categories: ['Lending', 'Yield'],
     icon: AaveIcon,
+    operation: 'Withdrawal',
+    comingSoon: true,
+    summary: p => <AaveSummary {...p} operation="Withdrawal" />,
   },
   {
     stepType: 'aave-borrow',
@@ -28,6 +48,9 @@ export const stepInfos: StepInfo[] = [
     platform: 'Aave',
     categories: ['Lending'],
     icon: AaveIcon,
+    operation: 'Borrow',
+    comingSoon: true,
+    summary: p => <AaveSummary {...p} operation="Borrow" />,
   },
   {
     stepType: 'aave-repay',
@@ -37,6 +60,9 @@ export const stepInfos: StepInfo[] = [
     platform: 'Aave',
     categories: ['Lending'],
     icon: AaveIcon,
+    operation: 'Repay',
+    comingSoon: true,
+    summary: p => <AaveSummary {...p} operation="Repay" />,
   },
   {
     stepType: 'aave-flash-loan',
@@ -46,5 +72,8 @@ export const stepInfos: StepInfo[] = [
     platform: 'Aave',
     categories: ['Lending'],
     icon: AaveIcon,
+    operation: 'Flash Loan',
+    comingSoon: true,
+    summary: p => <AaveSummary {...p} operation="Flash Loan" />,
   },
 ]

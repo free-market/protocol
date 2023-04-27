@@ -26,8 +26,6 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
     const sdkAsset = await this.instance.dereferenceAsset(stepConfig.asset, chain)
     const evmAsset = sdkAssetToEvmAsset(sdkAsset, chain)
 
-    const address = stepConfig.fromAddress ?? context.userAddress
-
     // TODO CORE-16 support percentages
     let amountStr: string
     if (typeof stepConfig.amount === 'number') {

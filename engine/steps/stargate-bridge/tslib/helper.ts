@@ -15,6 +15,7 @@ import {
   AssetReference,
   sdkAssetAmountToEvmInputAmount,
   EvmAssetType,
+  sdkAssetAndAmountToEvmInputAmount,
 } from '@freemarket/core'
 import rootLogger from 'loglevel'
 import type { StargateBridge } from './model'
@@ -224,7 +225,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     assert(stepConfig.nextStepId)
     assert(typeof stepConfig.inputAsset !== 'string')
     const [transferInputAsset, payload, targetAddress, dstChainId, remittance] = await Promise.all([
-      sdkAssetAmountToEvmInputAmount(stepConfig.inputAsset, chain, this.instance),
+      sdkAssetAndAmountToEvmInputAmount(stepConfig.inputAsset, stepConfig.inputAmount, chain, this.instance),
       this.getPayload(stepConfig, userAddress),
       this.getBridgeTargetAddress(context),
       this.getStargateChainId(stepConfig.destinationChain),
@@ -242,13 +243,15 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
 
     const stargateRequiredNative = remittance.amount.toString()
     let minAmountOut: string
-    if (typeof stepConfig.inputAsset.amount === 'string' && stepConfig.inputAsset.amount.endsWith('%')) {
+    if (typeof stepConfig.inputAmount === 'string' && stepConfig.inputAmount.endsWith('%')) {
       log.warn('stargate maxSlippagePercent not yet supported for relative input amounts, defaulting minAmountOut to 1')
       minAmountOut = '1'
     } else {
-      const p = stepConfig.maxSlippagePercent / 100
+      const maxSlippagePercent =
+        typeof stepConfig.maxSlippagePercent === 'number' ? stepConfig.maxSlippagePercent : parseFloat(stepConfig.maxSlippagePercent)
+      const p = maxSlippagePercent / 100
       const x = new Big(1 - p)
-      const amount = new Big(stepConfig.inputAsset.amount.toString())
+      const amount = new Big(stepConfig.inputAmount.toString())
       minAmountOut = amount.mul(x).toFixed(0)
     }
     // TODO required native
@@ -267,8 +270,8 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       amountIsPercent: false,
     }
 
-    const srcPoolId = StargateBridgeHelper.getPoolId(stepConfig.inputAsset.asset)
-    const dstPoolId = stepConfig.outputAsset ? StargateBridgeHelper.getPoolId(stepConfig.inputAsset.asset) : srcPoolId
+    const srcPoolId = StargateBridgeHelper.getPoolId(stepConfig.inputAsset)
+    const dstPoolId = stepConfig.outputAsset ? StargateBridgeHelper.getPoolId(stepConfig.inputAsset) : srcPoolId
 
     const minOut = await this.getStargateMinAmountOut({
       dstChainId,

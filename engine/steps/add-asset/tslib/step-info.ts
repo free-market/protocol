@@ -1,12 +1,16 @@
+import * as React from 'react'
 import { StepInfo } from '@freemarket/step-sdk'
 import AddAssetIcon from './AddAssetIcon'
+import StepSummary from './StepSummary'
 
-export const stepInfo: StepInfo = {
-  stepType: 'add-asset',
-  nodeType: 'stepNode',
-  name: 'Add Asset',
-  description: 'Adds an asset to the workflow',
-  platform: 'No Platform',
-  categories: ['Utilities'],
-  icon: AddAssetIcon,
-}
+export const stepInfos: StepInfo[] = [
+  {
+    stepType: 'add-asset',
+    nodeType: 'stepNode',
+    name: 'Add Asset',
+    description: 'Adds an asset to the workflow',
+    categories: ['Utilities'],
+    icon: AddAssetIcon,
+    summary: StepSummary,
+  },
+]

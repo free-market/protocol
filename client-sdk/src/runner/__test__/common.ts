@@ -12,12 +12,10 @@ export const addAssetStep: Step = {
 export const aaveSupplyStep: Step = {
   stepId: 'aaveSupply',
   type: 'aave-supply',
-  inputAsset: {
-    asset: {
-      type: 'native',
-    },
-    amount: 1,
+  asset: {
+    type: 'native',
   },
+  amount: 1,
 }
 
 export const stargateBridgeStep: Step = {
@@ -27,11 +25,9 @@ export const stargateBridgeStep: Step = {
   destinationGasUnits: 1000000,
   destinationUserAddress: '0x1234567890123456789012345678901234567890',
   inputAsset: {
-    asset: {
-      type: 'native',
-    },
-    amount: 1,
+    type: 'native',
   },
+  inputAmount: 1,
   maxSlippagePercent: 0.04,
 }
 

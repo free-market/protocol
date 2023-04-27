@@ -135,7 +135,7 @@ describe('Uniswap Exact In', async () => {
   //   expect(toBalanceDiff).to.be.gt(0)
   // })
 
-  it.only('does a transfer using the helper and the integration contract', async () => {
+  it('does a transfer using the helper and the integration contract', async () => {
     const {
       users: { otherUser },
       contracts: { uniswapExactInAction, toToken, weth },
@@ -148,9 +148,15 @@ describe('Uniswap Exact In', async () => {
 
     const stepConfig: UniswapExactIn = {
       type: 'uniswap-exact-in',
-      inputSymbol: 'WETH',
+      inputAsset: {
+        type: 'fungible-token',
+        symbol: 'WETH',
+      },
       inputAmount: testAmount,
-      outputSymbol: toSymbol,
+      outputAsset: {
+        type: 'fungible-token',
+        symbol: toSymbol,
+      },
     }
 
     const context: EncodingContext<UniswapExactIn> = {

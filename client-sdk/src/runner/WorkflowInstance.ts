@@ -42,6 +42,7 @@ import {
   fungibleTokenSchema,
   EvmWorkflowStep,
   IERC20__factory,
+  ParameterType,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
@@ -49,6 +50,10 @@ const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
 type ParameterPath = string[]
 type VisitStepCallback = (stepObject: any, path: string[]) => void
+
+interface WorkflowInstanceConstructorOptions {
+  skipValidation?: boolean
+}
 
 export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
@@ -58,14 +63,15 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   // determined
 
-  constructor(workflow: Workflow | string) {
+  constructor(workflow: Workflow | string, options?: WorkflowInstanceConstructorOptions) {
     const unparsedWorkflow = typeof workflow === 'string' ? JSON.parse(workflow) : workflow
     const parsedWorkflow = workflowSchema.parse(unparsedWorkflow)
     this.workflow = parsedWorkflow
     this.steps = this.addMissingStepIds(parsedWorkflow.steps)
-    this.validateWorkflowSteps()
-    this.validateParameters()
-
+    if (!options?.skipValidation) {
+      this.validateWorkflowSteps()
+      this.validateParameters()
+    }
     // TODO validateAssetRefs -- but may need to skip unresolved parameters
   }
 
@@ -326,7 +332,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     return rv
   }
 
-  private findAllParameterReferences(): Map<string, ParameterPath[]> {
+  findAllParameterReferences(): Map<string, ParameterPath[]> {
     const mapParamNameToPaths = new MapWithDefault<string, ParameterPath[]>(() => [])
     for (const step of this.steps) {
       this.visitStepValues(step, [step.stepId], (obj, path) => {
@@ -381,18 +387,15 @@ export class WorkflowInstance implements IWorkflowInstance {
           })
           continue
         }
-        const schema = stepSchema._def.optionsMap.get(step.type)
-        assert(schema)
-        const property = WorkflowInstance.getZodChild(schema, valuePath.slice(1)) as any
-        assert(property._def._parameterTypeName)
+        const typeAtPath = this.getTypeAtPath(valuePath)
 
-        if (declaredParamType !== property._def._parameterTypeName) {
+        if (declaredParamType !== typeAtPath) {
           problems.push({
             type: WorkflowValidationProblemType.ParameterTypeMismatch,
             stepId,
             step,
             // prettier-ignore
-            message: `parameter type '${declaredParamType}' for parameter '${paramName}' does not match expected type '${property._def._parameterTypeName}' at path '${valuePath.join('.')}'`,
+            message: `parameter type '${declaredParamType}' for parameter '${paramName}' does not match expected type '${typeAtPath}' at path '${valuePath.join('.')}'`,
           })
         }
       }
@@ -401,6 +404,16 @@ export class WorkflowInstance implements IWorkflowInstance {
     if (problems.length > 0) {
       throw new WorkflowValidationError(problems)
     }
+  }
+
+  getTypeAtPath(path: string[]): string {
+    const step = this.getStep(path[0])
+    assert(step)
+    const schema = stepSchema._def.optionsMap.get(step.type)
+    assert(schema)
+    const property = WorkflowInstance.getZodChild(schema, path.slice(1)) as any
+    assert(property._def._parameterTypeName)
+    return property._def._parameterTypeName as ParameterType
   }
 
   private validateWorkflowSteps(): Map<string, StepNode> {
@@ -549,6 +562,9 @@ export class WorkflowInstance implements IWorkflowInstance {
   // if called before args are applied, args may show up instead of chains
   @Memoize()
   getWorkflowSegments(): WorkflowSegment[] {
+    if (this.steps.length === 0) {
+      return []
+    }
     const mapStepIdToChains = new MapWithDefault<string, Set<ChainOrStart>>(() => new Set())
     const startStepIds = new Set<string>()
     mapStepIdToChains.getWithDefault(this.steps[0].stepId).add('start-chain')

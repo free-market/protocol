@@ -74,12 +74,10 @@ describe('StargateBridge', async () => {
       destinationChain: 'arbitrum',
       destinationGasUnits: '1000000',
       inputAsset: {
-        asset: {
-          type: 'fungible-token',
-          symbol: 'USDC',
-        },
-        amount: testAmount,
+        type: 'fungible-token',
+        symbol: 'USDC',
       },
+      inputAmount: testAmount,
       maxSlippagePercent: 0.1,
       destinationUserAddress: otherUser,
       nextStepId: WORKFLOW_END_STEP_ID,

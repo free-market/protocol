@@ -17,7 +17,7 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   const addAssetAction = <AddAssetAction>await ethers.getContract('AddAssetAction', baseFixture.signers.otherUserSigner)
 
   // deploy a test token
-  const testToken = await (await new TestErc20__factory(baseFixture.signers.otherUserSigner).deploy()).deployed()
+  const testToken = await (await new TestErc20__factory(baseFixture.signers.otherUserSigner).deploy('TEST', 18)).deployed()
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()

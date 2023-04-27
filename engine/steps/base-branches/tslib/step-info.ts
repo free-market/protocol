@@ -3,14 +3,16 @@ import ChainBranchIcon from './ChainBranchIcon'
 import AssetBalanceBranchIcon from './AssetBalanceBranchIcon'
 import ConvexStakeIcon from './branding-assets/ConvexIcon'
 import GelatoIcon from './branding-assets/GelatoIcon'
+import ChainBranchSummary from './ChainBranchSummary'
+import AssetBalanceBranchSummary from './AssetBalanceBranchSummary'
 export const chainBranchStepInfo: StepInfo = {
   stepType: 'chain-branch',
   nodeType: 'branchNode',
   name: 'Chain Branch',
   description: 'Branches based on the current chain',
-  platform: 'No Platform',
   categories: ['Utilities'],
   icon: ChainBranchIcon,
+  summary: ChainBranchSummary,
 }
 
 export const assetBalanceBranchStepInfo: StepInfo = {
@@ -18,9 +20,9 @@ export const assetBalanceBranchStepInfo: StepInfo = {
   nodeType: 'branchNode',
   name: 'Asset Balance Branch',
   description: 'Branches based on an asset balance comparison',
-  platform: 'No Platform',
   categories: ['Utilities'],
   icon: AssetBalanceBranchIcon,
+  summary: AssetBalanceBranchSummary,
 }
 
 export const stepInfos: StepInfo[] = [

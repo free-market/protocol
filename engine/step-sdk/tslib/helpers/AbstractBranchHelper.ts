@@ -8,9 +8,12 @@ export abstract class AbstractBranchHelper<T extends BranchStep> extends Abstrac
       return null
     }
 
-    const sameChain = [stepConfig.ifYes]
+    const sameChain = []
+    if (stepConfig.ifYes && stepConfig.ifYes !== WORKFLOW_END_STEP_ID) {
+      sameChain.push(stepConfig.ifYes)
+    }
     const negBranch = stepConfig.nextStepId
-    if (negBranch) {
+    if (negBranch && negBranch !== WORKFLOW_END_STEP_ID) {
       sameChain.push(negBranch)
     }
     return {

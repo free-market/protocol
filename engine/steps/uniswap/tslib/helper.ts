@@ -5,15 +5,13 @@ import {
   EncodingContext,
   EncodedWorkflowStep,
   sdkAssetAmountToEvmInputAmount,
+  sdkAssetAndAmountToEvmInputAmount,
   assert,
   ADDRESS_ZERO,
-  EvmAssetType,
   AssetAmount,
   Asset,
   sdkAssetToEvmAsset,
   AssetReference,
-  EvmAsset,
-  FungibleTokenChainInfo,
   Chain,
 } from '@freemarket/core'
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
@@ -61,27 +59,22 @@ const abiCoder = ethers.utils.defaultAbiCoder
 export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
   async encodeWorkflowStep(context: EncodingContext<UniswapExactIn>): Promise<EncodedWorkflowStep> {
     const { chain, stepConfig } = context
-    const { inputSymbol, outputSymbol, inputAmount } = stepConfig
+
     logger.debug('stepConfig', JSON.stringify(stepConfig, null, 2))
 
-    const inputAssetAmount: AssetAmount = {
-      asset: {
-        type: 'fungible-token',
-        symbol: inputSymbol,
-      },
-      amount: context.stepConfig.inputAmount,
-    }
+    const evmInputAmount = await sdkAssetAndAmountToEvmInputAmount(
+      context.stepConfig.inputAsset,
+      context.stepConfig.inputAmount,
+      context.chain,
+      this.instance
+    )
 
-    const outputAsset: AssetReference = {
-      type: 'fungible-token',
-      symbol: outputSymbol,
-    }
+    const outputAsset = await this.instance.dereferenceAsset(context.stepConfig.outputAsset, context.chain)
 
-    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
     const asset = await this.instance.dereferenceAsset(outputAsset, chain)
     const toAsset = sdkAssetToEvmAsset(asset, chain)
-    const inputAmountStr = inputAmount.toString()
-    const route = await this.getRoute(inputAssetAmount.asset, outputAsset, inputAmountStr)
+    const inputAmountStr = context.stepConfig.inputAmount.toString()
+    const route = await this.getRoute(context.stepConfig.inputAsset, outputAsset, inputAmountStr)
     assert(route, "uniswap auto-router couldn't find a route")
     logger.debug('num routes', route.route.length)
     const routes = UniswapExactInHelper.encodeRoute(route)

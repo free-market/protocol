@@ -1,14 +1,31 @@
 import z from 'zod'
-import { amountSchema, assetAmountSchema, chainSchema, addressSchema, createStepSchema, assetReferenceSchema } from '@freemarket/core'
+import {
+  amountSchema,
+  chainSchema,
+  addressSchema,
+  createStepSchema,
+  assetReferenceSchema,
+  stepProperties,
+  percentSchema,
+} from '@freemarket/core'
 
 export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
-  maxSlippagePercent: z.number().gt(0).lt(100).describe('The maximum amount of loss during the swap.'),
-  destinationChain: chainSchema,
-  destinationGasUnits: amountSchema,
-  destinationUserAddress: addressSchema.optional(),
-  destinationAdditionalNative: amountSchema.optional(),
-  inputAsset: assetAmountSchema,
-  outputAsset: assetReferenceSchema.optional(),
+  destinationChain: chainSchema.describe(stepProperties('Destination Chain', 'The chain to send the asset to')),
+  inputAsset: assetReferenceSchema.describe(stepProperties('Input Asset', 'The asset to send to the destination chain')),
+  inputAmount: amountSchema.describe(stepProperties('Input Amount', 'The amount of the input asset to send to the destination chain')),
+  maxSlippagePercent: percentSchema.describe(stepProperties('Max Slippage', 'The maximum amount of loss during the swap.')),
+  outputAsset: assetReferenceSchema
+    .optional()
+    .describe(stepProperties('Output Asset', 'The asset to receive from the destination chain (if different from the input asset)')),
+  destinationGasUnits: amountSchema.describe(
+    stepProperties('Dest. Gas Units', 'Gas units required to execute the workflow on the destination chain')
+  ),
+  destinationUserAddress: addressSchema
+    .optional()
+    .describe(stepProperties('Dest. User Address', 'The address of the user on the destination chain')),
+  destinationAdditionalNative: amountSchema
+    .optional()
+    .describe(stepProperties('Additional Native', 'Additional native asset to send to the destination user address')),
 })
 
 export interface StargateBridge extends z.infer<typeof stargateBridgeSchema> {}

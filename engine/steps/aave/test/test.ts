@@ -53,13 +53,11 @@ describe('AaveSupply', async () => {
 
     const stepConfig: AaveSupply = {
       type: 'aave-supply',
-      inputAsset: {
-        asset: {
-          type: 'fungible-token',
-          symbol: 'USDT',
-        },
-        amount: testAmount,
+      asset: {
+        type: 'fungible-token',
+        symbol: 'USDT',
       },
+      amount: testAmount,
     }
     const helper = new AaveSupplyHelper(mockWorkflowInstance)
 

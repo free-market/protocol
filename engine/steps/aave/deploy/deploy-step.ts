@@ -10,10 +10,13 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
   if (!poolAddress) {
     console.log(`deploying mock AavePool for chainId: ${chainId}`)
     const signer = await hardhatRuntimeEnv.ethers.getNamedSigner('deployer')
-    const mockPool = await (await new MockAavePool__factory(signer).deploy()).deployed()
+    const mockPool = await new MockAavePool__factory(signer).deploy()
+    console.log(`mockPool deployed to ${mockPool.address}`)
+    const mockAToken = await mockPool.mockAToken()
+    console.log(`mockAToken deployed to ${mockAToken}`)
     poolAddress = mockPool.address
   }
-  return deployStep('AaveSupplyAction', STEP_TYPE_ID, hardhatRuntimeEnv, [poolAddress])
+  await deployStep('AaveSupplyAction', STEP_TYPE_ID, hardhatRuntimeEnv, [poolAddress])
 }
 
 func.tags = ['AaveSupplyAction']

@@ -22,3 +22,7 @@ export function createStandardProvider(provider: Provider, signer?: Signer): EIP
   const s = signer ?? new VoidSigner(ADDRESS_ZERO)
   return new Eip1193Bridge(s, provider)
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

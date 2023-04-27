@@ -12,9 +12,10 @@ export interface StepInfo {
   nodeType: NodeType
   name: string
   description: string
-  platform: string
+  platform?: string
   categories: string[]
   icon?: (props: IconProps) => ReactNode
   summary?: (props: any) => ReactNode
   comingSoon?: boolean
+  operation?: string
 }

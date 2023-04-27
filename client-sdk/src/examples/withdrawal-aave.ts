@@ -12,19 +12,23 @@ const wrapEtherWorkflow: Workflow = {
     },
     {
       type: 'aave-withdrawal',
-      inputAsset: {
-        asset: {
-          type: 'fungible-token',
-          symbol: 'aUSDT',
-        },
-
-        amount: '100%',
+      asset: {
+        type: 'fungible-token',
+        symbol: 'aUSDT',
       },
+
+      amount: '100%',
     },
     {
       type: 'uniswap-exact-in',
-      inputSymbol: 'USDT',
-      outputSymbol: 'WETH',
+      inputAsset: {
+        type: 'fungible-token',
+        symbol: 'USDT',
+      },
+      outputAsset: {
+        type: 'fungible-token',
+        symbol: 'WETH',
+      },
       inputAmount: '100',
     },
   ],

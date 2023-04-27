@@ -11,7 +11,16 @@ export const PARAMETER_REFERENCE_REGEX = `^ *{{ *(${PARAMETER_NAME_REGEX}) *}} *
 export const PARAMETER_REFERENCE_REGEXP = new RegExp(PARAMETER_REFERENCE_REGEX)
 export const parameterReferenceSchema = z.string().regex(PARAMETER_REFERENCE_REGEXP)
 
-export const PARAMETER_TYPES = ['amount', 'absolute-amount', 'percent-amount', 'address', 'asset-ref', 'asset-amount'] as const
+export const PARAMETER_TYPES = [
+  'amount',
+  'absolute-amount',
+  'percent-amount',
+  'address',
+  'asset-ref',
+  'asset-amount',
+  'number',
+  'percent',
+] as const
 export const parameterTypeSchema = z.enum(PARAMETER_TYPES)
 
 export type ParameterType = z.infer<typeof parameterTypeSchema>

@@ -48,6 +48,10 @@
       "name": "[step] wrapped-native",
       "path": "../engine/steps/wrapped-native"
     }
+    {
+      "name": "end-to-end",
+      "path": "../engine/end-to-end"
+    }
   ],
   "settings": {}
 }

@@ -37,23 +37,19 @@ export const crossChainAaveDeposit: Workflow = {
       maxSlippagePercent: 0.05,
       destinationGasUnits: 1000000,
       inputAsset: {
-        asset: {
-          type: 'fungible-token',
-          symbol: 'USDC',
-        },
-        amount: '100%',
+        type: 'fungible-token',
+        symbol: 'USDC',
       },
+      inputAmount: '100%',
     },
     {
       type: 'aave-supply',
       stepId: 'aave-supply',
-      inputAsset: {
-        asset: {
-          type: 'fungible-token',
-          symbol: 'USDC',
-        },
-        amount: '100%',
+      asset: {
+        type: 'fungible-token',
+        symbol: 'USDC',
       },
+      amount: '100%',
     },
   ],
 }

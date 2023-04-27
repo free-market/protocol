@@ -1,4 +1,4 @@
-import type { Asset, AssetAmount, Chain } from '../model'
+import type { Amount, Asset, AssetAmount, AssetReference, Chain } from '../model'
 import { EvmAsset, EvmAssetType, EvmInputAsset } from '../evm'
 import { ADDRESS_ZERO } from '../utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
@@ -25,30 +25,37 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
     assetAddress: tokenAddress.address,
   }
 }
-
-export async function sdkAssetAmountToEvmInputAmount(assetAmount: AssetAmount, chain: Chain, instance: IWorkflow): Promise<EvmInputAsset> {
+export async function sdkAssetAndAmountToEvmInputAmount(
+  assetRef: AssetReference,
+  amount: Amount,
+  chain: Chain,
+  instance: IWorkflow
+): Promise<EvmInputAsset> {
   let amountStr: string
   let amountIsPercent = false
-  if (typeof assetAmount.amount === 'number') {
-    amountStr = assetAmount.amount.toFixed(0)
-  } else if (typeof assetAmount.amount === 'bigint') {
-    amountStr = assetAmount.amount.toString()
+  if (typeof amount === 'number') {
+    amountStr = amount.toFixed(0)
+  } else if (typeof amount === 'bigint') {
+    amountStr = amount.toString()
   } else {
-    if (assetAmount.amount.endsWith('%')) {
-      const s = assetAmount.amount.slice(0, assetAmount.amount.length - 1)
+    if (amount.endsWith('%')) {
+      const s = amount.slice(0, amount.length - 1)
       const n = parseFloat(s) * 1000 // to decibips
       amountStr = n.toFixed(0)
       amountIsPercent = true
     } else {
-      amountStr = assetAmount.amount
+      amountStr = amount
     }
   }
-  const asset = await instance.dereferenceAsset(assetAmount.asset, chain)
+  const asset = await instance.dereferenceAsset(assetRef, chain)
   return {
     asset: sdkAssetToEvmAsset(asset, chain),
     amount: amountStr,
     amountIsPercent,
   }
+}
+export function sdkAssetAmountToEvmInputAmount(assetAmount: AssetAmount, chain: Chain, instance: IWorkflow): Promise<EvmInputAsset> {
+  return sdkAssetAndAmountToEvmInputAmount(assetAmount.asset, assetAmount.amount, chain, instance)
 }
 
 export async function getChainId(provider: EIP1193Provider): Promise<number> {

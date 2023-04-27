@@ -70,13 +70,11 @@ if (shouldRunE2e()) {
           },
           {
             type: 'aave-supply',
-            inputAsset: {
-              asset: {
-                type: 'fungible-token',
-                symbol: 'USDT',
-              },
-              amount: '100%',
+            asset: {
+              type: 'fungible-token',
+              symbol: 'USDT',
             },
+            amount: '100%',
           },
         ],
       }

@@ -9,8 +9,8 @@
       "outputs": ["artifacts/**", "typechain-types/**", "cache/**"]
     },
     "build-ts": {
-      "dependsOn": ["^build-ts"],
-      "inputs": ["artifacts/**", "typechain-types/**", "src/**", "package.json", "tsconfig.json", "./tslib/**", "./test/**"],
+      "dependsOn": ["build-sol", "^build-ts"],
+      "inputs": ["src/**", "package.json", "tsconfig.json", "./tslib/**", "./test/**"],
       "outputs": ["build/**"]
     },
     "dev": {
@@ -21,6 +21,7 @@
       "outputs": ["build/**", "deployments/**", "artifacts/**", "typechain-types/**", "cache/**"]
     },
     "test": {
+      "dependsOn": ["build-ts"],
       "outputs": []
     },
     "lint": {
@@ -28,7 +29,7 @@
     },
     "deploy-contracts": {
       "cache": false,
-      "dependsOn": ["build", "^deploy-contracts"]
+      "dependsOn": ["build-ts", "^deploy-contracts"]
     },
     "post-deploy-contracts": {
       "cache": false

@@ -76,7 +76,8 @@ test('finds all parameter references in a workflow', t => {
     steps: [
       {
         type: 'aave-supply',
-        inputAsset: '{{ aaveAsset }}',
+        asset: '{{ aaveAsset }}',
+        amount: '{{ aaveAmount }}',
       },
     ],
   }
@@ -97,7 +98,8 @@ test('fails to validate when a parameter reference is not found in the declared 
     steps: [
       {
         type: 'aave-supply',
-        inputAsset: '{{ aaveAsset }}', // <-- parameter reference
+        asset: '{{ aaveAsset }}', // <-- parameter reference
+        amount: '{{ aaveAmount }}',
       },
     ],
   }
@@ -135,7 +137,8 @@ test('fails to validate when a parameter reference should be a different type th
     steps: [
       {
         type: 'aave-supply',
-        inputAsset: '{{ aaveAsset }}', // <-- parameter reference, should be type 'asset-amount' here
+        asset: '{{ aaveAsset }}', // <-- parameter reference, should be type 'asset-amount' here
+        amount: '{{ aaveAmount }}',
       },
     ],
   }
@@ -174,7 +177,8 @@ test('validate when everything is good', t => {
       },
       {
         type: 'aave-supply',
-        inputAsset: '{{ aaveAsset }}', // <-- parameter reference
+        asset: '{{ aaveAsset }}', // <-- parameter reference
+        amount: '{{ aaveAmount }}',
       },
     ],
   }

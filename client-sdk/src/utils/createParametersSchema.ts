@@ -6,14 +6,15 @@ import { getParameterSchema } from '@freemarket/core'
 
 const log = rootLogger.getLogger('createParametersSchema')
 
-export function createParametersSchema(workflow: ReadonlyDeep<Workflow>) {
-  if (!workflow.parameters) {
+export function createParametersSchema(workflow: ReadonlyDeep<Workflow>, excludeRemittances = true) {
+  const params = excludeRemittances ? workflow.parameters?.filter(it => !it.name.startsWith('remittances.')) : workflow.parameters
+  if (!params || params.length === 0) {
     log.debug(`workflow doesn't declare any parameters`)
     return null
   }
 
   const workflowArgsSchema: Record<string, ZodTypeAny> = {}
-  for (const param of workflow.parameters) {
+  for (const param of params) {
     const schema = getParameterSchema(param.type)
     workflowArgsSchema[param.name] = schema.describe(schema._def.description)
   }

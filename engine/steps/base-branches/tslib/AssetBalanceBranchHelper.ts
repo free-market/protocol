@@ -30,8 +30,8 @@ export class AssetBalanceBranchHelper extends AbstractBranchHelper<AssetBalanceB
   async encodeWorkflowStep(context: EncodingContext<AssetBalanceBranch>): Promise<EncodedWorkflowStep> {
     const { stepConfig, mapStepIdToIndex, chain } = context
     const { ifYes, asset: assetRef, comparison, amount } = stepConfig
-    const ifYesIndex = mapStepIdToIndex.get(ifYes)
-    assert(ifYesIndex !== undefined, `Could not find step with id ${ifYes}`)
+    const ifYesIndex = ifYes ? mapStepIdToIndex.get(ifYes) : -1
+    // assert(ifYesIndex !== undefined, `Could not find step with id ${ifYes}`)
     let comparisonOrdinal = ComparisonOrdinals[comparison]
     const sdkAsset = await this.instance.dereferenceAsset(assetRef, chain)
     const evmAsset = sdkAssetToEvmAsset(sdkAsset, chain)

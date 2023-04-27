@@ -23,6 +23,13 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.WALLET_MNEMONIC,
       },
     },
+    arbitrumGoerli: {
+      chainId: 421613,
+      url: 'https://goerli-rollup.arbitrum.io/rpc',
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    },
     hardhat: {
       // chainId: 1,
       forking: {

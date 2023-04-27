@@ -2,9 +2,10 @@ import { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
 import { SVGProps } from 'react'
 const AddAssetIcon = (props: SVGProps<SVGSVGElement> & IconProps) => {
-  const plusColor = props.dark ? '#090' : '#0f0'
+  const { dark, ...rest } = props
+  const plusColor = dark ? '#090' : '#0f0'
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" width="24px" height="24px" viewBox="0 0 512 512" {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" width="24px" height="24px" viewBox="0 0 512 512" {...rest}>
       <path
         style={{ fill: 'currentColor' }}
         d="M336 111.797c8.844 0 16 7.156 16 16s-7.156 16-16 16H176c-8.844 0-16-7.156-16-16s7.156-16 16-16h160zm9.25 48H166.734C87.469 217.609 32 340.141 32 417.953c0 104.656 100.281 93.5 224 93.5s224 11.156 224-93.5c0-77.812-55.469-200.344-134.75-258.156zm-178.516-64H345.25S416 34.078 384 7.078s-103 30-128 28c-25 2-96-55-128-28s38.734 88.719 38.734 88.719z"

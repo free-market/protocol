@@ -1,5 +1,6 @@
 export * from './Address'
 export * from './Amount'
+export * from './AssetType'
 export * from './Asset'
 export * from './AssetReference'
 export * from './AssetAmount'

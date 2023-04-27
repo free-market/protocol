@@ -44,10 +44,14 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
     args: ctorArgs,
   })
   if (deployResult.newlyDeployed) {
+    console.log(`registering ${stepName} with ConfigManager`)
     const configManagerAddress = await getDeployedContractAddress(hre, 'ConfigManager')
+    console.log(`configManagerAddress=${configManagerAddress}`)
     const configManager = <ConfigManager>await ethers.getContractAt('ConfigManager', configManagerAddress)
     const result = await configManager.setStepAddress(stepTypeId, deployResult.address)
+    console.log(`configManager.setStepAddress called, waiting for confirmation`)
     await result.wait()
+    console.log(`configManager.setStepAddress confirmed`)
   }
 
   // if (hre.network.live) {
