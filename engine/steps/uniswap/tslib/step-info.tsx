@@ -31,6 +31,7 @@ export const platformInfo: PlatformInfo = {
       description: 'Exchange an asset for another asset on Uniswap, specifying the exact amount of the input asset',
       icon: UniswapIcon,
       operation: 'Exact In',
+      platformName: 'Uniswap',
       summary: p => {
         return (
           <span style={{ ...p.labelStyle }}>
@@ -55,6 +56,7 @@ export const platformInfo: PlatformInfo = {
       description: 'Exchange an asset for another asset on Uniswap, specifying the exact amount of the output asset',
       icon: UniswapIcon,
       operation: 'Exact Out',
+      platformName: 'Uniswap',
       summary: p => <UniswapSummary {...p} operation="Swap" />,
     },
     {
@@ -65,6 +67,7 @@ export const platformInfo: PlatformInfo = {
       icon: UniswapIcon,
       operation: 'Deposit',
       comingSoon: true,
+      platformName: 'Uniswap',
       summary: p => <UniswapSummary {...p} operation="Deposit" />,
     },
     {
@@ -75,6 +78,7 @@ export const platformInfo: PlatformInfo = {
       icon: UniswapIcon,
       operation: 'Withdrawal',
       comingSoon: true,
+      platformName: 'Uniswap',
       summary: p => <UniswapSummary {...p} operation="Withdrawal" />,
     },
   ],

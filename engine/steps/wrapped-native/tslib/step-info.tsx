@@ -14,6 +14,7 @@ export const platformInfo: PlatformInfo = {
       name: 'Wrap Native',
       description: 'Exchanges native asset for wrapped asset',
       icon: WethIcon,
+      platformName: 'Wrapped Native',
       summary: p => <span style={{ ...p.infoStyle }}>{p.step.amount}</span>,
     },
     {
@@ -22,6 +23,7 @@ export const platformInfo: PlatformInfo = {
       name: 'Unwrap Native',
       description: 'Exchanges a wrapped asset for a native asset',
       icon: WethIcon,
+      platformName: 'Wrapped Native',
       summary: p => <span style={{ ...p.infoStyle }}>{p.step.amount}</span>,
     },
   ],

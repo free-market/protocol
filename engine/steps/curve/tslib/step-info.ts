@@ -13,6 +13,7 @@ export const platformInfos: PlatformInfo = {
       name: 'Curve Tricrypto2 Swap',
       description: 'Allows swapping between WETH, WBTC, and USDT',
       icon: CurveIcon,
+      platformName: 'Curve',
     },
     {
       stepType: 'curve-tricrypto2-deposit',
@@ -21,6 +22,7 @@ export const platformInfos: PlatformInfo = {
       description: 'Deposit WETH, WBTC, or USDT into Tricrypto2',
       icon: CurveIcon,
       comingSoon: true,
+      platformName: 'Curve',
     },
     {
       stepType: 'curve-tricrypto2-withdrawal',
@@ -29,6 +31,7 @@ export const platformInfos: PlatformInfo = {
       description: 'Withdrawal WETH, WBTC, or USDT from Tricrypto2',
       icon: CurveIcon,
       comingSoon: true,
+      platformName: 'Curve',
     },
     {
       stepType: 'curve-tricrypto2-stake',
@@ -37,6 +40,7 @@ export const platformInfos: PlatformInfo = {
       description: 'Stake Tricrypto2 LP tokens to earn CRV',
       icon: CurveIcon,
       comingSoon: true,
+      platformName: 'Curve',
     },
     {
       stepType: 'curve-tricrypto2-unstake',
@@ -45,6 +49,7 @@ export const platformInfos: PlatformInfo = {
       description: 'Unstake CRV tokens from Tricrypto2',
       icon: CurveIcon,
       comingSoon: true,
+      platformName: 'Curve',
     },
   ],
 }

@@ -31,6 +31,7 @@ export const platformInfo: PlatformInfo = {
       icon: AaveIcon,
       operation: 'Supply',
       summary: p => <AaveSummary {...p} operation="Supply" />,
+      platformName: 'Aave',
     },
     {
       stepType: 'aave-withdrawal',
@@ -41,6 +42,7 @@ export const platformInfo: PlatformInfo = {
       operation: 'Withdrawal',
       comingSoon: true,
       summary: p => <AaveSummary {...p} operation="Withdrawal" />,
+      platformName: 'Aave',
     },
     {
       stepType: 'aave-borrow',
@@ -51,6 +53,7 @@ export const platformInfo: PlatformInfo = {
       operation: 'Borrow',
       comingSoon: true,
       summary: p => <AaveSummary {...p} operation="Borrow" />,
+      platformName: 'Aave',
     },
     {
       stepType: 'aave-repay',
@@ -61,6 +64,7 @@ export const platformInfo: PlatformInfo = {
       operation: 'Repay',
       comingSoon: true,
       summary: p => <AaveSummary {...p} operation="Repay" />,
+      platformName: 'Aave',
     },
     {
       stepType: 'aave-flash-loan',
@@ -71,6 +75,7 @@ export const platformInfo: PlatformInfo = {
       operation: 'Flash Loan',
       comingSoon: true,
       summary: p => <AaveSummary {...p} operation="Flash Loan" />,
+      platformName: 'Aave',
     },
   ],
 }

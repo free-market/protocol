@@ -34,6 +34,7 @@ export const platformInfo: PlatformInfo = {
       name: 'Stargate Bridge',
       description: 'Moves an asset between chains',
       icon: StargateIcon,
+      platformName: 'Stargate',
       summary: StargateSummary,
     },
   ],
