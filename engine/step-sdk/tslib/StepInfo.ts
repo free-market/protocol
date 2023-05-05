@@ -7,15 +7,23 @@ export interface IconProps {
   dark: boolean
 }
 
-export interface StepInfo {
-  stepType: string
-  nodeType: NodeType
+export interface PlatformInfo {
   name: string
   description: string
-  platform?: string
+  icon?: (props: IconProps) => ReactNode
   categories: string[]
+  stepInfos: StepInfo[]
+}
+
+export interface StepInfo {
+  name: string
+  // engine step type
+  stepType: string
+  // UI node shape type
+  nodeType: NodeType
+  description: string
+  operation?: string
   icon?: (props: IconProps) => ReactNode
   summary?: (props: any) => ReactNode
   comingSoon?: boolean
-  operation?: string
 }

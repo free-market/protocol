@@ -21,7 +21,7 @@
       "args": ["${file}"],
       "outputCapture": "std",
       "env": {
-        "INCLUDE_E2E": "true"
+        "E2E": "true"
       },
       "stopOnEntry": true,
       // "console": "integratedTerminal", // optional
@@ -31,11 +31,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "foo",
+      "name": "run-workflow-cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/build/clis/execute-workflow.js",
-      "args": ["examples/cross-chain-deposit.workflow.json", "examples/cross-chain-deposit-args.json", "ethereum"],
-      "outFiles": ["${workspaceFolder}/build/**/*.js"]
+      "args": ["eraseme-wtf.json", "eraseme-xchain-args.json", "ethereum"],
+      "outFiles": ["${workspaceFolder}/build/**/*.js"],
+      "envFile": "${userHome}/.env"
     },
     {
       "type": "node",

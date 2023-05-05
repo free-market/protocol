@@ -1,6 +1,6 @@
 import z, { ZodLiteral } from 'zod'
 
-const positionSchema = z.object({
+export const positionSchema = z.object({
   x: z.number(),
   y: z.number(),
 })

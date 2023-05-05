@@ -4,8 +4,9 @@ import type { Workflow, Arguments } from '../../model'
 import { throws, assert, shouldRunE2e, getStandardProvider, getStandardWebSocketProvider } from '../../private/test-utils'
 import { crossChainAaveDeposit } from '../../examples/cross-chain-deposit'
 import dotenv from 'dotenv'
+import os from 'os'
 
-dotenv.config()
+dotenv.config({ path: os.homedir() + '/.env' })
 
 const testWorkflowJson = `
 {
@@ -70,7 +71,11 @@ test('finds all parameter references in a workflow', t => {
     parameters: [
       {
         name: 'aaveAsset',
-        type: 'asset-amount',
+        type: 'asset-ref',
+      },
+      {
+        name: 'aaveAmount',
+        type: 'amount',
       },
     ],
     steps: [
@@ -154,9 +159,14 @@ test('validate when everything is good', t => {
   const workflow: Workflow = {
     parameters: [
       {
-        name: 'aaveAsset', // <-- declared parameter
-        type: 'asset-amount',
-        description: 'The asset and amount to deposit into aave',
+        name: 'aaveAsset',
+        type: 'asset-ref',
+        description: 'The asset to deposit into aave',
+      },
+      {
+        name: 'aaveAmount',
+        type: 'amount',
+        description: 'The amount to deposit into aave',
       },
       {
         name: 'startAsset',
@@ -303,7 +313,7 @@ test('applies arguments', async t => {
   t.pass()
 })
 
-test.only('creates a WorkflowRunner', async t => {
+test('creates a WorkflowRunner', async t => {
   if (!shouldRunE2e()) {
     t.pass('skipping')
     return

@@ -303,6 +303,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       stepAddress: ADDRESS_ZERO,
       inputAssets: [transferInputAsset, paymentAsset],
       argData: StargateBridgeHelper.encodeStargateBridgeArgs(sgArgs),
+      nextStepIndex: -1,
     }
   }
 

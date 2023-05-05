@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { StepInfo } from '@freemarket/step-sdk'
+import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import StargateIcon from './StargateIcon'
 
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
@@ -22,13 +22,19 @@ export default function StargateSummary({ step, labelColor, valueColor }: Props)
   )
 }
 
-export const stepInfo: StepInfo = {
-  stepType: 'stargate-bridge',
-  nodeType: 'stepNode',
+export const platformInfo: PlatformInfo = {
   name: 'Stargate Bridge',
   description: 'Moves an asset between chains',
-  platform: 'Stargate',
-  categories: ['Bridging'],
   icon: StargateIcon,
-  summary: StargateSummary,
+  categories: ['Bridging'],
+  stepInfos: [
+    {
+      stepType: 'stargate-bridge',
+      nodeType: 'stepNode',
+      name: 'Stargate Bridge',
+      description: 'Moves an asset between chains',
+      icon: StargateIcon,
+      summary: StargateSummary,
+    },
+  ],
 }

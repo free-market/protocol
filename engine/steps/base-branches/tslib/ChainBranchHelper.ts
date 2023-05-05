@@ -25,20 +25,20 @@ const AssetAmountBranchParamsSchema = `
 `
 
 export class ChainBranchHelper extends AbstractBranchHelper<ChainBranch> {
-  encodeWorkflowStep(context: EncodingContext<ChainBranch>): Promise<EncodedWorkflowStep> {
+  async encodeWorkflowStep(context: EncodingContext<ChainBranch>): Promise<EncodedWorkflowStep> {
     const { stepConfig, mapStepIdToIndex } = context
     const { ifYes, currentChain } = stepConfig
     const ifYesIndex = ifYes ? mapStepIdToIndex.get(ifYes) : -1
     // assert(ifYesIndex !== undefined, `Could not find step with id ${ifYes}`)
-
-    const chainId = getChainIdFromChain(currentChain, false)
+    const isTestNet = await this.instance.isTestNet()
+    const chainId = getChainIdFromChain(currentChain, isTestNet)
     // console.log('current chain', currentChain, chainId)
     const argData = abiCoder.encode([ChainBranchParamsSchema], [{ chainId, ifYes: ifYesIndex }])
-    return Promise.resolve({
+    return {
       stepTypeId: STEP_TYPE_ID_CHAIN_BRANCH,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [],
       argData,
-    })
+    }
   }
 }

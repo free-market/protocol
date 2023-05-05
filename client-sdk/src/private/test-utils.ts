@@ -6,7 +6,11 @@ import { createStandardProvider } from '@freemarket/core'
 import type { ExecutionContext } from 'ava'
 
 export function shouldRunE2e() {
-  return process.env['INCLUDE_E2E'] === 'true'
+  const e2e = process.env.E2E?.toLowerCase()
+  if (!e2e) {
+    return false
+  }
+  return ['true', 't', 'yes', 'y', '1'].includes(e2e)
 }
 
 export function mapToRecord<V>(map: Map<string, V>): Record<string, V> {

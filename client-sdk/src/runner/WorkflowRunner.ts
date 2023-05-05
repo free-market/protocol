@@ -71,9 +71,12 @@ export class WorkflowRunner implements IWorkflowRunner {
       value: nativeAmount,
     })
     const gasLimit = srcWorkflowGasEstimate.mul(11).div(10)
-    const tx = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
+    log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
+    const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
+    log.debug(`tx submitted, hash=${txResponse.hash}`)
     this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
-    const txReceipt = await tx.wait(1)
+    const txReceipt = await txResponse.wait(1)
+    log.debug(`tx txReceipt, hash=${txReceipt.transactionHash}`)
     this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash })
 
     // const eraseme = getStargateBridgeParamsEvent(txReceipt)
@@ -216,6 +219,7 @@ export class WorkflowRunner implements IWorkflowRunner {
         const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(targetChain)
 
         const ethersProvider = getEthersProvider(this.instance.getProvider(targetChain))
+        ethersProvider.addListener
         const runner = WorkflowRunner__factory.connect(frontDoorAddr, ethersProvider)
         const expectedNonce = BigNumber.from(nonce)
         const filter = runner.filters.WorkflowContinuation(null, null, null)

@@ -1,8 +1,6 @@
 import z from 'zod'
 import { amountSchema, assetReferenceSchema, createStepSchema } from '@freemarket/core'
 
-const triCrypto2Symbol = z.enum(['USDT', 'WETH', 'WBTC'])
-
 export const curveTriCrypto2SwapSchema = createStepSchema('curve-tricrypto2-swap').extend({
   inputAsset: assetReferenceSchema,
   inputAmount: amountSchema,

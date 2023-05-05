@@ -1,0 +1,85 @@
+{
+  "name": "",
+  "description": "",
+  "steps": [
+    {
+      "stepId": "add-asset",
+      "nextStepId": "asset-balance-branch",
+      "position": { "x": 114.10934870017792, "y": 115.94425593010084 },
+      "type": "add-asset",
+      "asset": "{{ StartAsset }}",
+      "amount": "{{ StartAmount }}"
+    },
+    {
+      "stepId": "aave",
+      "nextStepId": "__end__",
+      "type": "aave-supply",
+      "asset": { "type": "fungible-token", "symbol": "USDC" },
+      "amount": "100%",
+      "position": { "x": 192.18158965025282, "y": 962.1488682970524 }
+    },
+    {
+      "stepId": "stargate",
+      "nextStepId": "aave",
+      "position": { "x": 63.04897908946273, "y": 779.2482835563624 },
+      "type": "stargate-bridge",
+      "destinationChain": "arbitrum",
+      "inputAsset": { "type": "fungible-token", "symbol": "USDC" },
+      "inputAmount": "100%",
+      "maxSlippagePercent": "1",
+      "destinationGasUnits": "1000000"
+    },
+    {
+      "stepId": "add-asset-1",
+      "nextStepId": "chain-branch",
+      "position": { "x": 92.12561914839125, "y": 514.1069022711641 },
+      "type": "add-asset",
+      "asset": { "type": "native" },
+      "amount": "{{ remittances.stargate.amount }}"
+    },
+    {
+      "stepId": "chain-branch",
+      "nextStepId": "stargate",
+      "position": { "x": 180.1795183888449, "y": 633.1756192698582 },
+      "type": "chain-branch",
+      "currentChain": "arbitrum",
+      "ifYes": "aave"
+    },
+    {
+      "stepId": "uniswap",
+      "nextStepId": "add-asset-1",
+      "type": "uniswap-exact-in",
+      "inputAsset": "{{ StartAsset }}",
+      "inputAmount": "{{ StartAmount }}",
+      "outputAsset": { "type": "fungible-token", "symbol": "USDC" },
+      "slippageTolerance": "1",
+      "position": { "x": 278.9449235558555, "y": 370.26207737766185 }
+    },
+    {
+      "stepId": "asset-balance-branch",
+      "nextStepId": "add-asset-1",
+      "position": { "x": 123.8814267205135, "y": 238.84753387787475 },
+      "type": "asset-balance-branch",
+      "asset": { "type": "fungible-token", "symbol": "USDC" },
+      "comparison": "equal",
+      "amount": "0",
+      "ifYes": "uniswap"
+    }
+  ],
+  "fungibleTokens": [
+    {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "type": "fungible-token",
+      "chains": {
+        "ethereum": { "address": "0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620", "decimals": 6 },
+        "arbitrum": { "address": "0x6aAd876244E7A1Ad44Ec4824Ce813729E5B6C291", "decimals": 6 }
+      }
+    }
+  ],
+  "parameters": [
+    { "name": "StartAsset", "type": "asset-ref", "label": "StartAsset" },
+    { "name": "StartAmount", "type": "amount", "label": "StartAmount" }
+  ],
+  "startStepId": "add-asset"
+}

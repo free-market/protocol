@@ -97,10 +97,14 @@ export class WorkflowInstance implements IWorkflowInstance {
     let appliedInstance = this.applyArguments(true, args)
     const remittances = await appliedInstance.getRemittances()
     appliedInstance = appliedInstance.applyArguments(false, remittances)
-    const firstNodeStepId = appliedInstance.steps[0].stepId
+    const firstNodeStepId = this.getStartStepId()
     const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress)
     const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
     return new WorkflowRunner(this, encoded, startChain, addAssetInfo)
+  }
+
+  private getStartStepId() {
+    return this.workflow.startStepId || this.steps[0].stepId
   }
 
   private async getAddAssetFungibleTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
@@ -332,7 +336,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     return rv
   }
 
-  findAllParameterReferences(): Map<string, ParameterPath[]> {
+  findAllParameterReferences(includeRemittances = true): Map<string, ParameterPath[]> {
     const mapParamNameToPaths = new MapWithDefault<string, ParameterPath[]>(() => [])
     for (const step of this.steps) {
       this.visitStepValues(step, [step.stepId], (obj, path) => {
@@ -340,7 +344,9 @@ export class WorkflowInstance implements IWorkflowInstance {
           const matchResult = PARAMETER_REFERENCE_REGEXP.exec(obj)
           if (matchResult) {
             const paramName = matchResult[1]
-            mapParamNameToPaths.getWithDefault(paramName).push(path)
+            if (includeRemittances || !paramName.startsWith('remittances.')) {
+              mapParamNameToPaths.getWithDefault(paramName).push(path)
+            }
           }
         }
       })
@@ -368,10 +374,14 @@ export class WorkflowInstance implements IWorkflowInstance {
         mapDeclaredParamNameToType.set(key, 'asset-amount')
       }
     }
+    const remittances = this.getRemittanceKeys()
 
     // get all parameter references in the steps
     const mapNameToPaths = this.findAllParameterReferences()
     for (const [paramName, valuePaths] of mapNameToPaths) {
+      if (remittances.has(paramName)) {
+        continue
+      }
       const declaredParamType = mapDeclaredParamNameToType.get(paramName)
       for (const valuePath of valuePaths) {
         const stepId = valuePath[0]
@@ -567,8 +577,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     }
     const mapStepIdToChains = new MapWithDefault<string, Set<ChainOrStart>>(() => new Set())
     const startStepIds = new Set<string>()
-    mapStepIdToChains.getWithDefault(this.steps[0].stepId).add('start-chain')
-    startStepIds.add(this.steps[0].stepId)
+    mapStepIdToChains.getWithDefault(this.getStartStepId()).add('start-chain')
+    startStepIds.add(this.getStartStepId())
     for (const step of this.steps) {
       const helper = createStepHelper(step.type, this)
       const result = helper.getPossibleNextSteps(step as any)
@@ -606,6 +616,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     for (let i = 0; i < reachable.length; ++i) {
       mapStepIdToIndex.set(reachable[i], i)
     }
+    mapStepIdToIndex.set(WORKFLOW_END_STEP_ID, -1)
 
     const chain = await this.resolveChain(chainOrStart)
     // TODO how to handle non-evm?
@@ -617,6 +628,10 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
       const helper = this.getStepHelper(chainOrStart, step.type)
       const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress, mapStepIdToIndex })
+      // if the step gave an index, use it
+      if (encoded.nextStepIndex !== undefined) {
+        return encoded as EvmWorkflowStep
+      }
       return {
         ...encoded,
         nextStepIndex,
