@@ -1,7 +1,0 @@
-{
-  "StartAsset": {
-    "type": "fungible-token",
-    "symbol": "USDC"
-  },
-  "StartAmount": "1000000"
-}
