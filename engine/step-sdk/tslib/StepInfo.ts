@@ -26,4 +26,5 @@ export interface StepInfo {
   icon?: (props: IconProps) => ReactNode
   summary?: (props: any) => ReactNode
   comingSoon?: boolean
+  platformName?: string
 }
