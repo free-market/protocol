@@ -9,7 +9,7 @@
 <h3 align="center">Free Market Protocol</h3>
 
   <p align="center">
-    Cross-chain De-Fi Workflow Engine
+    Web3's Orchestration Layer
     <br />
     <a href="https://github.com/free-market/platform/issues">Report Bug</a>
     ·
