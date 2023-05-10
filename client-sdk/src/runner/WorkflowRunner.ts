@@ -169,6 +169,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     assert(fungi)
     const addr = fungi.chains[this.startChain]?.address
     assert(addr)
+    log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
     const erc20 = IERC20__factory.connect(addr, signer)
     const response = await erc20.approve(frontDoorAddress, amount.toFixed(0))
     return await response.wait(1)
