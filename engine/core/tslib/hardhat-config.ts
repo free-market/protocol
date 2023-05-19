@@ -11,6 +11,18 @@ export const coreHardhatConfig: any = {
   solidity: '0.8.18',
 
   networks: {
+    arbitrum: {
+      url: process.env.ARBITRUM_MAINNET_URL,
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    },
+    optimism: {
+      url: process.env.OPTIMISM_MAINNET_URL,
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    },
     ethereumGoerli: {
       chainId: 5,
       url: 'https://rpc.ankr.com/eth_goerli',

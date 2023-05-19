@@ -1,0 +1,15 @@
+hh --network arbitrum deploy
+Generating typings for: 6 artifacts in dir: typechain-types for target: ethers-v5
+Successfully generated 20 typings!
+Compiled 10 Solidity files successfully
+deploying "FrontDoor" (tx: 0x926979025e44ac4ce998571c28e78bde08614c4326fe8ed9c786c0777d9665c2)...: deployed at 0x25B4670bd2B636Ab8fd40123Ef0B438a10beabc8 with 33841909 gas
+deploying "ConfigManager" (tx: 0xe34cf4633a04c181735de007bcd6f069f279508758cffca424dc9b4d2be1fa01)...: deployed at 0x2CAae422b848c82fDD29e0689FFCc84d911FF94B with 14209692 gas
+deploying "WorkflowRunner" (tx: 0x854d2bd766de9d7e75f3691300664e1a103facad0b9421a996abe3c78ec00ade)...: deployed at 0x56D118507CD54d3385828a6Be6e1e7EBc09d3694 with 38639823 gas
+deploying "WrapNativeAction" (tx: 0x6ec16efd70216b4a4a1c86da4e3bc800348fcf274a548bf42212f3019aabb9f9)...: deployed at 0x65a8259764539bA915a23465078d9C4e33Bd7e8e with 8513521 gas
+registering WrapNativeAction with ConfigManager
+reading ConfigManager address from /home/asdf/w/protocol/engine/steps/wrapped-native/node_modules/@freemarket/runner/deployments/arbitrum/ConfigManager.json
+using existing ConfigManager address: 0x3EBBB6C69cC0Da49aA1eD3ea1fb7598A20E4d5F8
+configManagerAddress=0x3EBBB6C69cC0Da49aA1eD3ea1fb7598A20E4d5F8
+configManager.setStepAddress called, waiting for confirmation
+configManager.setStepAddress confirmed
+
