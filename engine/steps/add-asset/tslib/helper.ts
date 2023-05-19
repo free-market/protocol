@@ -43,6 +43,7 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
       asset: evmAsset,
       amount: amountStr,
       amountIsPercent: false,
+      sourceIsCaller: false,
     }
 
     return {

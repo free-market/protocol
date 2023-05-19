@@ -52,6 +52,7 @@ export async function sdkAssetAndAmountToEvmInputAmount(
     asset: sdkAssetToEvmAsset(asset, chain),
     amount: amountStr,
     amountIsPercent,
+    sourceIsCaller: false,
   }
 }
 export function sdkAssetAmountToEvmInputAmount(assetAmount: AssetAmount, chain: Chain, instance: IWorkflow): Promise<EvmInputAsset> {

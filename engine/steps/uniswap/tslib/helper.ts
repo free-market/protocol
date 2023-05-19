@@ -74,22 +74,21 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     const asset = await this.instance.dereferenceAsset(outputAsset, chain)
     const toAsset = sdkAssetToEvmAsset(asset, chain)
     const inputAmountStr = context.stepConfig.inputAmount.toString()
-    // const route = await this.getRoute(context.stepConfig.inputAsset, outputAsset, inputAmountStr)
-    // assert(route, "uniswap auto-router couldn't find a route")
-    // logger.debug('num routes', route.route.length)
-    // const routes = UniswapExactInHelper.encodeRoute(route)
-    // let slippageTolerancePct = stepConfig.slippageTolerance?.toString() || '100'
-    // if (slippageTolerancePct.endsWith('%')) {
-    //   slippageTolerancePct = slippageTolerancePct.slice(0, -1)
-    // }
-    // const minExchangeRate = UniswapExactInHelper.getMinExchangeRate(inputAmountStr, route.quote, parseFloat(slippageTolerancePct))
+    const route = await this.getRoute(context.stepConfig.inputAsset, outputAsset, inputAmountStr)
+    assert(route, "uniswap auto-router couldn't find a route")
+    logger.debug('num routes', route.route.length)
+    const routes = UniswapExactInHelper.encodeRoute(route)
+    let slippageTolerancePct = stepConfig.slippageTolerance?.toString() || '100'
+    if (slippageTolerancePct.endsWith('%')) {
+      slippageTolerancePct = slippageTolerancePct.slice(0, -1)
+    }
+    const minExchangeRate = UniswapExactInHelper.getMinExchangeRate(inputAmountStr, route.quote, parseFloat(slippageTolerancePct))
 
     return {
       stepTypeId: STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
-      // argData: abiCoder.encode([UniswapExactInActionParamsSchema], [{ toAsset, routes, minExchangeRate }]),
-      argData: '0x',
+      argData: abiCoder.encode([UniswapExactInActionParamsSchema], [{ toAsset, routes, minExchangeRate }]),
     }
   }
 

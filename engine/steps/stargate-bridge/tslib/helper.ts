@@ -268,6 +268,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       },
       amount: stargateRequiredNative.toString(),
       amountIsPercent: false,
+      sourceIsCaller: false,
     }
 
     const srcPoolId = StargateBridgeHelper.getPoolId(stepConfig.inputAsset)

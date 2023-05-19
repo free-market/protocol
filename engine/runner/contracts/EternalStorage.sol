@@ -130,15 +130,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].get(_key2);
   }
 
-  function getEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bytes32) {
+  function getEnumerableMapBytes32ToBytes32(bytes32 _key1, bytes32 _key2) external view returns (bytes32) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].get(_key2);
   }
 
-  function getEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (uint256) {
+  function getEnumerableMapUintToUint(bytes32 _key1, uint256 _key2) external view returns (uint256) {
     return enumerableMapUintToUintMapStorage[_key1].get(_key2);
   }
 
-  function getEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (uint256) {
+  function getEnumerableMapBytes32ToUint(bytes32 _key1, bytes32 _key2) external view returns (uint256) {
     return enumerableMapBytes32ToUintMapStorage[_key1].get(_key2);
   }
 
@@ -152,15 +152,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].tryGet(_key2);
   }
 
-  function tryGetEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bool, bytes32) {
+  function tryGetEnumerableMapBytes32ToBytes32(bytes32 _key1, bytes32 _key2) external view returns (bool, bytes32) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].tryGet(_key2);
   }
 
-  function tryGetEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (bool, uint256) {
+  function tryGetEnumerableMapUintToUint(bytes32 _key1, uint256 _key2) external view returns (bool, uint256) {
     return enumerableMapUintToUintMapStorage[_key1].tryGet(_key2);
   }
 
-  function tryGetEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (bool, uint256) {
+  function tryGetEnumerableMapBytes32ToUint(bytes32 _key1, bytes32 _key2) external view returns (bool, uint256) {
     return enumerableMapBytes32ToUintMapStorage[_key1].tryGet(_key2);
   }
 
@@ -174,15 +174,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2, bytes32 _value) external onlyWriter returns (bool) {
+  function setEnumerableMapBytes32ToBytes32(bytes32 _key1, bytes32 _key2, bytes32 _value) external onlyWriter returns (bool) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2, uint256 _value) external onlyWriter returns (bool) {
+  function setEnumerableMapUintToUint(bytes32 _key1, uint256 _key2, uint256 _value) external onlyWriter returns (bool) {
     return enumerableMapUintToUintMapStorage[_key1].set(_key2, _value);
   }
 
-  function setEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2, uint256 _value) external onlyWriter returns (bool) {
+  function setEnumerableMapBytes32ToUint(bytes32 _key1, bytes32 _key2, uint256 _value) external onlyWriter returns (bool) {
     return enumerableMapBytes32ToUintMapStorage[_key1].set(_key2, _value);
   }
 
@@ -196,15 +196,15 @@ contract EternalStorage is Ownable {
     enumerableMapAddressToUintMapStorage[_key1].remove(_key2);
   }
 
-  function removeEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external onlyWriter {
+  function removeEnumerableMapBytes32ToBytes32(bytes32 _key1, bytes32 _key2) external onlyWriter {
     enumerableMapBytes32ToBytes32MapStorage[_key1].remove(_key2);
   }
 
-  function removeEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external onlyWriter {
+  function removeEnumerableMapUintToUint(bytes32 _key1, uint256 _key2) external onlyWriter {
     enumerableMapUintToUintMapStorage[_key1].remove(_key2);
   }
 
-  function removeEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external onlyWriter {
+  function removeEnumerableMapBytes32ToUint(bytes32 _key1, bytes32 _key2) external onlyWriter {
     enumerableMapBytes32ToUintMapStorage[_key1].remove(_key2);
   }
 
@@ -218,15 +218,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].contains(_key2);
   }
 
-  function containsEnumerableMapBytes32ToBytes32Map(bytes32 _key1, bytes32 _key2) external view returns (bool) {
+  function containsEnumerableMapBytes32ToBytes32(bytes32 _key1, bytes32 _key2) external view returns (bool) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].contains(_key2);
   }
 
-  function containsEnumerableMapUintToUintMap(bytes32 _key1, uint256 _key2) external view returns (bool) {
+  function containsEnumerableMapUintToUint(bytes32 _key1, uint256 _key2) external view returns (bool) {
     return enumerableMapUintToUintMapStorage[_key1].contains(_key2);
   }
 
-  function containsEnumerableMapBytes32ToUintMap(bytes32 _key1, bytes32 _key2) external view returns (bool) {
+  function containsEnumerableMapBytes32ToUint(bytes32 _key1, bytes32 _key2) external view returns (bool) {
     return enumerableMapBytes32ToUintMapStorage[_key1].contains(_key2);
   }
 
@@ -240,15 +240,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].length();
   }
 
-  function lengthEnumerableMapBytes32ToBytes32Map(bytes32 _key1) external view returns (uint256) {
+  function lengthEnumerableMapBytes32ToBytes32(bytes32 _key1) external view returns (uint256) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].length();
   }
 
-  function lengthEnumerableMapUintToUintMap(bytes32 _key1) external view returns (uint256) {
+  function lengthEnumerableMapUintToUint(bytes32 _key1) external view returns (uint256) {
     return enumerableMapUintToUintMapStorage[_key1].length();
   }
 
-  function lengthEnumerableMapBytes32ToUintMap(bytes32 _key1) external view returns (uint256) {
+  function lengthEnumerableMapBytes32ToUint(bytes32 _key1) external view returns (uint256) {
     return enumerableMapBytes32ToUintMapStorage[_key1].length();
   }
 
@@ -262,15 +262,15 @@ contract EternalStorage is Ownable {
     return enumerableMapAddressToUintMapStorage[_key1].at(_index);
   }
 
-  function atEnumerableMapBytes32ToBytes32Map(bytes32 _key1, uint256 _index) external view returns (bytes32, bytes32) {
+  function atEnumerableMapBytes32ToBytes32(bytes32 _key1, uint256 _index) external view returns (bytes32, bytes32) {
     return enumerableMapBytes32ToBytes32MapStorage[_key1].at(_index);
   }
 
-  function atEnumerableMapUintToUintMap(bytes32 _key1, uint256 _index) external view returns (uint256, uint256) {
+  function atEnumerableMapUintToUint(bytes32 _key1, uint256 _index) external view returns (uint256, uint256) {
     return enumerableMapUintToUintMapStorage[_key1].at(_index);
   }
 
-  function atEnumerableMapBytes32ToUintMap(bytes32 _key1, uint256 _index) external view returns (bytes32, uint256) {
+  function atEnumerableMapBytes32ToUint(bytes32 _key1, uint256 _index) external view returns (bytes32, uint256) {
     return enumerableMapBytes32ToUintMapStorage[_key1].at(_index);
   }
 }
