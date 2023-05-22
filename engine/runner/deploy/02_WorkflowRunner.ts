@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { FrontDoor, WorkflowRunner__factory } from '../typechain-types'
+import { ConfigManager, FrontDoor, WorkflowRunner__factory } from '../typechain-types'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts, ethers } = hre
@@ -14,8 +14,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
     args: [frontDoor.address],
   })
-  //console.log(`calling frontDoor<${frontDoor.address}>.setUpstream(${deployResult.address})`)
-  await frontDoor.setUpstream(deployResult.address)
+  // console.log(`calling frontDoor<${frontDoor.address}>.setUpstream(${deployResult.address})`)
+  await (await frontDoor.setUpstream(deployResult.address)).wait()
+
+  if (deployResult.newlyDeployed) {
+    // console.log('adding newly deployed runner to whitelist', deployResult.address)
+    const configManager = <ConfigManager>await ethers.getContract('ConfigManager')
+    await (await configManager.addRunnerAddress(deployResult.address)).wait()
+  }
+
   //console.log(`done calling frontDoor<${frontDoor.address}>.setUpstream(${deployResult.address})`)
 }
 export default func

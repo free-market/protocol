@@ -43,9 +43,11 @@ import {
   EvmWorkflowStep,
   IERC20__factory,
   ParameterType,
+  ADDRESS_ZERO,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
+
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
 type ParameterPath = string[]
@@ -638,7 +640,7 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
     })
     const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
-    return { steps: encodedSteps }
+    return { workflowRunnerAddress: ADDRESS_ZERO, steps: encodedSteps }
   }
 
   static async getChainIdFromProvider(provider: Provider): Promise<number> {

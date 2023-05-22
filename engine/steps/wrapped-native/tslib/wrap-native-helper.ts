@@ -13,7 +13,7 @@ import {
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { WrapNative } from './model'
 
-export const STEP_TYPE_ID = 105
+export const WRAP_NATIVE_STEP_TYPE_ID = 105
 
 export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
   async encodeWorkflowStep(context: EncodingContext<WrapNative>): Promise<EncodedWorkflowStep> {
@@ -28,7 +28,7 @@ export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
     const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
 
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: WRAP_NATIVE_STEP_TYPE_ID,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
       argData: '0x',

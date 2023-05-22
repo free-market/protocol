@@ -2,8 +2,12 @@
 pragma solidity ^0.8.13;
 import './IHasUpstream.sol';
 import './FreeMarketBase.sol';
+import './EternalStorage.sol';
+import 'hardhat/console.sol';
 
 contract Proxy is FreeMarketBase, IHasUpstream {
+  bytes32 constant runnerAddresses = 0x32b7d36eef9191cec628a9b46ddda74b702cf693ad48a065f3f9e5fcc4ea08f5; // keccak256('runnerAddresses')
+
   constructor(
     address owner,
     address storageAddress,
@@ -15,10 +19,32 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     return upstreamAddress;
   }
 
+  function resolveUpstream() internal view returns (address addr) {
+    address upstreamFromArgs = getAddressFromCalldata();
+    // console.log('upstreamFromArgs', upstreamFromArgs);
+    if (upstreamFromArgs != address(0)) {
+      // console.log('upstreamFromArgs != address(0)');
+      EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+      require(eternalStorage.containsEnumerableMapAddressToUint(runnerAddresses, upstreamFromArgs), 'provided upstream not whitelisted');
+      return upstreamFromArgs;
+    } else {
+      // console.log('upstreamFromArgs == address(0)');
+    }
+    return upstreamAddress;
+  }
+
+  function getAddressFromCalldata() internal pure returns (address addr) {
+    assembly {
+      let offset := add(4, calldataload(4))
+      addr := calldataload(offset)
+    }
+  }
+
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
-    // enforce owner authz in upstream
-    // require(owner == msg.sender);
+    console.log('fallback', resolveUpstream());
+    address upstream = resolveUpstream();
+    console.log('upstream', upstream);
     _delegate(this.getUpstream());
   }
 

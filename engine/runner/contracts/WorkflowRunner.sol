@@ -94,69 +94,71 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     if (startingAsset.amount > 0) {
       assetBalances.credit(startingAsset.asset, startingAsset.amount);
     }
-    while (true) {
-      // prepare to invoke the step
-      WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
+    if (workflow.steps.length > 0) {
+      while (true) {
+        // prepare to invoke the step
+        WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
 
-      // ChainBranch and AssetAmountBranch are special
-      if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
-        int16 nextStepIndex;
-        if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH) {
-          nextStepIndex = ChainBranch.getNextStepIndex(currentStep);
-        } else {
-          nextStepIndex = AssetBalanceBranch.getNextStepIndex(currentStep, assetBalances);
+        // ChainBranch and AssetAmountBranch are special
+        if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
+          int16 nextStepIndex;
+          if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH) {
+            nextStepIndex = ChainBranch.getNextStepIndex(currentStep);
+          } else {
+            nextStepIndex = AssetBalanceBranch.getNextStepIndex(currentStep, assetBalances);
+          }
+          if (nextStepIndex == -1) {
+            break;
+          }
+          currentStepIndex = uint16(nextStepIndex);
+          continue;
         }
-        if (nextStepIndex == -1) {
+
+        address stepAddress = resolveStepAddress(currentStep);
+        AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
+
+        console.log('calling id', currentStep.stepTypeId);
+        console.log('calling addr', stepAddress);
+        console.log('assetAmounts', inputAssetAmounts.length);
+        for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
+          console.log('  input type', inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
+          console.log('  input addr', inputAssetAmounts[i].asset.assetAddress);
+          console.log('  input amount', inputAssetAmounts[i].amount);
+        }
+
+        // invoke the step
+        WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
+
+        console.log('stepResult.ouptputs', stepResult.outputAssetAmounts.length);
+        for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+          console.log('output amount', stepResult.outputAssetAmounts[i].amount);
+        }
+
+        emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
+
+        // debit input assets
+        console.log('result inputs', stepResult.inputAssetAmounts.length);
+        for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
+          console.log('  debit', i);
+          console.log('  debit addr', stepResult.inputAssetAmounts[i].asset.assetAddress);
+          console.log('  debit amt', stepResult.inputAssetAmounts[i].amount);
+          assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
+        }
+        // credit output assets
+        console.log('result outputs', stepResult.outputAssetAmounts.length);
+        for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+          console.log('  credit', i);
+          console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
+          console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
+          assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
+        }
+        console.log('currentStep.nextStepIndex');
+        console.logInt(currentStep.nextStepIndex);
+        if (currentStep.nextStepIndex == -1) {
           break;
         }
-        currentStepIndex = uint16(nextStepIndex);
-        continue;
+        currentStepIndex = uint16(currentStep.nextStepIndex);
       }
-
-      address stepAddress = resolveStepAddress(currentStep);
-      AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
-
-      console.log('calling id', currentStep.stepTypeId);
-      console.log('calling addr', stepAddress);
-      console.log('assetAmounts', inputAssetAmounts.length);
-      for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-        console.log('  input type', inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
-        console.log('  input addr', inputAssetAmounts[i].asset.assetAddress);
-        console.log('  input amount', inputAssetAmounts[i].amount);
-      }
-
-      // invoke the step
-      WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
-
-      console.log('stepResult.ouptputs', stepResult.outputAssetAmounts.length);
-      for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-        console.log('output amount', stepResult.outputAssetAmounts[i].amount);
-      }
-
-      emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
-
-      // debit input assets
-      console.log('result inputs', stepResult.inputAssetAmounts.length);
-      for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
-        console.log('  debit', i);
-        console.log('  debit addr', stepResult.inputAssetAmounts[i].asset.assetAddress);
-        console.log('  debit amt', stepResult.inputAssetAmounts[i].amount);
-        assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
-      }
-      // credit output assets
-      console.log('result outputs', stepResult.outputAssetAmounts.length);
-      for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-        console.log('  credit', i);
-        console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
-        console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
-        assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
-      }
-      console.log('currentStep.nextStepIndex');
-      console.logInt(currentStep.nextStepIndex);
-      if (currentStep.nextStepIndex == -1) {
-        break;
-      }
-      currentStepIndex = uint16(currentStep.nextStepIndex);
     }
     refundUser(userAddress, assetBalances);
   }

@@ -8,16 +8,20 @@ import './FreeMarketBase.sol';
 import './FrontDoor.sol';
 
 contract ConfigManager is FreeMarketBase {
+  address public immutable frontDoorAddress;
+
   constructor(
-    address payable frontDoorAddress
+    address payable _frontDoorAddress
   )
     FreeMarketBase(
       msg.sender, // owner
-      FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
+      FrontDoor(_frontDoorAddress).eternalStorageAddress(), // eternal storage address
       address(0), // upstream (this doesn't have one)
       false // isUserProxy
     )
-  {}
+  {
+    frontDoorAddress = _frontDoorAddress;
+  }
 
   function getStepAddress(uint16 stepTypeId) external view returns (address) {
     return LibConfigReader.getStepAddressInternal(eternalStorageAddress, stepTypeId);
@@ -48,7 +52,7 @@ contract ConfigManager is FreeMarketBase {
       blacklist[i] = blacklistedAddress;
     }
 
-    return StepInfo(uint16(stepTypeId), stepAddress, whitelist, blacklist);
+    return StepInfo(uint16(stepTypeId), 0, stepAddress, whitelist, blacklist);
   }
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
@@ -69,5 +73,27 @@ contract ConfigManager is FreeMarketBase {
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress, 0);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress);
     emit StepAddressSetEvent(stepTypeId, stepAddress);
+  }
+
+  function addRunnerAddress(address runnerAddress) external onlyOwner {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    // using the map like a set, we only care about the keys
+    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.runnerAddresses, runnerAddress, 0);
+  }
+
+  function removeRunnerAddress(address runnerAddress) external onlyOwner {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.runnerAddresses, runnerAddress);
+  }
+
+  function getRunnerAddresses() external view returns (address[] memory) {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.runnerAddresses);
+    address[] memory runners = new address[](count);
+    for (uint256 i = 0; i < count; ++i) {
+      (address runnerAddress, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.runnerAddresses, i);
+      runners[i] = runnerAddress;
+    }
+    return runners;
   }
 }

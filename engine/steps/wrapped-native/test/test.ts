@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { STEP_TYPE_ID, WrapNativeHelper } from '../tslib/wrap-native-helper'
+import { WRAP_NATIVE_STEP_TYPE_ID, WrapNativeHelper } from '../tslib/wrap-native-helper'
 import { createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk'
@@ -47,7 +47,7 @@ describe('Wrapped Native', async () => {
     } = await setup()
 
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, wrapNativeAction.address)
+    await validateAction(configManager, WRAP_NATIVE_STEP_TYPE_ID, wrapNativeAction.address)
     // const chainId = await hardhat.getChainId()
     // const contractAddress = getWrappedNativeAddress(chainId)
   })

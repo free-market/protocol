@@ -11,6 +11,7 @@ contract FrontDoor is Proxy {
   }
 
   event UpstreamChanged(address oldUpstream, address newUpstream);
+  event UpstreamRemoved(address oldUpstream);
 
   function setUpstream(address newUpstream) public onlyOwner {
     address oldUpstream = upstreamAddress;
