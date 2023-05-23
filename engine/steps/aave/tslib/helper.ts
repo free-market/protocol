@@ -5,6 +5,7 @@ import {
   assert,
   ADDRESS_ZERO,
   sdkAssetAndAmountToEvmInputAmount,
+  AssetAmount,
 } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveSupply } from './model'
@@ -26,5 +27,16 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
       inputAssets: [inputAsset],
       argData: '0x',
     }
+  }
+  getAddAssetInfo(stepConfig: AaveSupply): Promise<AssetAmount[]> {
+    const ret: AssetAmount[] = []
+    assert(typeof stepConfig.asset !== 'string')
+    if (stepConfig.asset.source === 'caller') {
+      ret.push({
+        asset: stepConfig.asset,
+        amount: stepConfig.amount,
+      })
+    }
+    return Promise.resolve(ret)
   }
 }

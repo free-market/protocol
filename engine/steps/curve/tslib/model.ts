@@ -1,8 +1,8 @@
 import z from 'zod'
-import { amountSchema, assetReferenceSchema, createStepSchema } from '@freemarket/core'
+import { amountSchema, assetReferenceSchema, createStepSchema, inputAssetReferenceSchema } from '@freemarket/core'
 
 export const curveTriCrypto2SwapSchema = createStepSchema('curve-tricrypto2-swap').extend({
-  inputAsset: assetReferenceSchema,
+  inputAsset: inputAssetReferenceSchema,
   inputAmount: amountSchema,
   outputAsset: assetReferenceSchema,
 })

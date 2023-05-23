@@ -227,4 +227,17 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     const oneDollarsWorthOfToken = oneToken.div(assetChainInfo.usd)
     return oneDollarsWorthOfToken.mul(usdAmount).toFixed(0)
   }
+
+  getAddAssetInfo(stepConfig: UniswapExactIn): Promise<AssetAmount[]> {
+    assert(typeof stepConfig.inputAsset !== 'string')
+    if (stepConfig.inputAsset.source === 'caller') {
+      return Promise.resolve([
+        {
+          asset: stepConfig.inputAsset,
+          amount: stepConfig.inputAmount,
+        },
+      ])
+    }
+    return Promise.resolve([])
+  }
 }

@@ -56,6 +56,7 @@ describe('AaveSupply', async () => {
       asset: {
         type: 'fungible-token',
         symbol: 'USDT',
+        source: 'workflow',
       },
       amount: testAmount,
     }

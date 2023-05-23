@@ -1,6 +1,6 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedWorkflowStep } from '../runner/EncodedWorkflow'
-import type { AssetAmount, Chain, StepBase } from '../model'
+import type { Amount, AssetAmount, AssetReference, Chain, StepBase } from '../model'
 import { ZodType } from 'zod'
 
 export interface BridgeTarget {
@@ -25,13 +25,19 @@ export interface EncodingContext<T> {
   mapStepIdToIndex: Map<string, number>
 }
 
+export interface RemittanceInfo {
+  asset: AssetReference
+  amount: Amount
+  source: 'caller' | 'workflow'
+}
 export interface IStepHelper<T extends StepBase> {
   requiresRemittance(stepConfig: T): boolean
-  getRemittance(stepConfig: T): Promise<AssetAmount | null>
+  getRemittance(stepConfig: T): Promise<RemittanceInfo | null>
   getBridgeTarget(stepConfig: T): BridgeTarget | null
   encodeWorkflowStep(context: EncodingContext<T>): Promise<EncodedWorkflowStep>
   getPossibleNextSteps(stepConfig: T): NextSteps | null
   setProvider(provider: EIP1193Provider): void
+  getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]>
 }
 
 interface StepProperties {

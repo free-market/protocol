@@ -46,21 +46,16 @@ if (shouldRunE2e()) {
       const workflow: Workflow = {
         steps: [
           {
-            type: 'add-asset',
-            asset: {
-              type: 'native',
-            },
-            amount: '1000000000000000000',
-          },
-          {
             type: 'wrap-native',
-            amount: '100%',
+            amount: '1000000000000000000',
+            source: 'caller',
           },
           {
             type: 'curve-tricrypto2-swap',
             inputAsset: {
               type: 'fungible-token',
               symbol: 'WETH',
+              source: 'workflow',
             },
             inputAmount: '100%',
             outputAsset: {
@@ -73,6 +68,7 @@ if (shouldRunE2e()) {
             asset: {
               type: 'fungible-token',
               symbol: 'USDT',
+              source: 'workflow',
             },
             amount: '100%',
           },

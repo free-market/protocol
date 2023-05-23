@@ -18,6 +18,7 @@ const wrapEtherWorkflow: Workflow = {
     {
       type: 'wrap-native', // 3. Wrap the (native) asset from #2
       amount: '100%',
+      source: 'workflow',
     },
   ],
 }

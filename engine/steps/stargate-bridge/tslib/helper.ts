@@ -16,6 +16,7 @@ import {
   sdkAssetAmountToEvmInputAmount,
   EvmAssetType,
   sdkAssetAndAmountToEvmInputAmount,
+  RemittanceInfo,
 } from '@freemarket/core'
 import rootLogger from 'loglevel'
 import type { StargateBridge } from './model'
@@ -59,7 +60,8 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     return true
   }
 
-  async getRemittance(stepConfig: StargateBridge): Promise<AssetAmount> {
+  @Memoize(stepConfig => JSON.stringify(stepConfig))
+  async getRemittance(stepConfig: StargateBridge): Promise<RemittanceInfo> {
     const dstAddress = await this.getStargateBridgeActionAddress()
     const dstChainId = await this.getStargateChainId(stepConfig.destinationChain)
     if (!stepConfig.destinationGasUnits) {
@@ -78,6 +80,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     return {
       asset: { type: 'native' },
       amount: requiredNative,
+      source: stepConfig.remittanceSource,
     }
   }
 
@@ -152,6 +155,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     return sgRouterAddr
   }
 
+  @Memoize(args => JSON.stringify(args))
   async getStargateRequiredNative(args: StargateFeeArgs): Promise<string> {
     assert(this.ethersProvider)
     // prettier-ignore
@@ -378,5 +382,25 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       [args]
     )
     return encodedArgs
+  }
+  async getAddAssetInfo(stepConfig: StargateBridge): Promise<AssetAmount[]> {
+    const ret: AssetAmount[] = []
+    if (stepConfig.remittanceSource === 'caller') {
+      const remittance = await this.getRemittance(stepConfig)
+      ret.push({
+        asset: {
+          type: 'native',
+        },
+        amount: remittance.amount,
+      })
+    }
+    assert(typeof stepConfig.inputAsset !== 'string')
+    if (stepConfig.inputAsset.source === 'caller') {
+      ret.push({
+        asset: stepConfig.inputAsset,
+        amount: stepConfig.inputAmount,
+      })
+    }
+    return ret
   }
 }

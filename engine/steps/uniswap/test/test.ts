@@ -151,6 +151,7 @@ describe('Uniswap Exact In', async () => {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'WETH',
+        source: 'caller',
       },
       inputAmount: testAmount,
       outputAsset: {

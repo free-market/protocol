@@ -14,6 +14,7 @@ export const aaveSupplyStep: Step = {
   type: 'aave-supply',
   asset: {
     type: 'native',
+    source: 'caller',
   },
   amount: 1,
 }
@@ -26,9 +27,11 @@ export const stargateBridgeStep: Step = {
   destinationUserAddress: '0x1234567890123456789012345678901234567890',
   inputAsset: {
     type: 'native',
+    source: 'workflow',
   },
   inputAmount: 1,
   maxSlippagePercent: 0.04,
+  remittanceSource: 'caller',
 }
 
 export const chainBranchStep: Step = {

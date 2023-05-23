@@ -55,9 +55,11 @@ const aBigWorkflow: Workflow = {
       destinationUserAddress: '0x1234567890123456789012345678901234567890',
       inputAsset: {
         type: 'native',
+        source: 'workflow',
       },
       inputAmount: 1,
       maxSlippagePercent: 0.04,
+      remittanceSource: 'caller',
       nextStepId: 'aave',
     },
     {
@@ -68,9 +70,11 @@ const aBigWorkflow: Workflow = {
       destinationUserAddress: '0x1234567890123456789012345678901234567890',
       inputAsset: {
         type: 'native',
+        source: 'workflow',
       },
       inputAmount: 1,
       maxSlippagePercent: 0.04,
+      remittanceSource: 'caller',
       nextStepId: 'aave',
     },
     {
@@ -78,6 +82,7 @@ const aBigWorkflow: Workflow = {
       type: 'aave-supply',
       asset: {
         type: 'native',
+        source: 'workflow',
       },
       amount: 1,
     },

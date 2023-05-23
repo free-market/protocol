@@ -115,7 +115,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         }
 
         address stepAddress = resolveStepAddress(currentStep);
-        AssetAmount[] memory inputAssetAmounts = resolveAmounts(assetBalances, currentStep.inputAssets);
+        AssetAmount[] memory inputAssetAmounts = resolveAmounts(userAddress, assetBalances, currentStep.inputAssets);
 
         console.log('calling id', currentStep.stepTypeId);
         console.log('calling addr', stepAddress);
@@ -217,13 +217,17 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   }
 
   function resolveAmounts(
+    address userAddress,
     LibAssetBalances.AssetBalances memory assetBalances,
     WorkflowStepInputAsset[] memory inputAssets
-  ) internal pure returns (AssetAmount[] memory) {
+  ) internal returns (AssetAmount[] memory) {
     AssetAmount[] memory rv = new AssetAmount[](inputAssets.length);
     for (uint256 i = 0; i < inputAssets.length; ++i) {
       WorkflowStepInputAsset memory stepInputAsset = inputAssets[i];
       rv[i].asset = stepInputAsset.asset;
+      if (stepInputAsset.sourceIsCaller) {
+        transferFromCaller(userAddress, stepInputAsset, assetBalances);
+      }
       uint256 currentWorkflowAssetBalance = assetBalances.getAssetBalance(stepInputAsset.asset);
       if (stepInputAsset.amountIsPercent) {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
@@ -234,6 +238,26 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       }
     }
     return rv;
+  }
+
+  function transferFromCaller(
+    address userAddress,
+    WorkflowStepInputAsset memory inputAssetAmount,
+    LibAssetBalances.AssetBalances memory assetBalances
+  ) internal {
+    require(inputAssetAmount.amountIsPercent == false, 'cannot use percentage for amount of asset from caller');
+    if (inputAssetAmount.asset.assetType == AssetType.Native) {
+      // it's not possible to 'trasfer from caller' for native assets
+      // assetBalances should have been initialized with the correct amount
+    } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
+      IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
+      uint256 allowance = token.allowance(userAddress, address(this));
+      require(allowance >= inputAssetAmount.amount, 'insufficient allowance for erc20');
+      SafeERC20.safeTransferFrom(token, userAddress, address(this), inputAssetAmount.amount);
+      assetBalances.credit(inputAssetAmount.asset, inputAssetAmount.amount);
+    } else {
+      revert('unknown asset type in inputAssetAmounts');
+    }
   }
 
   function continueWorkflow(

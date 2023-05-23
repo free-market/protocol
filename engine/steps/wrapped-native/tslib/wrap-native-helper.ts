@@ -34,4 +34,14 @@ export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
       argData: '0x',
     }
   }
+  getAddAssetInfo(stepConfig: WrapNative): Promise<AssetAmount[]> {
+    const ret: AssetAmount[] = []
+    if (stepConfig.source === 'caller') {
+      ret.push({
+        asset: { type: 'native' },
+        amount: stepConfig.amount,
+      })
+    }
+    return Promise.resolve(ret)
+  }
 }

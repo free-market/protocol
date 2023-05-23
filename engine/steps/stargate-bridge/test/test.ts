@@ -76,11 +76,13 @@ describe('StargateBridge', async () => {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDC',
+        source: 'caller',
       },
       inputAmount: testAmount,
       maxSlippagePercent: 0.1,
       destinationUserAddress: otherUser,
       nextStepId: WORKFLOW_END_STEP_ID,
+      remittanceSource: 'caller',
     }
 
     const context: EncodingContext<StargateBridge> = {

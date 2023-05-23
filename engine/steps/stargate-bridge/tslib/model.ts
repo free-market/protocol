@@ -1,17 +1,19 @@
 import z from 'zod'
 import {
   amountSchema,
+  assetSourceSchema,
   chainSchema,
   addressSchema,
   createStepSchema,
   assetReferenceSchema,
   stepProperties,
   percentSchema,
+  inputAssetReferenceSchema,
 } from '@freemarket/core'
 
 export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
   destinationChain: chainSchema.describe(stepProperties('Destination Chain', 'The chain to send the asset to')),
-  inputAsset: assetReferenceSchema.describe(stepProperties('Input Asset', 'The asset to send to the destination chain')),
+  inputAsset: inputAssetReferenceSchema.describe(stepProperties('Input Asset', 'The asset to send to the destination chain')),
   inputAmount: amountSchema.describe(stepProperties('Input Amount', 'The amount of the input asset to send to the destination chain')),
   maxSlippagePercent: percentSchema.describe(stepProperties('Max Slippage', 'The maximum amount of loss during the swap.')),
   outputAsset: assetReferenceSchema
@@ -26,6 +28,7 @@ export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
   destinationAdditionalNative: amountSchema
     .optional()
     .describe(stepProperties('Additional Native', 'Additional native asset to send to the destination user address')),
+  remittanceSource: assetSourceSchema.default('caller').describe(stepProperties('Remittance Source', 'The source of the remittance')),
 })
 
 export interface StargateBridge extends z.infer<typeof stargateBridgeSchema> {}

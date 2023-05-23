@@ -3,18 +3,11 @@ import { Workflow } from '../model'
 const wrapEtherWorkflow: Workflow = {
   steps: [
     {
-      type: 'add-asset',
-      asset: {
-        type: 'fungible-token',
-        symbol: 'aUSDT',
-      },
-      amount: '100%',
-    },
-    {
       type: 'aave-withdrawal',
       asset: {
         type: 'fungible-token',
         symbol: 'aUSDT',
+        source: 'caller',
       },
 
       amount: '100%',
@@ -24,6 +17,7 @@ const wrapEtherWorkflow: Workflow = {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDT',
+        source: 'caller',
       },
       outputAsset: {
         type: 'fungible-token',

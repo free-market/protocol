@@ -17,11 +17,13 @@ const stargateStep: StargateBridge = {
   inputAsset: {
     type: 'fungible-token',
     symbol: 'USDC',
+    source: 'caller',
   },
   inputAmount: 1000000,
   maxSlippagePercent: 0.05,
   destinationAdditionalNative: 100000,
   destinationGasUnits: 1000000,
+  remittanceSource: 'caller',
 }
 
 test('gets remittances', async t => {

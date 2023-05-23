@@ -44,6 +44,7 @@ import {
   IERC20__factory,
   ParameterType,
   ADDRESS_ZERO,
+  RemittanceInfo,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
@@ -109,13 +110,22 @@ export class WorkflowInstance implements IWorkflowInstance {
     return this.workflow.startStepId || this.steps[0].stepId
   }
 
-  private async getAddAssetFungibleTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  private async getAddAssetTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
     const symbols = new Set<string>()
     for (const step of this.steps as Step[]) {
       if (step.type === 'add-asset') {
         assert(typeof step.asset !== 'string')
         if (step.asset.type !== 'native') {
           symbols.add(step.asset.symbol)
+        }
+      } else {
+        const helper = this.getStepHelper('start-chain', step.type)
+        const assetAmounts = await helper.getAddAssetInfo(step)
+        for (const assetAmount of assetAmounts) {
+          if (typeof assetAmount.asset !== 'string' && assetAmount.asset.type !== 'native') {
+            symbols.add(assetAmount.asset.symbol)
+          }
         }
       }
     }
@@ -134,6 +144,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     return rv
   }
 
+  // get balance, allowance, and required allowance for an ERC20 token
   private async getErc20InfoForSymbol(
     userAddress: string,
     chain: Chain,
@@ -153,7 +164,14 @@ export class WorkflowInstance implements IWorkflowInstance {
     }
   }
 
-  private getAddAssetAmountsMap() {
+  @Memoize()
+  private getRemittanceInfoForStep(step: Step): Promise<RemittanceInfo | null> {
+    const helper = this.getStepHelper('start-chain', step.type)
+    return helper.getRemittance(step)
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  private async getAddAssetAmountsMap() {
     type Amounts = { absolute: Big; percent: number }
     const amountsMap = new MapWithDefault<string, Amounts>(() => ({ absolute: Big(0), percent: 0 }))
 
@@ -167,6 +185,20 @@ export class WorkflowInstance implements IWorkflowInstance {
         } else {
           amounts.absolute = amounts.absolute.plus(step.amount.toString())
         }
+      } else {
+        const helper = this.getStepHelper('start-chain', step.type)
+        const assetAmounts = await helper.getAddAssetInfo(step)
+        for (const assetAmount of assetAmounts) {
+          if (typeof assetAmount.asset !== 'string') {
+            const key = assetAmount.asset.type === 'native' ? '__native__' : assetAmount.asset.symbol
+            const amounts = amountsMap.getWithDefault(key)
+            if (typeof assetAmount.amount === 'string' && assetAmount.amount.endsWith('%')) {
+              amounts.percent += parseFloat(assetAmount.amount.slice(0, assetAmount.amount.length - 1))
+            } else {
+              amounts.absolute = amounts.absolute.plus(assetAmount.amount.toString())
+            }
+          }
+        }
       }
     }
     return amountsMap
@@ -175,14 +207,14 @@ export class WorkflowInstance implements IWorkflowInstance {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   private async getAddAssetInfo(userAddress: string): Promise<AddAssetInfo> {
     const startChainProvider = this.getProvider('start-chain')
-    const erc20Info = await this.getAddAssetFungibleTokenInfo(userAddress, startChainProvider)
+    const erc20Info = await this.getAddAssetTokenInfo(userAddress, startChainProvider)
 
     const rv: AddAssetInfo = {
       native: new Big(0),
       erc20s: new Map<string, Erc20Info>(),
     }
 
-    const amountsMap = this.getAddAssetAmountsMap()
+    const amountsMap = await this.getAddAssetAmountsMap()
 
     for (const [symbol, amounts] of amountsMap) {
       if (amounts.percent > 100) {

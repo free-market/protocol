@@ -63,6 +63,7 @@ describe('Wrapped Native', async () => {
     const stepConfig: WrapNative = {
       type: 'wrap-native',
       amount: testAmount,
+      source: 'workflow',
     }
 
     const helper = new WrapNativeHelper(mockWorkflowInstance)

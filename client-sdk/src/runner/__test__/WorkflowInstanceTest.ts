@@ -329,3 +329,76 @@ test('creates a WorkflowRunner', async t => {
   await instance.getRunner(userAddr, args)
   t.pass()
 })
+
+test.only('handles asset source caller', async t => {
+  const workflow: Workflow = {
+    steps: [
+      {
+        type: 'uniswap-exact-in',
+        inputAsset: {
+          type: 'fungible-token',
+          symbol: 'USDC',
+          source: 'caller',
+        },
+        inputAmount: 1000000,
+        outputAsset: {
+          type: 'fungible-token',
+          symbol: 'USDT',
+        },
+      },
+      {
+        type: 'stargate-bridge',
+        destinationChain: 'arbitrum',
+        inputAsset: {
+          type: 'fungible-token',
+          symbol: 'USDT',
+          source: 'caller',
+        },
+        destinationGasUnits: 1000000,
+        inputAmount: 2000000,
+        outputAsset: {
+          type: 'fungible-token',
+          symbol: 'USDT',
+        },
+        maxSlippagePercent: 0.1,
+        remittanceSource: 'caller',
+      },
+    ],
+    fungibleTokens: [
+      {
+        symbol: 'USDC',
+        name: 'USD Coin',
+        type: 'fungible-token',
+        chains: {
+          ethereum: {
+            address: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
+            decimals: 6,
+          },
+        },
+      },
+      {
+        symbol: 'USDT',
+        name: 'USD Tether',
+        type: 'fungible-token',
+        chains: {
+          ethereum: {
+            address: '0x5BCc22abEC37337630C0E0dd41D64fd86CaeE951',
+            decimals: 6,
+          },
+        },
+      },
+    ],
+  }
+  const instance = new WorkflowInstance(workflow)
+  instance.setProvider('start-chain', getStandardProvider('ETHEREUM_GOERLI_URL'))
+  const userAddr = '0x242b2eeCE36061FF84EC0Ea69d4902373858fB2F'
+  const addAssetInfo = await instance['getAddAssetInfo'](userAddr)
+  t.is(addAssetInfo.erc20s.size, 2)
+  let erc20Info = addAssetInfo.erc20s.get('USDC')
+  assert(t, erc20Info)
+  t.is(erc20Info.requiredAllowance.toFixed(0), '1000000')
+  erc20Info = addAssetInfo.erc20s.get('USDT')
+  assert(t, erc20Info)
+  t.is(erc20Info.requiredAllowance.toFixed(0), '2000000')
+  t.assert(addAssetInfo.native.gt(0))
+})

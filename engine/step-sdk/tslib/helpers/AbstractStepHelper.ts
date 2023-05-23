@@ -11,6 +11,7 @@ import {
   IWorkflow,
   EncodedWorkflowStep,
   getEthersProvider,
+  RemittanceInfo,
 } from '@freemarket/core'
 import { Memoize } from 'typescript-memoize'
 import type { Provider } from '@ethersproject/providers'
@@ -83,7 +84,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     return false
   }
 
-  getRemittance(_stepConfig: T): Promise<AssetAmount | null> {
+  getRemittance(_stepConfig: T): Promise<RemittanceInfo | null> {
     return Promise.resolve(null)
   }
 
@@ -99,5 +100,9 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     return {
       sameChain: [stepConfig.nextStepId],
     }
+  }
+
+  getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]> {
+    return Promise.resolve([])
   }
 }

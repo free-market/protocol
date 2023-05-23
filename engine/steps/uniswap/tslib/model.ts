@@ -1,11 +1,19 @@
 import z from 'zod'
 
-import { absoluteAmountSchema, amountSchema, assetReferenceSchema, createStepSchema, percentSchema, stepProperties } from '@freemarket/core'
+import {
+  absoluteAmountSchema,
+  amountSchema,
+  assetReferenceSchema,
+  createStepSchema,
+  inputAssetReferenceSchema,
+  percentSchema,
+  stepProperties,
+} from '@freemarket/core'
 
 export const uniswapFeeTierSchema = z.union([z.literal('lowest'), z.literal('low'), z.literal('medium'), z.literal('high')])
 export type UniswapFeeTier = z.infer<typeof uniswapFeeTierSchema>
 
-const inputAsset = assetReferenceSchema.describe(stepProperties('Input Asset', 'The input asset'))
+const inputAsset = inputAssetReferenceSchema.describe(stepProperties('Input Asset', 'The input asset'))
 const outputAsset = assetReferenceSchema.describe(stepProperties('Output Symbol', 'The output asset'))
 const slippageTolerance = percentSchema.optional().describe(stepProperties('Slippage Tolerance', 'The maximum amount of slippage to allow'))
 

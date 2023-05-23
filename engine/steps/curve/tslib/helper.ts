@@ -53,4 +53,15 @@ export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto
     )
     return encodedArgs
   }
+  getAddAssetInfo(stepConfig: CurveTriCrypto2Swap): Promise<AssetAmount[]> {
+    const ret: AssetAmount[] = []
+    assert(typeof stepConfig.inputAsset !== 'string')
+    if (stepConfig.inputAsset.source === 'caller') {
+      ret.push({
+        asset: stepConfig.inputAsset,
+        amount: stepConfig.inputAmount,
+      })
+    }
+    return Promise.resolve(ret)
+  }
 }
