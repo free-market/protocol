@@ -77,7 +77,7 @@ export class MockWorkflowInstance implements IWorkflow {
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider {
     throw new Error('not implemented')
   }
-  encodeSegment(startStepId: string, chain: Chain, userAddress: string): Promise<EncodedWorkflow> {
+  encodeSegment(startStepId: string, chain: Chain, userAddress: string, runnerAddress: string): Promise<EncodedWorkflow> {
     throw new Error('not implemented')
   }
 

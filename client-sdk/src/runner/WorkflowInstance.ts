@@ -101,7 +101,9 @@ export class WorkflowInstance implements IWorkflowInstance {
     const remittances = await appliedInstance.getRemittances()
     appliedInstance = appliedInstance.applyArguments(false, remittances)
     const firstNodeStepId = this.getStartStepId()
-    const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress)
+    const sc = startChain === 'hardhat' ? 'ethereum' : startChain
+    const runnerAddress = appliedInstance.getWorkflow().runnerAddresses?.[sc] || ADDRESS_ZERO
+    const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress, runnerAddress)
     const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
     return new WorkflowRunner(this, encoded, startChain, addAssetInfo)
   }
@@ -643,7 +645,12 @@ export class WorkflowInstance implements IWorkflowInstance {
     return chainOrStart
   }
 
-  async encodeSegment(startStepId: string, chainOrStart: ChainOrStart, userAddress: string): Promise<EncodedWorkflow> {
+  async encodeSegment(
+    startStepId: string,
+    chainOrStart: ChainOrStart,
+    userAddress: string,
+    runnerAddress: string
+  ): Promise<EncodedWorkflow> {
     const reachable = this.getReachableSet(startStepId)
 
     const mapStepIdToIndex = new Map<string, number>()
@@ -672,7 +679,7 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
     })
     const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
-    return { workflowRunnerAddress: ADDRESS_ZERO, steps: encodedSteps }
+    return { workflowRunnerAddress: runnerAddress, steps: encodedSteps }
   }
 
   static async getChainIdFromProvider(provider: Provider): Promise<number> {

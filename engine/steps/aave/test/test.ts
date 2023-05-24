@@ -56,8 +56,8 @@ describe('AaveSupply', async () => {
       asset: {
         type: 'fungible-token',
         symbol: 'USDT',
-        source: 'workflow',
       },
+      source: 'workflow',
       amount: testAmount,
     }
     const helper = new AaveSupplyHelper(mockWorkflowInstance)

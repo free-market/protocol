@@ -41,8 +41,8 @@ export const coreHardhatConfig: any = {
     hardhat: {
       // chainId: 1,
       forking: {
-        url: 'https://rpc.ankr.com/eth',
-        blockNumber: 16889307,
+        url: process.env.HARDHAT_FORK_URL || 'https://rpc.ankr.com/eth',
+        // blockNumber: 16889307,
       },
     },
     local: {

@@ -9,5 +9,5 @@ export interface IWorkflow {
   dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset>
   isTestNet(): Promise<boolean>
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider
-  encodeSegment(startStepId: string, chain: Chain, userAddress: string): Promise<EncodedWorkflow>
+  encodeSegment(startStepId: string, chain: Chain, userAddress: string, runnerAddress: string): Promise<EncodedWorkflow>
 }

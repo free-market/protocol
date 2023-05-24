@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import WethIcon from './WethIcon'
+import { WRAP_NATIVE_STEP_TYPE_ID } from './wrap-native-helper'
 
 export const platformInfo: PlatformInfo = {
   name: 'Wrapped Native',
@@ -10,8 +11,10 @@ export const platformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'wrap-native',
+      stepTypeId: WRAP_NATIVE_STEP_TYPE_ID,
       nodeType: 'stepNode',
       name: 'Wrap Native',
+      operation: 'Wrap',
       description: 'Exchanges native asset for wrapped asset',
       icon: WethIcon,
       platformName: 'Wrapped Native',
@@ -19,8 +22,10 @@ export const platformInfo: PlatformInfo = {
     },
     {
       stepType: 'unwrap-native',
+      stepTypeId: -1,
       nodeType: 'stepNode',
       name: 'Unwrap Native',
+      operation: 'Unwrap',
       description: 'Exchanges a wrapped asset for a native asset',
       icon: WethIcon,
       platformName: 'Wrapped Native',

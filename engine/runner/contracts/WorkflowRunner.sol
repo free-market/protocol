@@ -203,8 +203,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   }
 
   function resolveStepAddress(WorkflowStep memory currentStep) internal view returns (address) {
-    // non-zero stepAddress means override/ignore the stepTypeId
-    // TODO do we want a white list of addresses for a given stepTypeId?
     if (currentStep.stepAddress == address(0)) {
       return LibConfigReader.getStepAddressInternal(eternalStorageAddress, currentStep.stepTypeId);
     }

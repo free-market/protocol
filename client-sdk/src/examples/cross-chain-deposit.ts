@@ -39,8 +39,8 @@ export const crossChainAaveDeposit: Workflow = {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDC',
-        source: 'caller',
       },
+      inputSource: 'caller',
       inputAmount: '100%',
       remittanceSource: 'caller',
     },
@@ -50,8 +50,8 @@ export const crossChainAaveDeposit: Workflow = {
       asset: {
         type: 'fungible-token',
         symbol: 'USDC',
-        source: 'caller',
       },
+      source: 'caller',
       amount: '100%',
     },
   ],

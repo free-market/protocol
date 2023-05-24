@@ -29,11 +29,13 @@ export async function sdkAssetAndAmountToEvmInputAmount(
   assetRef: AssetReference,
   amount: Amount,
   chain: Chain,
-  instance: IWorkflow
+  instance: IWorkflow,
+  sourceIsCaller: boolean
 ): Promise<EvmInputAsset> {
   let amountStr: string
   let amountIsPercent = false
   if (typeof amount === 'number') {
+    // if its a number just git rid of the decimals
     amountStr = amount.toFixed(0)
   } else if (typeof amount === 'bigint') {
     amountStr = amount.toString()
@@ -52,11 +54,16 @@ export async function sdkAssetAndAmountToEvmInputAmount(
     asset: sdkAssetToEvmAsset(asset, chain),
     amount: amountStr,
     amountIsPercent,
-    sourceIsCaller: false,
+    sourceIsCaller,
   }
 }
-export function sdkAssetAmountToEvmInputAmount(assetAmount: AssetAmount, chain: Chain, instance: IWorkflow): Promise<EvmInputAsset> {
-  return sdkAssetAndAmountToEvmInputAmount(assetAmount.asset, assetAmount.amount, chain, instance)
+export function sdkAssetAmountToEvmInputAmount(
+  assetAmount: AssetAmount,
+  chain: Chain,
+  instance: IWorkflow,
+  sourceIsCaller: boolean
+): Promise<EvmInputAsset> {
+  return sdkAssetAndAmountToEvmInputAmount(assetAmount.asset, assetAmount.amount, chain, instance, sourceIsCaller)
 }
 
 export async function getChainId(provider: EIP1193Provider): Promise<number> {

@@ -56,8 +56,8 @@ describe('Curve Tricrypo2 swap', async () => {
       type: 'curve-tricrypto2-swap',
       inputAsset: {
         type: 'native',
-        source: 'workflow',
       },
+      source: 'workflow',
       inputAmount: testAmount,
       outputAsset: {
         type: 'fungible-token',
@@ -85,8 +85,8 @@ describe('Curve Tricrypo2 swap', async () => {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDT',
-        source: 'workflow',
       },
+      source: 'workflow',
       inputAmount: tetherBalanceAfter.toString(),
       // this fails, I assume when going in this direction it doesn't unwrap for you
       // outputAsset: {

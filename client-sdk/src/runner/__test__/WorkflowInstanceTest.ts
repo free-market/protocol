@@ -83,6 +83,7 @@ test('finds all parameter references in a workflow', t => {
         type: 'aave-supply',
         asset: '{{ aaveAsset }}',
         amount: '{{ aaveAmount }}',
+        source: 'workflow',
       },
     ],
   }
@@ -105,6 +106,7 @@ test('fails to validate when a parameter reference is not found in the declared 
         type: 'aave-supply',
         asset: '{{ aaveAsset }}', // <-- parameter reference
         amount: '{{ aaveAmount }}',
+        source: 'workflow',
       },
     ],
   }
@@ -144,6 +146,7 @@ test('fails to validate when a parameter reference should be a different type th
         type: 'aave-supply',
         asset: '{{ aaveAsset }}', // <-- parameter reference, should be type 'asset-amount' here
         amount: '{{ aaveAmount }}',
+        source: 'workflow',
       },
     ],
   }
@@ -189,6 +192,7 @@ test('validate when everything is good', t => {
         type: 'aave-supply',
         asset: '{{ aaveAsset }}', // <-- parameter reference
         amount: '{{ aaveAmount }}',
+        source: 'workflow',
       },
     ],
   }
@@ -338,8 +342,8 @@ test.only('handles asset source caller', async t => {
         inputAsset: {
           type: 'fungible-token',
           symbol: 'USDC',
-          source: 'caller',
         },
+        inputAssetSource: 'caller',
         inputAmount: 1000000,
         outputAsset: {
           type: 'fungible-token',
@@ -352,8 +356,8 @@ test.only('handles asset source caller', async t => {
         inputAsset: {
           type: 'fungible-token',
           symbol: 'USDT',
-          source: 'caller',
         },
+        inputSource: 'caller',
         destinationGasUnits: 1000000,
         inputAmount: 2000000,
         outputAsset: {

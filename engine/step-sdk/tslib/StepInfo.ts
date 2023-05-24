@@ -19,6 +19,7 @@ export interface StepInfo {
   name: string
   // engine step type
   stepType: string
+  stepTypeId: number
   // UI node shape type
   nodeType: NodeType
   description: string

@@ -19,7 +19,8 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
       context.stepConfig.asset,
       context.stepConfig.amount,
       context.chain,
-      this.instance
+      this.instance,
+      context.stepConfig.source === 'caller'
     )
     return {
       stepTypeId: STEP_TYPE_ID,
@@ -31,7 +32,7 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
   getAddAssetInfo(stepConfig: AaveSupply): Promise<AssetAmount[]> {
     const ret: AssetAmount[] = []
     assert(typeof stepConfig.asset !== 'string')
-    if (stepConfig.asset.source === 'caller') {
+    if (stepConfig.source === 'caller') {
       ret.push({
         asset: stepConfig.asset,
         amount: stepConfig.amount,

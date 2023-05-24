@@ -17,8 +17,8 @@ const stargateStep: StargateBridge = {
   inputAsset: {
     type: 'fungible-token',
     symbol: 'USDC',
-    source: 'caller',
   },
+  inputSource: 'caller',
   inputAmount: 1000000,
   maxSlippagePercent: 0.05,
   destinationAdditionalNative: 100000,

@@ -5,6 +5,8 @@ import ConvexStakeIcon from './branding-assets/ConvexIcon'
 import GelatoIcon from './branding-assets/GelatoIcon'
 import ChainBranchSummary from './ChainBranchSummary'
 import AssetBalanceBranchSummary from './AssetBalanceBranchSummary'
+import { STEP_TYPE_ID_CHAIN_BRANCH } from './ChainBranchHelper'
+import { STEP_TYPE_ID_ASSET_BALANCE_BRANCH } from './AssetBalanceBranchHelper'
 
 export const chainBranchPlatformInfo: PlatformInfo = {
   name: 'Chain Branch',
@@ -14,6 +16,7 @@ export const chainBranchPlatformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'chain-branch',
+      stepTypeId: STEP_TYPE_ID_CHAIN_BRANCH,
       nodeType: 'branchNode',
       name: 'Chain Branch',
       description: 'Branches based on the current chain',
@@ -31,6 +34,7 @@ export const assetBalanceBranchPlatformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'asset-balance-branch',
+      stepTypeId: STEP_TYPE_ID_ASSET_BALANCE_BRANCH,
       nodeType: 'branchNode',
       name: 'Asset Balance Branch',
       description: 'Branches based on an asset balance comparison',
@@ -48,6 +52,7 @@ export const payGelatoRelayPlatform: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'gelato-relay-pay',
+      stepTypeId: -1,
       nodeType: 'stepNode',
       name: 'Pay Gelato Relay',
       description: 'Pay Gelato Relay for executing a transaction',

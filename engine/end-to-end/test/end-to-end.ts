@@ -55,8 +55,8 @@ if (shouldRunE2e()) {
             inputAsset: {
               type: 'fungible-token',
               symbol: 'WETH',
-              source: 'workflow',
             },
+            source: 'workflow',
             inputAmount: '100%',
             outputAsset: {
               type: 'fungible-token',
@@ -68,8 +68,8 @@ if (shouldRunE2e()) {
             asset: {
               type: 'fungible-token',
               symbol: 'USDT',
-              source: 'workflow',
             },
+            source: 'workflow',
             amount: '100%',
           },
         ],

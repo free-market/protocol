@@ -76,8 +76,8 @@ describe('StargateBridge', async () => {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDC',
-        source: 'caller',
       },
+      inputSource: 'caller',
       inputAmount: testAmount,
       maxSlippagePercent: 0.1,
       destinationUserAddress: otherUser,

@@ -17,6 +17,7 @@ export const PARAMETER_TYPES = [
   'percent-amount',
   'address',
   'asset-ref',
+  'asset-source',
   'asset-amount',
   'number',
   'percent',

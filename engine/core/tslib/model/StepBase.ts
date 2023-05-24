@@ -1,4 +1,6 @@
 import z, { ZodLiteral } from 'zod'
+import { chainSchema } from './Chain'
+import { addressSchema } from './Address'
 
 export const positionSchema = z.object({
   x: z.number(),
@@ -14,6 +16,7 @@ export const stepBaseSchema = z.object({
     .optional()
     .describe('The id of the next step in the workflow.  Defaults to the following step in the workflow.steps[] array.'),
   position: positionSchema.optional(),
+  stepAddresses: z.record(chainSchema, addressSchema).optional(),
 })
 
 export interface StepBase extends z.infer<typeof stepBaseSchema> {}

@@ -77,6 +77,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       payload: payload.continuationWorkflow,
       dstChainId,
     })
+    assert(stepConfig.remittanceSource === 'caller' || stepConfig.remittanceSource === 'workflow')
     return {
       asset: { type: 'native' },
       amount: requiredNative,
@@ -197,7 +198,8 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const encodedTargetSegment = await this.instance.encodeSegment(
       stepConfig.nextStepId,
       stepConfig.destinationChain,
-      targetChainUserAddress
+      targetChainUserAddress,
+      ADDRESS_ZERO // TODO implement me
     )
     log.debug('encoded target segment:\n' + JSON.stringify(encodedTargetSegment, null, 2))
     const { nonce, encodedWorkflow } = getBridgePayload(targetChainUserAddress, encodedTargetSegment)
@@ -229,7 +231,13 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     assert(stepConfig.nextStepId)
     assert(typeof stepConfig.inputAsset !== 'string')
     const [transferInputAsset, payload, targetAddress, dstChainId, remittance] = await Promise.all([
-      sdkAssetAndAmountToEvmInputAmount(stepConfig.inputAsset, stepConfig.inputAmount, chain, this.instance),
+      sdkAssetAndAmountToEvmInputAmount(
+        stepConfig.inputAsset,
+        stepConfig.inputAmount,
+        chain,
+        this.instance,
+        context.stepConfig.inputSource === 'caller'
+      ),
       this.getPayload(stepConfig, userAddress),
       this.getBridgeTargetAddress(context),
       this.getStargateChainId(stepConfig.destinationChain),
@@ -395,7 +403,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
       })
     }
     assert(typeof stepConfig.inputAsset !== 'string')
-    if (stepConfig.inputAsset.source === 'caller') {
+    if (stepConfig.inputSource === 'caller') {
       ret.push({
         asset: stepConfig.inputAsset,
         amount: stepConfig.inputAmount,

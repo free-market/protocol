@@ -25,11 +25,16 @@ export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
       amount: context.stepConfig.amount,
     }
 
-    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
+    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(
+      inputAssetAmount,
+      chain,
+      this.instance,
+      context.stepConfig.source === 'caller'
+    )
 
     return {
       stepTypeId: WRAP_NATIVE_STEP_TYPE_ID,
-      stepAddress: ADDRESS_ZERO,
+      stepAddress: this.getStepAddress(context),
       inputAssets: [evmInputAmount],
       argData: '0x',
     }

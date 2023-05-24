@@ -45,7 +45,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     console.log('fallback', resolveUpstream());
     address upstream = resolveUpstream();
     console.log('upstream', upstream);
-    _delegate(this.getUpstream());
+    _delegate(upstream);
   }
 
   /// @dev this allows this contract to receive ETH

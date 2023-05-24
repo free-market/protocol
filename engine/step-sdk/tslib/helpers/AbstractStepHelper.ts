@@ -12,6 +12,7 @@ import {
   EncodedWorkflowStep,
   getEthersProvider,
   RemittanceInfo,
+  ADDRESS_ZERO,
 } from '@freemarket/core'
 import { Memoize } from 'typescript-memoize'
 import type { Provider } from '@ethersproject/providers'
@@ -104,5 +105,10 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
 
   getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]> {
     return Promise.resolve([])
+  }
+
+  protected getStepAddress(context: EncodingContext<T>) {
+    const c = context.chain === 'hardhat' ? 'ethereum' : context.chain
+    return context.stepConfig.stepAddresses?.[c] || ADDRESS_ZERO
   }
 }

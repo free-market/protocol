@@ -6,7 +6,7 @@ import * as ethers from 'ethers'
 
 const abiCoder = ethers.utils.defaultAbiCoder
 
-const STEP_TYPE_ID_ASSET_BALANCE_BRANCH = 2
+export const STEP_TYPE_ID_ASSET_BALANCE_BRANCH = 2
 
 const AssetBalanceBranchParamsSchema = `
   tuple AssetAmountBranchParams (

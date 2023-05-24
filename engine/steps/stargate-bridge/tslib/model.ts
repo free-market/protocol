@@ -8,13 +8,14 @@ import {
   assetReferenceSchema,
   stepProperties,
   percentSchema,
-  inputAssetReferenceSchema,
 } from '@freemarket/core'
 
 export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
   destinationChain: chainSchema.describe(stepProperties('Destination Chain', 'The chain to send the asset to')),
-  inputAsset: inputAssetReferenceSchema.describe(stepProperties('Input Asset', 'The asset to send to the destination chain')),
+  inputAsset: assetReferenceSchema.describe(stepProperties('Input Asset', 'The asset to send to the destination chain')),
   inputAmount: amountSchema.describe(stepProperties('Input Amount', 'The amount of the input asset to send to the destination chain')),
+  inputSource: assetSourceSchema.describe(stepProperties('Input Source', 'The source of the input asset.')),
+
   maxSlippagePercent: percentSchema.describe(stepProperties('Max Slippage', 'The maximum amount of loss during the swap.')),
   outputAsset: assetReferenceSchema
     .optional()

@@ -66,7 +66,8 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
       context.stepConfig.inputAsset,
       context.stepConfig.inputAmount,
       context.chain,
-      this.instance
+      this.instance,
+      context.stepConfig.inputAssetSource === 'caller'
     )
 
     const outputAsset = await this.instance.dereferenceAsset(context.stepConfig.outputAsset, context.chain)
@@ -230,7 +231,7 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
 
   getAddAssetInfo(stepConfig: UniswapExactIn): Promise<AssetAmount[]> {
     assert(typeof stepConfig.inputAsset !== 'string')
-    if (stepConfig.inputAsset.source === 'caller') {
+    if (stepConfig.inputAssetSource === 'caller') {
       return Promise.resolve([
         {
           asset: stepConfig.inputAsset,

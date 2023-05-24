@@ -1,5 +1,5 @@
 import z from 'zod'
-import { fungibleTokenSchema, parameterSchema, positionSchema } from '@freemarket/core'
+import { addressSchema, chainSchema, fungibleTokenSchema, parameterSchema, positionSchema } from '@freemarket/core'
 import { stepSchema } from './Step'
 
 export const workflowSchema = z
@@ -15,6 +15,10 @@ export const workflowSchema = z
       ),
     steps: stepSchema.array().describe('The set of steps for this workflow.  Execution will begin at the step at index 0.'),
     startStepId: z.string().optional().describe('The id of the step to start at.  Defaults to the first step in the workflow.'),
+    runnerAddresses: z
+      .record(chainSchema, addressSchema)
+      .optional()
+      .describe('The address of the runner to use for this workflow.  Defaults to the current runner.'),
     startNodePosition: positionSchema.optional(),
   })
   .describe('A workflow.')

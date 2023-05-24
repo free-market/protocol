@@ -10,7 +10,8 @@
     "outDir": "./build",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "declaration": true
   },
   "files": ["./index.ts"],
   "include": ["hardhat.config.ts", "./typechain-types", "tslib", "./scripts", "./deploy", "./test"]

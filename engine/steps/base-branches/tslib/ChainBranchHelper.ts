@@ -6,7 +6,7 @@ import * as ethers from 'ethers'
 
 const abiCoder = ethers.utils.defaultAbiCoder
 
-const STEP_TYPE_ID_CHAIN_BRANCH = 1
+export const STEP_TYPE_ID_CHAIN_BRANCH = 1
 
 const ChainBranchParamsSchema = `
   tuple(

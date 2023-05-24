@@ -7,8 +7,8 @@ const wrapEtherWorkflow: Workflow = {
       asset: {
         type: 'fungible-token',
         symbol: 'aUSDT',
-        source: 'caller',
       },
+      source: 'caller',
 
       amount: '100%',
     },
@@ -17,8 +17,8 @@ const wrapEtherWorkflow: Workflow = {
       inputAsset: {
         type: 'fungible-token',
         symbol: 'USDT',
-        source: 'caller',
       },
+      inputAssetSource: 'caller',
       outputAsset: {
         type: 'fungible-token',
         symbol: 'WETH',

@@ -24,13 +24,17 @@ export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto
   async encodeWorkflowStep(context: EncodingContext<CurveTriCrypto2Swap>): Promise<EncodedWorkflowStep> {
     const { chain, stepConfig } = context
     const { inputAsset, outputAsset, inputAmount } = stepConfig
-
     const inputAssetAmount: AssetAmount = {
       asset: inputAsset,
       amount: context.stepConfig.inputAmount,
     }
 
-    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(inputAssetAmount, chain, this.instance)
+    const evmInputAmount = await sdkAssetAmountToEvmInputAmount(
+      inputAssetAmount,
+      chain,
+      this.instance,
+      context.stepConfig.source === 'caller'
+    )
     const asset = await this.instance.dereferenceAsset(outputAsset, chain)
     const toAsset = sdkAssetToEvmAsset(asset, chain)
 
@@ -56,7 +60,7 @@ export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto
   getAddAssetInfo(stepConfig: CurveTriCrypto2Swap): Promise<AssetAmount[]> {
     const ret: AssetAmount[] = []
     assert(typeof stepConfig.inputAsset !== 'string')
-    if (stepConfig.inputAsset.source === 'caller') {
+    if (stepConfig.source === 'caller') {
       ret.push({
         asset: stepConfig.inputAsset,
         amount: stepConfig.inputAmount,

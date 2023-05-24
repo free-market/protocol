@@ -10,7 +10,7 @@
     "dev": "tsc --watch",
     "build": "hardhat compile && tsc",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts": "hardhat deploy --tags CurveTriCrypto2SwapAction"
+    "deploy-contracts_": "hardhat deploy --tags CurveTriCrypto2SwapAction"
   },
   "keywords": [],
   "author": "",
