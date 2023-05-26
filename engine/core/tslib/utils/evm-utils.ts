@@ -7,6 +7,7 @@ import type { EIP1193Provider } from 'eip1193-provider'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { Provider, Web3Provider } from '@ethersproject/providers'
+import { Wallet } from '@ethersproject/wallet'
 
 export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
   if (asset.type === 'native') {
@@ -180,6 +181,9 @@ export function isTestNetById(chainId: number) {
 export function getEthersSigner(provider: EIP1193Provider): Signer {
   if (provider instanceof Eip1193Bridge) {
     return provider.signer
+  }
+  if ((<any>provider).wallet) {
+    return (<any>provider).wallet
   }
   return new Web3Provider(provider).getSigner()
 }

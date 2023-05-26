@@ -48,6 +48,12 @@ import {
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
+import { WorkflowRunner__factory } from '@freemarket/runner'
+import {
+  AssetAmountStructOutput,
+  WorkflowStepExecutionEventObject,
+} from '@freemarket/runner/build/typechain-types/contracts/WorkflowRunner'
+import { listenerCount } from 'events'
 
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
@@ -57,6 +63,21 @@ type VisitStepCallback = (stepObject: any, path: string[]) => void
 interface WorkflowInstanceConstructorOptions {
   skipValidation?: boolean
 }
+
+export interface ExecutionStepLogAsset {
+  symbol: string
+  address: string
+  amount: string
+  assetInfo?: Asset
+}
+
+export interface ExecutionStepLog {
+  stepTyeId: number
+  inputAssets: ExecutionStepLogAsset[]
+  outputAssets: ExecutionStepLogAsset[]
+}
+
+export type AddressToSymbol = Record<string, string>
 
 export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
@@ -835,6 +856,12 @@ export class WorkflowInstance implements IWorkflowInstance {
   }
 
   @Memoize()
+  private static async getDefaultFungibleTokensByAddress(): Promise<Record<string, AddressToSymbol>> {
+    const response = await axios.get('https://metadata.fmprotocol.com/tokens-by-address.json')
+    return response.data
+  }
+
+  @Memoize()
   private getStepMap(): Map<string, StepNode> {
     const mapStepIdToStep = new Map<string, StepNode>()
     for (const step of this.steps) {
@@ -878,5 +905,56 @@ export class WorkflowInstance implements IWorkflowInstance {
       chainMap.set(type, helper)
     }
     return helper
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  async getExecutionStepLogs(provider: EIP1193Provider, txHash: string): Promise<ExecutionStepLog[]> {
+    const chain = await getChainFromProvider(provider)
+    const ethersProvider = getEthersProvider(provider)
+    const txReceipt = await ethersProvider.getTransactionReceipt(txHash)
+    const iface = WorkflowRunner__factory.createInterface()
+    const ret: ExecutionStepLog[] = []
+    const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
+
+    const mapper = async (assetAmount: AssetAmountStructOutput): Promise<ExecutionStepLogAsset> => {
+      let symbol: string | undefined = mapAddressToSymbol[chain]?.[assetAmount.asset.assetAddress]
+      let assetInfo: Asset | undefined = undefined
+      if (symbol || assetAmount.asset.assetAddress === ADDRESS_ZERO) {
+        const ar: AssetReference = assetAmount.asset.assetAddress === ADDRESS_ZERO ? { type: 'native' } : { type: 'fungible-token', symbol }
+        try {
+          assetInfo = await this.dereferenceAsset(ar, chain)
+        } catch (e) {
+          // ignore
+        }
+      }
+      if (!symbol) {
+        symbol = `${assetAmount.asset.assetAddress.slice(0, 6)}...${assetAmount.asset.assetAddress.slice(-4)}`
+      }
+      return {
+        symbol,
+        address: assetAmount.asset.assetAddress,
+        amount: assetAmount.amount.toString(),
+        assetInfo,
+      }
+    }
+
+    for (const log of txReceipt.logs) {
+      try {
+        const parsedLog = iface.parseLog(log)
+        if (parsedLog.name === 'WorkflowStepExecution') {
+          const e = parsedLog.args as unknown as WorkflowStepExecutionEventObject
+          const inputs = await Promise.all(e.result.inputAssetAmounts.map(mapper))
+          const outputs = await Promise.all(e.result.outputAssetAmounts.map(mapper))
+          ret.push({
+            stepTyeId: e.stepTypeId,
+            inputAssets: inputs,
+            outputAssets: outputs,
+          })
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return ret
   }
 }

@@ -1,0 +1,48 @@
+// import { Log } from '@ethersproject/providers'
+// import { getEthersProvider } from '@freemarket/core'
+// import { WorkflowRunner__factory } from '@freemarket/runner'
+// import { WorkflowStepExecutionEventObject } from '@freemarket/runner/build/typechain-types/contracts/WorkflowRunner'
+// import { EIP1193Provider } from 'eip1193-provider'
+
+// export interface ExecutionStepLogAsset {
+//   symbol: string
+//   address: string
+//   amount: string
+// }
+
+// export interface ExecutionStepLog {
+//   stepTyeId: number
+//   inputAssets: ExecutionStepLogAsset[]
+//   outputAssets: ExecutionStepLogAsset[]
+// }
+
+// export async function getExecutionStepLogs(provider: EIP1193Provider, txHash: string): Promise<ExecutionStepLog[]> {
+//   const ethersProvider = getEthersProvider(provider)
+//   const txReceipt = await ethersProvider.getTransactionReceipt(txHash)
+//   const iface = WorkflowRunner__factory.createInterface()
+//   const ret: ExecutionStepLog[] = []
+//   for (const log of txReceipt.logs) {
+//     try {
+//       const parsedLog = iface.parseLog(log)
+//       if (parsedLog.name === 'WorkflowStepExecution') {
+//         const e = parsedLog.args as unknown as WorkflowStepExecutionEventObject
+//         const inputs = e.result.inputAssetAmounts.map(assetAmount => ({
+//           address: assetAmount.asset.assetAddress,
+//           amount: assetAmount.amount.toString(),
+//         }))
+//         const outputs = e.result.outputAssetAmounts.map(assetAmount => ({
+//           address: assetAmount.asset.assetAddress,
+//           amount: assetAmount.amount.toString(),
+//         }))
+//         ret.push({
+//           stepTyeId: e.stepTypeId,
+//           inputAssets: inputs,
+//           outputAssets: outputs,
+//         })
+//       }
+//     } catch (e) {
+//       // ignore
+//     }
+//   }
+//   return ret
+// }

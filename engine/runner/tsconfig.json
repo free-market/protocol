@@ -14,5 +14,5 @@
     "declaration": true
   },
   "files": ["./index.ts"],
-  "include": ["hardhat.config.ts", "./typechain-types", "tslib", "./scripts", "./deploy", "./test"]
+  "include": ["hardhat.config.ts", "./typechain-types", "tslib", "./scripts", "./deploy", "./test", "scripts"]
 }

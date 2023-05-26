@@ -56,6 +56,7 @@
   "dependencies": {
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/experimental": "^5.7.0",
+    "@ethersproject/wallet": "^5.7.0",
     "@openzeppelin/contracts": "^4.8.0",
     "axios": "0.27.2",
     "eip1193-provider": "^1.0.1",
