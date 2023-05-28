@@ -7,7 +7,7 @@ import { createStepHelper } from './createStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { Memoize } from 'typescript-memoize'
 import { NATIVE_ASSETS } from '../NativeAssets'
-import { WORKFLOW_END_STEP_ID } from './constants'
+import { HARDHAT_FORK_CHAIN, WORKFLOW_END_STEP_ID } from './constants'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import { WorkflowRunner } from './WorkflowRunner'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
@@ -122,8 +122,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     const remittances = await appliedInstance.getRemittances()
     appliedInstance = appliedInstance.applyArguments(false, remittances)
     const firstNodeStepId = this.getStartStepId()
-    const sc = startChain === 'hardhat' ? 'ethereum' : startChain
-    const runnerAddress = appliedInstance.getWorkflow().runnerAddresses?.[sc] || ADDRESS_ZERO
+    const sc = startChain === 'hardhat' ? HARDHAT_FORK_CHAIN : startChain
+    const runnerAddress = appliedInstance.getWorkflow().runnerAddresses?.[sc as Chain] || ADDRESS_ZERO
     const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress, runnerAddress)
     const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
     return new WorkflowRunner(this, encoded, startChain, addAssetInfo)
@@ -159,7 +159,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     const chain = await this.resolveChain('start-chain')
     const frontDoorAddress = await this.getFrontDoorAddressForChain(chain)
     const symbolsArray = Array.from(symbols)
-    const promises = symbolsArray.map(symbol => this.getErc20InfoForSymbol(userAddress, chain, provider, frontDoorAddress, symbol))
+    const c = chain === 'hardhat' ? HARDHAT_FORK_CHAIN : chain
+    const promises = symbolsArray.map(symbol => this.getErc20InfoForSymbol(userAddress, c, provider, frontDoorAddress, symbol))
     const results = await Promise.all(promises)
     for (let i = 0; i < symbolsArray.length; ++i) {
       rv.set(symbolsArray[i], results[i])
@@ -828,8 +829,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     if (!token) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, null)])
     }
-    const c = chain === 'hardhat' ? 'ethereum' : chain
-    if (!token.chains[c]) {
+    const c = chain === 'hardhat' ? HARDHAT_FORK_CHAIN : chain
+    if (!token.chains[c as Chain]) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, chain)])
     }
     return token

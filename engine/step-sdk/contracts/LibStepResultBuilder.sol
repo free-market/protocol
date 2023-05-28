@@ -44,12 +44,12 @@ library LibStepResultBuilder {
   }
 
   function addInputNative(StepResultBuilder memory builder, uint256 amount) internal pure returns (StepResultBuilder memory) {
-    builder.result.inputAssetAmounts[builder.inputIndex++] = AssetAmount(Asset(AssetType.ERC20, address(0)), amount);
+    builder.result.inputAssetAmounts[builder.inputIndex++] = AssetAmount(Asset(AssetType.Native, address(0)), amount);
     return builder;
   }
 
   function addOutputNative(StepResultBuilder memory builder, uint256 amount) internal pure returns (StepResultBuilder memory) {
-    builder.result.outputAssetAmounts[builder.outputIndex++] = AssetAmount(Asset(AssetType.ERC20, address(0)), amount);
+    builder.result.outputAssetAmounts[builder.outputIndex++] = AssetAmount(Asset(AssetType.Native, address(0)), amount);
     return builder;
   }
 

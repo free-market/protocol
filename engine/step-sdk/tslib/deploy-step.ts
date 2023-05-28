@@ -44,7 +44,7 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
     args: ctorArgs,
   })
   if (deployResult.newlyDeployed) {
-    console.log(`registering ${stepName} with ConfigManager`)
+    console.log(`registering ${stepName} with ConfigManager @ ${deployResult.address}`)
     const configManagerAddress = await getDeployedContractAddress(hre, 'ConfigManager')
     console.log(`configManagerAddress=${configManagerAddress}`)
     const configManager = <ConfigManager>await ethers.getContractAt('ConfigManager', configManagerAddress)

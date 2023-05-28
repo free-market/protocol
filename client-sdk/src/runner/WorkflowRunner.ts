@@ -15,6 +15,7 @@ import { getStargateBridgeParamsEvent } from '../private/debug-utils'
 import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner, IERC20__factory } from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
 import { BridgeBase__factory } from '@freemarket/stargate-bridge'
+import { HARDHAT_FORK_CHAIN } from './constants'
 const log = rootLogger.getLogger('WorkflowRunner')
 
 interface ContinuationInfo {
@@ -167,11 +168,12 @@ export class WorkflowRunner implements IWorkflowRunner {
     const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(this.startChain)
     const fungi = await this.instance.getFungibleToken(symbol)
     assert(fungi)
-    const addr = fungi.chains[this.startChain]?.address
+    const chain = this.startChain === 'hardhat' ? HARDHAT_FORK_CHAIN : this.startChain
+    const addr = fungi.chains[chain]?.address
     assert(addr)
     log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
     const erc20 = IERC20__factory.connect(addr, signer)
-    const response = await erc20.approve(frontDoorAddress, amount.toFixed(0))
+    const response = await erc20.approve(frontDoorAddress, amount.toFixed(0), {gasLimit: 1000000})
     return await response.wait(1)
   }
 

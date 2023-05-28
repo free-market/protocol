@@ -11,16 +11,17 @@ import {
   AssetReference,
 } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
-import type { WrapNative } from './model'
+import type { UnwrapNative } from './model'
 
-export const STEP_TYPE_ID_WRAP_NATIVE = 105
+export const STEP_TYPE_ID_UNWRAP_NATIVE = 106
 
-export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
-  async encodeWorkflowStep(context: EncodingContext<WrapNative>): Promise<EncodedWorkflowStep> {
+export class UnwrapNativeHelper extends AbstractStepHelper<UnwrapNative> {
+  async encodeWorkflowStep(context: EncodingContext<UnwrapNative>): Promise<EncodedWorkflowStep> {
     const { chain } = context
     const inputAssetAmount: AssetAmount = {
       asset: {
-        type: 'native',
+        type: 'fungible-token',
+        symbol: 'WETH',
       },
       amount: context.stepConfig.amount,
     }
@@ -33,17 +34,17 @@ export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
     )
 
     return {
-      stepTypeId: STEP_TYPE_ID_WRAP_NATIVE,
+      stepTypeId: STEP_TYPE_ID_UNWRAP_NATIVE,
       stepAddress: this.getStepAddress(context),
       inputAssets: [evmInputAmount],
       argData: '0x',
     }
   }
-  getAddAssetInfo(stepConfig: WrapNative): Promise<AssetAmount[]> {
+  getAddAssetInfo(stepConfig: UnwrapNative): Promise<AssetAmount[]> {
     const ret: AssetAmount[] = []
     if (stepConfig.source === 'caller') {
       ret.push({
-        asset: { type: 'native' },
+        asset: { type: 'fungible-token', symbol: 'WETH' },
         amount: stepConfig.amount,
       })
     }

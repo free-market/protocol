@@ -1,0 +1,67 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "@freemarket/core/contracts/IWorkflowStep.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport \"./model/Asset.sol\";\nimport \"./model/AssetAmount.sol\";\nimport \"./model/WorkflowStepResult.sol\";\n\n/// @title The interface between WorkflowRunner and each Step implementation.abi\n/// @author Marty Saxton\n/// @notice All steps must implement this interface.\ninterface IWorkflowStep {\n    /// @notice called by WorkflowRunner to execute a workflow step.\n    /// @param assetAmounts AssetAmounts to be used by the step\n    /// @param argData Step specific arguments in ABI encoding\n    /// @return the outcome of the step invocation\n    function execute(AssetAmount[] calldata assetAmounts, bytes calldata argData)\n        external\n        payable\n        returns (WorkflowStepResult memory);\n}\n"
+    },
+    "@freemarket/core/contracts/model/Asset.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport \"./AssetType.sol\";\n\nstruct Asset {\n    AssetType assetType;\n    address assetAddress; // 0x0 for ETH, the ERC20 address.  If it's an account balance, this could represent the token of the account\n}\n"
+    },
+    "@freemarket/core/contracts/model/AssetAmount.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport './Asset.sol';\n\nstruct AssetAmount {\n  Asset asset;\n  uint256 amount;\n}\n"
+    },
+    "@freemarket/core/contracts/model/AssetType.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nenum AssetType {\n    Native,\n    ERC20,\n    ERC721\n}\n"
+    },
+    "@freemarket/core/contracts/model/WorkflowStepResult.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport './AssetAmount.sol';\n\n// The return value from the execution of a step.\nstruct WorkflowStepResult {\n  // The amounts of each input asset that resulted from the step execution.\n  AssetAmount[] inputAssetAmounts;\n  // The amounts of each output asset that resulted from the step execution.\n  AssetAmount[] outputAssetAmounts;\n  // The index of the next step in a workflow.\n  // This value allows the step to override the default nextStepIndex\n  // statically defined\n  // -1 means terminate the workflow\n  // -2 means do not override the statically defined nextStepIndex in WorkflowStep\n  int16 nextStepIndex;\n  // the fee to be withheald out of the output assets (in decibips)\n  // -1 means use the default fee\n  int24 fee;\n}\n"
+    },
+    "@freemarket/step-sdk/contracts/LibActionHelpers.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport '@freemarket/core/contracts/model/AssetType.sol';\nimport '@freemarket/core/contracts/model/WorkflowStepResult.sol';\n\nlibrary LibActionHelpers {\n  function singleAssetResult(AssetType assetType, address assetAddress, uint256 amount) internal pure returns (WorkflowStepResult memory) {\n    Asset memory asset = Asset(assetType, assetAddress);\n    AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](1);\n    ouputAssetAmounts[0] = AssetAmount(asset, amount);\n    return WorkflowStepResult(new AssetAmount[](0), ouputAssetAmounts, -2, -1);\n  }\n\n  function singleTokenResult(address assetAddress, uint256 amount) internal pure returns (WorkflowStepResult memory) {\n    return singleAssetResult(AssetType.ERC20, assetAddress, amount);\n  }\n\n  function noOutputAssetsResult() internal pure returns (WorkflowStepResult memory) {\n    return singleAssetResult(AssetType.Native, address(0), 0);\n  }\n}\n"
+    },
+    "@freemarket/step-sdk/contracts/LibStepResultBuilder.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport '@freemarket/core/contracts/model/AssetType.sol';\nimport '@freemarket/core/contracts/model/WorkflowStepResult.sol';\n\nstruct StepResultBuilder {\n  uint256 inputIndex;\n  uint256 outputIndex;\n  WorkflowStepResult result;\n}\n\nlibrary LibStepResultBuilder {\n  function create(uint256 inputAssetCount, uint256 outputAssetCount) internal pure returns (StepResultBuilder memory) {\n    AssetAmount[] memory inputAssetAmounts = new AssetAmount[](inputAssetCount);\n    AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](outputAssetCount);\n    return StepResultBuilder(0, 0, WorkflowStepResult(inputAssetAmounts, ouputAssetAmounts, -2, -1));\n  }\n\n  function addInputToken(\n    StepResultBuilder memory builder,\n    address tokenAddress,\n    uint256 amount\n  ) internal pure returns (StepResultBuilder memory) {\n    builder.result.inputAssetAmounts[builder.inputIndex++] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);\n    return builder;\n  }\n\n  function addInputAssetAmount(\n    StepResultBuilder memory builder,\n    AssetAmount memory assetAmount\n  ) internal pure returns (StepResultBuilder memory) {\n    builder.result.inputAssetAmounts[builder.inputIndex++] = assetAmount;\n    return builder;\n  }\n\n  function addOutputToken(\n    StepResultBuilder memory builder,\n    address tokenAddress,\n    uint256 amount\n  ) internal pure returns (StepResultBuilder memory) {\n    builder.result.outputAssetAmounts[builder.outputIndex++] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);\n    return builder;\n  }\n\n  function addInputNative(StepResultBuilder memory builder, uint256 amount) internal pure returns (StepResultBuilder memory) {\n    builder.result.inputAssetAmounts[builder.inputIndex++] = AssetAmount(Asset(AssetType.ERC20, address(0)), amount);\n    return builder;\n  }\n\n  function addOutputNative(StepResultBuilder memory builder, uint256 amount) internal pure returns (StepResultBuilder memory) {\n    builder.result.outputAssetAmounts[builder.outputIndex++] = AssetAmount(Asset(AssetType.ERC20, address(0)), amount);\n    return builder;\n  }\n\n  function addOutputAssetAmount(\n    StepResultBuilder memory builder,\n    AssetAmount memory assetAmount\n  ) internal pure returns (StepResultBuilder memory) {\n    builder.result.outputAssetAmounts[builder.outputIndex++] = assetAmount;\n    return builder;\n  }\n\n  function setNextStepIndex(StepResultBuilder memory builder, int16 nextStepIndex) internal pure returns (StepResultBuilder memory) {\n    builder.result.nextStepIndex = nextStepIndex;\n    return builder;\n  }\n\n  function setFee(StepResultBuilder memory builder, int24 feeInDeciBips) internal pure returns (StepResultBuilder memory) {\n    builder.result.fee = feeInDeciBips;\n    return builder;\n  }\n}\n"
+    },
+    "contracts/UnwrapNativeAction.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport '@freemarket/core/contracts/IWorkflowStep.sol';\nimport '@freemarket/step-sdk/contracts/LibActionHelpers.sol';\nimport './Weth.sol';\nimport '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';\n\n\nusing LibStepResultBuilder for StepResultBuilder;\n\ncontract UnwrapNativeAction is IWorkflowStep {\n  address public immutable wethContractAddress;\n\n  event NativeUnwrapped(address thisAddr, uint256 amount);\n\n  constructor(address wrappedEtherContractAddress) {\n    wethContractAddress = wrappedEtherContractAddress;\n  }\n\n  function execute(AssetAmount[] calldata assetAmounts, bytes calldata) external payable returns (WorkflowStepResult memory) {\n\n    uint256 amount = assetAmounts[0].amount;\n    emit NativeUnwrapped(address(this), amount);\n    Weth weth = Weth(wethContractAddress);\n    weth.withdraw(amount);\n    return LibStepResultBuilder.create(1, 1).addOutputNative(amount).addInputToken(wethContractAddress, amount).result;\n  }\n}\n"
+    },
+    "contracts/Weth.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.13;\n\ninterface Weth {\n    function name() external view returns (string memory);\n\n    function approve(address guy, uint256 wad) external returns (bool);\n\n    function totalSupply() external view returns (uint256);\n\n    function transferFrom(address src, address dst, uint256 wad) external returns (bool);\n\n    function withdraw(uint256 wad) external;\n\n    function decimals() external view returns (uint8);\n\n    function balanceOf(address) external view returns (uint256);\n\n    function symbol() external view returns (string memory);\n\n    function transfer(address dst, uint256 wad) external returns (bool);\n\n    function deposit() external payable;\n\n    function allowance(address, address) external view returns (uint256);\n\n    // fallback() external payable;\n\n    event Approval(address indexed src, address indexed guy, uint256 wad);\n    event Transfer(address indexed src, address indexed dst, uint256 wad);\n    event Deposit(address indexed dst, uint256 wad);\n    event Withdrawal(address indexed src, uint256 wad);\n}\n"
+    },
+    "contracts/WrapNativeAction.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\nimport '@freemarket/core/contracts/IWorkflowStep.sol';\nimport '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';\nimport '@freemarket/step-sdk/contracts/LibActionHelpers.sol';\nimport './Weth.sol';\n\n\nusing LibStepResultBuilder for StepResultBuilder;\n\ncontract WrapNativeAction is IWorkflowStep {\n  address public immutable contractAddress;\n\n  event NativeWrapped(address thisAddr, uint256 amount);\n\n  constructor(address wrappedEtherContractAddress) {\n    contractAddress = wrappedEtherContractAddress;\n  }\n\n  function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata) external payable returns (WorkflowStepResult memory) {\n    require(inputAssetAmounts.length == 1, 'WrapNativeAction: inputAssetAmounts.length must be 1');\n\n    uint256 amount = inputAssetAmounts[0].amount;\n    emit NativeWrapped(address(this), amount);\n    Weth weth = Weth(contractAddress);\n    weth.deposit{value: amount}();\n\n    WorkflowStepResult memory rv = LibStepResultBuilder\n      .create(1, 1)\n      .addInputAssetAmount(inputAssetAmounts[0])\n      .addOutputToken(contractAddress, amount)\n      .result;\n\n\n    return rv;\n  }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    },
+    "libraries": {
+      "": {
+        "__CACHE_BREAKER__": "0x00000000d41867734bbee4c6863d9255b2b06ac1"
+      }
+    }
+  }
+}

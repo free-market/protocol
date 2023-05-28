@@ -164,21 +164,20 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   }
 
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
-    console.log('entering refundUser, numAssets', assetBalances.getAssetCount());
+    console.log('entering refundUser, numAssets=', assetBalances.getAssetCount());
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       console.log('  refunding asset', i);
-      console.log('  refunding asset addr', ab.asset.assetAddress);
-      console.log('  refunding asset amt', ab.amount);
+      console.log('    type', ab.asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
+      console.log('    addr', ab.asset.assetAddress);
+      console.log('    amt', ab.amount);
       Asset memory asset = ab.asset;
       uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
       uint256 userAmount = ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
-        // TODO this needs a unit test
         require(address(this).balance >= ab.amount, 'computed native balance is greater than actual balance');
-        (bool sent, bytes memory data) = payable(userAddress).call{value: userAmount}('');
-        require(sent, string(data));
+        payable(userAddress).transfer(userAmount);
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
         uint256 balance = token.balanceOf(address(this));

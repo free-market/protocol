@@ -10,7 +10,7 @@
     "dev": "tsc --watch",
     "build": "hardhat compile && tsc",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts": "hardhat deploy --tags WrapNativeAction"
+    "deploy-contracts": "hardhat deploy --tags WrapNativeAction,UnwrapNativeAction"
   },
   "keywords": [],
   "author": "",

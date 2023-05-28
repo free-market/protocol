@@ -55,7 +55,9 @@
   },
   "dependencies": {
     "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/experimental": "^5.7.0",
+    "@ethersproject/units": "^5.7.0",
     "@freemarket/core": "workspace:^0.0.1",
     "@freemarket/runner": "workspace:^0.0.1",
     "@openzeppelin/contracts": "^4.8.0",

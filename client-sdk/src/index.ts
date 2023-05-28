@@ -1,4 +1,5 @@
 export { getEthersProvider } from '@freemarket/core'
+export { formatNumber } from '@freemarket/step-sdk'
 export * from './model'
 export * from './runner'
 export * from './utils'

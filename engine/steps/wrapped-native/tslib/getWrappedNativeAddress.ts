@@ -19,6 +19,9 @@ export function getWrappedNativeAddress(chainId: string) {
     // fantom
     case '250':
       return '0x74b23882a30290451A17c44f4F05243b6b58C76d'
+    // ethereum goerli
+    case '5':
+      return '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'
   }
   throw new Error('unknown chainId: ' + chainId)
 }

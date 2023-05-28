@@ -1,63 +1,62 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { WRAP_NATIVE_STEP_TYPE_ID, WrapNativeHelper } from '../tslib/wrap-native-helper'
-import { createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
+import { STEP_TYPE_ID_WRAP_NATIVE, WrapNativeHelper } from '../tslib/wrap-native-helper'
+import { ADDRESS_ZERO, createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk'
-import { Weth__factory, WrapNativeAction } from '../typechain-types'
+import { UnwrapNativeAction, Weth__factory, WrapNativeAction } from '../typechain-types'
 import { getWrappedNativeAddress } from '../tslib/getWrappedNativeAddress'
 import { IERC20 } from '@freemarket/runner'
-import { WrapNative } from '../tslib'
+import { STEP_TYPE_ID_UNWRAP_NATIVE, UnwrapNative, UnwrapNativeHelper, WrapNative } from '../tslib'
+import { ContractTransaction } from 'ethers'
+import { TransactionReceipt } from '@ethersproject/providers'
+import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
 const testAmount = 107
+
+async function confirm<T>(ctPromise: Promise<ContractTransaction>): Promise<TransactionReceipt> {
+  const ct = await ctPromise
+  return ct.wait()
+}
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
     users: { otherUser },
     signers: { otherUserSigner },
-    contracts: { frontDoor },
+    contracts: { frontDoor, userWorkflowRunner },
   } = baseFixture
 
   // deploy the contract
   await deployments.fixture('WrapNativeAction')
+  await deployments.fixture('UnwrapNativeAction')
 
   // get a reference to the deployed contract with otherUser as the signer
   const wrapNativeAction = <WrapNativeAction>await ethers.getContract('WrapNativeAction', otherUserSigner)
-  const wrapContractAddress = await wrapNativeAction.contractAddress()
-  console.log('wrapContractAddress', wrapContractAddress)
-  const wrapContract = Weth__factory.connect(wrapContractAddress, otherUserSigner)
-  // const testUsdc = TestErc20__factory.connect(USDC_ethereumGoerli, otherUserSigner)
-  // await (await testUsdc.mint(otherUser, testAmount)).wait()
-
-  // // transfer to stargateBridgeAction
-  // await (await testUsdc.transfer(stargateBridgeAction.address, testAmount)).wait()
-
-  // create a mock WorkflowInstance and register the test token
+  const unwrapNativeAction = <UnwrapNativeAction>await ethers.getContract('UnwrapNativeAction', otherUserSigner)
+  const wethAddress = await wrapNativeAction.contractAddress()
+  // console.log('wethAddress', wethAddress)
+  const weth = Weth__factory.connect(wethAddress, otherUserSigner)
   const mockWorkflowInstance = new MockWorkflowInstance()
-  // mockWorkflowInstance.registerErc20('USDC', USDC_ethereumGoerli)
-  // mockWorkflowInstance.frontDoorAddress = frontDoor.address
-
-  return { contracts: { wrapNativeAction, wrapContract }, mockWorkflowInstance, wrapContractAddress }
+  return { contracts: { wrapNativeAction, weth, unwrapNativeAction }, mockWorkflowInstance, wethAddress }
 })
 
 describe('Wrapped Native', async () => {
   it('deploys', async () => {
     const {
-      contracts: { configManager, wrapNativeAction },
+      contracts: { configManager, wrapNativeAction, unwrapNativeAction },
     } = await setup()
 
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, WRAP_NATIVE_STEP_TYPE_ID, wrapNativeAction.address)
-    // const chainId = await hardhat.getChainId()
-    // const contractAddress = getWrappedNativeAddress(chainId)
+    await validateAction(configManager, STEP_TYPE_ID_WRAP_NATIVE, wrapNativeAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_UNWRAP_NATIVE, unwrapNativeAction.address)
   })
 
-  it('executes', async () => {
+  it('wraps when invoked directly', async () => {
     const {
-      contracts: { wrapNativeAction, wrapContract },
+      contracts: { wrapNativeAction, weth },
       users: { otherUser },
       mockWorkflowInstance,
-      wrapContractAddress,
+      wethAddress,
     } = await setup()
 
     const stepConfig: WrapNative = {
@@ -79,6 +78,61 @@ describe('Wrapped Native', async () => {
     const { inputAssets, argData } = encoded
     await expect(wrapNativeAction.execute(inputAssets, argData, { value: testAmount }))
       .to.changeEtherBalance(otherUser, testAmount * -1)
-      .and.changeTokenBalance(wrapContract, wrapNativeAction.address, testAmount)
+      .and.changeTokenBalance(weth, wrapNativeAction.address, testAmount)
+  })
+  it.only('unwraps when invoked by runner', async () => {
+    const {
+      contracts: { unwrapNativeAction, weth, userWorkflowRunner },
+      users: { otherUser },
+      mockWorkflowInstance,
+      wethAddress,
+    } = await setup()
+
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          stepTypeId: STEP_TYPE_ID_UNWRAP_NATIVE,
+          stepAddress: ADDRESS_ZERO,
+          inputAssets: [
+            {
+              sourceIsCaller: true,
+              amountIsPercent: false,
+              asset: {
+                assetType: 1,
+                assetAddress: wethAddress,
+              },
+              amount: testAmount,
+            },
+          ],
+          argData: '0x',
+          nextStepIndex: -1,
+        },
+      ],
+    }
+
+    // const stepConfig: UnwrapNative = {
+    //   type: 'unwrap-native',
+    //   amount: testAmount,
+    //   source: 'workflow',
+    // }
+    // const helper = new UnwrapNativeHelper(mockWorkflowInstance)
+    // const context: EncodingContext<UnwrapNative> = {
+    //   userAddress: otherUser,
+    //   chain: 'ethereum',
+    //   stepConfig: stepConfig,
+    //   mapStepIdToIndex: new Map<string, number>(),
+    // }
+    // const encoded = await helper.encodeWorkflowStep(context)
+
+    // transfer some weth to the contract runner (front door actually)
+    await confirm(weth.deposit({ value: testAmount }))
+    // await confirm(weth.transfer(userWorkflowRunner.address, testAmount))
+    await confirm(weth.approve(userWorkflowRunner.address, testAmount))
+    // await confirm(userWorkflowRunner.executeWorkflow(workflow))
+
+    await expect(userWorkflowRunner.executeWorkflow(workflow))
+      .to.changeEtherBalance(otherUser, testAmount)
+      .and.changeTokenBalance(weth, otherUser, testAmount * -1)
   })
 })

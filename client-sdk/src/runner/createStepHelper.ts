@@ -5,7 +5,7 @@ import type { IWorkflowInstance } from './IWorkflowInstance'
 import { AaveSupplyHelper } from '@freemarket/aave'
 import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
-import { WrapNativeHelper } from '@freemarket/wrapped-native'
+import { WrapNativeHelper, UnwrapNativeHelper } from '@freemarket/wrapped-native'
 import { UniswapExactInHelper } from '@freemarket/uniswap'
 import { CurveTriCrypto2SwapHelper } from '@freemarket/curve'
 import { AssetBalanceBranchHelper, ChainBranchHelper } from '@freemarket/base-branches'
@@ -21,6 +21,7 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'asset-balance-branch': AssetBalanceBranchHelper,
   'stargate-bridge': StargateBridgeHelper,
   'wrap-native': WrapNativeHelper,
+  'unwrap-native': UnwrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
   'curve-tricrypto2-swap': CurveTriCrypto2SwapHelper,
 }

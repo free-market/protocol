@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find . -name \*.ts | xargs grep 'const STEP'
+find . -name \*.ts | grep -v '\.d\.ts' | xargs grep 'const STEP'

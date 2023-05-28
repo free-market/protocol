@@ -542,7 +542,13 @@ importers:
       '@ethersproject/abstract-signer':
         specifier: ^5.7.0
         version: 5.7.0
+      '@ethersproject/bignumber':
+        specifier: ^5.7.0
+        version: 5.7.0
       '@ethersproject/experimental':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/units':
         specifier: ^5.7.0
         version: 5.7.0
       '@freemarket/core':
