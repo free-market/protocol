@@ -82,6 +82,8 @@ export type AddressToSymbol = Record<string, string>
 export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
   private providers = new Map<ChainOrStart, EIP1193Provider>()
+  // need for uniswap which doesn't support routing on forked chains
+  private nonForkedProviders = new Map<ChainOrStart, EIP1193Provider>()
   private stepHelpers = new MapWithDefault<ChainOrStart, Map<string, IStepHelper<any>>>(() => new Map())
   private steps: StepNode[]
 
@@ -99,8 +101,9 @@ export class WorkflowInstance implements IWorkflowInstance {
     // TODO validateAssetRefs -- but may need to skip unresolved parameters
   }
 
-  setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider): void {
+  setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider, nonForkedProvider?: EIP1193Provider): void {
     this.providers.set(chainOrStart, provider)
+    nonForkedProvider && this.nonForkedProviders.set(chainOrStart, nonForkedProvider)
     const chainMap = this.stepHelpers.get(chainOrStart)
     if (chainMap) {
       for (const helper of chainMap.values()) {
@@ -112,6 +115,10 @@ export class WorkflowInstance implements IWorkflowInstance {
     const rv = this.providers.get(chainOrStart)
     assert(rv)
     return rv
+  }
+
+  getNonForkedProvider(chainOrStart: ChainOrStart): EIP1193Provider | undefined {
+    return this.nonForkedProviders.get(chainOrStart)
   }
 
   async getRunner(userAddress: string, args?: Arguments): Promise<IWorkflowRunner> {
