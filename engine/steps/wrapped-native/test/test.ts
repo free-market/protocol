@@ -2,10 +2,10 @@ import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { STEP_TYPE_ID_WRAP_NATIVE, WrapNativeHelper } from '../tslib/wrap-native-helper'
 import { ADDRESS_ZERO, createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
-import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
+import { confirmTx, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk'
 import { UnwrapNativeAction, Weth__factory, WrapNativeAction } from '../typechain-types'
-import { getWrappedNativeAddress } from '../tslib/getWrappedNativeAddress'
+import { getWrappedNativeAddress } from '@freemarket/step-sdk/tslib/getWrappedNativeAddress'
 import { IERC20 } from '@freemarket/runner'
 import { STEP_TYPE_ID_UNWRAP_NATIVE, UnwrapNative, UnwrapNativeHelper, WrapNative } from '../tslib'
 import { ContractTransaction } from 'ethers'
@@ -13,11 +13,6 @@ import { TransactionReceipt } from '@ethersproject/providers'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
 const testAmount = 107
-
-async function confirm<T>(ctPromise: Promise<ContractTransaction>): Promise<TransactionReceipt> {
-  const ct = await ctPromise
-  return ct.wait()
-}
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
@@ -80,7 +75,7 @@ describe('Wrapped Native', async () => {
       .to.changeEtherBalance(otherUser, testAmount * -1)
       .and.changeTokenBalance(weth, wrapNativeAction.address, testAmount)
   })
-  it.only('unwraps when invoked by runner', async () => {
+  it('unwraps when invoked by runner', async () => {
     const {
       contracts: { unwrapNativeAction, weth, userWorkflowRunner },
       users: { otherUser },
@@ -126,10 +121,8 @@ describe('Wrapped Native', async () => {
     // const encoded = await helper.encodeWorkflowStep(context)
 
     // transfer some weth to the contract runner (front door actually)
-    await confirm(weth.deposit({ value: testAmount }))
-    // await confirm(weth.transfer(userWorkflowRunner.address, testAmount))
-    await confirm(weth.approve(userWorkflowRunner.address, testAmount))
-    // await confirm(userWorkflowRunner.executeWorkflow(workflow))
+    await confirmTx(weth.deposit({ value: testAmount }))
+    await confirmTx(weth.approve(userWorkflowRunner.address, testAmount))
 
     await expect(userWorkflowRunner.executeWorkflow(workflow))
       .to.changeEtherBalance(otherUser, testAmount)

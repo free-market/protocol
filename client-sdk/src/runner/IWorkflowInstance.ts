@@ -11,9 +11,6 @@ export interface IWorkflowInstance extends IWorkflow {
   // providers are required for getRemittances
   setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider, nonForkedProvider?: EIP1193Provider): void
 
-  getProvider(chainOrStart: ChainOrStart): EIP1193Provider
-  getNonForkedProvider(chain: Chain): EIP1193Provider | undefined
-
   getWorkflow(): ReadonlyDeep<Workflow>
   validateArguments(args?: Arguments): void
 

@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
+import '@freemarket/step-sdk/contracts/IWeth.sol';
 import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
-import './IWeth.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import 'hardhat/console.sol';
 

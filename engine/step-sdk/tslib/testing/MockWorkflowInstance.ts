@@ -1,4 +1,8 @@
+import { VoidSigner } from '@ethersproject/abstract-signer'
+import { Eip1193Bridge } from '@ethersproject/experimental'
+import { StaticJsonRpcProvider } from '@ethersproject/providers'
 import {
+  ADDRESS_ZERO,
   Asset,
   AssetReference,
   Chain,
@@ -9,9 +13,12 @@ import {
   IWorkflow,
   getDefaultFungibleTokens,
   nonEmptyStringSchema,
+  initEnv,
 } from '@freemarket/core'
-import type EIP1193Provider from 'eip1193-provider'
+import type { EIP1193Provider } from 'eip1193-provider'
 import { Memoize } from 'typescript-memoize'
+
+initEnv()
 
 export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
@@ -75,7 +82,8 @@ export class MockWorkflowInstance implements IWorkflow {
     return Promise.resolve(this.testNet)
   }
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider {
-    throw new Error('not implemented')
+    const ethersProvider = new StaticJsonRpcProvider(process.env.ETHEREUM_MAINNET_URL || 'https://rpc.ankr.com/eth')
+    return new Eip1193Bridge(new VoidSigner(ADDRESS_ZERO), ethersProvider)
   }
   encodeSegment(startStepId: string, chain: Chain, userAddress: string, runnerAddress: string): Promise<EncodedWorkflow> {
     throw new Error('not implemented')
@@ -83,5 +91,10 @@ export class MockWorkflowInstance implements IWorkflow {
 
   registerErc20(symbol: string, address: string) {
     this.erc20s.set(symbol, address)
+  }
+  getNonForkedProvider(
+    chain: 'ethereum' | 'arbitrum' | 'avalanche' | 'polygon' | 'binance' | 'optimism' | 'fantom' | 'hardhat'
+  ): EIP1193Provider | undefined {
+    return undefined
   }
 }

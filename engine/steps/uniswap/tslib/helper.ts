@@ -13,13 +13,14 @@ import {
   sdkAssetToEvmAsset,
   AssetReference,
   Chain,
+  getEthersProvider,
 } from '@freemarket/core'
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { UniswapExactIn } from './model'
 // import { IQuoter__factory } from '../typechain-types'
 import { AlphaRouter, SwapOptionsSwapRouter02, SwapRoute, SwapType } from '@uniswap/smart-order-router'
 import { BaseProvider, JsonRpcProvider } from '@ethersproject/providers'
-export const STEP_TYPE_ID = 104
+export const STEP_TYPE_ID_UNISWAP_EXACT_IN = 104
 export const QUOTER_CONTRACT_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 import { TradeType, CurrencyAmount, Percent, Token, Currency } from '@uniswap/sdk-core'
 import Big from 'big.js'
@@ -86,7 +87,7 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     const minExchangeRate = UniswapExactInHelper.getMinExchangeRate(inputAmountStr, route.quote, parseFloat(slippageTolerancePct))
 
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_IN,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
       argData: abiCoder.encode([UniswapExactInActionParamsSchema], [{ toAsset, routes, minExchangeRate }]),
@@ -95,9 +96,9 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
 
   async getRoute(fromAssetRef: AssetReference, toAssetRef: AssetReference, amount?: string) {
     assert(typeof fromAssetRef === 'object' && typeof toAssetRef === 'object')
-    assert(fromAssetRef.type === 'fungible-token')
-    assert(toAssetRef.type === 'fungible-token')
-    logger.debug(`getRoute(${fromAssetRef.symbol}, ${toAssetRef.symbol}, ${amount})`)
+    // assert(fromAssetRef.type === 'fungible-token')
+    // assert(toAssetRef.type === 'fungible-token')
+    logger.debug(`getRoute(${JSON.stringify(fromAssetRef)}, ${JSON.stringify(toAssetRef)}, ${amount})`)
 
     const chainId = await this.getChainId()
     // if it's hardhat, assume it's forked ethereum during a test (auto router doesn't work with forks for some unknown reason)
@@ -105,15 +106,20 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
     const chain = await this.getChain()
 
-    const fromAsset = await this.instance.dereferenceAsset(fromAssetRef, chain)
-    const toAsset = await this.instance.dereferenceAsset(toAssetRef, chain)
+    const fromAsset = await this.instance.dereferenceAsset(UniswapExactInHelper.toWrappedTokenRef(fromAssetRef), chain)
+    const toAsset = await this.instance.dereferenceAsset(UniswapExactInHelper.toWrappedTokenRef(toAssetRef), chain)
+    // console.log('fromAsset', fromAsset)
+    // console.log('toAsset', toAsset)
     assert(fromAsset.type === 'fungible-token')
     assert(toAsset.type === 'fungible-token')
     const fromAmount = amount ?? (await this.getTokenAmountInUsd(1000, fromAsset, chain))
+    console.log('fromAmount', fromAmount)
     const uniswapFromToken = UniswapExactInHelper.toUniswapToken(chain, chainIdForUniswap, fromAsset)
     const uniswapToToken = UniswapExactInHelper.toUniswapToken(chain, chainIdForUniswap, toAsset)
+    // console.log('uniswapFromToken', uniswapFromToken)
+    // console.log('uniswapToToken', uniswapToToken)
 
-    const router = this.getRouter(chainId)
+    const router = await this.getRouter(chainId)
     const options: SwapOptionsSwapRouter02 = {
       type: SwapType.SWAP_ROUTER_02,
       recipient: ADDRESS_ZERO,
@@ -130,14 +136,32 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     return route
   }
 
-  @Memoize()
-  private getRouter(chainId: number) {
+  private static toWrappedTokenRef(ref: AssetReference): AssetReference {
+    assert(typeof ref === 'object')
+    if (ref.type === 'native') {
+      return {
+        type: 'fungible-token',
+        symbol: 'WETH',
+      }
+    }
+    return ref
+  }
+
+  // @Memoize()
+  private async getRouter(chainId: number) {
     logger.debug('getting router for chain', chainId)
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
+    // console.log('chainIdForUniswap', chainIdForUniswap)
     const mainNetUrl = 'https://mainnet.infura.io/v3/b3b072b551ea4092b120e69eb5f43993'
     // const mainNetUrl = 'https://rpc.ankr.com/eth'
     const provider = chainId === 31337 ? new JsonRpcProvider(mainNetUrl) : this.ethersProvider
-    assert(provider)
+    const chain = await this.getChain()
+    const stdProvider = this.instance.getNonForkedProvider(chain) || this.instance.getProvider(chain)
+    // console.log('stdProvider', stdProvider)
+    // const provider = getEthersProvider(this.ethersProvider)
+    // const provider = this.ethersProvider
+    // console.log('provider', provider)
+    // assert(provider)
     const router = new AlphaRouter({
       chainId: chainIdForUniswap,
       provider: provider as BaseProvider,
@@ -222,10 +246,13 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     const assetChainInfo = asset.chains[chain]
     assert(assetChainInfo)
     const oneToken = new Big(10).pow(assetChainInfo.decimals)
+    console.log('oneToken', oneToken.toString())
     if (!assetChainInfo.usd) {
       return oneToken.toFixed(0)
     }
     const oneDollarsWorthOfToken = oneToken.div(assetChainInfo.usd)
+    console.log('oneDollarsWorthOfToken', oneDollarsWorthOfToken.toString())
+    console.log('ret', oneDollarsWorthOfToken.mul(usdAmount).toFixed(0))
     return oneDollarsWorthOfToken.mul(usdAmount).toFixed(0)
   }
 

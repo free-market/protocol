@@ -3,7 +3,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import UniswapIcon from './UniswapIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { STEP_TYPE_ID } from './helper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './helper'
 
 function UniswapSummary(props: any) {
   return (
@@ -27,7 +27,7 @@ export const platformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'uniswap-exact-in',
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_IN,
       nodeType: 'stepNode',
       name: 'Uniswap Swap',
       description: 'Exchange an asset for another asset on Uniswap, specifying the exact amount of the input asset',

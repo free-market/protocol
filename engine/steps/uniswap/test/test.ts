@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from 'chai'
-import hardhat, { ethers, deployments } from 'hardhat'
-import { STEP_TYPE_ID, UniswapExactInHelper } from '../tslib/helper'
+import hre, { ethers, deployments } from 'hardhat'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/helper'
 import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory } from '@freemarket/core'
-import { getTestFixture, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
+import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory } from '@freemarket/step-sdk'
 import { UniswapExactIn } from '../tslib/model'
 import { UniswapExactInAction } from '../typechain-types'
@@ -16,16 +16,21 @@ const testAmount = '10000000000000000000'
 const UsdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 const WethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 const WbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
-const AmpAddress = '0xfF20817765cB7f73d4bde2e66e067E58D11095C2'
+const MkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'
+import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
-const toSymbol = 'AMP'
-const toAddress = AmpAddress
+const toSymbol = 'MKR'
+const toAddress = MkrAddress
 
 const fromAmount = '100000000000000000000'
 
-const setup = getTestFixture(hardhat, async baseFixture => {
+const ONE_ETH = ethers.utils.parseEther('1')
+
+const setup = getTestFixture(hre, async baseFixture => {
   const {
     signers: { otherUserSigner },
+    contracts: { frontDoor, userWorkflowRunner },
+    users: { otherUser },
   } = baseFixture
 
   const weth = Weth__factory.connect(WETH_ADDRESS, otherUserSigner)
@@ -36,6 +41,7 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   // get a reference to the deployed contract with otherUser as the signer
   const uniswapExactInAction = <UniswapExactInAction>await ethers.getContract('UniswapExactInAction', otherUserSigner)
   const toToken = IERC20__factory.connect(toAddress, otherUserSigner)
+  const usdt = IERC20__factory.connect(UsdtAddress, otherUserSigner)
   const mockWorkflowInstance = new MockWorkflowInstance()
   const stdProvider = createStandardProvider(otherUserSigner.provider!, otherUserSigner)
   const helper = new UniswapExactInHelper(mockWorkflowInstance, stdProvider)
@@ -48,7 +54,16 @@ const setup = getTestFixture(hardhat, async baseFixture => {
     symbol: toSymbol,
   }
 
-  return { contracts: { uniswapExactInAction, toToken, weth }, mockWorkflowInstance, helper, fromAssetRef, toAssetRef }
+  return {
+    contracts: { uniswapExactInAction, toToken, weth, usdt, userWorkflowRunner, frontDoor },
+    mockWorkflowInstance,
+    helper,
+    fromAssetRef,
+    toAssetRef,
+    hre,
+    otherUser,
+    otherUserSigner,
+  }
 })
 
 describe('Uniswap Exact In', async () => {
@@ -57,7 +72,7 @@ describe('Uniswap Exact In', async () => {
       contracts: { configManager, uniswapExactInAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, uniswapExactInAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_UNISWAP_EXACT_IN, uniswapExactInAction.address)
   })
 
   it('computes exchange rates with slippage', () => {
@@ -177,5 +192,140 @@ describe('Uniswap Exact In', async () => {
     const toBalanceAfter = await toToken.balanceOf(uniswapExactInAction.address)
     // console.log('toBalanceAfter', toBalanceAfter.toString())
     expect(toBalanceAfter).to.be.greaterThan(toBalanceBefore)
+  })
+
+  it.skip('handles a no-op swap where the input and out assets are the same', async () => {
+    const {
+      users: { otherUser },
+      contracts: { uniswapExactInAction, weth },
+      helper,
+    } = await setup()
+
+    // wrap eth and give it to the Action
+    await (await weth.deposit({ value: testAmount })).wait()
+    weth.transfer(uniswapExactInAction.address, testAmount)
+
+    const stepConfig: UniswapExactIn = {
+      type: 'uniswap-exact-in',
+      inputAsset: {
+        type: 'fungible-token',
+        symbol: 'WETH',
+      },
+      inputAssetSource: 'caller',
+      inputAmount: testAmount,
+      outputAsset: {
+        type: 'fungible-token',
+        symbol: 'WETH',
+      },
+    }
+
+    const context: EncodingContext<UniswapExactIn> = {
+      userAddress: otherUser,
+      chain: 'ethereum',
+      stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
+    }
+
+    const encoded = await helper.encodeWorkflowStep(context)
+
+    const { inputAssets, argData } = encoded
+    await expect(uniswapExactInAction.execute(inputAssets, argData))
+      .to.changeEtherBalance(otherUser, 0)
+      .and.changeTokenBalance(weth, otherUser, 0)
+  })
+
+  it('handles a swap where the starting asset is native', async () => {
+    const {
+      users: { otherUser },
+      contracts: { uniswapExactInAction, usdt },
+      helper,
+    } = await setup()
+
+    const stepConfig: UniswapExactIn = {
+      type: 'uniswap-exact-in',
+      inputAsset: {
+        type: 'native',
+      },
+      inputAssetSource: 'caller',
+      inputAmount: testAmount,
+      outputAsset: {
+        type: 'fungible-token',
+        symbol: 'USDT',
+      },
+    }
+
+    const context: EncodingContext<UniswapExactIn> = {
+      userAddress: otherUser,
+      chain: 'ethereum',
+      stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
+    }
+
+    const encoded = await helper.encodeWorkflowStep(context)
+
+    const { inputAssets, argData } = encoded
+    const usdtBefore = await usdt.balanceOf(uniswapExactInAction.address)
+    console.log('usdtBefore', usdtBefore.toString())
+    await confirmTx(uniswapExactInAction.execute(inputAssets, argData, { value: testAmount }))
+    const usdtAfter = await usdt.balanceOf(uniswapExactInAction.address)
+    expect(usdtAfter).to.be.greaterThan(usdtBefore)
+    console.log('usdtAfter', usdtAfter.toString())
+  })
+  it.only('handles a swap where the to asset is native', async () => {
+    const {
+      users: { otherUser },
+      contracts: { frontDoor, uniswapExactInAction, usdt, userWorkflowRunner },
+      helper,
+      otherUserSigner,
+    } = await setup()
+
+    const tetherAmount = '100000000'
+
+    const stepConfig: UniswapExactIn = {
+      type: 'uniswap-exact-in',
+      inputAsset: {
+        type: 'fungible-token',
+        symbol: 'USDT',
+      },
+      inputAssetSource: 'caller',
+      inputAmount: tetherAmount,
+      outputAsset: {
+        type: 'native',
+      },
+    }
+
+    const context: EncodingContext<UniswapExactIn> = {
+      userAddress: otherUser,
+      chain: 'ethereum',
+      stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
+    }
+
+    await getUsdt(hre, ONE_ETH.toString(), otherUserSigner)
+    await confirmTx(usdt.approve(frontDoor.address, tetherAmount))
+
+    const encoded = await helper.encodeWorkflowStep(context)
+
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          ...encoded,
+          nextStepIndex: -1,
+        },
+      ],
+    }
+
+    const provider = uniswapExactInAction.provider
+    const ethBefore = await provider.getBalance(otherUser)
+    // console.log('ethBefore', ethBefore.toString())
+
+    // const { inputAssets, argData } = encoded
+    // await confirmTx(uniswapExactInAction.execute(inputAssets, argData))
+
+    await confirmTx(userWorkflowRunner.executeWorkflow(workflow))
+
+    const ethAfter = await provider.getBalance(otherUser)
+    expect(ethAfter).to.be.greaterThan(ethBefore)
   })
 })

@@ -25,6 +25,12 @@ export const uniswapExactInSchema = createStepSchema('uniswap-exact-in').extend(
   outputAsset,
   slippageTolerance,
 })
+// .refine(
+//   data => {
+//     return typeof data.inputAmount !== 'string' || !data.inputAmount.endsWith('%')
+//   },
+//   { message: 'Relative amounts are not supported' }
+// )
 
 export interface UniswapExactIn extends z.infer<typeof uniswapExactInSchema> {}
 

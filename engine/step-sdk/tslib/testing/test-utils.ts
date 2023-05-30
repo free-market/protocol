@@ -5,7 +5,8 @@ import type { HardhatRuntimeEnvironment } from 'hardhat/types'
 import type { BigNumberish, Signer } from 'ethers'
 import { getCurveTriCrypto2Address } from './curve'
 import { IERC20__factory, ITriCrypto2__factory, Weth__factory } from '../../typechain-types'
-
+import { TransactionReceipt } from '@ethersproject/providers'
+import { ContractTransaction } from '@ethersproject/contracts'
 export const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
 interface BaseTestFixture {
@@ -84,4 +85,9 @@ export async function getUsdt(hardhat: HardhatRuntimeEnvironment, wei: BigNumber
 export async function getWeth(wei: BigNumberish, signer: Signer) {
   const weth = Weth__factory.connect(WETH_ADDRESS, signer)
   await (await weth.deposit({ value: wei })).wait()
+}
+
+export async function confirmTx<T>(ctPromise: Promise<ContractTransaction>): Promise<TransactionReceipt> {
+  const ct = await ctPromise
+  return ct.wait()
 }
