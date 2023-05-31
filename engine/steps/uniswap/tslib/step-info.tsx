@@ -4,6 +4,7 @@ import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import UniswapIcon from './UniswapIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './helper'
+import { UniswapExactIn } from './model'
 
 function UniswapSummary(props: any) {
   return (
@@ -29,12 +30,14 @@ export const platformInfo: PlatformInfo = {
       stepType: 'uniswap-exact-in',
       stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_IN,
       nodeType: 'stepNode',
-      name: 'Uniswap Swap',
+      name: 'Uniswap Exact In',
       description: 'Exchange an asset for another asset on Uniswap, specifying the exact amount of the input asset',
       icon: UniswapIcon,
       operation: 'Exact In',
       platformName: 'Uniswap',
       summary: p => {
+        const stepConfig = p.step as UniswapExactIn
+        // TODO how to get decimals?
         return (
           <span style={{ ...p.labelStyle }}>
             Swap&nbsp;

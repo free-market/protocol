@@ -22,7 +22,7 @@ export const platformInfo: PlatformInfo = {
       summary: p => (
         <div style={{ display: 'flex' }}>
           <span style={{ ...p.labelStyle }}>amount: </span>
-          <span style={{ ...p.infoStyle }}>{formatNumber(p.step.amount, 18)}</span>
+          <span style={{ ...p.infoStyle }}>{p.step.amount}</span>
         </div>
       ),
     },
@@ -38,7 +38,7 @@ export const platformInfo: PlatformInfo = {
       summary: p => (
         <div style={{ display: 'flex' }}>
           <span style={{ ...p.labelStyle }}>amount: </span>
-          <span style={{ ...p.infoStyle }}>{formatNumber(p.step.amount, 18)}</span>
+          <span style={{ ...p.infoStyle }}>{p.step.amount}</span>
         </div>
       ),
     },

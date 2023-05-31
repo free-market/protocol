@@ -10,7 +10,6 @@
     "./tslib",
     "./scripts",
     "./deploy",
-    "./test",
-    "../../step-sdk/tslib/getWrappedNativeAddress.ts"
+    "./test"
   ]
 }

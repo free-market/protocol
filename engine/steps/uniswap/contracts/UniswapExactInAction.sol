@@ -55,13 +55,14 @@ contract UniswapExactInAction is IWorkflowStep {
   }
 
   function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+    console.log('entering uniswap exact in action');
     // validate
     require(inputAssetAmounts.length == 1, 'there must be exactly 1 input asset');
 
     Locals memory locals;
 
     locals.args = abi.decode(argData, (UniswapExactInActionParams));
-
+    console.log('decoded');
     // same from/to fails in the uniswap sdk
     // // check for no-op
     // if (
@@ -77,6 +78,7 @@ contract UniswapExactInAction is IWorkflowStep {
     // }
 
     if (inputAssetAmounts[0].asset.assetType == AssetType.Native || locals.args.toAsset.assetType == AssetType.Native) {
+      console.log('wethAddress', wethAddress);
       require(wethAddress != address(0), 'weth not supported on this chain');
     }
 
@@ -84,12 +86,19 @@ contract UniswapExactInAction is IWorkflowStep {
 
     // wrap native if necessary
     if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
+      console.log('wrapping native', inputAssetAmounts[0].amount);
+      console.log('this', address(this));
+      console.log('my balance', address(this).balance);
       IWeth(wethAddress).deposit{value: inputAssetAmounts[0].amount}();
+
+      console.log('wrapped native');
       locals.inputTokenAddress = wethAddress;
     }
 
     locals.inputAsset = IERC20(locals.inputTokenAddress);
+    console.log('approving input asset');
     locals.inputAsset.safeApprove(routerAddress, inputAssetAmounts[0].amount);
+    console.log('approved input asset');
 
     // logArgs(args);
 

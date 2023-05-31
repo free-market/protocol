@@ -113,7 +113,7 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
     assert(fromAsset.type === 'fungible-token')
     assert(toAsset.type === 'fungible-token')
     const fromAmount = amount ?? (await this.getTokenAmountInUsd(1000, fromAsset, chain))
-    console.log('fromAmount', fromAmount)
+    // console.log('fromAmount', fromAmount)
     const uniswapFromToken = UniswapExactInHelper.toUniswapToken(chain, chainIdForUniswap, fromAsset)
     const uniswapToToken = UniswapExactInHelper.toUniswapToken(chain, chainIdForUniswap, toAsset)
     // console.log('uniswapFromToken', uniswapFromToken)
@@ -151,14 +151,10 @@ export class UniswapExactInHelper extends AbstractStepHelper<UniswapExactIn> {
   private async getRouter(chainId: number) {
     logger.debug('getting router for chain', chainId)
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
-    // console.log('chainIdForUniswap', chainIdForUniswap)
-    const mainNetUrl = 'https://mainnet.infura.io/v3/b3b072b551ea4092b120e69eb5f43993'
-    // const mainNetUrl = 'https://rpc.ankr.com/eth'
-    const provider = chainId === 31337 ? new JsonRpcProvider(mainNetUrl) : this.ethersProvider
-    const chain = await this.getChain()
+    const chain = chainId === 31337 ? 'hardhat' : await this.getChain()
     const stdProvider = this.instance.getNonForkedProvider(chain) || this.instance.getProvider(chain)
     // console.log('stdProvider', stdProvider)
-    // const provider = getEthersProvider(this.ethersProvider)
+    const provider = getEthersProvider(stdProvider)
     // const provider = this.ethersProvider
     // console.log('provider', provider)
     // assert(provider)

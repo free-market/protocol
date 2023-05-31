@@ -4,6 +4,7 @@ export interface Erc20Info {
   balance: Big
   currentAllowance: Big
   requiredAllowance: Big
+  decimals: number
 }
 
 export interface AddAssetInfo {

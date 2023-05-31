@@ -225,6 +225,9 @@ importers:
       axios:
         specifier: 0.27.2
         version: 0.27.2
+      big.js:
+        specifier: ^6.2.1
+        version: 6.2.1
       eip1193-provider:
         specifier: ^1.0.1
         version: 1.0.1
@@ -265,6 +268,9 @@ importers:
       '@typechain/hardhat':
         specifier: ^6.1.2
         version: 6.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.0)(ethers@5.7.2)(hardhat@2.13.0)(typechain@8.1.1)
+      '@types/big.js':
+        specifier: ^6.1.6
+        version: 6.1.6
       '@types/chai':
         specifier: ^4.2.0
         version: 4.3.3

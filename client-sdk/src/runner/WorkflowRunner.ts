@@ -71,7 +71,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
       value: nativeAmount,
     })
-    const gasLimit = srcWorkflowGasEstimate.mul(11).div(10)
+    const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
     log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
     const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
     log.debug(`tx submitted, hash=${txResponse.hash}`)
@@ -173,7 +173,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     assert(addr)
     log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
     const erc20 = IERC20__factory.connect(addr, signer)
-    const response = await erc20.approve(frontDoorAddress, amount.toFixed(0), {gasLimit: 1000000})
+    const response = await erc20.approve(frontDoorAddress, amount.toFixed(0), { gasLimit: 1000000 })
     return await response.wait(1)
   }
 

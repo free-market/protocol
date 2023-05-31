@@ -1,6 +1,6 @@
 import type { Amount, Asset, AssetAmount, AssetReference, Chain } from '../model'
 import { EvmAsset, EvmAssetType, EvmInputAsset } from '../evm'
-import { ADDRESS_ZERO } from '../utils'
+import { ADDRESS_ZERO, assert } from '../utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
 import type { IWorkflow } from '../runner/IWorkflow'
 import type { EIP1193Provider } from 'eip1193-provider'
@@ -8,6 +8,7 @@ import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Wallet } from '@ethersproject/wallet'
+import Big from 'big.js'
 
 export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
   if (asset.type === 'native') {
@@ -26,6 +27,9 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
     assetAddress: tokenAddress.address,
   }
 }
+
+export const TEN_BIG = new Big(10)
+
 export async function sdkAssetAndAmountToEvmInputAmount(
   assetRef: AssetReference,
   amount: Amount,
@@ -33,27 +37,35 @@ export async function sdkAssetAndAmountToEvmInputAmount(
   instance: IWorkflow,
   sourceIsCaller: boolean
 ): Promise<EvmInputAsset> {
-  let amountStr: string
+  let amountBn: Big
   let amountIsPercent = false
-  if (typeof amount === 'number') {
-    // if its a number just git rid of the decimals
-    amountStr = amount.toFixed(0)
-  } else if (typeof amount === 'bigint') {
-    amountStr = amount.toString()
+  if (typeof amount === 'string' && amount.endsWith('%')) {
+    const s = amount.slice(0, amount.length - 1)
+    const n = parseFloat(s) * 1000 // to decibips
+    amountBn = new Big(n)
+    amountIsPercent = true
   } else {
-    if (amount.endsWith('%')) {
-      const s = amount.slice(0, amount.length - 1)
-      const n = parseFloat(s) * 1000 // to decibips
-      amountStr = n.toFixed(0)
-      amountIsPercent = true
+    if (typeof amount === 'bigint') {
+      amountBn = new Big(amount.toString())
     } else {
-      amountStr = amount
+      amountBn = new Big(amount)
+    }
+    const asset = await instance.dereferenceAsset(assetRef, chain)
+    if (asset.type === 'native') {
+      amountBn = amountBn.mul(TEN_BIG.pow(18))
+    } else {
+      const c = chain === 'hardhat' ? 'ethereum' : chain
+      const tokenInfo = asset.chains[c]
+      assert(tokenInfo)
+      const decimals = tokenInfo.decimals
+      amountBn = amountBn.mul(TEN_BIG.pow(decimals))
     }
   }
+
   const asset = await instance.dereferenceAsset(assetRef, chain)
   return {
     asset: sdkAssetToEvmAsset(asset, chain),
-    amount: amountStr,
+    amount: amountBn.toString(),
     amountIsPercent,
     sourceIsCaller,
   }

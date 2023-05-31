@@ -45,6 +45,7 @@ import {
   ParameterType,
   ADDRESS_ZERO,
   RemittanceInfo,
+  TEN_BIG,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
@@ -184,14 +185,15 @@ export class WorkflowInstance implements IWorkflowInstance {
     symbol: string
   ): Promise<Erc20Info> {
     const token = await this.getFungibleToken(symbol)
-    const erc20Address = token?.chains[chain]?.address
-    assert(erc20Address)
-    const erc20 = IERC20__factory.connect(erc20Address, getEthersProvider(provider))
+    const { address, decimals } = token?.chains[chain] || {}
+    assert(address && decimals)
+    const erc20 = IERC20__factory.connect(address, getEthersProvider(provider))
     const [allowance, balance] = await Promise.all([erc20.allowance(userAddress, frontDoorAddress), erc20.balanceOf(userAddress)])
     return {
       balance: new Big(balance.toString()),
       currentAllowance: new Big(allowance.toString()),
       requiredAllowance: new Big(0),
+      decimals,
     }
   }
 
@@ -276,11 +278,11 @@ export class WorkflowInstance implements IWorkflowInstance {
         totalRequired = amounts.absolute.plus(relativeAmount)
       }
       if (symbol === '__native__') {
-        rv.native = totalRequired
+        rv.native = totalRequired.mul(TEN_BIG.pow(18))
       } else {
         const x = erc20Info.get(symbol)
         assert(x)
-        x.requiredAllowance = totalRequired
+        x.requiredAllowance = totalRequired.mul(TEN_BIG.pow(x.decimals))
         rv.erc20s.set(symbol, x)
       }
     }
@@ -354,6 +356,8 @@ export class WorkflowInstance implements IWorkflowInstance {
   // TODO probably don't need to instantiate WorkflowInstance here
   private applyArguments(ignoreInternalParams: boolean, args: Arguments = {}): WorkflowInstance {
     const rv = new WorkflowInstance(cloneDeep(this.workflow))
+    rv.providers = new Map(this.providers)
+    rv.nonForkedProviders = new Map(this.nonForkedProviders)
     const allParams = rv.findAllParameterReferences()
     for (const [paramName, paths] of allParams) {
       if (ignoreInternalParams && paramName.startsWith('remittances.')) {
@@ -371,9 +375,6 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
     }
     delete rv.workflow.parameters
-    for (const [chainOrStart, provider] of this.providers) {
-      rv.setProvider(chainOrStart, provider)
-    }
     return rv
   }
 
@@ -689,6 +690,11 @@ export class WorkflowInstance implements IWorkflowInstance {
     mapStepIdToIndex.set(WORKFLOW_END_STEP_ID, -1)
 
     const chain = await this.resolveChain(chainOrStart)
+    if (chainOrStart === 'start-chain') {
+      const startChainProvider = this.getProvider('start-chain')
+      const startChainProviderNonForked = this.getNonForkedProvider('start-chain')
+      this.setProvider(chain, startChainProvider, startChainProviderNonForked)
+    }
     // TODO how to handle non-evm?
     const promises = reachable.map(async stepId => {
       const step = this.getStep(stepId)
@@ -697,6 +703,7 @@ export class WorkflowInstance implements IWorkflowInstance {
         nextStepIndex = -1
       }
       const helper = this.getStepHelper(chainOrStart, step.type)
+      helper.setProvider(this.getProvider(chain))
       const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress, mapStepIdToIndex })
       // if the step gave an index, use it
       if (encoded.nextStepIndex !== undefined) {

@@ -237,7 +237,7 @@ describe('Uniswap Exact In', async () => {
   it('handles a swap where the starting asset is native', async () => {
     const {
       users: { otherUser },
-      contracts: { uniswapExactInAction, usdt },
+      contracts: { uniswapExactInAction, usdt, userWorkflowRunner },
       helper,
     } = await setup()
 
@@ -263,15 +263,26 @@ describe('Uniswap Exact In', async () => {
 
     const encoded = await helper.encodeWorkflowStep(context)
 
-    const { inputAssets, argData } = encoded
-    const usdtBefore = await usdt.balanceOf(uniswapExactInAction.address)
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          ...encoded,
+          nextStepIndex: -1,
+        },
+      ],
+    }
+
+    // const { inputAssets, argData } = encoded
+    const usdtBefore = await usdt.balanceOf(otherUser)
     console.log('usdtBefore', usdtBefore.toString())
-    await confirmTx(uniswapExactInAction.execute(inputAssets, argData, { value: testAmount }))
-    const usdtAfter = await usdt.balanceOf(uniswapExactInAction.address)
+    // await confirmTx(uniswapExactInAction.execute(inputAssets, argData, { value: testAmount }))
+    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { value: testAmount }))
+    const usdtAfter = await usdt.balanceOf(otherUser)
     expect(usdtAfter).to.be.greaterThan(usdtBefore)
     console.log('usdtAfter', usdtAfter.toString())
   })
-  it.only('handles a swap where the to asset is native', async () => {
+  it('handles a swap where the to asset is native', async () => {
     const {
       users: { otherUser },
       contracts: { frontDoor, uniswapExactInAction, usdt, userWorkflowRunner },

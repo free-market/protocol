@@ -29,6 +29,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.2",
+    "@types/big.js": "^6.1.6",
     "@types/chai": "^4.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": ">=12.0.0",
@@ -59,6 +60,7 @@
     "@ethersproject/wallet": "^5.7.0",
     "@openzeppelin/contracts": "^4.8.0",
     "axios": "0.27.2",
+    "big.js": "^6.2.1",
     "eip1193-provider": "^1.0.1",
     "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
