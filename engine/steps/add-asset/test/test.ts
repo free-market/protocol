@@ -21,7 +21,7 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('TEST', testToken.address)
+  mockWorkflowInstance.registerErc20('TEST', testToken.address, 6)
 
   // mint the user some of the test token
   await (await testToken.mint(baseFixture.users.otherUser, testAmount)).wait()

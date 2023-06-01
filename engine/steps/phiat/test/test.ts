@@ -28,7 +28,7 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('USDT', usdtAddress)
+  mockWorkflowInstance.registerErc20('USDT', usdtAddress, 6)
 
   return { contracts: { phiatSupplyAction }, mockWorkflowInstance, usdt, usdtAddress }
 })

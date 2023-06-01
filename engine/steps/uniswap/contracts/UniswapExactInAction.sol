@@ -12,6 +12,7 @@ import 'hardhat/console.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './IV3SwapRouter.sol';
 
 using ABDKMathQuad for bytes16;
@@ -77,26 +78,34 @@ contract UniswapExactInAction is IWorkflowStep {
     //       .result;
     // }
 
-    if (inputAssetAmounts[0].asset.assetType == AssetType.Native || locals.args.toAsset.assetType == AssetType.Native) {
-      console.log('wethAddress', wethAddress);
-      require(wethAddress != address(0), 'weth not supported on this chain');
-    }
+    // if (inputAssetAmounts[0].asset.assetType == AssetType.Native || locals.args.toAsset.assetType == AssetType.Native) {
+    //   console.log('wethAddress', wethAddress);
+    //   require(wethAddress != address(0), 'weth not supported on this chain');
+    // }
 
-    locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
+    locals.inputTokenAddress = LibWethUtils.wrapIfNecessary(inputAssetAmounts[0], wethAddress);
 
     // wrap native if necessary
-    if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
-      console.log('wrapping native', inputAssetAmounts[0].amount);
-      console.log('this', address(this));
-      console.log('my balance', address(this).balance);
-      IWeth(wethAddress).deposit{value: inputAssetAmounts[0].amount}();
+    // if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
+    //   console.log('wrapping native', inputAssetAmounts[0].amount);
+    //   console.log('this', address(this));
+    //   console.log('my balance', address(this).balance);
+    //   IWeth(wethAddress).deposit{value: inputAssetAmounts[0].amount}();
 
-      console.log('wrapped native');
-      locals.inputTokenAddress = wethAddress;
-    }
+    //   console.log('wrapped native');
+    //   locals.inputTokenAddress = wethAddress;
+    // } else {
+    //   locals.inputTokenAddress = inputAssetAmounts[0].asset.assetAddress;
+    //   console.log('not wrapping, asset address:', locals.inputTokenAddress);
+    //   uint256 myBalanceOfToken = IERC20(locals.inputTokenAddress).balanceOf(address(this));
+    //   console.log('my balance of token', myBalanceOfToken);
+    // }
 
     locals.inputAsset = IERC20(locals.inputTokenAddress);
     console.log('approving input asset');
+    console.log('routerAddress', routerAddress);
+    console.log('locals.inputTokenAddress', locals.inputTokenAddress);
+    console.log('inputAssetAmounts[0].amount', inputAssetAmounts[0].amount);
     locals.inputAsset.safeApprove(routerAddress, inputAssetAmounts[0].amount);
     console.log('approved input asset');
 

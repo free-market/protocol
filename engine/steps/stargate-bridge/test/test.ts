@@ -11,6 +11,7 @@ import { StargateBridge } from '../tslib/model'
 import { TestErc20__factory } from '@freemarket/step-sdk'
 
 const testAmount = 100
+const testAmountFull = 100_000000
 
 const USDC_ethereumGoerli = '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620'
 
@@ -28,14 +29,14 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   const stargateBridgeAction = <StargateBridgeAction>await ethers.getContract('StargateBridgeAction', otherUserSigner)
 
   const testUsdc = TestErc20__factory.connect(USDC_ethereumGoerli, otherUserSigner)
-  await (await testUsdc.mint(otherUser, testAmount)).wait()
+  await (await testUsdc.mint(otherUser, testAmountFull)).wait()
 
   // transfer to stargateBridgeAction
-  await (await testUsdc.transfer(stargateBridgeAction.address, testAmount)).wait()
+  await (await testUsdc.transfer(stargateBridgeAction.address, testAmountFull)).wait()
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('USDC', USDC_ethereumGoerli)
+  mockWorkflowInstance.registerErc20('USDC', USDC_ethereumGoerli, 6)
   mockWorkflowInstance.testNet = true
   mockWorkflowInstance.frontDoorAddress = frontDoor.address
 
@@ -107,6 +108,6 @@ describe('StargateBridge', async () => {
       stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.argData, {
         value: remittance.amount,
       })
-    ).to.changeTokenBalance(testUsdc, stargateBridgeAction.address, testAmount * -1)
+    ).to.changeTokenBalance(testUsdc, stargateBridgeAction.address, testAmountFull * -1)
   })
 })

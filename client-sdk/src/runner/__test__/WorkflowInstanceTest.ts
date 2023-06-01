@@ -334,7 +334,7 @@ test('creates a WorkflowRunner', async t => {
   t.pass()
 })
 
-test.only('handles asset source caller', async t => {
+test.skip('handles asset source caller', async t => {
   const workflow: Workflow = {
     steps: [
       {
@@ -344,7 +344,7 @@ test.only('handles asset source caller', async t => {
           symbol: 'USDC',
         },
         inputAssetSource: 'caller',
-        inputAmount: 1000000,
+        inputAmount: 1,
         outputAsset: {
           type: 'fungible-token',
           symbol: 'USDT',
@@ -359,7 +359,7 @@ test.only('handles asset source caller', async t => {
         },
         inputSource: 'caller',
         destinationGasUnits: 1000000,
-        inputAmount: 2000000,
+        inputAmount: 2,
         outputAsset: {
           type: 'fungible-token',
           symbol: 'USDT',

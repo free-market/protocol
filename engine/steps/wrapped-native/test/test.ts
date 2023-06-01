@@ -12,7 +12,8 @@ import { ContractTransaction } from 'ethers'
 import { TransactionReceipt } from '@ethersproject/providers'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
-const testAmount = 107
+const testAmountEth = 1
+const testAmountWei = ethers.utils.parseEther(testAmountEth.toString())
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
@@ -56,7 +57,7 @@ describe('Wrapped Native', async () => {
 
     const stepConfig: WrapNative = {
       type: 'wrap-native',
-      amount: testAmount,
+      amount: testAmountEth,
       source: 'workflow',
     }
 
@@ -71,10 +72,11 @@ describe('Wrapped Native', async () => {
     // console.log(JSON.stringify(encoded, null, 4))
 
     const { inputAssets, argData } = encoded
-    await expect(wrapNativeAction.execute(inputAssets, argData, { value: testAmount }))
-      .to.changeEtherBalance(otherUser, testAmount * -1)
-      .and.changeTokenBalance(weth, wrapNativeAction.address, testAmount)
+    await expect(wrapNativeAction.execute(inputAssets, argData, { value: testAmountWei }))
+      .to.changeEtherBalance(otherUser, testAmountWei.mul(-1))
+      .and.changeTokenBalance(weth, wrapNativeAction.address, testAmountWei)
   })
+
   it('unwraps when invoked by runner', async () => {
     const {
       contracts: { unwrapNativeAction, weth, userWorkflowRunner },
@@ -97,7 +99,7 @@ describe('Wrapped Native', async () => {
                 assetType: 1,
                 assetAddress: wethAddress,
               },
-              amount: testAmount,
+              amount: testAmountEth,
             },
           ],
           argData: '0x',
@@ -121,11 +123,11 @@ describe('Wrapped Native', async () => {
     // const encoded = await helper.encodeWorkflowStep(context)
 
     // transfer some weth to the contract runner (front door actually)
-    await confirmTx(weth.deposit({ value: testAmount }))
-    await confirmTx(weth.approve(userWorkflowRunner.address, testAmount))
+    await confirmTx(weth.deposit({ value: testAmountEth }))
+    await confirmTx(weth.approve(userWorkflowRunner.address, testAmountEth))
 
     await expect(userWorkflowRunner.executeWorkflow(workflow))
-      .to.changeEtherBalance(otherUser, testAmount)
-      .and.changeTokenBalance(weth, otherUser, testAmount * -1)
+      .to.changeEtherBalance(otherUser, testAmountEth)
+      .and.changeTokenBalance(weth, otherUser, testAmountEth * -1)
   })
 })

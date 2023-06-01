@@ -8,7 +8,10 @@ import { IERC20 } from '@freemarket/runner'
 import { CurveTriCrypto2SwapAction } from '../typechain-types'
 import { CurveTriCrypto2Swap } from '../tslib/model'
 import { BigNumber } from 'ethers'
-const testAmount = '1000000000000000000'
+import Big from 'big.js'
+
+const testAmountEth = new Big('1')
+const testAmountWei = ethers.utils.parseEther(testAmountEth.toString())
 
 const UsdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 const WethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
@@ -28,9 +31,9 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   const triCryptoAction = <CurveTriCrypto2SwapAction>await ethers.getContract('CurveTriCrypto2SwapAction', otherUserSigner)
   const usdt = IERC20__factory.connect(UsdtAddress, otherUserSigner)
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('USDT', UsdtAddress)
-  mockWorkflowInstance.registerErc20('WETH', WethAddress)
-  mockWorkflowInstance.registerErc20('WBTC', WbtcAddress)
+  mockWorkflowInstance.registerErc20('USDT', UsdtAddress, 6)
+  mockWorkflowInstance.registerErc20('WETH', WethAddress, 18)
+  mockWorkflowInstance.registerErc20('WBTC', WbtcAddress, 8)
 
   const helper = new CurveTriCrypto2SwapHelper(mockWorkflowInstance)
 
@@ -58,7 +61,7 @@ describe('Curve Tricrypo2 swap', async () => {
         type: 'native',
       },
       source: 'workflow',
-      inputAmount: testAmount,
+      inputAmount: testAmountEth.toFixed(0),
       outputAsset: {
         type: 'fungible-token',
         symbol: 'USDT',
@@ -75,10 +78,12 @@ describe('Curve Tricrypo2 swap', async () => {
 
     const tetherBalanceBefore = await usdt.balanceOf(triCryptoAction.address)
     let { inputAssets, argData } = encoded
-    await expect(triCryptoAction.execute(inputAssets, argData, { value: testAmount })).not.to.be.reverted
+    await expect(triCryptoAction.execute(inputAssets, argData, { value: testAmountWei })).not.to.be.reverted
     let tetherBalanceAfter = await usdt.balanceOf(triCryptoAction.address)
     expect(tetherBalanceAfter).to.be.greaterThan(tetherBalanceBefore)
-
+    console.log('tetherBalanceAfter', tetherBalanceAfter.toString())
+    const inputAmountStr = new Big(tetherBalanceAfter.toString()).div(10 ** 6).toString()
+    console.log('inputAmountStr', inputAmountStr)
     // go the other direction: USDT -> WETH (to native is failing)
     context.stepConfig = {
       type: 'curve-tricrypto2-swap',
@@ -87,7 +92,7 @@ describe('Curve Tricrypo2 swap', async () => {
         symbol: 'USDT',
       },
       source: 'workflow',
-      inputAmount: tetherBalanceAfter.toString(),
+      inputAmount: inputAmountStr,
       // this fails, I assume when going in this direction it doesn't unwrap for you
       // outputAsset: {
       //   type: 'native',

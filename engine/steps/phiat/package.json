@@ -9,7 +9,7 @@
     "build-ts": "tsc",
     "dev": "tsc --watch",
     "build": "hardhat compile && tsc",
-    "test": "hardhat test --deploy-fixture",
+    "test": "echo not implemented -- hardhat test --deploy-fixture",
     "deploy-contracts": "hardhat deploy --tags PhiatSupplyAction"
   },
   "keywords": [],

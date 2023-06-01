@@ -17,12 +17,14 @@ import {
 } from '@freemarket/core'
 import type { EIP1193Provider } from 'eip1193-provider'
 import { Memoize } from 'typescript-memoize'
+import axios from 'axios'
 
 initEnv()
 
 export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
   private erc20s = new Map<string, string>()
+  private decimals = new Map<string, number>()
 
   testNet = false
   frontDoorAddress?: string
@@ -32,6 +34,12 @@ export class MockWorkflowInstance implements IWorkflow {
       throw new Error('frontDoorAddress not set in not MockWorkflowInstance')
     }
     return Promise.resolve(this.frontDoorAddress)
+  }
+
+  @Memoize()
+  private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
+    const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
+    return response.data
   }
 
   async dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
@@ -55,7 +63,7 @@ export class MockWorkflowInstance implements IWorkflow {
       const chains: FungibleToken['chains'] = {}
       chains[chain] = {
         address,
-        decimals: 18,
+        decimals: this.decimals.get(assetRef.symbol)!,
       }
 
       const rv: FungibleToken = {
@@ -89,8 +97,9 @@ export class MockWorkflowInstance implements IWorkflow {
     throw new Error('not implemented')
   }
 
-  registerErc20(symbol: string, address: string) {
+  registerErc20(symbol: string, address: string, decimals: number) {
     this.erc20s.set(symbol, address)
+    this.decimals.set(symbol, decimals)
   }
   getNonForkedProvider(
     chain: 'ethereum' | 'arbitrum' | 'avalanche' | 'polygon' | 'binance' | 'optimism' | 'fantom' | 'hardhat'

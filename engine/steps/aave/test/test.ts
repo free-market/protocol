@@ -5,7 +5,9 @@ import { AaveSupplyHelper, STEP_TYPE_ID } from '../tslib/helper'
 import { EncodingContext } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt } from '@freemarket/step-sdk/tslib/testing'
 import { AaveSupply } from '../tslib/model'
-const testAmount = 99
+
+const testAmountUsdt = 9
+const testAmountUsdtFull = testAmountUsdt * 10 ** 6
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
@@ -24,11 +26,11 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   const { usdt, usdtAddress } = await getUsdt(hardhat, '1000000000000000000', otherUserSigner)
 
   // transfer to stargateBridgeAction
-  await (await usdt.transfer(aaveSupplyAction.address, testAmount)).wait()
+  await (await usdt.transfer(aaveSupplyAction.address, testAmountUsdtFull)).wait()
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('USDT', usdtAddress)
+  mockWorkflowInstance.registerErc20('USDT', usdtAddress, 6)
 
   return { contracts: { aaveSupplyAction }, mockWorkflowInstance, usdt, usdtAddress }
 })
@@ -58,7 +60,7 @@ describe('AaveSupply', async () => {
         symbol: 'USDT',
       },
       source: 'workflow',
-      amount: testAmount,
+      amount: testAmountUsdt,
     }
     const helper = new AaveSupplyHelper(mockWorkflowInstance)
 
@@ -72,7 +74,7 @@ describe('AaveSupply', async () => {
     await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData)).to.changeTokenBalance(
       usdt,
       aaveSupplyAction.address,
-      testAmount * -1
+      testAmountUsdtFull * -1
     )
   })
 })

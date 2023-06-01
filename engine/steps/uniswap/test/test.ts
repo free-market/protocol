@@ -3,26 +3,24 @@
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
 import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/helper'
-import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory } from '@freemarket/core'
+import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory } from '@freemarket/step-sdk'
 import { UniswapExactIn } from '../tslib/model'
 import { UniswapExactInAction } from '../typechain-types'
 import { CurrencyAmount, Token } from '@uniswap/sdk-core'
 import { ADDRESS_ZERO } from '@uniswap/v3-sdk'
-
-//                   12345678901234567890
-const testAmount = '10000000000000000000'
-const UsdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
-const WethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-const WbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
-const MkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
+
+import Big from 'big.js'
+
+const testAmountEth = new Big('1')
+const testAmountWei = testAmountEth.mul(TEN_BIG.pow(18)).toFixed(0)
+const UsdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
+const MkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'
 
 const toSymbol = 'MKR'
 const toAddress = MkrAddress
-
-const fromAmount = '100000000000000000000'
 
 const ONE_ETH = ethers.utils.parseEther('1')
 
@@ -88,7 +86,7 @@ describe('Uniswap Exact In', async () => {
   it('computes a route', async () => {
     const { helper, fromAssetRef, toAssetRef } = await setup()
     // await getWeth(fromAmount, otherUserSigner)
-    const route = await helper.getRoute(fromAssetRef, toAssetRef, fromAmount)
+    const route = await helper.getRoute(fromAssetRef, toAssetRef, testAmountWei)
     expect(route).to.not.be.undefined
   })
 
@@ -158,8 +156,8 @@ describe('Uniswap Exact In', async () => {
     } = await setup()
 
     // wrap eth and give it to the Action
-    await (await weth.deposit({ value: testAmount })).wait()
-    weth.transfer(uniswapExactInAction.address, testAmount)
+    await (await weth.deposit({ value: testAmountWei })).wait()
+    weth.transfer(uniswapExactInAction.address, testAmountWei)
 
     const stepConfig: UniswapExactIn = {
       type: 'uniswap-exact-in',
@@ -168,7 +166,7 @@ describe('Uniswap Exact In', async () => {
         symbol: 'WETH',
       },
       inputAssetSource: 'caller',
-      inputAmount: testAmount,
+      inputAmount: testAmountEth.toFixed(0),
       outputAsset: {
         type: 'fungible-token',
         symbol: toSymbol,
@@ -202,8 +200,8 @@ describe('Uniswap Exact In', async () => {
     } = await setup()
 
     // wrap eth and give it to the Action
-    await (await weth.deposit({ value: testAmount })).wait()
-    weth.transfer(uniswapExactInAction.address, testAmount)
+    await (await weth.deposit({ value: testAmountWei })).wait()
+    weth.transfer(uniswapExactInAction.address, testAmountWei)
 
     const stepConfig: UniswapExactIn = {
       type: 'uniswap-exact-in',
@@ -212,7 +210,7 @@ describe('Uniswap Exact In', async () => {
         symbol: 'WETH',
       },
       inputAssetSource: 'caller',
-      inputAmount: testAmount,
+      inputAmount: testAmountEth.toFixed(0),
       outputAsset: {
         type: 'fungible-token',
         symbol: 'WETH',
@@ -247,7 +245,7 @@ describe('Uniswap Exact In', async () => {
         type: 'native',
       },
       inputAssetSource: 'caller',
-      inputAmount: testAmount,
+      inputAmount: testAmountEth.toFixed(0),
       outputAsset: {
         type: 'fungible-token',
         symbol: 'USDT',
@@ -277,11 +275,12 @@ describe('Uniswap Exact In', async () => {
     const usdtBefore = await usdt.balanceOf(otherUser)
     console.log('usdtBefore', usdtBefore.toString())
     // await confirmTx(uniswapExactInAction.execute(inputAssets, argData, { value: testAmount }))
-    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { value: testAmount }))
+    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { value: testAmountWei }))
     const usdtAfter = await usdt.balanceOf(otherUser)
     expect(usdtAfter).to.be.greaterThan(usdtBefore)
     console.log('usdtAfter', usdtAfter.toString())
   })
+
   it('handles a swap where the to asset is native', async () => {
     const {
       users: { otherUser },
@@ -290,7 +289,7 @@ describe('Uniswap Exact In', async () => {
       otherUserSigner,
     } = await setup()
 
-    const tetherAmount = '100000000'
+    const tetherAmount = '1000'
 
     const stepConfig: UniswapExactIn = {
       type: 'uniswap-exact-in',
@@ -313,7 +312,7 @@ describe('Uniswap Exact In', async () => {
     }
 
     await getUsdt(hre, ONE_ETH.toString(), otherUserSigner)
-    await confirmTx(usdt.approve(frontDoor.address, tetherAmount))
+    await confirmTx(usdt.approve(frontDoor.address, new Big(tetherAmount).mul(TEN_BIG.pow(6)).toFixed(0)))
 
     const encoded = await helper.encodeWorkflowStep(context)
 
@@ -334,7 +333,7 @@ describe('Uniswap Exact In', async () => {
     // const { inputAssets, argData } = encoded
     // await confirmTx(uniswapExactInAction.execute(inputAssets, argData))
 
-    await confirmTx(userWorkflowRunner.executeWorkflow(workflow))
+    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { gasLimit: 30000000 }))
 
     const ethAfter = await provider.getBalance(otherUser)
     expect(ethAfter).to.be.greaterThan(ethBefore)
