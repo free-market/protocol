@@ -4,6 +4,8 @@ import { payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
 import { assetBalanceBranchSchema, chainBranchSchema } from '@freemarket/base-branches'
 import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
+import { phiatSupplySchema } from '@freemarket/phiat'
+import { pulsexExactInSchema } from '@freemarket/pulsex'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'
@@ -19,6 +21,8 @@ export const stepSchema = z.discriminatedUnion('type', [
   addAssetSchema,
   curveTriCrypto2SwapSchema,
   payGelatoRelaySchema,
+  phiatSupplySchema,
+  pulsexExactInSchema,
   uniswapExactInSchema,
   uniswapExactOutSchema,
   unwrapNativeSchema,
