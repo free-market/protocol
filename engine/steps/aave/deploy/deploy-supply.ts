@@ -16,6 +16,8 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
     const mockAToken = await mockPool.mockAToken()
     console.log(`mockAToken deployed to ${mockAToken}`)
     poolAddress = mockPool.address
+  } else {
+    console.log(`using existing AavePool at ${poolAddress}`)
   }
   const wethAddress = getWrappedNativeAddress(chainId) || ADDRESS_ZERO
   await deployStep('AaveSupplyAction', STEP_TYPE_ID, hardhatRuntimeEnv, [poolAddress, wethAddress])

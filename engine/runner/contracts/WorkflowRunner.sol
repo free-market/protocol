@@ -98,6 +98,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       while (true) {
         // prepare to invoke the step
         WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
+        console.log('prepping for step', currentStep.stepTypeId);
 
         // ChainBranch and AssetAmountBranch are special
         if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
@@ -247,6 +248,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       // it's not possible to 'trasfer from caller' for native assets
       // assetBalances should have been initialized with the correct amount
     } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
+      console.log('transferFromCaller erc20', inputAssetAmount.asset.assetAddress, inputAssetAmount.amount);
       IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
       uint256 allowance = token.allowance(userAddress, address(this));
       require(allowance >= inputAssetAmount.amount, 'insufficient allowance for erc20');

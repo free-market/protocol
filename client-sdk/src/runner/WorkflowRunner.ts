@@ -68,10 +68,12 @@ export class WorkflowRunner implements IWorkflowRunner {
     this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
-    const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
-      value: nativeAmount,
-    })
-    const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
+    // console.log('estimating gas', await runner.signer.getAddress())
+    // const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
+    //   value: nativeAmount,
+    // })
+    // const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
+    const gasLimit = 30000000
     log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
     const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
     log.debug(`tx submitted, hash=${txResponse.hash}`)

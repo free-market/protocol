@@ -1,19 +1,21 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { AaveSupplyAction } from '../typechain-types'
+import { AaveSupplyAction, IAaveV3Pool__factory, IERC20__factory } from '../typechain-types'
 import { AaveSupplyHelper, STEP_TYPE_ID } from '../tslib/helper'
-import { EncodingContext } from '@freemarket/core'
-import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt } from '@freemarket/step-sdk/tslib/testing'
+import { ADDRESS_ZERO, EncodingContext } from '@freemarket/core'
+import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt, confirmTx } from '@freemarket/step-sdk/tslib/testing'
 import { AaveSupply } from '../tslib/model'
+import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
 const testAmountUsdt = 9
 const testAmountUsdtFull = testAmountUsdt * 10 ** 6
+const ONE_ETH = ethers.utils.parseEther('1')
 
 const setup = getTestFixture(hardhat, async baseFixture => {
   const {
     users: { otherUser },
     signers: { otherUserSigner },
-    contracts: { frontDoor },
+    contracts: { frontDoor, userWorkflowRunner },
   } = baseFixture
 
   // deploy the contract
@@ -25,14 +27,14 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   // get some USDT
   const { usdt, usdtAddress } = await getUsdt(hardhat, '1000000000000000000', otherUserSigner)
 
-  // transfer to stargateBridgeAction
+  // transfer to the step
   await (await usdt.transfer(aaveSupplyAction.address, testAmountUsdtFull)).wait()
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
   mockWorkflowInstance.registerErc20('USDT', usdtAddress, 6)
 
-  return { contracts: { aaveSupplyAction }, mockWorkflowInstance, usdt, usdtAddress }
+  return { contracts: { aaveSupplyAction, userWorkflowRunner }, mockWorkflowInstance, usdt, usdtAddress, otherUserSigner }
 })
 
 describe('AaveSupply', async () => {
@@ -40,12 +42,13 @@ describe('AaveSupply', async () => {
     const {
       contracts: { configManager, aaveSupplyAction },
       mockWorkflowInstance,
+      otherUserSigner,
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
     await validateAction(configManager, STEP_TYPE_ID, aaveSupplyAction.address)
   })
 
-  it('executes', async () => {
+  it('executes when invoked directly', async () => {
     const {
       users: { otherUser },
       contracts: { aaveSupplyAction },
@@ -76,5 +79,77 @@ describe('AaveSupply', async () => {
       aaveSupplyAction.address,
       testAmountUsdtFull * -1
     )
+  })
+
+  it.only('executes when invoked via the front door', async () => {
+    const {
+      users: { otherUser },
+      contracts: { userWorkflowRunner, aaveSupplyAction },
+      mockWorkflowInstance,
+      otherUserSigner,
+    } = await setup()
+
+    const stepConfig: AaveSupply = {
+      type: 'aave-supply',
+      asset: {
+        type: 'fungible-token',
+        symbol: 'USDT',
+      },
+      source: 'caller',
+      amount: testAmountUsdt,
+    }
+    const helper = new AaveSupplyHelper(mockWorkflowInstance)
+
+    const context: EncodingContext<AaveSupply> = {
+      userAddress: otherUser,
+      chain: 'ethereum',
+      stepConfig,
+      mapStepIdToIndex: new Map<string, number>(),
+    }
+    const encoded = await helper.encodeWorkflowStep(context)
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          ...encoded,
+          nextStepIndex: -1,
+        },
+      ],
+    }
+
+    console.log('getting usdt')
+    // get some USDT
+    const { usdt } = await getUsdt(hardhat, ONE_ETH, otherUserSigner)
+    console.log('got usdt')
+
+    // transfer to the step
+    await confirmTx(usdt.approve(userWorkflowRunner.address, testAmountUsdtFull))
+
+    // console.log('estimating gas')
+    // const gasEstimate = await userWorkflowRunner.estimateGas.executeWorkflow(workflow)
+    // console.log('gasEstimate', gasEstimate.toString())
+    const poolAddr = await aaveSupplyAction.poolAddress()
+    const pool = IAaveV3Pool__factory.connect(poolAddr, otherUserSigner)
+    const reserveData = await pool.getReserveData(usdt.address)
+    console.log('reserveData', reserveData)
+    const aTokenAddress = reserveData.aTokenAddress
+    const aToken = IERC20__factory.connect(aTokenAddress, otherUserSigner)
+    const aTokenBalanceBefore = await aToken.balanceOf(otherUser)
+    const usdtBalanceBefore = await usdt.balanceOf(otherUser)
+    console.log('usdtBalanceBefore', usdtBalanceBefore.toString())
+    console.log('aTokenBalanceBefore', aTokenBalanceBefore.toString())
+    console.log('executing workflow', userWorkflowRunner.address)
+    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { gasLimit: 3000000 }))
+    // await confirmTx(userWorkflowRunner.executeWorkflow())
+    const aTokenBalanceAfter = await aToken.balanceOf(otherUser)
+    const usdtBalanceAfter = await usdt.balanceOf(otherUser)
+    console.log('aTokenBalanceAfter', aTokenBalanceAfter.toString())
+    console.log('usdtBalanceAfter', usdtBalanceAfter.toString())
+
+    // await expect(userWorkflow.executeStep(otherUser, encoded.inputAssets, encoded.argData)).to.changeTokenBalance(
+    //   usdt,
+    //   aaveSupplyAction.address,
+    //   testAmountUsdtFull * -1
+    // )
   })
 })

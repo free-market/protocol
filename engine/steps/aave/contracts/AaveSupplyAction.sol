@@ -38,6 +38,7 @@ contract AaveSupplyAction is IWorkflowStep {
   }
 
   function execute(AssetAmount[] calldata assetAmounts, bytes calldata) public payable returns (WorkflowStepResult memory) {
+    console.log('entering aave supply action');
     // validate
     require(assetAmounts.length == 1, 'there must be exactly 1 input asset');
     // require(assetAmounts[0].asset.assetType == AssetType.ERC20, 'the input asset must be an ERC20');
@@ -53,6 +54,9 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // approve aave to take the asset
     locals.inputToken = IERC20(locals.inputTokenAddress);
+    uint256 myBalance = locals.inputToken.balanceOf(address(this));
+    console.log('myBalance', myBalance);
+    console.log('approving', assetAmounts[0].amount);
     locals.inputToken.safeApprove(poolAddress, assetAmounts[0].amount);
 
     // get the aToken
@@ -63,8 +67,10 @@ contract AaveSupplyAction is IWorkflowStep {
     // take note of the before balance
     locals.aTokenBalanceBefore = locals.aToken.balanceOf(address(this));
 
+    console.log('invoking supply');
     // invoke supply
     locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, address(this), 0);
+    console.log('invoked supply');
 
     locals.aTokenBalanceAfter = locals.aToken.balanceOf(address(this));
     require(locals.aTokenBalanceAfter > locals.aTokenBalanceBefore, 'aToken balance did not increase');

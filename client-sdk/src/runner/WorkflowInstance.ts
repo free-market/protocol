@@ -144,18 +144,23 @@ export class WorkflowInstance implements IWorkflowInstance {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   private async getAddAssetTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
     const symbols = new Set<string>()
+
+    const startChainSegmentIds = new Set(this.getReachableSet(this.getStartStepId()))
     for (const step of this.steps as Step[]) {
-      if (step.type === 'add-asset') {
-        assert(typeof step.asset !== 'string')
-        if (step.asset.type !== 'native') {
-          symbols.add(step.asset.symbol)
-        }
-      } else {
-        const helper = this.getStepHelper('start-chain', step.type)
-        const assetAmounts = await helper.getAddAssetInfo(step)
-        for (const assetAmount of assetAmounts) {
-          if (typeof assetAmount.asset !== 'string' && assetAmount.asset.type !== 'native') {
-            symbols.add(assetAmount.asset.symbol)
+      assert(step.stepId)
+      if (startChainSegmentIds.has(step.stepId)) {
+        if (step.type === 'add-asset') {
+          assert(typeof step.asset !== 'string')
+          if (step.asset.type !== 'native') {
+            symbols.add(step.asset.symbol)
+          }
+        } else {
+          const helper = this.getStepHelper('start-chain', step.type)
+          const assetAmounts = await helper.getAddAssetInfo(step)
+          for (const assetAmount of assetAmounts) {
+            if (typeof assetAmount.asset !== 'string' && assetAmount.asset.type !== 'native') {
+              symbols.add(assetAmount.asset.symbol)
+            }
           }
         }
       }
@@ -207,8 +212,13 @@ export class WorkflowInstance implements IWorkflowInstance {
   private async getAddAssetAmountsMap() {
     type Amounts = { absolute: Big; percent: number }
     const amountsMap = new MapWithDefault<string, Amounts>(() => ({ absolute: Big(0), percent: 0 }))
+    const startChainSegmentIds = new Set(this.getReachableSet(this.getStartStepId()))
 
     for (const step of this.steps as Step[]) {
+      assert(step.stepId)
+      if (!startChainSegmentIds.has(step.stepId)) {
+        continue
+      }
       if (step.type === 'add-asset') {
         assert(typeof step.asset !== 'string')
         const key = step.asset.type === 'native' ? '__native__' : step.asset.symbol
