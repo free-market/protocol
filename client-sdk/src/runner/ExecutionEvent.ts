@@ -1,4 +1,4 @@
-import type { Chain } from '@freemarket/core'
+import type { Chain, PartialRecord } from '@freemarket/core'
 
 export enum ExecutionEventCode {
   Erc20ApprovalsSubmitting = 'Erc20ApprovalsSubmitting',
@@ -53,15 +53,30 @@ export interface WorkflowConfirmed {
   transactionHash: string
 }
 
-export interface WorkflowWaitingForBridge {
+export interface WorkflowWaitingForContinuation {
   code: 'WorkflowWaitingForBridge'
-  bridgeName: string
+  stepType: string
   sourceChain: Chain
   sourceChainTransactionHash: string
   targetChain: Chain
 }
+
+export interface OnChainEvent {
+  name: string
+  signature: string
+  args: Record<string, any>
+}
+
+export interface ExecutionEvents {
+  chain: Chain
+  events: OnChainEvent[]
+}
+
 export interface WorkflowComplete {
   code: 'WorkflowComplete'
+  chain: Chain
+  transactionHash: string
+  events: ExecutionEvents[]
 }
 
 export type CreateExecutionEventArg =
@@ -72,7 +87,7 @@ export type CreateExecutionEventArg =
   | WorkflowSubmitting
   | WorkflowSubmitted
   | WorkflowConfirmed
-  | WorkflowWaitingForBridge
+  | WorkflowWaitingForContinuation
   | WorkflowComplete
 
 export type ExecutionEvent = CreateExecutionEventArg & { message: string }
@@ -95,7 +110,7 @@ export function createExecutionEvent(event: CreateExecutionEventArg): ExecutionE
     case 'WorkflowConfirmed':
       return { ...event, message: `Workflow confirmed on ${event.chain} tx=${event.transactionHash}` }
     case 'WorkflowWaitingForBridge':
-      return { ...event, message: `Waiting for ${event.bridgeName} to bridge funds from ${event.sourceChain} to ${event.targetChain}` }
+      return { ...event, message: `Waiting for ${event.stepType} to bridge funds from ${event.sourceChain} to ${event.targetChain}` }
     case 'WorkflowComplete':
       return { ...event, message: `Workflow has completed successfully` }
   }

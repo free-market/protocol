@@ -64,8 +64,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
 
   /// @notice This event is emitted when this is a continuation of a workflow from another chain
   /// @param nonce The nonce provided by the caller on the source chain, used to correlate the source chain workflow segment with this segment.
-  /// @param startingAsset The asset that was transferred from the source chain to this chain
-  event WorkflowContinuation(uint256 nonce, address userAddress, AssetAmount startingAsset);
+  /// @param startingAssets The asset that was transferred from the source chain to this chain
+  event WorkflowContinuation(uint256 nonce, address userAddress, AssetAmount[] startingAssets);
 
   using LibAssetBalances for LibAssetBalances.AssetBalances;
 
@@ -74,11 +74,12 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   }
 
   function executeWorkflow(Workflow calldata workflow) external payable nonReentrant {
-    AssetAmount memory startingAssets = AssetAmount(Asset(AssetType.Native, address(0)), 0);
+    AssetAmount[] memory startingAssets = new AssetAmount[](1);
+    startingAssets[0] = AssetAmount(Asset(AssetType.Native, address(0)), 0);
     executeWorkflow(msg.sender, workflow, startingAssets);
   }
 
-  function executeWorkflow(address userAddress, Workflow memory workflow, AssetAmount memory startingAsset) internal {
+  function executeWorkflow(address userAddress, Workflow memory workflow, AssetAmount[] memory startingAssets) internal {
     emit WorkflowExecution(userAddress, workflow);
     // workflow starts on the step with index 0
     uint16 currentStepIndex = 0;
@@ -90,10 +91,17 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       console.log('crediting native', msg.value);
       assetBalances.credit(0, msg.value);
     }
+
     // credit any starting assets (if this is a continutation workflow with assets sent by a bridge)
-    if (startingAsset.amount > 0) {
-      assetBalances.credit(startingAsset.asset, startingAsset.amount);
+    for (uint256 i = 0; i < startingAssets.length; i++) {
+      AssetAmount memory startingAsset = startingAssets[i];
+      if (startingAsset.amount > 0) {
+        console.log('crediting starting', startingAsset.asset.assetAddress, startingAsset.amount);
+        assetBalances.credit(startingAsset.asset, startingAsset.amount);
+      }
     }
+
+    // loop through the steps
     if (workflow.steps.length > 0) {
       while (true) {
         // prepare to invoke the step
@@ -231,7 +239,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
         // rv[i].amount = 1;
       } else {
-        require(currentWorkflowAssetBalance <= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
+        require(currentWorkflowAssetBalance >= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
         rv[i].amount = stepInputAsset.amount;
       }
     }
@@ -263,9 +271,25 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     address userAddress,
     uint256 nonce,
     Workflow memory workflow,
-    AssetAmount memory startingAsset
+    AssetAmount[] memory startingAssets
   ) external payable {
-    emit WorkflowContinuation(nonce, userAddress, startingAsset);
-    executeWorkflow(userAddress, workflow, startingAsset);
+    // only step contracts are allowed to call this
+    require(LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, msg.sender), 'caller is not a valid step');
+    emit WorkflowContinuation(nonce, userAddress, startingAssets);
+    for (uint256 i = 0; i < startingAssets.length; ++i) {
+      if (startingAssets[i].asset.assetType == AssetType.Native) {
+        // the calling step should have sent the correct amount of native
+        require(msg.value >= startingAssets[i].amount, 'msg.value is less than starting asset amount');
+      } else if (startingAssets[i].asset.assetType == AssetType.ERC20) {
+        // the calling step should have approved the correct amount of the erc20
+        IERC20 token = IERC20(startingAssets[i].asset.assetAddress);
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= startingAssets[i].amount, 'insufficient allowance for erc20');
+        SafeERC20.safeTransferFrom(token, msg.sender, address(this), startingAssets[i].amount);
+      } else {
+        revert('unknown asset type in startingAssets');
+      }
+    }
+    executeWorkflow(userAddress, workflow, startingAssets);
   }
 }

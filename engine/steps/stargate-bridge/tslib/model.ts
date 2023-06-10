@@ -30,6 +30,7 @@ export const stargateBridgeSchema = createStepSchema('stargate-bridge').extend({
     .optional()
     .describe(stepProperties('Additional Native', 'Additional native asset to send to the destination user address')),
   remittanceSource: assetSourceSchema.default('caller').describe(stepProperties('Remittance Source', 'The source of the remittance')),
+  // includeContinuationWorkflowInEvent: z.boolean().default(false).describe(stepProperties('Include Continuation Workflow', 'Include the continuation workflow in the event')),
 })
 
 export interface StargateBridge extends z.infer<typeof stargateBridgeSchema> {}

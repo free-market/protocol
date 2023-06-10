@@ -61,7 +61,11 @@ contract ConfigManager is FreeMarketBase {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     eternalStorage.setEnumerableMapUintToAddress(LibConfigReader.latestStepAddresses, stepTypeId, stepAddress);
     // using the white list map like a set, we only care about the keys
+    // this sets it as the current step for the stepTypeId
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress, 0);
+    // this adds it to the list of all valid steps
+    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress, 0);
+    // remove it from the black list just in case it was there
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress);
     emit StepAddressSetEvent(stepTypeId, stepAddress);
   }
@@ -72,6 +76,7 @@ contract ConfigManager is FreeMarketBase {
     require(stepAddress != latest, 'cannot remove latest step address');
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress, 0);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress);
+    eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress);
     emit StepAddressSetEvent(stepTypeId, stepAddress);
   }
 

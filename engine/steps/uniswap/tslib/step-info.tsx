@@ -3,7 +3,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import UniswapIcon from './UniswapIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './helper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './ExactInHelper'
 import { UniswapExactIn } from './model'
 
 function UniswapSummary(props: any) {

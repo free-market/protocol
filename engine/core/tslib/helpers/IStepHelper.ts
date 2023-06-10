@@ -2,6 +2,7 @@ import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedWorkflowStep } from '../runner/EncodedWorkflow'
 import type { Amount, AssetAmount, AssetReference, Chain, StepBase } from '../model'
 import { ZodType } from 'zod'
+import { ContinuationInfo } from './ContinuationInfo'
 
 export interface BridgeTarget {
   chain: Chain
@@ -23,6 +24,7 @@ export interface EncodingContext<T> {
   chain: Chain
   stepConfig: T
   mapStepIdToIndex: Map<string, number>
+  isDebug?: boolean
 }
 
 export interface RemittanceInfo {
@@ -30,6 +32,18 @@ export interface RemittanceInfo {
   amount: Amount
   source: 'caller' | 'workflow'
 }
+
+export interface EncodeContinuationResult {
+  toAddress: string
+  fromAddress: string
+  callData: string
+  // TODO startAssets not needed?
+  startAssets: {
+    address: string
+    amount: string
+  }[]
+}
+
 export interface IStepHelper<T extends StepBase> {
   requiresRemittance(stepConfig: T): boolean
   getRemittance(stepConfig: T): Promise<RemittanceInfo | null>
@@ -38,6 +52,7 @@ export interface IStepHelper<T extends StepBase> {
   getPossibleNextSteps(stepConfig: T): NextSteps | null
   setProvider(provider: EIP1193Provider): void
   getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]>
+  encodeContinuation(continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult>
 }
 
 interface StepProperties {

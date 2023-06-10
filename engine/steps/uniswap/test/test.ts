@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/helper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/ExactInHelper'
 import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory } from '@freemarket/step-sdk'
@@ -86,7 +86,7 @@ describe('Uniswap Exact In', async () => {
   it('computes a route', async () => {
     const { helper, fromAssetRef, toAssetRef } = await setup()
     // await getWeth(fromAmount, otherUserSigner)
-    const route = await helper.getRoute(fromAssetRef, toAssetRef, testAmountWei)
+    const route = await helper.getRoute(fromAssetRef, toAssetRef, 'exactIn', testAmountWei)
     expect(route).to.not.be.undefined
   })
 

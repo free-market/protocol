@@ -17,8 +17,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // console.log(`calling frontDoor<${frontDoor.address}>.setUpstream(${deployResult.address})`)
 
   if (deployResult.newlyDeployed) {
+    console.log('configuring frontDoor and runner whitelist for:', deployResult.address)
     await (await frontDoor.setUpstream(deployResult.address)).wait()
-    // console.log('adding newly deployed runner to whitelist', deployResult.address)
     const configManager = <ConfigManager>await ethers.getContract('ConfigManager')
     await (await configManager.addRunnerAddress(deployResult.address)).wait()
   }

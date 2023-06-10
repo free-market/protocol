@@ -1,0 +1,129 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IWorkflowStep",
+  "sourceName": "@freemarket/core/contracts/IWorkflowStep.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "enum AssetType",
+                  "name": "assetType",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "address",
+                  "name": "assetAddress",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct Asset",
+              "name": "asset",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct AssetAmount[]",
+          "name": "assetAmounts",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "argData",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "components": [
+                    {
+                      "internalType": "enum AssetType",
+                      "name": "assetType",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "assetAddress",
+                      "type": "address"
+                    }
+                  ],
+                  "internalType": "struct Asset",
+                  "name": "asset",
+                  "type": "tuple"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct AssetAmount[]",
+              "name": "inputAssetAmounts",
+              "type": "tuple[]"
+            },
+            {
+              "components": [
+                {
+                  "components": [
+                    {
+                      "internalType": "enum AssetType",
+                      "name": "assetType",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "assetAddress",
+                      "type": "address"
+                    }
+                  ],
+                  "internalType": "struct Asset",
+                  "name": "asset",
+                  "type": "tuple"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct AssetAmount[]",
+              "name": "outputAssetAmounts",
+              "type": "tuple[]"
+            },
+            {
+              "internalType": "int16",
+              "name": "nextStepIndex",
+              "type": "int16"
+            },
+            {
+              "internalType": "int24",
+              "name": "fee",
+              "type": "int24"
+            }
+          ],
+          "internalType": "struct WorkflowStepResult",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

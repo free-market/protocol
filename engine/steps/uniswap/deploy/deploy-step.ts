@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '../tslib/helper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '../tslib/ExactInHelper'
 import { deployStep, getWrappedNativeAddress } from '@freemarket/step-sdk'
 import { ADDRESS_ZERO } from '@freemarket/core'
 

@@ -10,4 +10,5 @@ export interface StargateBridgeActionArgs {
   minAmountOutIsPercent: boolean
   continuationWorkflow: string
   nonce: string
+  includeContinuationWorkflowInEvent: boolean
 }

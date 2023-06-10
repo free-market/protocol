@@ -1,33 +1,52 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
 import type { AddAssetInfo } from './AddAssetInfo'
-import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
+import {
+  createExecutionEvent,
+  CreateExecutionEventArg,
+  ExecutionEvent,
+  ExecutionEventCode,
+  ExecutionEventHandler,
+  ExecutionEvents,
+  OnChainEvent,
+} from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 // import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { BigNumber } from '@ethersproject/bignumber'
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
+import { Wallet } from '@ethersproject/wallet'
 
 import rootLogger from 'loglevel'
 import { getStargateBridgeParamsEvent } from '../private/debug-utils'
-import { Chain, EncodedWorkflow, getEthersProvider, getEthersSigner, IERC20__factory } from '@freemarket/core'
+import {
+  ADDRESS_ZERO,
+  AssetAmount,
+  Chain,
+  ContinuationInfo,
+  EncodeContinuationResult,
+  EncodedWorkflow,
+  getEthersProvider,
+  getEthersSigner,
+  IERC20__factory,
+  PartialRecord,
+} from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
-import { BridgeBase__factory } from '@freemarket/stargate-bridge'
+import { WorkflowContinuingStep__factory } from '@freemarket/stargate-bridge'
 import { HARDHAT_FORK_CHAIN } from './constants'
+import { AssetAmountStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
+import { Workflow } from '../model/Workflow'
+import { LogDescription } from '@ethersproject/abi'
+import { Log } from '@ethersproject/providers'
+import { MapWithDefault } from '../utils/MapWithDefault'
+
 const log = rootLogger.getLogger('WorkflowRunner')
 
-interface ContinuationInfo {
-  bridgeName: string
-  nonce: string
-  targetChain: Chain
-}
 export interface WaitForContinuationResult {
-  transaction: {
-    hash: string
-  }
-  assetAmount: string
+  transactionHash: string
+  assetAmounts: AssetAmountStructOutput[]
 }
 
 export class WorkflowRunner implements IWorkflowRunner {
@@ -36,12 +55,23 @@ export class WorkflowRunner implements IWorkflowRunner {
   private instance: IWorkflowInstance
   private startChain: Chain
   private addAssetInfo: AddAssetInfo
+  private isDebug: boolean
+  private signer?: Signer
 
-  constructor(instance: IWorkflowInstance, startChainWorkflow: EncodedWorkflow, startChain: Chain, addAssetInfo: AddAssetInfo) {
+  public debugFundsSourcePrivateKey?: string
+
+  constructor(
+    instance: IWorkflowInstance,
+    startChainWorkflow: EncodedWorkflow,
+    startChain: Chain,
+    addAssetInfo: AddAssetInfo,
+    isDebug: boolean
+  ) {
     this.startChainWorkflow = startChainWorkflow
     this.instance = instance
     this.startChain = startChain
     this.addAssetInfo = addAssetInfo
+    this.isDebug = isDebug
   }
 
   addEventHandler(handler: ExecutionEventHandler): void {
@@ -61,19 +91,18 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  async submitWorkflow(signer: Signer): Promise<void> {
+  async submitWorkflow(signer: Signer): Promise<ExecutionEvents[]> {
+    const events: ExecutionEvents[] = []
+    this.signer = signer
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(this.startChain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddr, signer)
 
     this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
-    // console.log('estimating gas', await runner.signer.getAddress())
-    // const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
-    //   value: nativeAmount,
-    // })
-    // const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
-    const gasLimit = 30000000
+    log.debug('estimating gas', await runner.signer.getAddress())
+    const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, { value: nativeAmount })
+    const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
     log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
     const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
     log.debug(`tx submitted, hash=${txResponse.hash}`)
@@ -81,51 +110,104 @@ export class WorkflowRunner implements IWorkflowRunner {
     const txReceipt = await txResponse.wait(1)
     log.debug(`tx txReceipt, hash=${txReceipt.transactionHash}`)
     this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash })
-
-    // const eraseme = getStargateBridgeParamsEvent(txReceipt)
+    const startChainEvents = WorkflowRunner.parseLogs(txReceipt.logs)
+    events.push({
+      chain: this.startChain,
+      events: startChainEvents,
+    })
 
     const sourceChain = this.startChain
 
+    // TODO do something here to support multiple bridges in one workflow
     // eslint-disable-next-line sonarjs/no-one-iteration-loop
     for (;;) {
-      const continuationInfo = this.getContinuationInfoFromEvents(txReceipt)
+      const continuationInfo = await this.getContinuationInfoFromEvents(startChainEvents, this.startChain)
       if (!continuationInfo) {
         break
       }
 
       this.sendEvent({
         code: 'WorkflowWaitingForBridge',
-        bridgeName: continuationInfo.bridgeName,
+        stepType: continuationInfo.stepType,
         sourceChain,
         sourceChainTransactionHash: txReceipt.transactionHash,
         targetChain: continuationInfo.targetChain,
       })
-      await this.waitForContinuation(continuationInfo)
-
+      if (this.isDebug) {
+        // TODO ERASEME
+        // continuationInfo.targetChain = 'arbitrum'
+        const continuationEvents = await this.continueDebugWorkflow(continuationInfo)
+        events.push({
+          chain: continuationInfo.targetChain,
+          events: continuationEvents,
+        })
+      } else {
+        await this.waitForContinuation(continuationInfo)
+        // TODO what to do about events here?
+      }
       // TODO get next txReceipt https://freemarket.atlassian.net/browse/CORE-24
       //  provider.getTransaction(transactionHash)
 
       break
     }
 
-    this.sendEvent({ code: 'WorkflowComplete' })
+    this.sendEvent({ code: 'WorkflowComplete', chain: this.startChain, transactionHash: txReceipt.transactionHash, events })
+
+    return events
   }
 
-  getContinuationInfoFromEvents(txReceipt: ContractReceipt): ContinuationInfo | null {
-    const iface = BridgeBase__factory.createInterface()
-    const eventTopic = iface.getEventTopic(iface.events['WorkflowBridged(string,uint256,uint256)'])
-    for (const log of txReceipt.logs) {
-      if (log.topics[0] === eventTopic) {
-        try {
-          const event = iface.parseLog(log)
-          const { bridgeName, nonce, targetChainId } = event.args
-          const targetChain = WorkflowRunner.getChainFromCode(targetChainId.toNumber())
-          return { bridgeName, nonce, targetChain }
-        } catch (e) {
-          // ignore error
+  async getContinuationInfoFromEvents(events: LogDescription[], chain: Chain): Promise<ContinuationInfo | null> {
+    const workflowBridgedEvent = events.find(e => e.name === 'WorkflowBridged')
+    if (workflowBridgedEvent) {
+      const { stepType, nonce, targetChain: targetChainId, continuationWorkflow } = workflowBridgedEvent.args
+      // this block is correct-ish, but since we're not supporting relative minOut yet, the minOut will be the percent (100000 for 100%)
+      //   const eventExpectedAssets: AssetAmountStructOutput[] = event.args.expectedAssets
+      //   const expectedAssetsPromises: Promise<AssetAmount>[] = eventExpectedAssets.map(async a => {
+      //     assert(a.asset.assetType === 1)
+      //     const assetAddress = a.asset.assetAddress
+      //     const asset = await this.instance.getFungibleTokenByChainAndAddress(chain, assetAddress)
+      //     // TODO: we probably have to query the contract for symbol and decimals if we don't have it
+      //     // for now just assert
+      //     assert(asset)
+      //     const ret: AssetAmount = {
+      //       asset: {
+      //         type: 'fungible-token',
+      //         symbol: asset.symbol,
+      //       },
+      //       amount: a.amount.toString(),
+      //     }
+      //     return ret
+      //   })
+      //   const expectedAssets = await Promise.all(expectedAssetsPromises)
+      //   const targetChain = WorkflowRunner.getChainFromCode(targetChainId)
+      //   return { stepType, nonce, targetChain, expectedAssets, continuationWorkflow }
+      // }
+
+      // take 99% of the input amount for now
+      const stepExecutionEvent = events.find(e => e.name === 'WorkflowStepExecution' && e.args.stepTypeId === 101)
+      if (stepExecutionEvent) {
+        const inputs = stepExecutionEvent.args.result.inputAssetAmounts
+        const tokenInput = inputs.find((it: any) => it.asset.assetType === 1)
+        if (tokenInput) {
+          const amount = tokenInput.amount as BigNumber
+          const minOut = amount.mul(99).div(100)
+          const asset = await this.instance.getFungibleTokenByChainAndAddress(chain, tokenInput.asset.assetAddress)
+          assert(asset)
+          const expectedAssets: AssetAmount[] = [
+            {
+              asset: {
+                type: 'fungible-token',
+                symbol: asset.symbol,
+              },
+              amount: minOut.toString(),
+            },
+          ]
+          const targetChain = WorkflowRunner.getChainFromCode(targetChainId)
+          return { stepType, nonce, targetChain, expectedAssets, continuationWorkflow }
         }
       }
     }
+
     return null
   }
 
@@ -238,7 +320,7 @@ export class WorkflowRunner implements IWorkflowRunner {
         }, bridgeTimeoutSeconds * 1000)
 
         log.debug(`watching for nonce ${nonce}`)
-        runner.on(filter, async (nonce, _userAddress, startingAsset, event) => {
+        runner.on(filter, async (nonce, _userAddress, startingAssets, event) => {
           log.debug('got WorkflowContinuation')
           if (nonce.eq(expectedNonce)) {
             log.debug(`saw expected nonce ${nonce}`)
@@ -246,8 +328,8 @@ export class WorkflowRunner implements IWorkflowRunner {
             clearTimeout(timeout)
             const txReceipt = await event.getTransactionReceipt()
             resolve({
-              transaction: { hash: txReceipt.transactionHash },
-              assetAmount: startingAsset.amount.toString(),
+              transactionHash: txReceipt.transactionHash,
+              assetAmounts: startingAssets,
             })
           }
         })
@@ -256,4 +338,70 @@ export class WorkflowRunner implements IWorkflowRunner {
       }
     })
   }
+
+  async continueDebugWorkflow(continuationInfo: ContinuationInfo): Promise<LogDescription[]> {
+    assert(this.debugFundsSourcePrivateKey)
+
+    const helper = this.instance.getStepHelper(continuationInfo.targetChain, continuationInfo.stepType)
+    const encoded = await helper.encodeContinuation(continuationInfo)
+    await this.prepareContinuationAssets(continuationInfo, encoded)
+    const provider = this.instance.getProvider(continuationInfo.targetChain)
+    const nativeAmount = encoded.startAssets
+      .filter(a => a.address === ADDRESS_ZERO)
+      .reduce((sum, a) => sum.add(a.amount), BigNumber.from(0))
+      .toHexString()
+    log.debug('invoking execute_debug_transaction')
+    log.debug('  toAddress', encoded.toAddress)
+    log.debug('  fromAddress', encoded.fromAddress)
+    log.debug('  callData', encoded.callData)
+    log.debug('  nativeAmount', nativeAmount)
+
+    const result: any = await provider.request({
+      method: 'execute_debug_transaction',
+      params: [encoded.toAddress, encoded.fromAddress, encoded.callData, nativeAmount],
+    })
+
+    return WorkflowRunner.parseLogs(result.logs)
+  }
+
+  async prepareContinuationAssets(continuationInfo: ContinuationInfo, encoded: EncodeContinuationResult): Promise<void> {
+    const helper = this.instance.getStepHelper(continuationInfo.targetChain, 'uniswap-exact-in') as any
+    const provider = this.instance.getProvider(continuationInfo.targetChain)
+    assert((<any>provider).vm)
+    const ethersProvider = getEthersProvider(provider)
+    assert(this.debugFundsSourcePrivateKey)
+    const fundsSourceWallet = new Wallet(this.debugFundsSourcePrivateKey, ethersProvider)
+    const sourceAsset = { type: 'native' }
+    for (const expectedAsset of continuationInfo.expectedAssets) {
+      await helper.doSwap(fundsSourceWallet, encoded.toAddress, sourceAsset, expectedAsset.asset, 'exactOut', expectedAsset.amount)
+    }
+  }
+
+  private static parseLogs(logs: Array<Log>): LogDescription[] {
+    const ret: LogDescription[] = []
+    const contractInterfaces = [WorkflowContinuingStep__factory.createInterface(), WorkflowRunner__factory.createInterface()]
+    for (const log of logs) {
+      for (const iface of contractInterfaces) {
+        try {
+          const event = iface.parseLog(log)
+          ret.push(event)
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+    return ret
+  }
 }
+
+// function logDescriptionToOnChainEvent(logDescription: LogDescription): OnChainEvent {
+//   const { name, signature, args } = logDescription
+//   const outArgs: Record<string, string> = {}
+//   for (const key of Object.keys(args)) {
+//     // skip numeric keys (they are array indices
+//     if (parseInt(key).toString() !== key) {
+//       outArgs[key] = args[key].toString()
+//     }
+//   }
+//   return { name, signature, args: outArgs }
+// }

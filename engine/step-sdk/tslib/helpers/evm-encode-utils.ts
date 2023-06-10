@@ -13,9 +13,10 @@ export const AssetSchema = `
 // // const x = abiCoder.encode([AssetArrayAbi], [[]])
 const InputAssetSchema = `
   tuple(
+    bool sourceIsCaller,
+    bool amountIsPercent,
     ${AssetSchema} asset,
-    uint256 amount,
-    bool amountIsPercent
+    uint256 amount
   )`
 
 const WorkflowStepSchema = `
@@ -30,6 +31,7 @@ const WorkflowStepSchema = `
 
 const WorkflowSchema = `
   tuple(
+    address workflowRunnerAddress,
     ${WorkflowStepSchema}[] steps
   )
 `

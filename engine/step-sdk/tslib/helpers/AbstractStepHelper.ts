@@ -13,6 +13,8 @@ import {
   getEthersProvider,
   RemittanceInfo,
   ADDRESS_ZERO,
+  ContinuationInfo,
+  EncodeContinuationResult,
 } from '@freemarket/core'
 import { Memoize } from 'typescript-memoize'
 import type { Provider } from '@ethersproject/providers'
@@ -110,5 +112,9 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
   protected getStepAddress(context: EncodingContext<T>) {
     const c = context.chain === 'hardhat' ? 'ethereum' : context.chain
     return context.stepConfig.stepAddresses?.[c] || ADDRESS_ZERO
+  }
+
+  encodeContinuation(continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult> {
+    throw new Error('Method not implemented.')
   }
 }

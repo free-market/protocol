@@ -1,13 +1,29 @@
-import type { HardhatUserConfig } from 'hardhat/config'
+import { HardhatUserConfig, task } from 'hardhat/config'
 import os from 'os'
 import path from 'path'
 import dotenv from 'dotenv'
 import 'hardhat-preprocessor'
 import { removeConsoleLog } from 'hardhat-preprocessor'
+import fs from 'fs'
 
 dotenv.config({ path: path.join(os.homedir(), '.env') })
 
-export const coreHardhatConfig: any = {
+task('deploymentSource', 'Prints the source code for a deployed contract')
+  .addParam('contract', 'The name of the contract, e.g., MyAwesomeContract')
+  .addParam('source', 'The path to the contract source code, e.g., contracts/MyAwesomeContract.sol')
+  .setAction(async (args, hre) => {
+    const { deployments } = hre
+    const deployment = await deployments.get(args.contract)
+    // console.log(deployment.solcInputHash)
+    // console.log(hre.network.name)
+    const solcInputsFname = `deployments/${hre.network.name}/solcInputs/${deployment.solcInputHash}.json`
+    const solcInputsStr = fs.readFileSync(solcInputsFname).toString()
+    const solcInputs = JSON.parse(solcInputsStr)
+    console.log(solcInputs.sources[args.source].content)
+    // const solcInput =
+  })
+
+export const coreHardhatConfig: HardhatUserConfig = {
   solidity: '0.8.18',
 
   networks: {
@@ -39,7 +55,7 @@ export const coreHardhatConfig: any = {
     },
     // for testing deployments with local hh node, but not named 'localhost' so is considered 'live' by hardhat-deploy
     hardhat: {
-      // chainId: 1,
+      chainId: (process.env.HARDHAT_CHAIN_ID && parseInt(process.env.HARDHAT_CHAIN_ID)) || 31337,
       forking: {
         url: process.env.HARDHAT_FORK_URL || 'https://rpc.ankr.com/eth',
         // blockNumber: 16889307,

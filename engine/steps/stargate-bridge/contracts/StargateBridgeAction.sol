@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import './BridgeBase.sol';
+import './WorkflowContinuingStep.sol';
 import '@freemarket/core/contracts/model/Asset.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/model/BridgePayload.sol';
@@ -12,6 +12,7 @@ import './IStargateReceiver.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
+import 'hardhat/console.sol';
 
 using LibStepResultBuilder for StepResultBuilder;
 
@@ -39,9 +40,11 @@ struct StargateBridgeActionArgs {
   bytes continuationWorkflow;
   // the value used to correlate the source chain transaction with the target chain transaction
   uint256 nonce;
+  // whether the continuation workflow should be included in the event
+  bool includeContinuationWorkflowInEvent;
 }
 
-contract StargateBridgeAction is BridgeBase, IStargateReceiver {
+contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
   address public immutable frontDoorAddress;
   address public immutable stargateRouterAddress;
 
@@ -49,7 +52,6 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
   /// @param tokenAddress the address of the erc20 that was transfered from the source chain to this chain.abi
   /// @param bridgePayload the payload that was sent along with the erc20.
   event SgReceiveCalled(address tokenAddress, uint256 amount, BridgePayload bridgePayload);
-
   event StargateBridgeParamsEvent(
     uint256 nativeAmount,
     uint256 assetAmount,
@@ -136,7 +138,13 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
       locals.dstActionAddressEncoded,
       locals.args.continuationWorkflow
     );
-    emit WorkflowBridged('Stargate', locals.args.dstChainId, locals.args.nonce);
+    if (locals.args.continuationWorkflow.length > 0) {
+      AssetAmount[] memory expectedAssets = new AssetAmount[](1);
+      expectedAssets[0] = locals.erc20InputAsset;
+      expectedAssets[0].amount = locals.minAmountOut;
+      bytes memory continuationFlow = locals.args.includeContinuationWorkflowInEvent ? locals.args.continuationWorkflow : new bytes(0);
+      emit WorkflowBridged('stargate-bridge', locals.args.dstChainId, locals.args.nonce, expectedAssets, continuationFlow);
+    }
 
     return WorkflowStepResult(inputAssetAmounts, new AssetAmount[](0), -2, -1);
   }
@@ -157,12 +165,27 @@ contract StargateBridgeAction is BridgeBase, IStargateReceiver {
     require(msg.sender == stargateRouterAddress, 'only Stargate is permitted to call sgReceive');
     BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
     emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
-
     IERC20 startingToken = IERC20(tokenAddress);
-    SafeERC20.safeTransfer(startingToken, frontDoorAddress, amount);
-
-    AssetAmount memory startingAsset = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
+    SafeERC20.safeIncreaseAllowance(startingToken, frontDoorAddress, amount);
+    AssetAmount[] memory startingAssets = new AssetAmount[](1);
+    startingAssets[0] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
     IWorkflowRunner runner = IWorkflowRunner(frontDoorAddress);
-    runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAsset);
+    bool continuationSuccessful = false;
+    // TODO set value when the bridged asset is native
+    try runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAssets) {
+      // if the workflow succeeds, we're done
+      emit ContinuationSuccess();
+      continuationSuccessful = true;
+    } catch Error(string memory reason) {
+      emit ContinuationFailure(reason);
+    } catch Panic(uint256 errorCode) {
+      emit ContinuationFailure(errorCode);
+    } catch (bytes memory reason) {
+      emit ContinuationFailure(reason);
+    }
+    // if the workflow fails, we need to return the tokens to the user
+    if (!continuationSuccessful) {
+      SafeERC20.safeTransfer(startingToken, bridgePayload.userAddress, amount);
+    }
   }
 }

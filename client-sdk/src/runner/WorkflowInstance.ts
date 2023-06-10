@@ -55,6 +55,9 @@ import {
   WorkflowStepExecutionEventObject,
 } from '@freemarket/runner/build/typechain-types/contracts/WorkflowRunner'
 import { listenerCount } from 'events'
+import { LogDescription } from '@ethersproject/abi'
+import { ExecutionStepLog, ExecutionStepLogAsset } from './ExecutionLog'
+import { OnChainEvent } from './ExecutionEvent'
 
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
@@ -63,19 +66,6 @@ type VisitStepCallback = (stepObject: any, path: string[]) => void
 
 interface WorkflowInstanceConstructorOptions {
   skipValidation?: boolean
-}
-
-export interface ExecutionStepLogAsset {
-  symbol: string
-  address: string
-  amount: string
-  assetInfo?: Asset
-}
-
-export interface ExecutionStepLog {
-  stepTyeId: number
-  inputAssets: ExecutionStepLogAsset[]
-  outputAssets: ExecutionStepLogAsset[]
 }
 
 export type AddressToSymbol = Record<string, string>
@@ -122,7 +112,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     return this.nonForkedProviders.get(chainOrStart)
   }
 
-  async getRunner(userAddress: string, args?: Arguments): Promise<IWorkflowRunner> {
+  async getRunner(userAddress: string, args?: Arguments, isDebug?: boolean): Promise<IWorkflowRunner> {
     // TODO can this be parallelized?
     const startChainProvider = this.getProvider('start-chain')
     const startChain = await getChainFromProvider(startChainProvider)
@@ -132,9 +122,9 @@ export class WorkflowInstance implements IWorkflowInstance {
     const firstNodeStepId = this.getStartStepId()
     const sc = startChain === 'hardhat' ? HARDHAT_FORK_CHAIN : startChain
     const runnerAddress = appliedInstance.getWorkflow().runnerAddresses?.[sc as Chain] || ADDRESS_ZERO
-    const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress, runnerAddress)
+    const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress, runnerAddress, !!isDebug)
     const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
-    return new WorkflowRunner(this, encoded, startChain, addAssetInfo)
+    return new WorkflowRunner(this, encoded, startChain, addAssetInfo, !!isDebug)
   }
 
   private getStartStepId() {
@@ -365,9 +355,12 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   // TODO probably don't need to instantiate WorkflowInstance here
   private applyArguments(ignoreInternalParams: boolean, args: Arguments = {}): WorkflowInstance {
-    const rv = new WorkflowInstance(cloneDeep(this.workflow))
+    // validation only works after setting providers
+    const rv = new WorkflowInstance(cloneDeep(this.workflow), { skipValidation: true })
     rv.providers = new Map(this.providers)
     rv.nonForkedProviders = new Map(this.nonForkedProviders)
+    this.validateWorkflowSteps()
+    this.validateParameters()
     const allParams = rv.findAllParameterReferences()
     for (const [paramName, paths] of allParams) {
       if (ignoreInternalParams && paramName.startsWith('remittances.')) {
@@ -689,7 +682,8 @@ export class WorkflowInstance implements IWorkflowInstance {
     startStepId: string,
     chainOrStart: ChainOrStart,
     userAddress: string,
-    runnerAddress: string
+    runnerAddress: string,
+    isDebug: boolean
   ): Promise<EncodedWorkflow> {
     const reachable = this.getReachableSet(startStepId)
 
@@ -698,7 +692,7 @@ export class WorkflowInstance implements IWorkflowInstance {
       mapStepIdToIndex.set(reachable[i], i)
     }
     mapStepIdToIndex.set(WORKFLOW_END_STEP_ID, -1)
-
+    // TODO ERASEME
     const chain = await this.resolveChain(chainOrStart)
     if (chainOrStart === 'start-chain') {
       const startChainProvider = this.getProvider('start-chain')
@@ -714,7 +708,7 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
       const helper = this.getStepHelper(chainOrStart, step.type)
       helper.setProvider(this.getProvider(chain))
-      const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress, mapStepIdToIndex })
+      const encoded = await helper.encodeWorkflowStep({ chain, stepConfig: step as any, userAddress, mapStepIdToIndex, isDebug })
       // if the step gave an index, use it
       if (encoded.nextStepIndex !== undefined) {
         return encoded as EvmWorkflowStep
@@ -918,7 +912,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     return this.getZodChild(child, path.slice(1))
   }
 
-  private getStepHelper(chainOrStart: ChainOrStart, type: string): IStepHelper<any> {
+  getStepHelper(chainOrStart: ChainOrStart, type: string): IStepHelper<any> {
     const chainMap = this.stepHelpers.getWithDefault(chainOrStart)
     let helper = chainMap.get(type)
     if (!helper) {
@@ -933,11 +927,7 @@ export class WorkflowInstance implements IWorkflowInstance {
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  async getExecutionStepLogs(provider: EIP1193Provider, txHash: string): Promise<ExecutionStepLog[]> {
-    const chain = await getChainFromProvider(provider)
-    const ethersProvider = getEthersProvider(provider)
-    const txReceipt = await ethersProvider.getTransactionReceipt(txHash)
-    const iface = WorkflowRunner__factory.createInterface()
+  async toExecutionStepLogs(chain: Chain, events: OnChainEvent[]): Promise<ExecutionStepLog[]> {
     const ret: ExecutionStepLog[] = []
     const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
 
@@ -963,23 +953,28 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
     }
 
-    for (const log of txReceipt.logs) {
-      try {
-        const parsedLog = iface.parseLog(log)
-        if (parsedLog.name === 'WorkflowStepExecution') {
-          const e = parsedLog.args as unknown as WorkflowStepExecutionEventObject
-          const inputs = await Promise.all(e.result.inputAssetAmounts.map(mapper))
-          const outputs = await Promise.all(e.result.outputAssetAmounts.map(mapper))
-          ret.push({
-            stepTyeId: e.stepTypeId,
-            inputAssets: inputs,
-            outputAssets: outputs,
-          })
-        }
-      } catch (e) {
-        // ignore
+    for (const event of events) {
+      if (event.name === 'WorkflowStepExecution') {
+        const e = event.args as unknown as WorkflowStepExecutionEventObject
+        const inputs = await Promise.all(e.result.inputAssetAmounts.map(mapper))
+        const outputs = await Promise.all(e.result.outputAssetAmounts.map(mapper))
+        ret.push({
+          stepTyeId: e.stepTypeId,
+          inputAssets: inputs,
+          outputAssets: outputs,
+        })
       }
     }
+
     return ret
+  }
+
+  async getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
+    const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
+    const symbol = mapAddressToSymbol[chain]?.[address]
+    if (!symbol) {
+      return undefined
+    }
+    return this.getFungibleToken(symbol)
   }
 }
