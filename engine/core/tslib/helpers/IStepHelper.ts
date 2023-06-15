@@ -60,8 +60,8 @@ interface StepProperties {
   description: string
 }
 
-export function stepProperties(label: string, description: string, operation?: string): string {
-  return JSON.stringify({ label, description, ...(operation && { operation }) })
+export function stepProperties(label: string, description: string): string {
+  return JSON.stringify({ label, description })
 }
 
 export function getStepMeta(schema: ZodType<any>): StepProperties | undefined {

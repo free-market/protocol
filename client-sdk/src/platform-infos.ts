@@ -18,13 +18,13 @@ export { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 export function getPlatformInfos(): PlatformInfo[] {
   return [
     aavePlatformInfo,
-    addAssetPlatformInfo,
+    // addAssetPlatformInfo,
     assetBalanceBranchPlatformInfo,
     chainBranchPlatformInfo,
     // curvePlatformInfo,
     payGelatoRelayPlatform,
-    phiatPlatformInfo,
-    pulsexPlatformInfo,
+    // phiatPlatformInfo,
+    // pulsexPlatformInfo,
     stargateBridgePlatformInfo,
     uniswapPlatformInfo,
     wrappedNativePlatformInfo,

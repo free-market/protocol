@@ -66,7 +66,7 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     // console.log('toAsset', toAsset)
     assert(fromAsset.type === 'fungible-token')
     assert(toAsset.type === 'fungible-token')
-    const fromAmount = amount ?? (await this.getTokenAmountInUsd(1000, fromAsset, chain))
+    const fromAmount = amount && !amount.endsWith('%') ? amount : await this.getTokenAmountInUsd(1000, fromAsset, chain)
     // console.log('fromAmount', fromAmount)
     const uniswapFromToken = UniswapBaseHelper.toUniswapToken(chain, chainIdForUniswap, fromAsset)
     const uniswapToToken = UniswapBaseHelper.toUniswapToken(chain, chainIdForUniswap, toAsset)
