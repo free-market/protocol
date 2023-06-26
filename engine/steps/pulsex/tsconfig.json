@@ -1,8 +1,0 @@
-{
-  "extends": "@freemarket/step-sdk/step-sdk-tsconfig",
-  "compilerOptions": {
-    "outDir": "./build"
-  },
-  "files": ["./index.ts"],
-  "include": ["hardhat.config.ts", "./typechain-types", "./tslib", "./scripts", "./deploy", "./test"]
-}

@@ -10,8 +10,6 @@ import {
 import { platformInfo as stargateBridgePlatformInfo } from '@freemarket/stargate-bridge/build/tslib/step-info'
 import { platformInfo as uniswapPlatformInfo } from '@freemarket/uniswap/build/tslib/step-info'
 import { platformInfo as wrappedNativePlatformInfo } from '@freemarket/wrapped-native/build/tslib/step-info'
-import { platformInfo as phiatPlatformInfo } from '@freemarket/phiat/build/tslib/step-info'
-import { platformInfo as pulsexPlatformInfo } from '@freemarket/pulsex/build/tslib/step-info'
 
 export { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 
@@ -23,8 +21,6 @@ export function getPlatformInfos(): PlatformInfo[] {
     chainBranchPlatformInfo,
     // curvePlatformInfo,
     payGelatoRelayPlatform,
-    // phiatPlatformInfo,
-    // pulsexPlatformInfo,
     stargateBridgePlatformInfo,
     uniswapPlatformInfo,
     wrappedNativePlatformInfo,

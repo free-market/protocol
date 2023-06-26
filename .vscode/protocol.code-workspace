@@ -37,14 +37,6 @@
       "path": "../engine/steps/curve"
     },
     {
-      "name": "[step] phiat",
-      "path": "../engine/steps/phiat"
-    },
-    {
-      "name": "[step] pulsex",
-      "path": "../engine/steps/pulsex"
-    },
-    {
       "name": "[step] stargate-bridge",
       "path": "../engine/steps/stargate-bridge"
     },
