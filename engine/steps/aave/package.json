@@ -16,14 +16,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aave/core-v3": "^1.17.2",
+    "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/experimental": "^5.7.0",
     "@freemarket/core": "workspace:^0.0.1",
     "@freemarket/runner": "workspace:^0.0.1",
     "@freemarket/step-sdk": "workspace:^0.0.1",
     "@openzeppelin/contracts": "^4.8.0",
     "big.js": "^6.2.1",
+    "eth-sig-util": "2.5.3",
+    "ethereumjs-util": "^7.1.5",
     "loglevel": "^1.8.1",
     "react": "^18.2.0",
-    "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {

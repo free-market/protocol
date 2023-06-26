@@ -3,7 +3,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import UniswapIcon from './UniswapIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './ExactInHelper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './UniswapExactInHelper'
 import { UniswapExactIn } from './model'
 
 function UniswapSummary(props: any) {
@@ -36,11 +36,9 @@ export const platformInfo: PlatformInfo = {
       operation: 'Exact In',
       platformName: 'Uniswap',
       summary: p => {
-        const stepConfig = p.step as UniswapExactIn
-        // TODO how to get decimals?
         return (
           <span style={{ ...p.labelStyle }}>
-            Swap&nbsp;
+            Exact-In&nbsp;
             <span style={{ ...p.infoStyle }}>
               {p.step.inputAmount.toString()}
               &nbsp;
@@ -63,31 +61,46 @@ export const platformInfo: PlatformInfo = {
       icon: UniswapIcon,
       operation: 'Exact Out',
       platformName: 'Uniswap',
-      summary: p => <UniswapSummary {...p} operation="Swap" />,
+      summary: p => {
+        return (
+          <span style={{ ...p.labelStyle }}>
+            Exact-Out&nbsp;
+            <span style={{ ...p.infoStyle }}>
+              {p.step.inputAmount.toString()}
+              &nbsp;
+              <AssetReferenceView assetRef={p.step.inputAsset} />
+            </span>
+            &nbsp;→&nbsp;
+            <span style={{ ...p.infoStyle }}>
+              <AssetReferenceView assetRef={p.step.outputAsset} />
+            </span>
+          </span>
+        )
+      },
     },
-    {
-      stepType: 'uniswap-deposit',
-      stepTypeId: -1,
-      nodeType: 'stepNode',
-      name: 'Uniswap Deposit',
-      description: 'Deposit an asset into Uniswap',
-      icon: UniswapIcon,
-      operation: 'Deposit',
-      comingSoon: true,
-      platformName: 'Uniswap',
-      summary: p => <UniswapSummary {...p} operation="Deposit" />,
-    },
-    {
-      stepType: 'uniswap-withdrawal',
-      stepTypeId: -1,
-      nodeType: 'stepNode',
-      name: 'Uniswap Withdrawal',
-      description: 'Withdrawal an asset from Uniswap',
-      icon: UniswapIcon,
-      operation: 'Withdrawal',
-      comingSoon: true,
-      platformName: 'Uniswap',
-      summary: p => <UniswapSummary {...p} operation="Withdrawal" />,
-    },
+    // {
+    //   stepType: 'uniswap-deposit',
+    //   stepTypeId: -1,
+    //   nodeType: 'stepNode',
+    //   name: 'Uniswap Deposit',
+    //   description: 'Deposit an asset into Uniswap',
+    //   icon: UniswapIcon,
+    //   operation: 'Deposit',
+    //   comingSoon: true,
+    //   platformName: 'Uniswap',
+    //   summary: p => <UniswapSummary {...p} operation="Deposit" />,
+    // },
+    // {
+    //   stepType: 'uniswap-withdrawal',
+    //   stepTypeId: -1,
+    //   nodeType: 'stepNode',
+    //   name: 'Uniswap Withdrawal',
+    //   description: 'Withdrawal an asset from Uniswap',
+    //   icon: UniswapIcon,
+    //   operation: 'Withdrawal',
+    //   comingSoon: true,
+    //   platformName: 'Uniswap',
+    //   summary: p => <UniswapSummary {...p} operation="Withdrawal" />,
+    // },
   ],
 }

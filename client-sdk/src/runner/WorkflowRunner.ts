@@ -1,14 +1,6 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
 import type { AddAssetInfo } from './AddAssetInfo'
-import {
-  createExecutionEvent,
-  CreateExecutionEventArg,
-  ExecutionEvent,
-  ExecutionEventCode,
-  ExecutionEventHandler,
-  ExecutionEvents,
-  OnChainEvent,
-} from './ExecutionEvent'
+import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 // import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
@@ -23,7 +15,9 @@ import rootLogger from 'loglevel'
 import { getStargateBridgeParamsEvent } from '../private/debug-utils'
 import {
   ADDRESS_ZERO,
+  Asset,
   AssetAmount,
+  AssetReference,
   Chain,
   ContinuationInfo,
   EncodeContinuationResult,
@@ -31,21 +25,31 @@ import {
   getEthersProvider,
   getEthersSigner,
   IERC20__factory,
+  Memoize,
   PartialRecord,
 } from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
 import { WorkflowContinuingStep__factory } from '@freemarket/stargate-bridge'
 import { HARDHAT_FORK_CHAIN } from './constants'
-import { AssetAmountStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
+import { AssetAmountStructOutput, AssetStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { Workflow } from '../model/Workflow'
 import { LogDescription } from '@ethersproject/abi'
 import { Log } from '@ethersproject/providers'
 import { MapWithDefault } from '../utils/MapWithDefault'
+import {
+  ExecutionLog,
+  ExecutionLogAssetAmount,
+  ExecutionLogContinuation,
+  ExecutionLogRemainingAsset,
+  ExecutionLogStep,
+} from './ExecutionLog'
+import { getPlatformInfos, StepInfo } from '../platform-infos'
 
 const log = rootLogger.getLogger('WorkflowRunner')
 
 export interface WaitForContinuationResult {
   transactionHash: string
+  transactionReceipt: ContractReceipt
   assetAmounts: AssetAmountStructOutput[]
 }
 
@@ -91,8 +95,8 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  async submitWorkflow(signer: Signer): Promise<ExecutionEvents[]> {
-    const events: ExecutionEvents[] = []
+  async submitWorkflow(signer: Signer): Promise<ExecutionLog[]> {
+    const events: ExecutionLog[] = []
     this.signer = signer
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(this.startChain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddr, signer)
@@ -109,12 +113,10 @@ export class WorkflowRunner implements IWorkflowRunner {
     this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
     const txReceipt = await txResponse.wait(1)
     log.debug(`tx txReceipt, hash=${txReceipt.transactionHash}`)
-    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash })
+    const logs = await this.toExecutionLogs(this.startChain, txReceipt.logs)
+    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash, logs })
     const startChainEvents = WorkflowRunner.parseLogs(txReceipt.logs)
-    events.push({
-      chain: this.startChain,
-      events: startChainEvents,
-    })
+    events.push(...logs)
 
     const sourceChain = this.startChain
 
@@ -134,16 +136,12 @@ export class WorkflowRunner implements IWorkflowRunner {
         targetChain: continuationInfo.targetChain,
       })
       if (this.isDebug) {
-        // TODO ERASEME
-        // continuationInfo.targetChain = 'arbitrum'
         const continuationEvents = await this.continueDebugWorkflow(continuationInfo)
-        events.push({
-          chain: continuationInfo.targetChain,
-          events: continuationEvents,
-        })
+        events.push(...continuationEvents)
       } else {
-        await this.waitForContinuation(continuationInfo)
-        // TODO what to do about events here?
+        const continuationResult = await this.waitForContinuation(continuationInfo)
+        const logs = await this.toExecutionLogs(continuationInfo.targetChain, continuationResult.transactionReceipt.logs)
+        events.push(...logs)
       }
       // TODO get next txReceipt https://freemarket.atlassian.net/browse/CORE-24
       //  provider.getTransaction(transactionHash)
@@ -151,7 +149,9 @@ export class WorkflowRunner implements IWorkflowRunner {
       break
     }
 
-    this.sendEvent({ code: 'WorkflowComplete', chain: this.startChain, transactionHash: txReceipt.transactionHash, events })
+    const failureLog = events.find(log => log.type === 'continuation-failure')
+    const success = !failureLog
+    this.sendEvent({ code: 'WorkflowComplete', chain: this.startChain, transactionHash: txReceipt.transactionHash, events, success })
 
     return events
   }
@@ -329,6 +329,7 @@ export class WorkflowRunner implements IWorkflowRunner {
             const txReceipt = await event.getTransactionReceipt()
             resolve({
               transactionHash: txReceipt.transactionHash,
+              transactionReceipt: txReceipt,
               assetAmounts: startingAssets,
             })
           }
@@ -339,7 +340,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     })
   }
 
-  async continueDebugWorkflow(continuationInfo: ContinuationInfo): Promise<LogDescription[]> {
+  async continueDebugWorkflow(continuationInfo: ContinuationInfo): Promise<ExecutionLog[]> {
     assert(this.debugFundsSourcePrivateKey)
 
     const helper = this.instance.getStepHelper(continuationInfo.targetChain, continuationInfo.stepType)
@@ -361,7 +362,7 @@ export class WorkflowRunner implements IWorkflowRunner {
       params: [encoded.toAddress, encoded.fromAddress, encoded.callData, nativeAmount],
     })
 
-    return WorkflowRunner.parseLogs(result.logs)
+    return this.toExecutionLogs(continuationInfo.targetChain, result.logs as any)
   }
 
   async prepareContinuationAssets(continuationInfo: ContinuationInfo, encoded: EncodeContinuationResult): Promise<void> {
@@ -390,6 +391,120 @@ export class WorkflowRunner implements IWorkflowRunner {
         }
       }
     }
+    return ret
+  }
+
+  @Memoize()
+  static getStepInfoByIdMap(): Map<number, StepInfo> {
+    const ret = new Map<number, StepInfo>()
+    const platforms = getPlatformInfos()
+    for (const platform of platforms) {
+      for (const step of platform.stepInfos) {
+        ret.set(step.stepTypeId, step)
+      }
+    }
+    return ret
+  }
+
+  @Memoize()
+  static getStepInfoMap(): Map<string, StepInfo> {
+    const ret = new Map<string, StepInfo>()
+    const platforms = getPlatformInfos()
+    for (const platform of platforms) {
+      for (const step of platform.stepInfos) {
+        ret.set(step.stepType, step)
+      }
+    }
+    return ret
+  }
+
+  private async toAsset(chain: Chain, evmAsset: AssetStructOutput): Promise<Asset | undefined> {
+    if (evmAsset.assetType === 0) {
+      const assetRef: AssetReference = { type: 'native' }
+      return await this.instance.dereferenceAsset(assetRef, chain)
+    }
+    return this.instance.getFungibleTokenByChainAndAddress(chain, evmAsset.assetAddress)
+  }
+
+  private async toExecutionLogAssetAmount(chain: Chain, aa: AssetAmountStructOutput): Promise<ExecutionLogAssetAmount> {
+    const asset = await this.toAsset(chain, aa.asset)
+    return {
+      asset,
+      address: aa.asset.assetAddress,
+      amount: aa.amount.toString(),
+    }
+  }
+
+  private async toExecutionLog(chain: Chain, log: LogDescription): Promise<ExecutionLog | undefined> {
+    switch (log.name) {
+      case 'WorkflowStepExecution': {
+        const inputPromise = log.args.result.inputAssetAmounts.map((a: AssetAmountStructOutput) => this.toExecutionLogAssetAmount(chain, a))
+        const outputPromise = log.args.result.outputAssetAmounts.map((a: AssetAmountStructOutput) =>
+          this.toExecutionLogAssetAmount(chain, a)
+        )
+        const inputs = await Promise.all(inputPromise)
+        const outputs = await Promise.all(outputPromise)
+        const stepInfo = WorkflowRunner.getStepInfoByIdMap().get(log.args.stepTypeId)
+        assert(stepInfo)
+        const executionStepLog: ExecutionLogStep = {
+          chain,
+          type: 'step',
+          stepInfo,
+          inputs,
+          outputs,
+        }
+        return executionStepLog
+      }
+      case 'RemainingAsset': {
+        const asset = await this.toAsset(chain, log.args.asset)
+        const remainingAssetLog: ExecutionLogRemainingAsset = {
+          chain,
+          type: 'remaining-asset',
+          assetAmount: { asset, amount: log.args.totalAmount.toString(), address: log.args.asset.assetAddress },
+          userAmount: log.args.userAmount.toString(),
+          feeAmount: log.args.feeAmount.toString(),
+        }
+        return remainingAssetLog
+      }
+      case 'WorkflowBridged': {
+        const assetAmountPromises = log.args.expectedAssets.map((it: any) => this.toExecutionLogAssetAmount(chain, it))
+        const assetAmounts = await Promise.all(assetAmountPromises)
+        const stepInfo = WorkflowRunner.getStepInfoMap().get(log.args.stepType)
+        assert(stepInfo)
+        const continuationLog: ExecutionLogContinuation = {
+          chain,
+          type: 'continuation',
+          stepInfo,
+          toChain: WorkflowRunner.getChainFromCode(log.args.targetChain),
+          assetAmounts,
+        }
+        return continuationLog
+      }
+      case 'ContinuationSuccess':
+        return {
+          chain,
+          type: 'continuation-success',
+        }
+      case 'ContinuationFailure':
+        return {
+          chain,
+          type: 'continuation-failure',
+          reason: log.args.reason,
+        }
+    }
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  async toExecutionLogs(chain: Chain, events: Array<Log>): Promise<ExecutionLog[]> {
+    const ret: ExecutionLog[] = []
+    const logs = WorkflowRunner.parseLogs(events)
+    for (const log of logs) {
+      const executionLog = await this.toExecutionLog(chain, log)
+      if (executionLog) {
+        ret.push(executionLog)
+      }
+    }
+
     return ret
   }
 }

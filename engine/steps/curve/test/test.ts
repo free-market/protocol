@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { CurveTriCrypto2SwapHelper, STEP_TYPE_ID } from '../tslib/helper'
+import { CurveTriCrypto2SwapHelper, STEP_TYPE_ID_CURVE } from '../tslib/helper'
 import { createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { getTestFixture, getUsdt, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk'
@@ -46,7 +46,7 @@ describe('Curve Tricrypo2 swap', async () => {
       contracts: { configManager, triCryptoAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, triCryptoAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_CURVE, triCryptoAction.address)
   })
 
   it('transfers native to tether', async () => {

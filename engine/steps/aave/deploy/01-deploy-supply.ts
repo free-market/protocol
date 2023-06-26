@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_TYPE_ID } from '../tslib/helper'
+import { STEP_TYPE_ID_AAVE_SUPPLY } from '../tslib/supply-helper'
 import { deployStep, getWrappedNativeAddress } from '@freemarket/step-sdk'
 import { getPoolAddress } from '../tslib/getPoolAddress'
 import { MockAavePool__factory } from '../typechain-types'
@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hardhatRuntimeEnv) {
     console.log(`using existing AavePool at ${poolAddress}`)
   }
   const wethAddress = getWrappedNativeAddress(chainId) || ADDRESS_ZERO
-  await deployStep('AaveSupplyAction', STEP_TYPE_ID, hardhatRuntimeEnv, [poolAddress, wethAddress])
+  await deployStep('AaveSupplyAction', STEP_TYPE_ID_AAVE_SUPPLY, hardhatRuntimeEnv, [poolAddress, wethAddress])
 }
 
 func.tags = ['AaveSupplyAction']

@@ -50,7 +50,6 @@
     "source-map-support": "^0.5.21",
     "treeify": "^1.1.0",
     "type-fest": "^3.6.1",
-    "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {

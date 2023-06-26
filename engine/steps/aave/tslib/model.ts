@@ -1,9 +1,8 @@
-import type z from 'zod'
+import z from 'zod'
 import { amountSchema, createStepSchema, assetReferenceSchema, stepProperties, assetSourceSchema } from '@freemarket/core'
+import { assetSourceDescription } from '@freemarket/step-sdk'
 
-const sourceDescription = `The source of the asset.  
-  * Caller means the asset is transferred in from the caller of the transaction.  
-  * Workflow means the asset is from the output of a previous step.`
+const sourceDescription = `The source of the asset. ${assetSourceDescription} `
 
 export const aaveSupplySchema = createStepSchema('aave-supply').extend({
   asset: assetReferenceSchema.describe(stepProperties('Asset', 'The asset to deposit into Aave.')),
@@ -21,10 +20,16 @@ export const aaveWithdrawalSchema = createStepSchema('aave-withdrawal').extend({
 
 export interface AaveWithdrawal extends z.infer<typeof aaveWithdrawalSchema> {}
 
+export const aaveInterestRateModeSchema = z.enum(['stable', 'variable'])
+
+export type AaveInterestRateMode = z.infer<typeof aaveInterestRateModeSchema>
+
 export const aaveBorrowSchema = createStepSchema('aave-borrow').extend({
   asset: assetReferenceSchema.describe(stepProperties('Asset', 'The asset to borrow from Aave.')),
   amount: amountSchema.describe(stepProperties('Amount', 'The asset to borrow from Aave.')),
-  source: assetSourceSchema.describe(stepProperties('Source', sourceDescription)),
+  interestRateMode: aaveInterestRateModeSchema.describe(
+    stepProperties('Interest Rate Mode', 'The interest rate mode to use for the borrow.')
+  ),
 })
 
 export interface AaveBorrow extends z.infer<typeof aaveBorrowSchema> {}

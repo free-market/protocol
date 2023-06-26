@@ -1,6 +1,6 @@
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import CurveIcon from './CurveIcon'
-import { STEP_TYPE_ID } from './helper'
+import { STEP_TYPE_ID_CURVE } from './helper'
 
 export const platformInfo: PlatformInfo = {
   name: 'Curve',
@@ -10,7 +10,7 @@ export const platformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'curve-tricrypto2-swap',
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_CURVE,
       nodeType: 'stepNode',
       name: 'Curve Tricrypto2 Swap',
       description: 'Allows swapping between WETH, WBTC, and USDT',

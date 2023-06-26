@@ -10,7 +10,7 @@ import {
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveSupply } from './model'
 
-export const STEP_TYPE_ID = 102
+export const STEP_TYPE_ID_AAVE_SUPPLY = 102
 
 export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
   async encodeWorkflowStep(context: EncodingContext<AaveSupply>): Promise<EncodedWorkflowStep> {
@@ -23,7 +23,7 @@ export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
       context.stepConfig.source === 'caller'
     )
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_AAVE_SUPPLY,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [inputAsset],
       argData: '0x',

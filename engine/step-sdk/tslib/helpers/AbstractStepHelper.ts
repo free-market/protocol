@@ -15,8 +15,8 @@ import {
   ADDRESS_ZERO,
   ContinuationInfo,
   EncodeContinuationResult,
+  Memoize,
 } from '@freemarket/core'
-import { Memoize } from 'typescript-memoize'
 import type { Provider } from '@ethersproject/providers'
 
 import type { EIP1193Provider } from 'eip1193-provider'

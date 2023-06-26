@@ -1,4 +1,5 @@
-import type { Chain, PartialRecord } from '@freemarket/core'
+import { assert, type Chain, type PartialRecord } from '@freemarket/core'
+import { ExecutionLog } from './ExecutionLog'
 
 export enum ExecutionEventCode {
   Erc20ApprovalsSubmitting = 'Erc20ApprovalsSubmitting',
@@ -51,6 +52,7 @@ export interface WorkflowConfirmed {
   code: 'WorkflowConfirmed'
   chain: Chain
   transactionHash: string
+  logs: ExecutionLog[]
 }
 
 export interface WorkflowWaitingForContinuation {
@@ -61,22 +63,12 @@ export interface WorkflowWaitingForContinuation {
   targetChain: Chain
 }
 
-export interface OnChainEvent {
-  name: string
-  signature: string
-  args: Record<string, any>
-}
-
-export interface ExecutionEvents {
-  chain: Chain
-  events: OnChainEvent[]
-}
-
 export interface WorkflowComplete {
   code: 'WorkflowComplete'
   chain: Chain
   transactionHash: string
-  events: ExecutionEvents[]
+  events: ExecutionLog[]
+  success: boolean
 }
 
 export type CreateExecutionEventArg =
@@ -111,8 +103,14 @@ export function createExecutionEvent(event: CreateExecutionEventArg): ExecutionE
       return { ...event, message: `Workflow confirmed on ${event.chain} tx=${event.transactionHash}` }
     case 'WorkflowWaitingForBridge':
       return { ...event, message: `Waiting for ${event.stepType} to bridge funds from ${event.sourceChain} to ${event.targetChain}` }
-    case 'WorkflowComplete':
+    case 'WorkflowComplete': {
+      const failureLog = event.events.find(log => log.type === 'continuation-failure')
+      if (failureLog) {
+        assert(failureLog.type === 'continuation-failure')
+        return { ...event, message: `Workflow has failed: ${failureLog.reason}` }
+      }
       return { ...event, message: `Workflow has completed successfully` }
+    }
   }
 }
 

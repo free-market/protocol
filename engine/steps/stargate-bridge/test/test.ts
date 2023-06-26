@@ -3,12 +3,13 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { StargateBridgeAction } from '../typechain-types'
-import { StargateBridgeHelper, STEP_TYPE_ID } from '../tslib/helper'
-import { createStandardProvider, EncodingContext, WORKFLOW_END_STEP_ID } from '@freemarket/core'
+import { StargateBridgeHelper, STEP_TYPE_ID_STARGATE_BRIDGE } from '../tslib/helper'
+import { createStandardProvider, EncodingContext, TEN_BIG, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { getRouterAddress } from '../tslib/getRouterAddress'
 import { StargateBridge } from '../tslib/model'
 import { TestErc20__factory } from '@freemarket/step-sdk'
+import Big from 'big.js'
 
 const testAmount = 100
 const testAmountFull = 100_000000
@@ -49,7 +50,7 @@ describe('StargateBridge', async () => {
       contracts: { configManager, stargateBridgeAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, stargateBridgeAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_STARGATE_BRIDGE, stargateBridgeAction.address)
 
     const networkInfo = await stargateBridgeAction.provider.getNetwork()
     const expectedRouterAddress = getRouterAddress(networkInfo.chainId.toString())
@@ -106,7 +107,7 @@ describe('StargateBridge', async () => {
     // invoke stargate
     await expect(
       stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.argData, {
-        value: remittance.amount,
+        value: new Big(remittance.amount.toString()).mul(TEN_BIG.pow(18)).toFixed(0),
       })
     ).to.changeTokenBalance(testUsdc, stargateBridgeAction.address, testAmountFull * -1)
   })

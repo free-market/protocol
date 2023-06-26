@@ -14,9 +14,9 @@ import {
   getDefaultFungibleTokens,
   nonEmptyStringSchema,
   initEnv,
+  Memoize,
 } from '@freemarket/core'
 import type { EIP1193Provider } from 'eip1193-provider'
-import { Memoize } from 'typescript-memoize'
 import axios from 'axios'
 
 initEnv()
@@ -25,6 +25,7 @@ export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
   private erc20s = new Map<string, string>()
   private decimals = new Map<string, number>()
+  private providers = new Map<ChainOrStart, EIP1193Provider>()
 
   testNet = false
   frontDoorAddress?: string
@@ -34,6 +35,10 @@ export class MockWorkflowInstance implements IWorkflow {
       throw new Error('frontDoorAddress not set in not MockWorkflowInstance')
     }
     return Promise.resolve(this.frontDoorAddress)
+  }
+
+  setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider) {
+    this.providers.set(chainOrStart, provider)
   }
 
   @Memoize()
@@ -90,6 +95,10 @@ export class MockWorkflowInstance implements IWorkflow {
     return Promise.resolve(this.testNet)
   }
   getProvider(chainOrStart: ChainOrStart): EIP1193Provider {
+    const provider = this.providers.get(chainOrStart)
+    if (provider) {
+      return provider
+    }
     const ethersProvider = new StaticJsonRpcProvider(process.env.ETHEREUM_MAINNET_URL || 'https://rpc.ankr.com/eth')
     return new Eip1193Bridge(new VoidSigner(ADDRESS_ZERO), ethersProvider)
   }

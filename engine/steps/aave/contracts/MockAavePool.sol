@@ -19,4 +19,28 @@ contract MockAavePool is IAaveV3Pool {
   function getReserveData(address) external view returns (ReserveData memory) {
     return ReserveData(ReserveConfigurationMap(0), 0, 0, 0, 0, 0, 0, 0, address(mockAToken), address(0), address(0), address(0), 0, 9, 0);
   }
+
+  function getUserAccountData(
+    address user
+  )
+    external
+    view
+    override
+    returns (
+      uint256 totalCollateralBase,
+      uint256 totalDebtBase,
+      uint256 availableBorrowsBase,
+      uint256 currentLiquidationThreshold,
+      uint256 ltv,
+      uint256 healthFactor
+    )
+  {}
+
+  function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf) external override {}
+
+  function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) external override returns (uint256) {}
+
+  function getUserConfiguration(address user) external view override returns (UserConfigurationMap memory) {}
+
+  function setUserUseReserveAsCollateral(address asset, bool useAsCollateral) external override {}
 }

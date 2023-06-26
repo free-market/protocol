@@ -30,6 +30,7 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
 
 export const TEN_BIG = new Big(10)
 export const ONE_BIG = new Big(1)
+export const TWO_BIG = new Big(2)
 
 export async function sdkAssetAndAmountToEvmInputAmount(
   assetRef: AssetReference,

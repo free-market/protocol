@@ -17,7 +17,7 @@ import {
 import type z from 'zod'
 import { AddAsset } from './model'
 
-export const STEP_TYPE_ID = 100
+export const STEP_TYPE_ID_ADD_ASSET = 100
 
 export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
   async encodeWorkflowStep(context: EncodingContext<AddAsset>): Promise<EncodedWorkflowStep> {
@@ -47,7 +47,7 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
     }
 
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_ADD_ASSET,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmAssetAmount],
       argData: '0x',

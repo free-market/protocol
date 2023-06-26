@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { AaveSupplyAction, IAaveV3Pool__factory, IERC20__factory } from '../typechain-types'
-import { AaveSupplyHelper, STEP_TYPE_ID } from '../tslib/helper'
+import { AaveSupplyHelper, STEP_TYPE_ID_AAVE_SUPPLY } from '../tslib/supply-helper'
 import { ADDRESS_ZERO, EncodingContext } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt, confirmTx } from '@freemarket/step-sdk/tslib/testing'
 import { AaveSupply } from '../tslib/model'
@@ -45,7 +45,7 @@ describe('AaveSupply', async () => {
       otherUserSigner,
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, aaveSupplyAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_AAVE_SUPPLY, aaveSupplyAction.address)
   })
 
   it('executes when invoked directly', async () => {
@@ -81,7 +81,7 @@ describe('AaveSupply', async () => {
     )
   })
 
-  it.only('executes when invoked via the front door', async () => {
+  it('executes when invoked via the front door', async () => {
     const {
       users: { otherUser },
       contracts: { userWorkflowRunner, aaveSupplyAction },
@@ -107,7 +107,7 @@ describe('AaveSupply', async () => {
       mapStepIdToIndex: new Map<string, number>(),
     }
     const encoded = await helper.encodeWorkflowStep(context)
-    const workflow: WorkflowStruct = {
+    const supplyWorkflow: WorkflowStruct = {
       workflowRunnerAddress: ADDRESS_ZERO,
       steps: [
         {
@@ -131,7 +131,7 @@ describe('AaveSupply', async () => {
     const poolAddr = await aaveSupplyAction.poolAddress()
     const pool = IAaveV3Pool__factory.connect(poolAddr, otherUserSigner)
     const reserveData = await pool.getReserveData(usdt.address)
-    console.log('reserveData', reserveData)
+    // console.log('reserveData', reserveData)
     const aTokenAddress = reserveData.aTokenAddress
     const aToken = IERC20__factory.connect(aTokenAddress, otherUserSigner)
     const aTokenBalanceBefore = await aToken.balanceOf(otherUser)
@@ -139,7 +139,7 @@ describe('AaveSupply', async () => {
     console.log('usdtBalanceBefore', usdtBalanceBefore.toString())
     console.log('aTokenBalanceBefore', aTokenBalanceBefore.toString())
     console.log('executing workflow', userWorkflowRunner.address)
-    await confirmTx(userWorkflowRunner.executeWorkflow(workflow, { gasLimit: 3000000 }))
+    await confirmTx(userWorkflowRunner.executeWorkflow(supplyWorkflow, { gasLimit: 3000000 }))
     // await confirmTx(userWorkflowRunner.executeWorkflow())
     const aTokenBalanceAfter = await aToken.balanceOf(otherUser)
     const usdtBalanceAfter = await usdt.balanceOf(otherUser)

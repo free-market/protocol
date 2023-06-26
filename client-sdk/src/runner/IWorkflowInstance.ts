@@ -5,8 +5,6 @@ import type { Arguments, Workflow } from '../model'
 
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import type { WorkflowSegment } from './WorkflowSegment'
-import { ExecutionStepLog } from './ExecutionLog'
-import { OnChainEvent } from './ExecutionEvent'
 
 export interface IWorkflowInstance extends IWorkflow {
   //////
@@ -27,5 +25,4 @@ export interface IWorkflowInstance extends IWorkflow {
 
   getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined>
   getStepHelper(chainOrStart: ChainOrStart, type: string): IStepHelper<any>
-  toExecutionStepLogs(chain: Chain, parsedLogs: OnChainEvent[]): Promise<ExecutionStepLog[]>
 }

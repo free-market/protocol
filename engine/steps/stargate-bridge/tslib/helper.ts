@@ -1,6 +1,5 @@
 import { AbstractStepHelper, getBridgePayload } from '@freemarket/step-sdk'
 import { defaultAbiCoder } from '@ethersproject/abi'
-import { Memoize } from 'typescript-memoize'
 import {
   ADDRESS_ZERO,
   assert,
@@ -20,6 +19,7 @@ import {
   TEN_BIG,
   ContinuationInfo,
   EncodeContinuationResult,
+  Memoize,
 } from '@freemarket/core'
 import rootLogger from 'loglevel'
 import type { StargateBridge } from './model'
@@ -38,7 +38,7 @@ import type { StargateBridgeActionArgs } from './StargateBridgeActionArgs'
 import { BigNumber } from 'ethers'
 import { EIP1193Provider } from 'hardhat/types'
 
-export const STEP_TYPE_ID = 101
+export const STEP_TYPE_ID_STARGATE_BRIDGE = 101
 
 // const log = rootLogger.getLogger('StargateBridgeHelper')
 const log = rootLogger
@@ -135,7 +135,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     assert(this.ethersProvider)
     const frontDoorAddress = await this.getFrontDoorAddress()
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, this.ethersProvider)
-    const stargateBridgeActionAddress = await runner.getStepAddress(STEP_TYPE_ID)
+    const stargateBridgeActionAddress = await runner.getStepAddress(STEP_TYPE_ID_STARGATE_BRIDGE)
     return stargateBridgeActionAddress
   }
 
@@ -145,7 +145,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const ethersProvider = getEthersProvider(stdProvider)
     const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(chain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddress, ethersProvider)
-    const sgBridgeActionAddr = await runner.getStepAddress(STEP_TYPE_ID)
+    const sgBridgeActionAddr = await runner.getStepAddress(STEP_TYPE_ID_STARGATE_BRIDGE)
     log.debug(`StargateBridgeAction for chain '${chain}' is ${sgBridgeActionAddr}`)
     return sgBridgeActionAddr
   }
@@ -328,7 +328,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     log.debug(`stargate args:\n${JSON.stringify(sgArgs, null, 2)}`)
 
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_STARGATE_BRIDGE,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [transferInputAsset, paymentAsset],
       argData: StargateBridgeHelper.encodeStargateBridgeArgs(sgArgs),
@@ -443,7 +443,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const ethersProvider = getEthersProvider(stdProvider)
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(continuationInfo.targetChain)
     const runner = WorkflowRunner__factory.connect(frontDoorAddr, ethersProvider)
-    const stepAddress = await runner.getStepAddress(STEP_TYPE_ID)
+    const stepAddress = await runner.getStepAddress(STEP_TYPE_ID_STARGATE_BRIDGE)
     const step = StargateBridgeAction__factory.connect(stepAddress, ethersProvider)
     const stargateRouterAddress = await step.stargateRouterAddress()
 

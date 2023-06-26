@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import AaveIcon from './AaveIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { STEP_TYPE_ID } from './helper'
+import { STEP_TYPE_ID_AAVE_SUPPLY } from './supply-helper'
 
 function AaveSummary(props: any) {
   return (
@@ -26,7 +26,7 @@ export const platformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'aave-supply',
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_AAVE_SUPPLY,
       nodeType: 'stepNode',
       name: 'Aave Supply',
       description: 'Deposit an asset into Aave',

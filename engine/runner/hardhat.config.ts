@@ -37,24 +37,4 @@ task('setStepAddress', 'Overwrite the current step address for a given step type
     console.log('done')
   })
 
-task('fixTheShit', 'wtf').setAction(async (args, hre) => {
-  const { ethers } = hre
-  const frontDoor = await ethers.getContract('FrontDoor')
-  const storageAddr = await frontDoor.eternalStorageAddress()
-  console.log('storageAddr: ' + storageAddr)
-  const deployerSigner = await ethers.getNamedSigner('deployer')
-  const storage = EternalStorage__factory.connect(storageAddr, deployerSigner)
-  const writer = await storage.getWriter()
-  console.log('writer: ' + writer)
-  const currentConfigManager = await ethers.getContract('ConfigManager')
-  console.log('currentConfigManager: ' + currentConfigManager.address)
-  if (writer !== currentConfigManager.address) {
-    console.log('updating writer')
-    // await (await storage.setWriter(currentConfigManager.address)).wait()
-    console.log('writer updated')
-  } else {
-    console.log('writer already updated')
-  }
-})
-
 export default coreHardhatConfig

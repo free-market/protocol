@@ -67,7 +67,6 @@
     "keccak": "^3.0.3",
     "lodash.merge": "^4.6.2",
     "react": "^18.2.0",
-    "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
   }
 }

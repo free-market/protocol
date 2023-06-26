@@ -11,7 +11,7 @@ export const AssetSchema = `
 `
 // const AssetArrayAbi = `${AssetAbi}[]`
 // // const x = abiCoder.encode([AssetArrayAbi], [[]])
-const InputAssetSchema = `
+export const InputAssetSchema = `
   tuple(
     bool sourceIsCaller,
     bool amountIsPercent,

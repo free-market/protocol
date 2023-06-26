@@ -13,7 +13,7 @@ import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
 
-export const STEP_TYPE_ID = 103
+export const STEP_TYPE_ID_CURVE = 103
 
 // on ethereum:
 // index 0 = USDT  = 0xdAC17F958D2ee523a2206206994597C13D831ec7
@@ -39,7 +39,7 @@ export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto
     const toAsset = sdkAssetToEvmAsset(asset, chain)
 
     return {
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_CURVE,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount],
       argData: CurveTriCrypto2SwapHelper.encodeAddAssetArgs(toAsset),

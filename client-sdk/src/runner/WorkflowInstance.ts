@@ -5,7 +5,6 @@ import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import { createStepHelper } from './createStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
-import { Memoize } from 'typescript-memoize'
 import { NATIVE_ASSETS } from '../NativeAssets'
 import { HARDHAT_FORK_CHAIN, WORKFLOW_END_STEP_ID } from './constants'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
@@ -46,6 +45,7 @@ import {
   ADDRESS_ZERO,
   RemittanceInfo,
   TEN_BIG,
+  Memoize,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
@@ -56,8 +56,7 @@ import {
 } from '@freemarket/runner/build/typechain-types/contracts/WorkflowRunner'
 import { listenerCount } from 'events'
 import { LogDescription } from '@ethersproject/abi'
-import { ExecutionStepLog, ExecutionStepLogAsset } from './ExecutionLog'
-import { OnChainEvent } from './ExecutionEvent'
+import { ExecutionLogStep, ExecutionLogAssetAmount } from './ExecutionLog'
 
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
@@ -924,49 +923,6 @@ export class WorkflowInstance implements IWorkflowInstance {
       chainMap.set(type, helper)
     }
     return helper
-  }
-
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  async toExecutionStepLogs(chain: Chain, events: OnChainEvent[]): Promise<ExecutionStepLog[]> {
-    const ret: ExecutionStepLog[] = []
-    const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
-
-    const mapper = async (assetAmount: AssetAmountStructOutput): Promise<ExecutionStepLogAsset> => {
-      let symbol: string | undefined = mapAddressToSymbol[chain]?.[assetAmount.asset.assetAddress]
-      let assetInfo: Asset | undefined = undefined
-      if (symbol || assetAmount.asset.assetAddress === ADDRESS_ZERO) {
-        const ar: AssetReference = assetAmount.asset.assetAddress === ADDRESS_ZERO ? { type: 'native' } : { type: 'fungible-token', symbol }
-        try {
-          assetInfo = await this.dereferenceAsset(ar, chain)
-        } catch (e) {
-          // ignore
-        }
-      }
-      if (!symbol) {
-        symbol = `${assetAmount.asset.assetAddress.slice(0, 6)}...${assetAmount.asset.assetAddress.slice(-4)}`
-      }
-      return {
-        symbol,
-        address: assetAmount.asset.assetAddress,
-        amount: assetAmount.amount.toString(),
-        assetInfo,
-      }
-    }
-
-    for (const event of events) {
-      if (event.name === 'WorkflowStepExecution') {
-        const e = event.args as unknown as WorkflowStepExecutionEventObject
-        const inputs = await Promise.all(e.result.inputAssetAmounts.map(mapper))
-        const outputs = await Promise.all(e.result.outputAssetAmounts.map(mapper))
-        ret.push({
-          stepTyeId: e.stepTypeId,
-          inputAssets: inputs,
-          outputAssets: outputs,
-        })
-      }
-    }
-
-    return ret
   }
 
   async getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {

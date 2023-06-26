@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { AddAssetAction } from '../typechain-types'
-import { AddAssetHelper, STEP_TYPE_ID } from '../tslib/helper'
+import { AddAssetHelper, STEP_TYPE_ID_ADD_ASSET } from '../tslib/helper'
 import { EncodingContext } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk/typechain-types'
@@ -37,7 +37,7 @@ describe('AddAsset', async () => {
       contracts: { configManager, addAssetAction },
     } = await setup()
     // simple sanity check to make sure that the action registered itself during deployment
-    await validateAction(configManager, STEP_TYPE_ID, addAssetAction.address)
+    await validateAction(configManager, STEP_TYPE_ID_ADD_ASSET, addAssetAction.address)
   })
 
   it('can execute', async () => {

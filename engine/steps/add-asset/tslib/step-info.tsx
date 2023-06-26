@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import AddAssetIcon from './AddAssetIcon'
 import StepSummary from './StepSummary'
-import { STEP_TYPE_ID } from './helper'
+import { STEP_TYPE_ID_ADD_ASSET } from './helper'
 
 export const platformInfo: PlatformInfo = {
   name: 'Add Asset',
@@ -12,7 +12,7 @@ export const platformInfo: PlatformInfo = {
   stepInfos: [
     {
       stepType: 'add-asset',
-      stepTypeId: STEP_TYPE_ID,
+      stepTypeId: STEP_TYPE_ID_ADD_ASSET,
       nodeType: 'stepNode',
       name: 'Add Asset',
       description: 'Adds an asset to the workflow',

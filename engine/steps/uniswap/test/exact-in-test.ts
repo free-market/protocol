@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/ExactInHelper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN, UniswapExactInHelper } from '../tslib/UniswapExactInHelper'
 import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
-import { Weth__factory } from '@freemarket/step-sdk'
+import { Weth__factory, formatNumber } from '@freemarket/step-sdk'
 import { UniswapExactIn } from '../tslib/model'
 import { UniswapExactInAction } from '../typechain-types'
 import { CurrencyAmount, Token } from '@uniswap/sdk-core'
@@ -13,6 +13,9 @@ import { ADDRESS_ZERO } from '@uniswap/v3-sdk'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 
 import Big from 'big.js'
+import { Signer } from '@ethersproject/abstract-signer'
+import { IERC20Metadata__factory } from '@freemarket/runner'
+import { Provider } from '@ethersproject/providers'
 
 const testAmountEth = new Big('1')
 const testAmountWei = testAmountEth.mul(TEN_BIG.pow(18)).toFixed(0)
@@ -24,6 +27,12 @@ const toAddress = MkrAddress
 
 const ONE_ETH = ethers.utils.parseEther('1')
 
+async function formatAssetAmount(assetAddress: string, amount: string, provider: Provider | Signer) {
+  const token = IERC20Metadata__factory.connect(toAddress, provider)
+  const decimals = await token.decimals()
+  return formatNumber(amount, decimals, 4, true)
+}
+
 const setup = getTestFixture(hre, async baseFixture => {
   const {
     signers: { otherUserSigner },
@@ -34,7 +43,7 @@ const setup = getTestFixture(hre, async baseFixture => {
   const weth = Weth__factory.connect(WETH_ADDRESS, otherUserSigner)
 
   // deploy the contract
-  await deployments.fixture('CurveTriCrypto2SwapAction')
+  await deployments.fixture('UniswapExactInAction')
 
   // get a reference to the deployed contract with otherUser as the signer
   const uniswapExactInAction = <UniswapExactInAction>await ethers.getContract('UniswapExactInAction', otherUserSigner)
@@ -79,76 +88,24 @@ describe('Uniswap Exact In', async () => {
     const token = new Token(1, ADDRESS_ZERO, 18)
     const toAmount = CurrencyAmount.fromRawAmount(token, 500)
     const slippageTolerance = 1 // 1%
-    const worstAllowableSlippage = UniswapExactInHelper.getMinExchangeRate(fromAmount, toAmount, slippageTolerance)
-    expect(worstAllowableSlippage).to.eq('0x007eb851eb851eb851eb851eb851eb851f')
+    const worstAllowableSlippage = UniswapExactInHelper.getWorstExchangeRate(fromAmount, toAmount, slippageTolerance)
+    expect(worstAllowableSlippage).to.eq('0x7eb851eb851eb851eb851eb851eb851f')
   })
 
   it('computes a route', async () => {
     const { helper, fromAssetRef, toAssetRef } = await setup()
     // await getWeth(fromAmount, otherUserSigner)
-    const route = await helper.getRoute(fromAssetRef, toAssetRef, 'exactIn', testAmountWei)
+    const route = await helper.getRoute(fromAssetRef, toAssetRef, 'exactIn', testAmountEth.toFixed())
     expect(route).to.not.be.undefined
+    const quote = route!.route!.quote
+    const nBig = new Big(quote.numerator.toString())
+    const dBig = new Big(quote.denominator.toString())
+    const decimal = nBig.div(dBig)
+    // prettier-ignore
+    console.log(`quote numerator=${quote.numerator.toString()} denominator=${quote.denominator.toString()} decimalScale=${quote.decimalScale.toString()} decimal=${decimal.toFixed(5)} toFixed=${quote.toFixed(5)}`)
   })
 
-  // it('encodes a route', async () => {
-  //   const {
-  //     helper,
-  //     users: { otherUser },
-  //     signers: { otherUserSigner },
-  //     fromAssetRef,
-  //     toAssetRef,
-  //     contracts: { toToken },
-  //   } = await setup()
-  //   await getWeth(fromAmount, otherUserSigner)
-  //   const route = await helper.getRoute(fromAssetRef, toAssetRef, fromAmount)
-  //   expect(route).to.not.be.undefined
-  //   const encodedPaths = UniswapExactInHelper.encodeRoute(route!)
-  //   const chainId = (await otherUserSigner.provider!.getNetwork()).chainId
-  //   // console.log('approving', fromAmount, chainId)
-  //   const weth = Weth__factory.connect(WETH_ADDRESS, otherUserSigner)
-  //   await (await weth.approve(SWAP_ROUTER_ADDRESS, fromAmount)).wait()
-  //   const allowance = await weth.allowance(otherUser, SWAP_ROUTER_ADDRESS)
-  //   // console.log('allowance', allowance.toString())
-  //   const fromBalance = await weth.balanceOf(otherUser)
-  //   // console.log('fromBalance', fromBalance.toString())
-
-  //   const toBalanceBefore = await toToken.balanceOf(otherUser)
-
-  //   const swapRouter: SwapRouter02 = SwapRouter02__factory.connect(SWAP_ROUTER_ADDRESS, otherUserSigner)
-
-  //   // based on code examples from uniswap deadline is unix timestamp in seconds
-  //   const deadline = Math.floor(Date.now() / 1000 + 1800)
-  //   const promises: Promise<any>[] = []
-  //   // console.log(`encodedPaths.length=${encodedPaths.length} encodedPaths=${JSON.stringify(encodedPaths, null, 2)}`)
-  //   let pathBalanceBefore = toBalanceBefore
-  //   for (const path of encodedPaths) {
-  //     const amountIn = Math.floor(parseInt(testAmount) * parseFloat(path.portion))
-  //     const args: IV3SwapRouter.ExactInputParamsStruct = {
-  //       path: path.encodedPath,
-  //       recipient: otherUser,
-  //       // deadline,
-  //       amountIn: path.portion,
-  //       amountOutMinimum: 0,
-  //     }
-  //     console.log(`submitting path=${path.encodedPath} amountIn=${path.amount}`)
-  //     const response = await swapRouter.exactInput(args)
-  //     console.log('submit waiting')
-  //     const receipt = await response.wait()
-  //     const pathBalanceAfter = await toToken.balanceOf(otherUser)
-  //     const pathBalanceDiff = pathBalanceAfter.sub(pathBalanceBefore)
-  //     console.log(`pathBalanceDiff=${pathBalanceDiff.toString()}`)
-  //     pathBalanceBefore = pathBalanceAfter
-  //     // console.log(receipt)
-  //   }
-
-  //   const toBalanceAfter = await toToken.balanceOf(otherUser)
-  //   console.log('toBalanceAfter', toBalanceAfter.toString())
-  //   const toBalanceDiff = toBalanceAfter.sub(toBalanceBefore)
-  //   console.log('toBalanceDiff', toBalanceDiff.toString())
-  //   expect(toBalanceDiff).to.be.gt(0)
-  // })
-
-  it('does a transfer using the helper and the integration contract', async () => {
+  it('does a swap using the helper and the integration contract', async () => {
     const {
       users: { otherUser },
       contracts: { uniswapExactInAction, toToken, weth },
@@ -171,6 +128,7 @@ describe('Uniswap Exact In', async () => {
         type: 'fungible-token',
         symbol: toSymbol,
       },
+      slippageTolerance: '1',
     }
 
     const context: EncodingContext<UniswapExactIn> = {
@@ -181,15 +139,22 @@ describe('Uniswap Exact In', async () => {
     }
 
     const encoded = await helper.encodeWorkflowStep(context)
+    console.log('encoded step args', encoded)
 
-    const toBalanceBefore = await toToken.balanceOf(uniswapExactInAction.address)
     const { inputAssets, argData } = encoded
+    const toBalanceBefore = await toToken.balanceOf(uniswapExactInAction.address)
     await (await uniswapExactInAction.execute(inputAssets, argData)).wait()
     // console.log('uniswapExactInAction.address', uniswapExactInAction.address)
     // console.log('toToken.address', toToken.address)
     const toBalanceAfter = await toToken.balanceOf(uniswapExactInAction.address)
     // console.log('toBalanceAfter', toBalanceAfter.toString())
     expect(toBalanceAfter).to.be.greaterThan(toBalanceBefore)
+
+    const [wethAmount, tokenAmount] = await Promise.all([
+      formatAssetAmount(weth.address, testAmountWei, weth.provider),
+      formatAssetAmount(toToken.address, toBalanceAfter.toString(), toToken.provider),
+    ])
+    console.log(`from  weth=${wethAmount}  to  ${toSymbol}=${tokenAmount}`)
   })
 
   it.skip('handles a no-op swap where the input and out assets are the same', async () => {

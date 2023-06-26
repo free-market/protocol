@@ -13,3 +13,13 @@ export function getCurveTriCrypto2Address(chainId: string | number) {
   }
   throw new Error('could not find tryCrypto2 address for chain: ' + chainId)
 }
+
+export function getCurve3PoolAddress(chainId: string | number) {
+  switch (chainId.toString()) {
+    // ethereum
+    case '1':
+    case '31337':
+      return '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7'
+  }
+  throw new Error('could not find 3pool address for chain: ' + chainId)
+}

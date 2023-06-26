@@ -38,7 +38,7 @@ contract AaveSupplyAction is IWorkflowStep {
   }
 
   function execute(AssetAmount[] calldata assetAmounts, bytes calldata) public payable returns (WorkflowStepResult memory) {
-    console.log('entering aave supply action');
+    console.log('entering aave supply action', address(this));
     // validate
     require(assetAmounts.length == 1, 'there must be exactly 1 input asset');
     // require(assetAmounts[0].asset.assetType == AssetType.ERC20, 'the input asset must be an ERC20');
@@ -46,7 +46,6 @@ contract AaveSupplyAction is IWorkflowStep {
     emit AaveSupplyActionEvent(assetAmounts[0]);
     Locals memory locals;
 
-    console.log('entering aave supply action');
     console.log('assetAmounts[0].asset.address', assetAmounts[0].asset.assetAddress);
 
     locals.inputTokenAddress = LibWethUtils.wrapIfNecessary(assetAmounts[0], wethAddress);
@@ -61,25 +60,27 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // get the aToken
     locals.pool = IAaveV3Pool(poolAddress);
-    locals.reserveData = locals.pool.getReserveData(locals.inputTokenAddress);
-    locals.aToken = IERC20(locals.reserveData.aTokenAddress);
+    // locals.reserveData = locals.pool.getReserveData(locals.inputTokenAddress);
+    // locals.aToken = IERC20(locals.reserveData.aTokenAddress);
 
     // take note of the before balance
-    locals.aTokenBalanceBefore = locals.aToken.balanceOf(address(this));
+    // locals.aTokenBalanceBefore = locals.aToken.balanceOf(msg.sender);
 
     console.log('invoking supply');
+
     // invoke supply
-    locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, address(this), 0);
+    locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, msg.sender, 0);
     console.log('invoked supply');
 
-    locals.aTokenBalanceAfter = locals.aToken.balanceOf(address(this));
-    require(locals.aTokenBalanceAfter > locals.aTokenBalanceBefore, 'aToken balance did not increase');
+    // locals.aTokenBalanceAfter = locals.aToken.balanceOf(msg.sender);
+    // require(locals.aTokenBalanceAfter > locals.aTokenBalanceBefore, 'aToken balance did not increase');
 
     return
       LibStepResultBuilder
-        .create(1, 1)
-        .addInputAssetAmount(assetAmounts[0])
-        .addOutputToken(locals.reserveData.aTokenAddress, locals.aTokenBalanceAfter - locals.aTokenBalanceBefore)
-        .result;
+      .create(1, 1)
+      .addInputAssetAmount(assetAmounts[0]).addOutputToken(locals.reserveData.aTokenAddress, 0).result;
+      // since the asset is going straight to the caller, it's not counted as an asset 'in the workflow'
+      // but still mentioning it here with a 0 amount so it gets logged
+    // .addOutputToken(locals.reserveData.aTokenAddress, locals.aTokenBalanceAfter - locals.aTokenBalanceBefore)
   }
 }

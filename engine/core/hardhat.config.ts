@@ -36,6 +36,9 @@ const config: HardhatUserConfig = {
         url: 'https://rpc.ankr.com/eth',
         blockNumber: 16889307,
       },
+      accounts: {
+        mnemonic: 'rubber possible radar amused patient ability canoe dust debate gallery dawn ring',
+      },
     },
     local: {
       // chainId: 1,

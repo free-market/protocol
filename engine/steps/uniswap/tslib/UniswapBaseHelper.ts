@@ -7,15 +7,9 @@ const SWAP_ROUTER_02_ADDRESS = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
 import {
-  EncodingContext,
-  EncodedWorkflowStep,
-  sdkAssetAmountToEvmInputAmount,
-  sdkAssetAndAmountToEvmInputAmount,
   assert,
   ADDRESS_ZERO,
-  AssetAmount,
   Asset,
-  sdkAssetToEvmAsset,
   AssetReference,
   Chain,
   getEthersProvider,
@@ -23,30 +17,37 @@ import {
   TEN_BIG,
   ONE_BIG,
   FungibleToken,
+  Memoize,
+  Percent as FmPercent,
+  TWO_BIG,
 } from '@freemarket/core'
-import { AbstractStepHelper, AssetSchema, IWeth__factory, Weth__factory } from '@freemarket/step-sdk'
-import type { UniswapExactIn } from './model'
+import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
 // import { IQuoter__factory } from '../typechain-types'
 import { AlphaRouter, SwapOptionsSwapRouter02, SwapRoute, SwapType } from '@uniswap/smart-order-router'
-import { BaseProvider, JsonRpcProvider } from '@ethersproject/providers'
-export const STEP_TYPE_ID_UNISWAP_EXACT_IN = 104
+import { BaseProvider } from '@ethersproject/providers'
 export const QUOTER_CONTRACT_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 import { TradeType, CurrencyAmount, Percent, Token, Currency } from '@uniswap/sdk-core'
 import Big from 'big.js'
 import { BigNumber, utils } from 'ethers'
 import { Protocol } from '@uniswap/router-sdk'
-import { Memoize } from 'typescript-memoize'
 
 import { IERC20__factory, IV3SwapRouter__factory } from '../typechain-types'
 import { Signer } from '@ethersproject/abstract-signer'
 
 const gasLimit = 30_000_000
 
+export const UniswapRouteSchema = `
+  tuple(
+    bytes encodedPath,
+    int256 portion
+  )`
+
 export interface UniswapRoute {
   encodedPath: string
   portion: string
 }
 
+const TWO_TO_THE_128 = TWO_BIG.pow(128)
 export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStepHelper<T> {
   async getRoute(fromAssetRef: AssetReference, toAssetRef: AssetReference, type: 'exactIn' | 'exactOut', amount?: string) {
     assert(typeof fromAssetRef === 'object' && typeof toAssetRef === 'object')
@@ -55,8 +56,8 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     logger.debug(`getRoute(${JSON.stringify(fromAssetRef)}, ${JSON.stringify(toAssetRef)}, ${amount})`)
 
     const chainId = await this.getChainId()
-    // if it's hardhat, assume it's forked ethereum during a test (auto router doesn't work with forks for some unknown reason)
 
+    // if it's hardhat, assume it's forked ethereum during a test (auto router doesn't work with forks for some unknown reason)
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
     const chain = await this.getChain()
 
@@ -66,8 +67,9 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     // console.log('toAsset', toAsset)
     assert(fromAsset.type === 'fungible-token')
     assert(toAsset.type === 'fungible-token')
-    const fromAmount = amount && !amount.endsWith('%') ? amount : await this.getTokenAmountInUsd(1000, fromAsset, chain)
-    // console.log('fromAmount', fromAmount)
+    // const fromAmount = amount && !amount.endsWith('%') ? amount : await this.getTokenAmountInUsd(1000, fromAsset, chain)
+    const routeAmount = await this.getRouteAmount(amount, fromAsset, chain)
+    logger.debug('routeAmount for getRoute', routeAmount)
     const uniswapFromToken = UniswapBaseHelper.toUniswapToken(chain, chainIdForUniswap, fromAsset)
     const uniswapToToken = UniswapBaseHelper.toUniswapToken(chain, chainIdForUniswap, toAsset)
     // console.log('uniswapFromToken', uniswapFromToken)
@@ -81,7 +83,7 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
       deadline: Math.floor(Date.now() / 1000 + 1800),
     }
 
-    const { numerator, denominator } = this.getUniswapFraction(fromAsset, chain, fromAmount)
+    const { numerator, denominator } = this.getUniswapFraction(fromAsset, chain, routeAmount)
     const route = await router.route(
       CurrencyAmount.fromFractionalAmount(uniswapFromToken, numerator, denominator),
       uniswapToToken,
@@ -89,7 +91,16 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
       options,
       { protocols: [Protocol.V3] }
     )
-    return route
+    return { route, amountUsedForRoute: routeAmount }
+  }
+
+  private async getRouteAmount(amount: string | undefined, asset: Asset, chain: Chain) {
+    if (amount && !amount.endsWith('%')) {
+      const decimals = asset.type === 'native' ? 18 : asset.chains[chain]?.decimals
+      assert(decimals)
+      return new Big(amount).mul(TEN_BIG.pow(decimals)).toFixed(0)
+    }
+    return this.getTokenAmountInUsd(1000, asset, chain)
   }
 
   private getUniswapFraction(asset: FungibleToken, chain: Chain, amount: string) {
@@ -118,13 +129,10 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     const assetChainInfo = asset.chains[chain]
     assert(assetChainInfo)
     const oneToken = new Big(10).pow(assetChainInfo.decimals)
-    console.log('oneToken', oneToken.toString())
     if (!assetChainInfo.usd) {
       return oneToken.toFixed(0)
     }
     const oneDollarsWorthOfToken = oneToken.div(assetChainInfo.usd)
-    console.log('oneDollarsWorthOfToken', oneDollarsWorthOfToken.toString())
-    console.log('ret', oneDollarsWorthOfToken.mul(usdAmount).toFixed(0))
     return oneDollarsWorthOfToken.mul(usdAmount).toFixed(0)
   }
   static toUniswapToken(chain: Chain, chainId: number, asset: Asset) {
@@ -177,33 +185,56 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
 
       encodedPaths.push({
         encodedPath,
-        portion: UniswapBaseHelper.toQuadFloat(portion),
+        portion: this.to128x128(portion),
       })
     }
     return encodedPaths
   }
 
-  static toQuadFloat(n: Big) {
-    const nStr = n.toFixed()
-    const dot = nStr.indexOf('.')
-    const wholeNumberPart = dot === -1 ? nStr : nStr.slice(0, dot)
-    logger.debug('wholeNumberPart', wholeNumberPart)
+  static to128x128(n: Big) {
+    logger.debug('encoding to128x128', n.toFixed())
+    const shifted = n.mul(TWO_TO_THE_128)
+    const ret = BigNumber.from(shifted.toFixed(0)).toHexString()
+    // const wholeNumberPart = n.round(0, 0)
+    // const fractionalPart = n.minus(wholeNumberPart)
 
-    const wholeNumberPartHex = BigNumber.from(wholeNumberPart).toHexString()
-    logger.debug('wholeNumberPartHex', wholeNumberPartHex)
+    // const nStr = n.toFixed()
+    // const dot = nStr.indexOf('.')
+    // const wholeNumberPart = dot === -1 ? nStr : nStr.slice(0, dot)
+    // logger.debug('wholeNumberPart', wholeNumberPart)
+
+    // const wholeNumberPartHex = BigNumber.from(wholeNumberPart).toHexString()
+    // logger.debug('wholeNumberPartHex', wholeNumberPartHex)
     // overflow would be > 32 hex digits, because the whole number part must fit inside 128 bits,
     // which is 16 bytes, which is 32 hex digits
     // but compare length to 34 to account for the leading 0x
-    assert(wholeNumberPartHex.length <= 34, 'exchange rate overflow')
+    // assert(wholeNumberPartHex.length <= 34, 'exchange rate overflow')
     // get the decimal part leaving in the decimal so we get it as a fraction
-    const decimalPart = dot === -1 ? '0' : nStr.slice(dot)
-    const decimalPartBig = new Big(decimalPart)
-    // multiply the fraction by 2^128
-    const twoToThe128 = new Big(2).pow(128)
-    const decimalPart128 = twoToThe128.mul(decimalPartBig)
-    const decimalPartHex = BigNumber.from(decimalPart128.toFixed(0)).toHexString()
-    logger.debug('decimalPart', decimalPartHex, decimalPartHex.length)
-    return utils.hexConcat([wholeNumberPartHex, decimalPartHex])
+    // const decimalPart = dot === -1 ? '0' : nStr.slice(dot)
+    // const decimalPartBig = new Big(decimalPart)
+    // // multiply the fraction by 2^128
+    // const twoToThe128 = new Big(2).pow(128)
+    // const decimalPart128 = twoToThe128.mul(decimalPartBig)
+    // const decimalPartHex = BigNumber.from(decimalPart128.toFixed(0)).toHexString()
+    // logger.debug('decimalPart', decimalPartHex, decimalPartHex.length)
+    // const ret = utils.hexConcat([wholeNumberPartHex, decimalPartHex])
+    logger.debug('to128x128 ret', ret, ret.length)
+    return ret
+  }
+
+  static getSlippageTolerancePercent(slippageTolerance?: FmPercent): number {
+    let slippageTolerancePct = slippageTolerance?.toString() || '100'
+    return parseFloat(
+      slippageTolerancePct.endsWith('%') ? (slippageTolerancePct = slippageTolerancePct.slice(0, -1)) : slippageTolerancePct
+    )
+  }
+
+  static getExchangeRateFromQuote(fromAmount: string, quote: CurrencyAmount<Currency>): Big {
+    const quoteNumerator = new Big(quote.numerator.toString())
+    const quoteDenominator = new Big(quote.denominator.toString())
+    const endAmount = quoteNumerator.div(quoteDenominator)
+    const exchangeRate = endAmount.div(fromAmount)
+    return exchangeRate
   }
 
   // utility currently only used in the debugger
@@ -239,8 +270,8 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     await (await token.approve(SWAP_ROUTER_02_ADDRESS, MAX_UINT256, { gasLimit })).wait()
 
     // ask uniswap sdk for the route
-    const uniswapFromToken = UniswapBaseHelper.toUniswapToken(chain, chainId, fromAsset)
-    const uniswapToToken = UniswapBaseHelper.toUniswapToken(chain, chainId, toAsset)
+    const uniswapAmountToken = UniswapBaseHelper.toUniswapToken(chain, chainId, fromAsset)
+    const uniswapQuoteToken = UniswapBaseHelper.toUniswapToken(chain, chainId, toAsset)
     const router = await this.getRouter(chainId)
     const options: SwapOptionsSwapRouter02 = {
       type: SwapType.SWAP_ROUTER_02,
@@ -249,10 +280,10 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
       deadline: Math.floor(Date.now() / 1000 + 1800),
     }
 
-    const { numerator, denominator } = this.getUniswapFraction(fromAsset, chain, amount)
+    const { numerator, denominator } = this.getUniswapFraction(toAsset, chain, amount)
     const route = await router.route(
-      CurrencyAmount.fromFractionalAmount(uniswapFromToken, numerator, denominator),
-      uniswapToToken,
+      CurrencyAmount.fromFractionalAmount(uniswapAmountToken, numerator, denominator),
+      uniswapQuoteToken,
       type === 'exactIn' ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
       options,
       { protocols: [Protocol.V3] }

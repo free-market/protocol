@@ -24,9 +24,24 @@ task('deploymentSource', 'Prints the source code for a deployed contract')
   })
 
 export const coreHardhatConfig: HardhatUserConfig = {
-  solidity: '0.8.18',
+  solidity: {
+    compilers: [
+      {
+        version: '0.8.18',
+      },
+      {
+        version: '0.8.10',
+      },
+    ],
+  },
 
   networks: {
+    ethereum: {
+      url: 'https://rpc.ankr.com/eth',
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    },
     arbitrum: {
       url: process.env.ARBITRUM_MAINNET_URL,
       accounts: {
@@ -59,6 +74,9 @@ export const coreHardhatConfig: HardhatUserConfig = {
       forking: {
         url: process.env.HARDHAT_FORK_URL || 'https://rpc.ankr.com/eth',
         // blockNumber: 16889307,
+      },
+      accounts: {
+        mnemonic: 'rubber possible radar amused patient ability canoe dust debate gallery dawn ring',
       },
     },
     local: {

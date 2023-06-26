@@ -25,7 +25,6 @@
     "ethers": "^5.7.2",
     "loglevel": "^1.8.1",
     "react": "^18.2.0",
-    "typescript-memoize": "^1.1.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
