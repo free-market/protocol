@@ -15,11 +15,12 @@ import {
   Memoize,
   MAX_UINT256,
   EvmInputAsset,
+  getChainIdFromChain,
 } from '@freemarket/core'
 import { WorkflowStepInputAssetStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { TypedDataUtils, signTypedData_v4 } from 'eth-sig-util'
 
-import { AbstractStepHelper, AssetSchema, InputAssetSchema } from '@freemarket/step-sdk'
+import { AbstractStepHelper, AssetSchema, InputAssetSchema, getWrappedNativeAddress } from '@freemarket/step-sdk'
 import type { AaveBorrow, AaveInterestRateMode, AaveSupply } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { TypedDataSigner } from '@ethersproject/abstract-signer'
@@ -30,7 +31,7 @@ import { hexlify, splitSignature } from '@ethersproject/bytes'
 import { recoverAddress, verifyTypedData } from 'ethers/lib/utils'
 import rootLogger from 'loglevel'
 
-const log = rootLogger.getLogger('execute-workflow')
+const log = rootLogger.getLogger('borrow-helper')
 
 export const STEP_TYPE_ID_AAVE_BORROW = 110
 
@@ -125,11 +126,11 @@ export class AaveBorrowHelper extends AbstractStepHelper<AaveBorrow> {
 
   // returns a pair of these, the first permits MAX_UINT256, the 2nd permits 0
   async getDelegationWithSigs(context: EncodingContext<AaveBorrow>, evmInputAsset: EvmInputAsset): Promise<DelegationWithSigParams[]> {
-    const debtTokenAddress = await this.getDebtTokenAddress(
-      context.chain,
-      evmInputAsset.asset.assetAddress,
-      context.stepConfig.interestRateMode
-    )
+    const chainId = await this.getChainId()
+    const assetAddress =
+      evmInputAsset.asset.assetType === 1 ? evmInputAsset.asset.assetAddress : getWrappedNativeAddress(chainId.toString())
+    assert(assetAddress)
+    const debtTokenAddress = await this.getDebtTokenAddress(context.chain, assetAddress, context.stepConfig.interestRateMode)
 
     const provider = this.instance.getProvider(context.chain)
     const ethersProvider = getEthersProvider(provider)
@@ -138,7 +139,6 @@ export class AaveBorrowHelper extends AbstractStepHelper<AaveBorrow> {
         ? StableDebtToken__factory.connect(debtTokenAddress, ethersProvider)
         : VariableDebtToken__factory.connect(debtTokenAddress, ethersProvider)
 
-    const chainId = await this.getChainId()
     const expiration = MAX_UINT256
     const nonce = (await debtToken.nonces(context.userAddress)).toNumber()
     const EIP712_REVISION = '1'

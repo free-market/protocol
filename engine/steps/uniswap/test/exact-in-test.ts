@@ -234,6 +234,8 @@ describe('Uniswap Exact In', async () => {
           nextStepIndex: -1,
         },
       ],
+      beforeAll: [],
+      afterAll: [],
     }
 
     // const { inputAssets, argData } = encoded
@@ -289,6 +291,8 @@ describe('Uniswap Exact In', async () => {
           nextStepIndex: -1,
         },
       ],
+      beforeAll: [],
+      afterAll: [],
     }
 
     const provider = uniswapExactInAction.provider

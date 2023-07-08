@@ -718,7 +718,12 @@ export class WorkflowInstance implements IWorkflowInstance {
       }
     })
     const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
-    return { workflowRunnerAddress: runnerAddress, steps: encodedSteps }
+    return {
+      workflowRunnerAddress: runnerAddress,
+      steps: encodedSteps,
+      beforeAll: [],
+      afterAll: [],
+    }
   }
 
   static async getChainIdFromProvider(provider: Provider): Promise<number> {

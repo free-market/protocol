@@ -171,6 +171,8 @@ describe('Uniswap Exact Out', async () => {
           nextStepIndex: -1,
         },
       ],
+      beforeAll: [],
+      afterAll: [],
     }
 
     const oneHundredEthInWei = ethers.utils.parseEther('100')

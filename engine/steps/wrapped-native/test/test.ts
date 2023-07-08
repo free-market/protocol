@@ -106,6 +106,8 @@ describe('Wrapped Native', async () => {
           nextStepIndex: -1,
         },
       ],
+      beforeAll: [],
+      afterAll: [],
     }
 
     // const stepConfig: UnwrapNative = {

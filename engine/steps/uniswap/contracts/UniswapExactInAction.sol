@@ -57,6 +57,19 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
     locals.worstExchangeRateFloat = ABDKMathQuad.from128x128(locals.args.worstExchangeRate);
     console.log('decoded');
 
+    if (
+      inputAssetAmounts[0].asset.assetAddress == locals.args.toAsset.assetAddress &&
+      inputAssetAmounts[0].asset.assetType == locals.args.toAsset.assetType
+    ) {
+      // swapping to same asset, no-op
+      return
+        LibStepResultBuilder
+          .create(1, 1)
+          .addInputAssetAmount(inputAssetAmounts[0])
+          .addOutputAssetAmount(AssetAmount(locals.args.toAsset, inputAssetAmounts[0].amount))
+          .result;
+    }
+
     locals.inputTokenAddress = LibWethUtils.wrapIfNecessary(inputAssetAmounts[0], wethAddress);
 
     locals.inputAsset = IERC20(locals.inputTokenAddress);

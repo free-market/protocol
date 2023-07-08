@@ -12,6 +12,7 @@ import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import '@freemarket/step-sdk/contracts/IWeth.sol';
 import 'hardhat/console.sol';
 import '@freemarket/core/contracts/model/WorkflowStepInputAsset.sol';
 import '@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol';
@@ -51,26 +52,12 @@ contract AaveBorrowAction is IWorkflowStep {
   bytes16 internal immutable AAVE_ORACLE_PRICE_DIVISOR_FLOAT;
   bytes16 internal immutable TEN_FLOAT;
 
-  /// @notice This event is emitted when an Aave 'supply' action is executed.
-  /// @param inputAssetAmount the asset and amout being supplied to Aave.
-  event AaveSupplyActionEvent(AssetAmount inputAssetAmount);
-
   constructor(address _poolAddressProviderAddress, address _wethAddress) {
     poolAddressProviderAddress = _poolAddressProviderAddress;
     wethAddress = _wethAddress;
     AAVE_ORACLE_PRICE_DIVISOR_FLOAT = ABDKMathQuad.fromUInt(AAVE_ORACLE_PRICE_DIVISOR_UINT);
     TEN_FLOAT = ABDKMathQuad.fromUInt(10);
   }
-
-  // struct Locals {
-  //   IERC20 inputToken;
-  //   address inputTokenAddress;
-  //   IAaveV3Pool pool;
-  //   IERC20 aToken;
-  //   uint256 aTokenBalanceBefore;
-  //   uint256 aTokenBalanceAfter;
-  //   ReserveData reserveData;
-  // }
 
   function execute(AssetAmount[] calldata, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
     console.log('entering aave borrow action');
@@ -99,14 +86,15 @@ contract AaveBorrowAction is IWorkflowStep {
     //   // require(priceOracleSentinel.isBorrowAllowed(), 'borrow is not allowed');
     // }
 
+    address assetAddress = args.asset.assetType == AssetType.ERC20 ? args.asset.assetAddress : wethAddress;
     if (args.amountIsPercent) {
-      borrowAmount = computeRelativeAmount(args.amount, args.asset.assetAddress, pool, poolAddressProvider);
+      borrowAmount = computeRelativeAmount(args.amount, assetAddress, pool, poolAddressProvider);
     }
     console.log('borrowAmount', borrowAmount);
 
     ICreditDelegationToken debtToken;
     {
-      DataTypes.ReserveData memory reserveData = pool.getReserveData(args.asset.assetAddress);
+      DataTypes.ReserveData memory reserveData = pool.getReserveData(assetAddress);
       if (args.interestRateMode == 1) {
         debtToken = ICreditDelegationToken(reserveData.stableDebtTokenAddress);
       } else {
@@ -129,12 +117,12 @@ contract AaveBorrowAction is IWorkflowStep {
     console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
 
     console.log('borrowing this:', address(this));
-    console.log('borrowing asset:', args.asset.assetAddress);
+    console.log('borrowing asset:', assetAddress);
     console.log('borrowing amount:', borrowAmount);
     console.log('borrowing interestRateMode:', args.interestRateMode);
     console.log('borrowing referralCode:', args.referralCode);
     console.log('borrowing msg.sender (on-behalf of):', msg.sender);
-    pool.borrow(args.asset.assetAddress, borrowAmount, args.interestRateMode, args.referralCode, msg.sender);
+    pool.borrow(assetAddress, borrowAmount, args.interestRateMode, args.referralCode, msg.sender);
 
     // the second sig is to delegate 0 to this
     console.log('delegating 0');
@@ -149,7 +137,12 @@ contract AaveBorrowAction is IWorkflowStep {
     );
     console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
 
-    return LibStepResultBuilder.create(0, 1).addOutputToken(args.asset.assetAddress, borrowAmount).result;
+    if (args.asset.assetType == AssetType.Native) {
+      console.log('unwrapping native');
+      IWeth(wethAddress).withdraw(borrowAmount);
+    }
+
+    return LibStepResultBuilder.create(0, 1).addOutputAssetAmount(AssetAmount(args.asset, borrowAmount)).result;
   }
 
   function computeRelativeAmount(
@@ -188,6 +181,7 @@ contract AaveBorrowAction is IWorkflowStep {
       console.log('assetPrice', assetPrice);
     }
 
+    console.log('getting decimals', assetAddress);
     uint8 decimals = IERC20Metadata(assetAddress).decimals();
     console.log('decimals', decimals);
 
@@ -203,4 +197,9 @@ contract AaveBorrowAction is IWorkflowStep {
     borrowAmountFloat = borrowAmountFloat.mul(scaler);
     return borrowAmountFloat.toUInt();
   }
+
+  // there are just here for unit testing to enable weth.withdraw()
+  receive() external payable {}
+
+  fallback() external payable {}
 }

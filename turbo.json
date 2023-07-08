@@ -5,6 +5,7 @@
       "cache": false
     },
     "build-sol": {
+      "dependsOn": ["^build-sol"],
       "inputs": ["contracts/**", "package.json", "hardhat.config.ts"],
       "outputs": ["artifacts/**", "typechain-types/**", "cache/**"]
     },

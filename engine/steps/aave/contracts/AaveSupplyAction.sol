@@ -41,7 +41,6 @@ contract AaveSupplyAction is IWorkflowStep {
     console.log('entering aave supply action', address(this));
     // validate
     require(assetAmounts.length == 1, 'there must be exactly 1 input asset');
-    // require(assetAmounts[0].asset.assetType == AssetType.ERC20, 'the input asset must be an ERC20');
 
     emit AaveSupplyActionEvent(assetAmounts[0]);
     Locals memory locals;
@@ -53,34 +52,21 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // approve aave to take the asset
     locals.inputToken = IERC20(locals.inputTokenAddress);
-    uint256 myBalance = locals.inputToken.balanceOf(address(this));
-    console.log('myBalance', myBalance);
+
+    console.log('myBalance', locals.inputToken.balanceOf(address(this)));
     console.log('approving', assetAmounts[0].amount);
     locals.inputToken.safeApprove(poolAddress, assetAmounts[0].amount);
 
     // get the aToken
     locals.pool = IAaveV3Pool(poolAddress);
-    // locals.reserveData = locals.pool.getReserveData(locals.inputTokenAddress);
-    // locals.aToken = IERC20(locals.reserveData.aTokenAddress);
-
-    // take note of the before balance
-    // locals.aTokenBalanceBefore = locals.aToken.balanceOf(msg.sender);
-
-    console.log('invoking supply');
 
     // invoke supply
+    console.log('invoking supply');
     locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, msg.sender, 0);
-    console.log('invoked supply');
-
-    // locals.aTokenBalanceAfter = locals.aToken.balanceOf(msg.sender);
-    // require(locals.aTokenBalanceAfter > locals.aTokenBalanceBefore, 'aToken balance did not increase');
 
     return
-      LibStepResultBuilder
-      .create(1, 1)
-      .addInputAssetAmount(assetAmounts[0]).addOutputToken(locals.reserveData.aTokenAddress, 0).result;
       // since the asset is going straight to the caller, it's not counted as an asset 'in the workflow'
       // but still mentioning it here with a 0 amount so it gets logged
-    // .addOutputToken(locals.reserveData.aTokenAddress, locals.aTokenBalanceAfter - locals.aTokenBalanceBefore)
+      LibStepResultBuilder.create(1, 1).addInputAssetAmount(assetAmounts[0]).addOutputToken(locals.reserveData.aTokenAddress, 0).result;
   }
 }

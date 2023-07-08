@@ -88,7 +88,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     // credit ETH if sent with this call
     if (msg.value != 0) {
       // TODO add event
-      console.log('crediting native', msg.value);
+      // console.log('crediting native', msg.value);
       assetBalances.credit(0, msg.value);
     }
 
@@ -96,7 +96,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     for (uint256 i = 0; i < startingAssets.length; i++) {
       AssetAmount memory startingAsset = startingAssets[i];
       if (startingAsset.amount > 0) {
-        console.log('crediting starting', startingAsset.asset.assetAddress, startingAsset.amount);
+        // console.log('crediting starting', startingAsset.asset.assetAddress, startingAsset.amount);
         assetBalances.credit(startingAsset.asset, startingAsset.amount);
       }
     }
@@ -106,7 +106,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       while (true) {
         // prepare to invoke the step
         WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
-        console.log('prepping for step', currentStep.stepTypeId);
 
         // ChainBranch and AssetAmountBranch are special
         if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
@@ -126,42 +125,41 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         address stepAddress = resolveStepAddress(currentStep);
         AssetAmount[] memory inputAssetAmounts = resolveAmounts(userAddress, assetBalances, currentStep.inputAssets);
 
-        console.log('calling id', currentStep.stepTypeId);
-        console.log('calling addr', stepAddress);
-        console.log('assetAmounts', inputAssetAmounts.length);
-        for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-          console.log('  input type', inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
-          console.log('  input addr', inputAssetAmounts[i].asset.assetAddress);
-          console.log('  input amount', inputAssetAmounts[i].amount);
-        }
+        // console.log('calling id', currentStep.stepTypeId);
+        // console.log('calling addr', stepAddress);
+        // console.log('assetAmounts', inputAssetAmounts.length);
+        // for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
+        //   console.log('  input type', inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
+        //   console.log('  input addr', inputAssetAmounts[i].asset.assetAddress);
+        //   console.log('  input amount', inputAssetAmounts[i].amount);
+        // }
 
         // invoke the step
         WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
 
-        console.log('stepResult.ouptputs', stepResult.outputAssetAmounts.length);
-        for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-          console.log('output amount', stepResult.outputAssetAmounts[i].amount);
-        }
+        // console.log('stepResult.ouptputs', stepResult.outputAssetAmounts.length);
+        // for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+        //   console.log('output amount', stepResult.outputAssetAmounts[i].amount);
+        // }
 
         emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
 
         // debit input assets
-        console.log('result inputs', stepResult.inputAssetAmounts.length);
+        // console.log('result inputs', stepResult.inputAssetAmounts.length);
         for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
-          console.log('  debit', i);
-          console.log('  debit addr', stepResult.inputAssetAmounts[i].asset.assetAddress);
-          console.log('  debit amt', stepResult.inputAssetAmounts[i].amount);
+          // console.log('  debit', i);
+          // console.log('  debit addr', stepResult.inputAssetAmounts[i].asset.assetAddress);
+          // console.log('  debit amt', stepResult.inputAssetAmounts[i].amount);
           assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
         }
         // credit output assets
-        console.log('result outputs', stepResult.outputAssetAmounts.length);
+        // console.log('result outputs', stepResult.outputAssetAmounts.length);
         for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-          console.log('  credit', i);
-          console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
-          console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
+          // console.log('  credit', i);
+          // console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
+          // console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
           assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
         }
-        console.log('currentStep.nextStepIndex');
         console.logInt(currentStep.nextStepIndex);
         if (currentStep.nextStepIndex == -1) {
           break;
@@ -173,13 +171,13 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   }
 
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
-    console.log('entering refundUser, numAssets=', assetBalances.getAssetCount());
+    // console.log('entering refundUser, numAssets=', assetBalances.getAssetCount());
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
       AssetAmount memory ab = assetBalances.getAssetAt(i);
-      console.log('  refunding asset', i);
-      console.log('    type', ab.asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
-      console.log('    addr', ab.asset.assetAddress);
-      console.log('    amt', ab.amount);
+      // console.log('  refunding asset', i);
+      // console.log('    type', ab.asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
+      // console.log('    addr', ab.asset.assetAddress);
+      // console.log('    amt', ab.amount);
       Asset memory asset = ab.asset;
       uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
       uint256 userAmount = ab.amount - feeAmount;
@@ -189,8 +187,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         payable(userAddress).transfer(userAmount);
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
-        uint256 balance = token.balanceOf(address(this));
-        console.log('  refunding erc20 balance', balance);
+        // uint256 balance = token.balanceOf(address(this));
+        // console.log('  refunding erc20 balance', balance);
         SafeERC20.safeTransfer(token, userAddress, userAmount);
       } else {
         revert('unknown asset type in assetBalances');

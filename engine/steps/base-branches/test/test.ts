@@ -39,7 +39,12 @@ describe('AddAsset', async () => {
       ...(await helper.encodeWorkflowStep(context)),
       nextStepIndex: -1,
     }
-    const workflowEthereum: WorkflowStruct = { workflowRunnerAddress: ADDRESS_ZERO, steps: [encodedForEthereum] }
+    const workflowEthereum: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [encodedForEthereum],
+      beforeAll: [],
+      afterAll: [],
+    }
     await expect(userWorkflowRunner.executeWorkflow(workflowEthereum)).not.to.be.reverted
 
     stepConfig.currentChain = 'polygon'
@@ -47,7 +52,12 @@ describe('AddAsset', async () => {
       ...(await helper.encodeWorkflowStep(context)),
       nextStepIndex: -1,
     }
-    const workflowPoly: WorkflowStruct = { workflowRunnerAddress: ADDRESS_ZERO, steps: [encodedForPolygon] }
+    const workflowPoly: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [encodedForPolygon],
+      beforeAll: [],
+      afterAll: [],
+    }
     await expect(userWorkflowRunner.executeWorkflow(workflowPoly)).not.to.be.reverted
   })
   it.only('branches correctly based on asset amount', async () => {
@@ -75,7 +85,12 @@ describe('AddAsset', async () => {
       ...(await helper.encodeWorkflowStep(context)),
       nextStepIndex: -1,
     }
-    const workflow: WorkflowStruct = { workflowRunnerAddress: ADDRESS_ZERO, steps: [encoded] }
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [encoded],
+      beforeAll: [],
+      afterAll: [],
+    }
     await expect(userWorkflowRunner.executeWorkflow(workflow)).not.to.be.reverted
     await expect(userWorkflowRunner.executeWorkflow(workflow, { value: '1000000000000000000' })).not.to.be.reverted
   })

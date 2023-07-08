@@ -3,6 +3,12 @@ pragma solidity ^0.8.13;
 
 import './WorkflowStep.sol';
 
+
+struct SetupTeardown {
+  uint16 stepTypeId;
+  bytes argData;
+}
+
 // The main workflow data structure.
 struct Workflow {
   // The address of the WorkflowRunner contract, allowing the caller to specify an older version of the runner.
@@ -14,4 +20,8 @@ struct Workflow {
   // The 'edges' in the graph are defined within each WorkflowStep,
   // but can be overriden in the return value of a step.
   WorkflowStep[] steps;
+
+  SetupTeardown[] beforeAll;
+  SetupTeardown[] afterAll;
+  
 }

@@ -38,6 +38,9 @@ export const aaveRepaySchema = createStepSchema('aave-repay').extend({
   asset: assetReferenceSchema.describe(stepProperties('Asset', 'The asset to repay to Aave.')),
   amount: amountSchema.describe(stepProperties('Amount', 'The asset to repay to Aave.')),
   source: assetSourceSchema.describe(stepProperties('Source', sourceDescription)),
+  interestRateMode: aaveInterestRateModeSchema.describe(
+    stepProperties('Interest Rate Mode', 'The interest rate mode of the debt being repaid.')
+  ),
 })
 
 export interface AaveRepay extends z.infer<typeof aaveRepaySchema> {}

@@ -54,6 +54,8 @@ describe('WorkflowRunner', async () => {
     const workflow: WorkflowStruct = {
       workflowRunnerAddress: '0x0000000000000000000000000000000000000123',
       steps: [],
+      beforeAll: [],
+      afterAll: [],
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
   })
@@ -70,6 +72,8 @@ describe('WorkflowRunner', async () => {
     const workflow: WorkflowStruct = {
       workflowRunnerAddress: ADDRESS_ZERO,
       steps: [],
+      beforeAll: [],
+      afterAll: [],
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
 

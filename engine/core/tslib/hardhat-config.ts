@@ -5,6 +5,13 @@ import dotenv from 'dotenv'
 import 'hardhat-preprocessor'
 import { removeConsoleLog } from 'hardhat-preprocessor'
 import fs from 'fs'
+import Crypto from 'crypto'
+import { tmpdir } from 'os'
+const execSync = require('child_process').execSync
+
+function tmpFile(ext: string) {
+  return path.join(tmpdir(), `temp.${Crypto.randomBytes(6).readUIntLE(0, 6).toString(36)}.${ext}`)
+}
 
 dotenv.config({ path: path.join(os.homedir(), '.env') })
 
@@ -21,6 +28,33 @@ task('deploymentSource', 'Prints the source code for a deployed contract')
     const solcInputs = JSON.parse(solcInputsStr)
     console.log(solcInputs.sources[args.source].content)
     // const solcInput =
+  })
+
+task('deploymentDiff', 'Diffs the source code for a deployed contract against the current source code')
+  .addParam('contract', 'The name of the contract, e.g., MyAwesomeContract')
+  .addParam('source', 'The path to the contract source code, e.g., contracts/MyAwesomeContract.sol')
+  .setAction(async (args, hre) => {
+    const { deployments } = hre
+    const deployment = await deployments.get(args.contract)
+    // console.log(deployment.solcInputHash)
+    // console.log(hre.network.name)
+    const solcInputsFname = `deployments/${hre.network.name}/solcInputs/${deployment.solcInputHash}.json`
+    const solcInputsStr = fs.readFileSync(solcInputsFname).toString()
+    const solcInputs = JSON.parse(solcInputsStr)
+    const tempFile = tmpFile('sol')
+    let currentSource = fs.readFileSync(args.source).toString()
+    let lines = currentSource.split('\n')
+    lines = lines.filter(line => !line.match(/import.*hardhat.console.sol/) && !line.match(/console.log/))
+    currentSource = lines.join('\n')
+    const tempFileCurrentSource = tmpFile('sol')
+    fs.writeFileSync(tempFileCurrentSource, currentSource)
+    // console.log(lines)
+    fs.writeFileSync(tempFile, solcInputs.sources[args.source].content)
+    try {
+      execSync(`icdiff  ${tempFile} ${tempFileCurrentSource}`, { stdio: 'inherit' })
+    } finally {
+      fs.unlinkSync(tempFile)
+    }
   })
 
 export const coreHardhatConfig: HardhatUserConfig = {

@@ -58,6 +58,16 @@ contract UniswapExactOutAction is AbstractUniswapAction, IWorkflowStep {
     Locals memory locals;
     locals.args = abi.decode(argData, (UniswapExactOutActionParams));
     console.log('decoded');
+
+    if (
+      locals.args.fromAsset.assetAddress == locals.args.toAsset.assetAddress &&
+      locals.args.fromAsset.assetType == locals.args.toAsset.assetType
+    ) {
+      // swapping to same asset, no-op
+      AssetAmount memory assetAmount = AssetAmount(locals.args.fromAsset, locals.args.amountOut);
+      return LibStepResultBuilder.create(1, 1).addInputAssetAmount(assetAmount).addOutputAssetAmount(assetAmount).result;
+    }
+
     locals.worstExchangeRateFloat = ABDKMathQuad.from128x128(locals.args.worstExchangeRate);
     locals.amountOutFloat = ABDKMathQuad.fromUInt(locals.args.amountOut);
     console.log('worstExchangeRate encoded', uint256(locals.args.worstExchangeRate));

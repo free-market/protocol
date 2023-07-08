@@ -2,7 +2,7 @@ import type { EIP1193Provider } from 'eip1193-provider'
 import type { IStepHelper } from '@freemarket/core'
 
 import type { IWorkflowInstance } from './IWorkflowInstance'
-import { AaveSupplyHelper } from '@freemarket/aave'
+import { AaveSupplyHelper, AaveBorrowHelper, AaveRepayHelper } from '@freemarket/aave'
 import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
 import { WrapNativeHelper, UnwrapNativeHelper } from '@freemarket/wrapped-native'
@@ -16,6 +16,8 @@ interface StepHelperConstructor {
 
 const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'aave-supply': AaveSupplyHelper,
+  'aave-borrow': AaveBorrowHelper,
+  'aave-repay': AaveRepayHelper,
   'add-asset': AddAssetHelper,
   'chain-branch': ChainBranchHelper,
   'asset-balance-branch': AssetBalanceBranchHelper,
