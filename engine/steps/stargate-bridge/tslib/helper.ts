@@ -128,6 +128,7 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
           return StargateChainIds.Polygon
       }
     }
+    throw new Error(`Unsupported chain ${chain}`)
   }
 
   @Memoize()

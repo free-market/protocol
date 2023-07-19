@@ -16,6 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/abstract-signer": "^5.7.0",
     "@freemarket/aave": "workspace:^0.0.1",
     "@freemarket/core": "workspace:^0.0.1",
     "@freemarket/runner": "workspace:^0.0.1"
@@ -42,6 +44,7 @@
     "hardhat": "^2.13.0",
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.8",
+    "mocha": "^10.2.0",
     "prettier": "^2.8.5",
     "rimraf": "^4.4.0",
     "solidity-coverage": "^0.8.0",

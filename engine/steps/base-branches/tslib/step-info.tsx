@@ -7,6 +7,8 @@ import ChainBranchSummary from './ChainBranchSummary'
 import AssetBalanceBranchSummary from './AssetBalanceBranchSummary'
 import { STEP_TYPE_ID_CHAIN_BRANCH } from './ChainBranchHelper'
 import { STEP_TYPE_ID_ASSET_BALANCE_BRANCH } from './AssetBalanceBranchHelper'
+import { STEP_TYPE_ID_PREV_OUTPUT_BRANCH } from './PreviousOutputBranchHelper'
+import PreviousOutputBranchSummary from './PreviousOutputBranchSummary'
 
 export const chainBranchPlatformInfo: PlatformInfo = {
   name: 'Chain Branch',
@@ -40,6 +42,23 @@ export const assetBalanceBranchPlatformInfo: PlatformInfo = {
       description: 'Branches based on an asset balance comparison',
       icon: AssetBalanceBranchIcon,
       summary: AssetBalanceBranchSummary,
+    },
+  ],
+}
+export const previousOutputBranchPlatformInfo: PlatformInfo = {
+  name: 'Previous Output Branch',
+  description: 'Branches based on the amount output from the previous step',
+  icon: AssetBalanceBranchIcon,
+  categories: ['Utilities'],
+  stepInfos: [
+    {
+      stepType: 'previous-output-branch',
+      stepTypeId: STEP_TYPE_ID_PREV_OUTPUT_BRANCH,
+      nodeType: 'branchNode',
+      name: 'Previous Output Branch',
+      description: 'Branches based on the amount output from the previous step',
+      icon: AssetBalanceBranchIcon,
+      summary: PreviousOutputBranchSummary,
     },
   ],
 }

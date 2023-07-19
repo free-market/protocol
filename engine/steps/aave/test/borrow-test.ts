@@ -1,22 +1,11 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { AaveBorrowAction, AaveSupplyAction, IAaveV3Pool, IAaveV3Pool__factory, IERC20, IERC20__factory } from '../typechain-types'
-import { AaveSupplyHelper, STEP_TYPE_ID_AAVE_SUPPLY } from '../tslib/supply-helper'
+import { AaveSupplyHelper } from '../tslib/supply-helper'
 import { ADDRESS_ZERO, EncodingContext } from '@freemarket/core'
-import {
-  getTestFixture,
-  MockWorkflowInstance,
-  validateAction,
-  getUsdt,
-  confirmTx,
-  getUsdc,
-  printEvents,
-} from '@freemarket/step-sdk/tslib/testing'
+import { getTestFixture, MockWorkflowInstance, validateAction, getUsdc, printEvents } from '@freemarket/step-sdk/tslib/testing'
 import { AaveBorrow, AaveSupply } from '../tslib/model'
-import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { AaveBorrowHelper, STEP_TYPE_ID_AAVE_BORROW } from '../tslib/borrow-helper'
-import { Log } from '@ethersproject/providers'
-import { Interface } from '@ethersproject/abi'
 import { formatNumber } from '@freemarket/step-sdk'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import { Signer } from '@ethersproject/abstract-signer'
@@ -116,11 +105,19 @@ describe('AaveBorrow', async () => {
     mockWorkflowInstance.frontDoorAddress = aaveBorrowAction.address
 
     const borrowEncoded = await borrowHelper.encodeWorkflowStep(borrowEncodingContext)
-    console.log('borrowEncoded', borrowEncoded)
+    const { stepConfig, ...contextCommon } = borrowEncodingContext
+    const multiStepConfig = {
+      ...contextCommon,
+      stepConfigs: [borrowStepConfig],
+    }
+    const beforeAfter = await borrowHelper.getBeforeAfterAll(multiStepConfig)
+    // console.log('borrowEncoded', borrowEncoded)
     const wbtcAddr = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
     const asset = IERC20__factory.connect(wbtcAddr, otherUserSigner)
     const balanceBefore = await asset.balanceOf(aaveBorrowAction.address)
     console.log('borrowed asset balance before', balanceBefore.toString())
+    await (await aaveBorrowAction.beforeAll(beforeAfter!.beforeAll!.argData)).wait()
+
     const borrowTx = await (await aaveBorrowAction.execute(borrowEncoded.inputAssets, borrowEncoded.argData)).wait()
     const balanceAfter = await asset.balanceOf(aaveBorrowAction.address)
     console.log('borrowed asset balance after', balanceAfter.toString())
@@ -168,11 +165,6 @@ describe('AaveBorrow', async () => {
     }
     const supplyEncoded = await supplyHelper.encodeWorkflowStep(supplyEncodingContext)
     const supplyTx = await (await aaveSupplyAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData)).wait()
-    // // await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData)).to.changeTokenBalance(
-    // //   usdt,
-    // //   aaveSupplyAction.address,
-    // //   testAmountUsdtFull * -1
-    // // )
 
     const aTokenBalanceAfter = await aToken.balanceOf(otherUser)
     console.log('aTokenBalanceAfter', aTokenBalanceAfter.toString())

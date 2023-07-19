@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
-import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/LibPercent.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';

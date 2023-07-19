@@ -7,6 +7,7 @@ import '@freemarket/core/contracts/model/WorkflowStepResult.sol';
 struct StepResultBuilder {
   uint256 inputIndex;
   uint256 outputIndex;
+  uint256 outputToCallerIndex;
   WorkflowStepResult result;
 }
 
@@ -14,7 +15,21 @@ library LibStepResultBuilder {
   function create(uint256 inputAssetCount, uint256 outputAssetCount) internal pure returns (StepResultBuilder memory) {
     AssetAmount[] memory inputAssetAmounts = new AssetAmount[](inputAssetCount);
     AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](outputAssetCount);
-    return StepResultBuilder(0, 0, WorkflowStepResult(inputAssetAmounts, ouputAssetAmounts, -2, -1));
+    AssetAmount[] memory ouputAssetAmountsToCaller = new AssetAmount[](0);
+
+    return StepResultBuilder(0, 0, 0, WorkflowStepResult(inputAssetAmounts, ouputAssetAmounts, ouputAssetAmountsToCaller, -2, -1));
+  }
+
+  function create(
+    uint256 inputAssetCount,
+    uint256 outputAssetCount,
+    uint256 outputAssetToCallerCount
+  ) internal pure returns (StepResultBuilder memory) {
+    AssetAmount[] memory inputAssetAmounts = new AssetAmount[](inputAssetCount);
+    AssetAmount[] memory ouputAssetAmounts = new AssetAmount[](outputAssetCount);
+    AssetAmount[] memory ouputAssetToCallerAmounts = new AssetAmount[](outputAssetToCallerCount);
+
+    return StepResultBuilder(0, 0, 0, WorkflowStepResult(inputAssetAmounts, ouputAssetAmounts, ouputAssetToCallerAmounts, -2, -1));
   }
 
   function addInputToken(
@@ -58,6 +73,14 @@ library LibStepResultBuilder {
     AssetAmount memory assetAmount
   ) internal pure returns (StepResultBuilder memory) {
     builder.result.outputAssetAmounts[builder.outputIndex++] = assetAmount;
+    return builder;
+  }
+
+  function addOutputAssetAmountToCaller(
+    StepResultBuilder memory builder,
+    AssetAmount memory assetAmount
+  ) internal pure returns (StepResultBuilder memory) {
+    builder.result.outputAssetAmountsToCaller[builder.outputToCallerIndex++] = assetAmount;
     return builder;
   }
 

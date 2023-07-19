@@ -20,6 +20,7 @@ import {
   Memoize,
   Percent as FmPercent,
   TWO_BIG,
+  translateChain,
 } from '@freemarket/core'
 import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
 // import { IQuoter__factory } from '../typechain-types'
@@ -49,6 +50,9 @@ export interface UniswapRoute {
 
 const TWO_TO_THE_128 = TWO_BIG.pow(128)
 export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStepHelper<T> {
+  @Memoize((fromAssetRef: AssetReference, toAssetRef: AssetReference, type: 'exactIn' | 'exactOut') => {
+    return `${JSON.stringify(fromAssetRef)}-${JSON.stringify(toAssetRef)}-${type}`
+  })
   async getRoute(fromAssetRef: AssetReference, toAssetRef: AssetReference, type: 'exactIn' | 'exactOut', amount?: string) {
     assert(typeof fromAssetRef === 'object' && typeof toAssetRef === 'object')
     // assert(fromAssetRef.type === 'fungible-token')
@@ -96,7 +100,8 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
 
   private async getRouteAmount(amount: string | undefined, asset: Asset, chain: Chain) {
     if (amount && !amount.endsWith('%')) {
-      const decimals = asset.type === 'native' ? 18 : asset.chains[chain]?.decimals
+      const c = translateChain(chain)
+      const decimals = asset.type === 'native' ? 18 : asset.chains[c]?.decimals
       assert(decimals)
       return new Big(amount).mul(TEN_BIG.pow(decimals)).toFixed(0)
     }
@@ -126,7 +131,8 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
 
   async getTokenAmountInUsd(usdAmount: number, asset: Asset, chain: Chain) {
     assert(asset.type === 'fungible-token')
-    const assetChainInfo = asset.chains[chain]
+    const c = translateChain(chain)
+    const assetChainInfo = asset.chains[c]
     assert(assetChainInfo)
     const oneToken = new Big(10).pow(assetChainInfo.decimals)
     if (!assetChainInfo.usd) {
@@ -135,9 +141,11 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     const oneDollarsWorthOfToken = oneToken.div(assetChainInfo.usd)
     return oneDollarsWorthOfToken.mul(usdAmount).toFixed(0)
   }
+
   static toUniswapToken(chain: Chain, chainId: number, asset: Asset) {
     assert(asset.type === 'fungible-token')
-    const assetChainInfo = asset.chains[chain]
+    const c = translateChain(chain)
+    const assetChainInfo = asset.chains[c]
     assert(assetChainInfo)
 
     return new Token(chainId, assetChainInfo.address, assetChainInfo.decimals)
@@ -147,7 +155,7 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
   protected async getRouter(chainId: number) {
     logger.debug('getting router for chain', chainId)
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
-    const chain = chainId === 31337 ? 'hardhat' : await this.getChain()
+    const chain = chainId === 31337 ? 'local' : await this.getChain()
     const stdProvider = this.instance.getNonForkedProvider(chain) || this.instance.getProvider(chain)
     // console.log('stdProvider', stdProvider)
     const provider = getEthersProvider(stdProvider)
@@ -192,33 +200,10 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
   }
 
   static to128x128(n: Big) {
-    logger.debug('encoding to128x128', n.toFixed())
+    // logger.debug('encoding to128x128', n.toFixed())
     const shifted = n.mul(TWO_TO_THE_128)
     const ret = BigNumber.from(shifted.toFixed(0)).toHexString()
-    // const wholeNumberPart = n.round(0, 0)
-    // const fractionalPart = n.minus(wholeNumberPart)
-
-    // const nStr = n.toFixed()
-    // const dot = nStr.indexOf('.')
-    // const wholeNumberPart = dot === -1 ? nStr : nStr.slice(0, dot)
-    // logger.debug('wholeNumberPart', wholeNumberPart)
-
-    // const wholeNumberPartHex = BigNumber.from(wholeNumberPart).toHexString()
-    // logger.debug('wholeNumberPartHex', wholeNumberPartHex)
-    // overflow would be > 32 hex digits, because the whole number part must fit inside 128 bits,
-    // which is 16 bytes, which is 32 hex digits
-    // but compare length to 34 to account for the leading 0x
-    // assert(wholeNumberPartHex.length <= 34, 'exchange rate overflow')
-    // get the decimal part leaving in the decimal so we get it as a fraction
-    // const decimalPart = dot === -1 ? '0' : nStr.slice(dot)
-    // const decimalPartBig = new Big(decimalPart)
-    // // multiply the fraction by 2^128
-    // const twoToThe128 = new Big(2).pow(128)
-    // const decimalPart128 = twoToThe128.mul(decimalPartBig)
-    // const decimalPartHex = BigNumber.from(decimalPart128.toFixed(0)).toHexString()
-    // logger.debug('decimalPart', decimalPartHex, decimalPartHex.length)
-    // const ret = utils.hexConcat([wholeNumberPartHex, decimalPartHex])
-    logger.debug('to128x128 ret', ret, ret.length)
+    // logger.debug('to128x128 ret', ret, ret.length)
     return ret
   }
 

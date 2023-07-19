@@ -6,7 +6,7 @@ import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetRe
 
 type Props = SummaryPropsBase<AssetBalanceBranch>
 
-function toOperatorStr(operator: ComparisonOperator) {
+export function toOperatorStr(operator: ComparisonOperator) {
   switch (operator) {
     case 'greater-than':
       return '>'

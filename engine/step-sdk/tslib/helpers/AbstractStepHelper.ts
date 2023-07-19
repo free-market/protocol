@@ -16,6 +16,10 @@ import {
   ContinuationInfo,
   EncodeContinuationResult,
   Memoize,
+  EncodedBeforeAfter,
+  MultiStepEncodingContext,
+  translateChain,
+  BeforeAfterResult,
 } from '@freemarket/core'
 import type { Provider } from '@ethersproject/providers'
 
@@ -45,7 +49,6 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     switch (chainId) {
       case 1:
       case 5:
-      case 31337:
         return 'ethereum'
       case 56:
       case 97:
@@ -65,6 +68,8 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
       case 250:
       case 4002:
         return 'fantom'
+      case 31337:
+        return 'local'
       default:
         throw new Error('unknown chainId: ' + chainId)
     }
@@ -110,11 +115,15 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
   }
 
   protected getStepAddress(context: EncodingContext<T>) {
-    const c = context.chain === 'hardhat' ? 'ethereum' : context.chain
+    const c = translateChain(context.chain)
     return context.stepConfig.stepAddresses?.[c] || ADDRESS_ZERO
   }
 
   encodeContinuation(continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult> {
     throw new Error('Method not implemented.')
+  }
+
+  getBeforeAfterAll(context: MultiStepEncodingContext<T>): Promise<BeforeAfterResult | null> {
+    return Promise.resolve(null)
   }
 }

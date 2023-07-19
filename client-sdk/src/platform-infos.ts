@@ -3,6 +3,7 @@ import { platformInfo as aavePlatformInfo } from '@freemarket/aave/build/tslib/s
 import {
   chainBranchPlatformInfo,
   assetBalanceBranchPlatformInfo,
+  previousOutputBranchPlatformInfo,
   payGelatoRelayPlatform,
 } from '@freemarket/base-branches/build/tslib/step-info'
 import { platformInfo as stargateBridgePlatformInfo } from '@freemarket/stargate-bridge/build/tslib/step-info'
@@ -17,6 +18,7 @@ export function getPlatformInfos(): PlatformInfo[] {
     // addAssetPlatformInfo,
     assetBalanceBranchPlatformInfo,
     chainBranchPlatformInfo,
+    previousOutputBranchPlatformInfo,
     // curvePlatformInfo,
     payGelatoRelayPlatform,
     stargateBridgePlatformInfo,

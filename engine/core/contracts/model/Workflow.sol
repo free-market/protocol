@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import './WorkflowStep.sol';
 
-
-struct SetupTeardown {
+struct BeforeAfter {
   uint16 stepTypeId;
+  address stepAddress;
   bytes argData;
 }
 
@@ -20,8 +20,6 @@ struct Workflow {
   // The 'edges' in the graph are defined within each WorkflowStep,
   // but can be overriden in the return value of a step.
   WorkflowStep[] steps;
-
-  SetupTeardown[] beforeAll;
-  SetupTeardown[] afterAll;
-  
+  BeforeAfter[] beforeAll;
+  BeforeAfter[] afterAll;
 }

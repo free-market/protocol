@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
-import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
+import '@freemarket/core/contracts/IWorkflowStepBeforeAll.sol';
+import '@freemarket/core/contracts/IWorkflowStepAfterAll.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/LibPercent.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -25,7 +26,10 @@ using LibStepResultBuilder for StepResultBuilder;
 using LibErc20 for IERC20;
 using ABDKMathQuad for bytes16;
 
-struct Signature {
+struct DelegationWithSignatureArgs {
+  uint256 amount;
+  uint256 interestRateMode;
+  address assetAddress;
   uint8 v;
   bytes32 r;
   bytes32 s;
@@ -38,10 +42,9 @@ struct AaveBorrowActionArgs {
   Asset asset;
   bool amountIsPercent;
   uint16 referralCode;
-  Signature[] delegateSignatures;
 }
 
-contract AaveBorrowAction is IWorkflowStep {
+contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowStepAfterAll {
   // prices from Aave oracle have 8 decimals
   // so to convert to float we need to divide by 1e8
   uint256 internal constant AAVE_ORACLE_PRICE_DIVISOR_UINT = 100000000;
@@ -51,6 +54,8 @@ contract AaveBorrowAction is IWorkflowStep {
   address public immutable wethAddress;
   bytes16 internal immutable AAVE_ORACLE_PRICE_DIVISOR_FLOAT;
   bytes16 internal immutable TEN_FLOAT;
+
+  event Eraseme(address debtToken, uint256 amount, uint256 interestRateMode, address assetAddress, uint8 v, bytes32 r, bytes32 s);
 
   constructor(address _poolAddressProviderAddress, address _wethAddress) {
     poolAddressProviderAddress = _poolAddressProviderAddress;
@@ -71,12 +76,7 @@ contract AaveBorrowAction is IWorkflowStep {
     console.log('asset.address', args.asset.assetAddress);
     console.log('amountIsPercent', args.amountIsPercent);
     console.log('referralCode', args.referralCode);
-    console.log('args.delegateSignatures.length', args.delegateSignatures.length);
 
-    IPoolAddressesProvider poolAddressProvider = IPoolAddressesProvider(poolAddressProviderAddress);
-    address poolAddress = poolAddressProvider.getPool();
-
-    IPool pool = IPool(poolAddress);
     uint256 borrowAmount = args.amount;
     console.log('borrowAmount', borrowAmount);
 
@@ -86,35 +86,36 @@ contract AaveBorrowAction is IWorkflowStep {
     //   // require(priceOracleSentinel.isBorrowAllowed(), 'borrow is not allowed');
     // }
 
+    IPool pool = getPool();
     address assetAddress = args.asset.assetType == AssetType.ERC20 ? args.asset.assetAddress : wethAddress;
     if (args.amountIsPercent) {
-      borrowAmount = computeRelativeAmount(args.amount, assetAddress, pool, poolAddressProvider);
+      borrowAmount = computeRelativeAmount(args.amount, assetAddress, pool);
     }
     console.log('borrowAmount', borrowAmount);
 
-    ICreditDelegationToken debtToken;
-    {
-      DataTypes.ReserveData memory reserveData = pool.getReserveData(assetAddress);
-      if (args.interestRateMode == 1) {
-        debtToken = ICreditDelegationToken(reserveData.stableDebtTokenAddress);
-      } else {
-        debtToken = ICreditDelegationToken(reserveData.variableDebtTokenAddress);
-      }
-    }
-    // the first sig is to delegate max uint to this
-    console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
-    console.log('delegating max');
-    debtToken.delegationWithSig(
-      msg.sender,
-      address(this),
-      MAX_UINT256,
-      MAX_UINT256,
-      args.delegateSignatures[0].v,
-      args.delegateSignatures[0].r,
-      args.delegateSignatures[0].s
-    );
+    // ICreditDelegationToken debtToken;
+    // {
+    //   DataTypes.ReserveData memory reserveData = pool.getReserveData(assetAddress);
+    //   if (args.interestRateMode == 1) {
+    //     debtToken = ICreditDelegationToken(reserveData.stableDebtTokenAddress);
+    //   } else {
+    //     debtToken = ICreditDelegationToken(reserveData.variableDebtTokenAddress);
+    //   }
+    // }
+    // // the first sig is to delegate max uint to this
+    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
+    // console.log('delegating max');
+    // debtToken.delegationWithSig(
+    //   msg.sender,
+    //   address(this),
+    //   MAX_UINT256,
+    //   MAX_UINT256,
+    //   args.delegateSignatures[0].v,
+    //   args.delegateSignatures[0].r,
+    //   args.delegateSignatures[0].s
+    // );
 
-    console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
+    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
 
     console.log('borrowing this:', address(this));
     console.log('borrowing asset:', assetAddress);
@@ -125,17 +126,17 @@ contract AaveBorrowAction is IWorkflowStep {
     pool.borrow(assetAddress, borrowAmount, args.interestRateMode, args.referralCode, msg.sender);
 
     // the second sig is to delegate 0 to this
-    console.log('delegating 0');
-    debtToken.delegationWithSig(
-      msg.sender,
-      address(this),
-      0,
-      MAX_UINT256,
-      args.delegateSignatures[1].v,
-      args.delegateSignatures[1].r,
-      args.delegateSignatures[1].s
-    );
-    console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
+    // console.log('delegating 0');
+    // debtToken.delegationWithSig(
+    //   msg.sender,
+    //   address(this),
+    //   0,
+    //   MAX_UINT256,
+    //   args.delegateSignatures[1].v,
+    //   args.delegateSignatures[1].r,
+    //   args.delegateSignatures[1].s
+    // );
+    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
 
     if (args.asset.assetType == AssetType.Native) {
       console.log('unwrapping native');
@@ -145,12 +146,7 @@ contract AaveBorrowAction is IWorkflowStep {
     return LibStepResultBuilder.create(0, 1).addOutputAssetAmount(AssetAmount(args.asset, borrowAmount)).result;
   }
 
-  function computeRelativeAmount(
-    uint256 borrowAmountPercent,
-    address assetAddress,
-    IPool pool,
-    IPoolAddressesProvider poolAddressProvider
-  ) internal view returns (uint256) {
+  function computeRelativeAmount(uint256 borrowAmountPercent, address assetAddress, IPool pool) internal view returns (uint256) {
     console.log('computing relative borrow amount');
     // get borrowing power (in base currency)
     uint256 availableBorrowsBase;
@@ -174,6 +170,7 @@ contract AaveBorrowAction is IWorkflowStep {
     // ask the price oracle for the price of the asset to be borrowed
     uint256 assetPrice;
     {
+      IPoolAddressesProvider poolAddressProvider = IPoolAddressesProvider(poolAddressProviderAddress);
       IAaveOracle aaveOracle = IAaveOracle(poolAddressProvider.getPriceOracle());
       address[] memory addresses = new address[](1);
       addresses[0] = assetAddress;
@@ -196,6 +193,41 @@ contract AaveBorrowAction is IWorkflowStep {
     bytes16 scaler = ABDKMathQuad.fromUInt(10 ** decimals);
     borrowAmountFloat = borrowAmountFloat.mul(scaler);
     return borrowAmountFloat.toUInt();
+  }
+
+  function beforeAll(bytes calldata argData) external payable {
+    console.log('entering beforeAll');
+    invokeDelegateWithSigs(argData);
+  }
+
+  function afterAll(bytes calldata argData) external payable {
+    console.log('entering afterAll');
+    invokeDelegateWithSigs(argData);
+  }
+
+  function invokeDelegateWithSigs(bytes calldata argData) internal {
+    DelegationWithSignatureArgs[] memory args = abi.decode(argData, (DelegationWithSignatureArgs[]));
+    IPool pool = getPool();
+    for (uint256 i = 0; i < args.length; i++) {
+      console.log('delegationWithSig', args[i].assetAddress);
+      ICreditDelegationToken debtToken = getDebtToken(pool, args[i].assetAddress, args[i].interestRateMode);
+      emit Eraseme(address(debtToken), args[i].amount, args[i].interestRateMode, args[i].assetAddress, args[i].v, args[i].r, args[i].s);
+      debtToken.delegationWithSig(msg.sender, address(this), args[i].amount, MAX_UINT256, args[i].v, args[i].r, args[i].s);
+    }
+  }
+
+  function getPool() internal view returns (IPool) {
+    IPoolAddressesProvider poolAddressProvider = IPoolAddressesProvider(poolAddressProviderAddress);
+    address poolAddress = poolAddressProvider.getPool();
+    return IPool(poolAddress);
+  }
+
+  function getDebtToken(IPool pool, address assetAddress, uint256 interestRateMode) internal view returns (ICreditDelegationToken) {
+    DataTypes.ReserveData memory reserveData = pool.getReserveData(assetAddress);
+    if (interestRateMode == 1) {
+      return ICreditDelegationToken(reserveData.stableDebtTokenAddress);
+    }
+    return ICreditDelegationToken(reserveData.variableDebtTokenAddress);
   }
 
   // there are just here for unit testing to enable weth.withdraw()

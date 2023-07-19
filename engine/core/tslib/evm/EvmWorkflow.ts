@@ -1,7 +1,8 @@
 import type { EvmWorkflowStep } from './EvmWorkflowStep'
 
-interface EvmBeforeAfter {
+export interface EvmBeforeAfter {
   stepTypeId: string | number
+  stepAddress: string
   argData: string
 }
 

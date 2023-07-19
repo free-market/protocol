@@ -110,9 +110,7 @@ export class MockWorkflowInstance implements IWorkflow {
     this.erc20s.set(symbol, address)
     this.decimals.set(symbol, decimals)
   }
-  getNonForkedProvider(
-    chain: 'ethereum' | 'arbitrum' | 'avalanche' | 'polygon' | 'binance' | 'optimism' | 'fantom' | 'hardhat'
-  ): EIP1193Provider | undefined {
+  getNonForkedProvider(chain: Chain): EIP1193Provider | undefined {
     return undefined
   }
 }

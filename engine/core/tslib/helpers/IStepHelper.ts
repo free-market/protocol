@@ -1,5 +1,5 @@
 import type { EIP1193Provider } from 'eip1193-provider'
-import type { EncodedWorkflowStep } from '../runner/EncodedWorkflow'
+import type { EncodedBeforeAfter, EncodedWorkflowStep } from '../runner/EncodedWorkflow'
 import type { Amount, AssetAmount, AssetReference, Chain, StepBase } from '../model'
 import { ZodType } from 'zod'
 import { ContinuationInfo } from './ContinuationInfo'
@@ -27,6 +27,11 @@ export interface EncodingContext<T> {
   isDebug?: boolean
 }
 
+// used in beforeAll and afterAll, same aas EncodingContext except stepConfig is an array
+export interface MultiStepEncodingContext<T> extends Omit<EncodingContext<T>, 'stepConfig'> {
+  stepConfigs: T[]
+}
+
 export interface RemittanceInfo {
   asset: AssetReference
   amount: Amount
@@ -44,6 +49,11 @@ export interface EncodeContinuationResult {
   }[]
 }
 
+export interface BeforeAfterResult {
+  beforeAll: EncodedBeforeAfter | null
+  afterAll: EncodedBeforeAfter | null
+}
+
 export interface IStepHelper<T extends StepBase> {
   requiresRemittance(stepConfig: T): boolean
   getRemittance(stepConfig: T): Promise<RemittanceInfo | null>
@@ -53,6 +63,7 @@ export interface IStepHelper<T extends StepBase> {
   setProvider(provider: EIP1193Provider): void
   getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]>
   encodeContinuation(continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult>
+  getBeforeAfterAll(context: MultiStepEncodingContext<T>): Promise<BeforeAfterResult | null>
 }
 
 interface StepProperties {

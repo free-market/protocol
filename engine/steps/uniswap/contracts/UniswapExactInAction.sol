@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
-import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
 import '@freemarket/step-sdk/contracts/IWeth.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import 'hardhat/console.sol';
 
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
@@ -126,7 +126,18 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
     locals.amountReceived = locals.outputAssetBalanceAfter - locals.outputAssetBalanceBefore;
     locals.worstTolerableAmountReceived = locals.amountInFloat.mul(locals.worstExchangeRateFloat).toUInt();
     console.log('worstTolerableAmountReceived', locals.worstTolerableAmountReceived);
-    require(locals.amountReceived >= locals.worstTolerableAmountReceived, 'amount received is worse than worst tolerable amount received');
+    if (locals.amountReceived < locals.worstTolerableAmountReceived) {
+      string memory message = string(
+        abi.encodePacked(
+          'amount received is worse than worst tolerable amount: ',
+          Strings.toString(locals.amountReceived),
+          ' < ',
+          Strings.toString(locals.worstTolerableAmountReceived)
+        )
+      );
+      revert(message);
+    }
+    // require(locals.amountReceived >= locals.worstTolerableAmountReceived, 'amount received is worse than worst tolerable amount received');
 
     // unwrap native if necessary
     if (locals.args.toAsset.assetType == AssetType.Native) {

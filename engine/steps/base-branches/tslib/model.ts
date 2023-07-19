@@ -11,10 +11,17 @@ export const COMPARISON_OPERATORS = ['greater-than', 'greater-than-equal', 'less
 export const comparisonOperatorSchema = z.enum(COMPARISON_OPERATORS)
 export type ComparisonOperator = z.infer<typeof comparisonOperatorSchema>
 
-export const assetBalanceBranchSchema = createBranchStepSchema('asset-balance-branch').extend({
-  asset: assetReferenceSchema.describe(stepProperties('Asset', 'the asset to compare against')),
-  comparison: comparisonOperatorSchema.describe(stepProperties('Comparison', 'the comparison operator to use')),
-  amount: absoluteAmountSchema.describe(stepProperties('Amount', 'the amount to compare against')),
-})
+function createAssetComparisonBranchSchema(stepType: string) {
+  return createBranchStepSchema(stepType).extend({
+    asset: assetReferenceSchema.describe(stepProperties('Asset', 'the asset to compare against')),
+    comparison: comparisonOperatorSchema.describe(stepProperties('Comparison', 'the comparison operator to use')),
+    amount: absoluteAmountSchema.describe(stepProperties('Amount', 'the amount to compare against')),
+  })
+}
+export const assetBalanceBranchSchema = createAssetComparisonBranchSchema('asset-balance-branch')
 
 export interface AssetBalanceBranch extends z.infer<typeof assetBalanceBranchSchema> {}
+
+export const previousOutputBranchSchema = createAssetComparisonBranchSchema('previous-output-branch')
+
+export interface PreviousOutputBranch extends z.infer<typeof previousOutputBranchSchema> {}

@@ -10,6 +10,8 @@ import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Wallet } from '@ethersproject/wallet'
 import Big from 'big.js'
 
+export const HARDHAT_FORK_CHAIN = 'ethereum'
+
 export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
   if (asset.type === 'native') {
     return {
@@ -17,7 +19,7 @@ export function sdkAssetToEvmAsset(asset: Asset, chain: Chain): EvmAsset {
       assetAddress: ADDRESS_ZERO,
     }
   }
-  const c = chain === 'hardhat' ? 'ethereum' : chain
+  const c = translateChain(chain)
   const tokenAddress = asset.chains[c]
   if (!tokenAddress) {
     throw new AssetNotFoundError([new AssetNotFoundProblem(asset.symbol, chain)])
@@ -56,7 +58,7 @@ export async function sdkAssetAndAmountToEvmInputAmount(
     if (asset.type === 'native') {
       amountBn = amountBn.mul(TEN_BIG.pow(18))
     } else {
-      const c = chain === 'hardhat' ? 'ethereum' : chain
+      const c = translateChain(chain)
       const tokenInfo = asset.chains[c]
       assert(tokenInfo)
       const decimals = tokenInfo.decimals
@@ -116,7 +118,7 @@ export function getChainFromId(chainId: number): Chain {
     case 4002:
       return 'fantom'
     case 31337:
-      return 'hardhat'
+      return 'local'
     default:
       throw new Error('unknown chainId: ' + chainId)
   }
@@ -206,4 +208,8 @@ export function getEthersProvider(provider: EIP1193Provider): Provider {
     return provider.provider
   }
   return new Web3Provider(provider)
+}
+
+export function translateChain(chain: Chain): Chain {
+  return chain === 'hardhat' || chain === 'local' ? HARDHAT_FORK_CHAIN : chain
 }

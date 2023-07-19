@@ -59,4 +59,11 @@ export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
     iconUrl: ETH_ICON_URL,
     chain: 'ethereum',
   },
+  local: {
+    type: 'native',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    iconUrl: ETH_ICON_URL,
+    chain: 'ethereum',
+  },
 }

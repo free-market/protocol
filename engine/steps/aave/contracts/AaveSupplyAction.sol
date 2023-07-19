@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
-import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
 import './IAaveV3Pool.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -59,6 +58,7 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // get the aToken
     locals.pool = IAaveV3Pool(poolAddress);
+    locals.reserveData = locals.pool.getReserveData(locals.inputTokenAddress);
 
     // invoke supply
     console.log('invoking supply');
@@ -67,6 +67,10 @@ contract AaveSupplyAction is IWorkflowStep {
     return
       // since the asset is going straight to the caller, it's not counted as an asset 'in the workflow'
       // but still mentioning it here with a 0 amount so it gets logged
-      LibStepResultBuilder.create(1, 1).addInputAssetAmount(assetAmounts[0]).addOutputToken(locals.reserveData.aTokenAddress, 0).result;
+      LibStepResultBuilder
+        .create(1, 0, 1)
+        .addInputAssetAmount(assetAmounts[0])
+        .addOutputAssetAmountToCaller(AssetAmount(Asset(AssetType.ERC20, locals.reserveData.aTokenAddress), assetAmounts[0].amount))
+        .result;
   }
 }

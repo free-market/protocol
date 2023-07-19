@@ -7,20 +7,20 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 import '@freemarket/core/contracts/model/Workflow.sol';
 import '@freemarket/core/contracts/IWorkflowStep.sol';
+import '@freemarket/core/contracts/IWorkflowStepBeforeAll.sol';
+import '@freemarket/core/contracts/IWorkflowStepAfterAll.sol';
 import '@freemarket/core/contracts/LibPercent.sol';
 import '@freemarket/core/contracts/IWorkflowRunner.sol';
 import './FrontDoor.sol';
 import './LibAssetBalances.sol';
-import './LibStorageWriter.sol';
-import './EternalStorage.sol';
-import './LibAsset.sol';
 import './ChainBranch.sol';
-import './AssetBalanceBranch.sol';
-import 'hardhat/console.sol';
+import './AssetComparisons.sol';
 import './LibConfigReader.sol';
+import 'hardhat/console.sol';
 
 uint16 constant STEP_TYPE_ID_CHAIN_BRANCH = 1;
 uint16 constant STEP_TYPE_ID_ASSET_AMOUNT_BRANCH = 2;
+uint16 constant STEP_TYPE_ID_PREV_OUTPUT_BRANCH = 3;
 
 contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   constructor(
@@ -101,20 +101,25 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       }
     }
 
-    // loop through the steps
+    executeBeforeAlls(workflow);
+    uint256 previousOutputAmount = 0;
+    // execute steps
     if (workflow.steps.length > 0) {
       while (true) {
         // prepare to invoke the step
         WorkflowStep memory currentStep = workflow.steps[currentStepIndex];
 
-        // ChainBranch and AssetAmountBranch are special
-        if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH || currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
+        // handle core branch step types here
+        if (currentStep.stepTypeId >= STEP_TYPE_ID_CHAIN_BRANCH && currentStep.stepTypeId <= STEP_TYPE_ID_PREV_OUTPUT_BRANCH) {
           int16 nextStepIndex;
           if (currentStep.stepTypeId == STEP_TYPE_ID_CHAIN_BRANCH) {
             nextStepIndex = ChainBranch.getNextStepIndex(currentStep);
+          } else if (currentStep.stepTypeId == STEP_TYPE_ID_ASSET_AMOUNT_BRANCH) {
+            nextStepIndex = AssetComparison.getNextStepIndex(currentStep, assetBalances, AssetComparisonType.Balance);
           } else {
-            nextStepIndex = AssetBalanceBranch.getNextStepIndex(currentStep, assetBalances);
-          }
+            // step type must be STEP_TYPE_ID_PREV_OUTPUT_BRANCH
+            nextStepIndex = AssetComparison.getNextStepIndex(currentStep, assetBalances, AssetComparisonType.Credit);
+          } 
           if (nextStepIndex == -1) {
             break;
           }
@@ -122,7 +127,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           continue;
         }
 
-        address stepAddress = resolveStepAddress(currentStep);
+        address stepAddress = resolveStepAddress(currentStep.stepAddress, currentStep.stepTypeId);
         AssetAmount[] memory inputAssetAmounts = resolveAmounts(userAddress, assetBalances, currentStep.inputAssets);
 
         // console.log('calling id', currentStep.stepTypeId);
@@ -159,6 +164,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           // console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
           // console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
           assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
+          previousOutputAmount = stepResult.outputAssetAmounts[i].amount;
         }
         console.logInt(currentStep.nextStepIndex);
         if (currentStep.nextStepIndex == -1) {
@@ -167,7 +173,31 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         currentStepIndex = uint16(currentStep.nextStepIndex);
       }
     }
+
+    executeAfterAlls(workflow);
+
     refundUser(userAddress, assetBalances);
+  }
+
+  function executeBeforeAlls(Workflow memory workflow) internal {
+    console.log('exec before alls', workflow.afterAll.length);
+    for (uint256 i = 0; i < workflow.beforeAll.length; ++i) {
+      executeBeforeAfter(IWorkflowStepBeforeAll.beforeAll.selector, workflow.beforeAll[i]);
+    }
+  }
+
+  function executeAfterAlls(Workflow memory workflow) internal {
+    console.log('exec after alls', workflow.afterAll.length);
+    for (uint256 i = 0; i < workflow.afterAll.length; ++i) {
+      executeBeforeAfter(IWorkflowStepAfterAll.afterAll.selector, workflow.afterAll[i]);
+    }
+  }
+
+  function executeBeforeAfter(bytes4 selector, BeforeAfter memory beforeAfter) internal {
+    address stepAddress = resolveStepAddress(beforeAfter.stepAddress, beforeAfter.stepTypeId);
+    console.log('about to dc', stepAddress);
+    (bool success, bytes memory returnData) = stepAddress.delegatecall(abi.encodeWithSelector(selector, beforeAfter.argData));
+    require(success, string(returnData));
   }
 
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
@@ -208,16 +238,15 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     return abi.decode(returnData, (WorkflowStepResult));
   }
 
-  function resolveStepAddress(WorkflowStep memory currentStep) internal view returns (address) {
-    if (currentStep.stepAddress == address(0)) {
-      return LibConfigReader.getStepAddressInternal(eternalStorageAddress, currentStep.stepTypeId);
+  function resolveStepAddress(address frozenStepAddress, uint16 stepTypeId) internal view returns (address) {
+    // address zero indicates that the step implementation is not frozen
+    if (frozenStepAddress == address(0)) {
+      return LibConfigReader.getStepAddressInternal(eternalStorageAddress, stepTypeId);
     }
     // ensure given address is in the whitelist for given stepTypeId
-    require(
-      LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, currentStep.stepTypeId, currentStep.stepAddress),
-      'step address not in white list'
-    );
-    return currentStep.stepAddress;
+    bool isWhitelisted = LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, stepTypeId, frozenStepAddress);
+    require(isWhitelisted, 'step address not in white list');
+    return frozenStepAddress;
   }
 
   function resolveAmounts(

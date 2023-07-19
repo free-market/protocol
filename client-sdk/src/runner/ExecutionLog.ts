@@ -17,6 +17,7 @@ export interface ExecutionLogStep extends ExecutionLogBase {
   stepInfo: StepInfo
   inputs: ExecutionLogAssetAmount[]
   outputs: ExecutionLogAssetAmount[]
+  outputsToUser: ExecutionLogAssetAmount[]
 }
 
 export interface ExecutionLogContinuation extends ExecutionLogBase {
@@ -54,16 +55,11 @@ export function getAllAssets(logs: ExecutionLog[]) {
   for (const log of logs) {
     switch (log.type) {
       case 'step':
-        for (const input of log.inputs) {
-          if (!seenAddresses.has(input.address)) {
-            seenAddresses.add(input.address)
-            ret.add(input)
-          }
-        }
-        for (const output of log.outputs) {
-          if (!seenAddresses.has(output.address)) {
-            seenAddresses.add(output.address)
-            ret.add(output)
+        const allAssetAmounts = [...log.inputs, ...log.outputsToUser, ...log.outputsToUser]
+        for (const assetAmount of allAssetAmounts) {
+          if (!seenAddresses.has(assetAmount.address)) {
+            seenAddresses.add(assetAmount.address)
+            ret.add(assetAmount)
           }
         }
         break

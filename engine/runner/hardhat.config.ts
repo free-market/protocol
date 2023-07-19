@@ -36,5 +36,14 @@ task('setStepAddress', 'Overwrite the current step address for a given step type
     await (await configManager.setStepAddress(args.steptypeid, args.address)).wait()
     console.log('done')
   })
+task('listSteps', 'List current step addresses').setAction(async (args, hre) => {
+  const { ethers } = hre
+  const configManager = <ConfigManager>await ethers.getContract('ConfigManager')
+  const stepCount = (await configManager.getStepCount()).toNumber()
+  for (let i = 0; i < stepCount; ++i) {
+    const stepInfo = await configManager.getStepInfoAt(i)
+    console.log(`step ${i}: id=${stepInfo.stepTypeId} addr=${stepInfo.latest}`)
+  }
+})
 
 export default coreHardhatConfig

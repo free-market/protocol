@@ -6,7 +6,7 @@ import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import { createStepHelper } from './createStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
 import { NATIVE_ASSETS } from '../NativeAssets'
-import { HARDHAT_FORK_CHAIN, WORKFLOW_END_STEP_ID } from './constants'
+import { WORKFLOW_END_STEP_ID } from './constants'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import { WorkflowRunner } from './WorkflowRunner'
 import { WorkflowValidationError, WorkflowValidationProblem, WorkflowValidationProblemType } from './WorkflowValidationError'
@@ -46,17 +46,14 @@ import {
   RemittanceInfo,
   TEN_BIG,
   Memoize,
+  EncodedBeforeAfter,
+  EvmBeforeAfter,
+  MultiStepEncodingContext,
+  translateChain,
+  BeforeAfterResult,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
-import { WorkflowRunner__factory } from '@freemarket/runner'
-import {
-  AssetAmountStructOutput,
-  WorkflowStepExecutionEventObject,
-} from '@freemarket/runner/build/typechain-types/contracts/WorkflowRunner'
-import { listenerCount } from 'events'
-import { LogDescription } from '@ethersproject/abi'
-import { ExecutionLogStep, ExecutionLogAssetAmount } from './ExecutionLog'
 
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
@@ -68,6 +65,11 @@ interface WorkflowInstanceConstructorOptions {
 }
 
 export type AddressToSymbol = Record<string, string>
+
+interface BeforeAfter {
+  beforeAll: EncodedBeforeAfter | null
+  afterAll: EncodedBeforeAfter | null
+}
 
 export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
@@ -119,7 +121,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     const remittances = await appliedInstance.getRemittances()
     appliedInstance = appliedInstance.applyArguments(false, remittances)
     const firstNodeStepId = this.getStartStepId()
-    const sc = startChain === 'hardhat' ? HARDHAT_FORK_CHAIN : startChain
+    const sc = translateChain(startChain)
     const runnerAddress = appliedInstance.getWorkflow().runnerAddresses?.[sc as Chain] || ADDRESS_ZERO
     const encoded = await appliedInstance.encodeSegment(firstNodeStepId, 'start-chain', userAddress, runnerAddress, !!isDebug)
     const addAssetInfo = await appliedInstance.getAddAssetInfo(userAddress)
@@ -161,7 +163,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     const chain = await this.resolveChain('start-chain')
     const frontDoorAddress = await this.getFrontDoorAddressForChain(chain)
     const symbolsArray = Array.from(symbols)
-    const c = chain === 'hardhat' ? HARDHAT_FORK_CHAIN : chain
+    const c = translateChain(chain)
     const promises = symbolsArray.map(symbol => this.getErc20InfoForSymbol(userAddress, c, provider, frontDoorAddress, symbol))
     const results = await Promise.all(promises)
     for (let i = 0; i < symbolsArray.length; ++i) {
@@ -691,15 +693,17 @@ export class WorkflowInstance implements IWorkflowInstance {
       mapStepIdToIndex.set(reachable[i], i)
     }
     mapStepIdToIndex.set(WORKFLOW_END_STEP_ID, -1)
-    // TODO ERASEME
+
     const chain = await this.resolveChain(chainOrStart)
     if (chainOrStart === 'start-chain') {
       const startChainProvider = this.getProvider('start-chain')
       const startChainProviderNonForked = this.getNonForkedProvider('start-chain')
       this.setProvider(chain, startChainProvider, startChainProviderNonForked)
     }
-    // TODO how to handle non-evm?
-    const promises = reachable.map(async stepId => {
+
+    ////////////////////////////////
+
+    const encodeStepPromises = reachable.map(async stepId => {
       const step = this.getStep(stepId)
       let nextStepIndex = step.nextStepId === WORKFLOW_END_STEP_ID ? -1 : mapStepIdToIndex.get(step.nextStepId)
       if (!nextStepIndex) {
@@ -717,13 +721,54 @@ export class WorkflowInstance implements IWorkflowInstance {
         nextStepIndex,
       }
     })
-    const encodedSteps: EvmWorkflowStep[] = await Promise.all(promises)
+    const beforeAftersPromise = this.encodeBeforeAfter(chainOrStart, userAddress, mapStepIdToIndex, isDebug, reachable)
+    const encodedSteps: EvmWorkflowStep[] = await Promise.all(encodeStepPromises)
+    const { beforeAll, afterAll } = await beforeAftersPromise
     return {
       workflowRunnerAddress: runnerAddress,
       steps: encodedSteps,
-      beforeAll: [],
-      afterAll: [],
+      beforeAll,
+      afterAll,
     }
+  }
+
+  async encodeBeforeAfter(
+    chainOrStart: ChainOrStart,
+    userAddress: string,
+    mapStepIdToIndex: Map<string, number>,
+    isDebug: boolean,
+    reachable: string[]
+  ) {
+    // for each step type, build a list of all steps of that type
+    const mapStepTypeIdToSteps = new MapWithDefault<string, StepNode[]>(() => [])
+    for (const stepId of reachable) {
+      const step = this.getStep(stepId)
+      mapStepTypeIdToSteps.getWithDefault(step.type).push(step)
+    }
+    const chain = await this.resolveChain(chainOrStart)
+
+    // for each step type, ask the helper to encode the before/after
+    const promises = Array.from(mapStepTypeIdToSteps.entries()).map(async ([stepType, stepConfigs]) => {
+      const helper = this.getStepHelper(chainOrStart, stepType)
+      helper.setProvider(this.getProvider(chainOrStart))
+      const encodingContext: MultiStepEncodingContext<any> = {
+        chain,
+        stepConfigs,
+        userAddress,
+        mapStepIdToIndex,
+        isDebug,
+      }
+      return helper.getBeforeAfterAll(encodingContext)
+    })
+    const beforeAfterResults = await Promise.all(promises)
+
+    // filter out nulls
+    const beforeAfters = beforeAfterResults.filter(x => x !== null) as BeforeAfterResult[]
+
+    // rearrange into beforeAll and afterAll, eliminating nulls
+    const beforeAll = beforeAfters.map(x => x.beforeAll).filter(x => x !== null) as EvmBeforeAfter[]
+    const afterAll = beforeAfters.map(x => x.afterAll).filter(x => x !== null) as EvmBeforeAfter[]
+    return { beforeAll, afterAll }
   }
 
   static async getChainIdFromProvider(provider: Provider): Promise<number> {
@@ -763,7 +808,7 @@ export class WorkflowInstance implements IWorkflowInstance {
   async getFrontDoorAddressForChain(chain: Chain): Promise<string> {
     let address: string | undefined = undefined
     const isTestnet = await this.isTestNet()
-    if (chain === 'hardhat') {
+    if (chain === 'hardhat' || chain === 'local') {
       address = frontDoorAddresses['local']
     } else {
       if (isTestnet) {
@@ -851,7 +896,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     if (!token) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, null)])
     }
-    const c = chain === 'hardhat' ? HARDHAT_FORK_CHAIN : chain
+    const c = translateChain(chain)
     if (!token.chains[c as Chain]) {
       throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, chain)])
     }
@@ -932,7 +977,8 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   async getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
     const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
-    const symbol = mapAddressToSymbol[chain]?.[address]
+    const c = translateChain(chain)
+    const symbol = mapAddressToSymbol[c]?.[address]
     if (!symbol) {
       return undefined
     }

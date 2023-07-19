@@ -1,18 +1,17 @@
 import type { ContractReceipt } from '@ethersproject/contracts'
 import type { AddAssetInfo } from './AddAssetInfo'
-import { createExecutionEvent, CreateExecutionEventArg, ExecutionEvent, ExecutionEventCode, ExecutionEventHandler } from './ExecutionEvent'
+import { createExecutionEvent, CreateExecutionEventArg, ExecutionEventHandler } from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 // import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
+import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 import { Wallet } from '@ethersproject/wallet'
 
 import rootLogger from 'loglevel'
-import { getStargateBridgeParamsEvent } from '../private/debug-utils'
 import {
   ADDRESS_ZERO,
   Asset,
@@ -26,16 +25,14 @@ import {
   getEthersSigner,
   IERC20__factory,
   Memoize,
-  PartialRecord,
+  translateChain,
 } from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
 import { WorkflowContinuingStep__factory } from '@freemarket/stargate-bridge'
-import { HARDHAT_FORK_CHAIN } from './constants'
+
 import { AssetAmountStructOutput, AssetStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
-import { Workflow } from '../model/Workflow'
 import { LogDescription } from '@ethersproject/abi'
 import { Log } from '@ethersproject/providers'
-import { MapWithDefault } from '../utils/MapWithDefault'
 import {
   ExecutionLog,
   ExecutionLogAssetAmount,
@@ -44,6 +41,7 @@ import {
   ExecutionLogStep,
 } from './ExecutionLog'
 import { getPlatformInfos, StepInfo } from '../platform-infos'
+import { AaveBorrowAction__factory } from '@freemarket/aave'
 
 const log = rootLogger.getLogger('WorkflowRunner')
 
@@ -105,7 +103,10 @@ export class WorkflowRunner implements IWorkflowRunner {
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
     log.debug('estimating gas', await runner.signer.getAddress())
-    const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, { value: nativeAmount })
+    const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
+      value: nativeAmount,
+      gasLimit: 30_000_000,
+    })
     const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
     log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
     const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
@@ -252,7 +253,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(this.startChain)
     const fungi = await this.instance.getFungibleToken(symbol)
     assert(fungi)
-    const chain = this.startChain === 'hardhat' ? HARDHAT_FORK_CHAIN : this.startChain
+    const chain = translateChain(this.startChain)
     const addr = fungi.chains[chain]?.address
     assert(addr)
     log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
@@ -380,7 +381,11 @@ export class WorkflowRunner implements IWorkflowRunner {
 
   private static parseLogs(logs: Array<Log>): LogDescription[] {
     const ret: LogDescription[] = []
-    const contractInterfaces = [WorkflowContinuingStep__factory.createInterface(), WorkflowRunner__factory.createInterface()]
+    const contractInterfaces = [
+      WorkflowContinuingStep__factory.createInterface(),
+      WorkflowRunner__factory.createInterface(),
+      AaveBorrowAction__factory.createInterface(),
+    ]
     for (const log of logs) {
       for (const iface of contractInterfaces) {
         try {
@@ -442,8 +447,13 @@ export class WorkflowRunner implements IWorkflowRunner {
         const outputPromise = log.args.result.outputAssetAmounts.map((a: AssetAmountStructOutput) =>
           this.toExecutionLogAssetAmount(chain, a)
         )
+        const outputToUserPromise = log.args.result.outputAssetAmountsToCaller.map((a: AssetAmountStructOutput) =>
+          this.toExecutionLogAssetAmount(chain, a)
+        )
         const inputs = await Promise.all(inputPromise)
         const outputs = await Promise.all(outputPromise)
+        const outputsToUser = await Promise.all(outputToUserPromise)
+
         const stepInfo = WorkflowRunner.getStepInfoByIdMap().get(log.args.stepTypeId)
         assert(stepInfo)
         const executionStepLog: ExecutionLogStep = {
@@ -452,6 +462,7 @@ export class WorkflowRunner implements IWorkflowRunner {
           stepInfo,
           inputs,
           outputs,
+          outputsToUser,
         }
         return executionStepLog
       }

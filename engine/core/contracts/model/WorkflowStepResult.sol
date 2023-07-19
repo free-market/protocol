@@ -9,6 +9,8 @@ struct WorkflowStepResult {
   AssetAmount[] inputAssetAmounts;
   // The amounts of each output asset that resulted from the step execution.
   AssetAmount[] outputAssetAmounts;
+  // The amounts of each output asset that resulted from the step execution.
+  AssetAmount[] outputAssetAmountsToCaller;
   // The index of the next step in a workflow.
   // This value allows the step to override the default nextStepIndex
   // statically defined

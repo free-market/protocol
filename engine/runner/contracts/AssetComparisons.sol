@@ -4,33 +4,43 @@ pragma solidity ^0.8.13;
 import '@freemarket/core/contracts/model/WorkflowStep.sol';
 import './LibAssetBalances.sol';
 import 'hardhat/console.sol';
+import './Comparison.sol';
 
 using LibAssetBalances for LibAssetBalances.AssetBalances;
 
-enum Comparison {
-  Equal,
-  NotEqual,
-  LessThan,
-  LessThanOrEqual,
-  GreaterThan,
-  GreaterThanOrEqual
-}
 
-struct AssetBalanceBranchParams {
+struct AssetComparisonParams {
   Asset asset;
   Comparison comparison;
   uint256 amount;
   int16 ifYes;
 }
 
-library AssetBalanceBranch {
+enum AssetComparisonType {
+  Balance,
+  Credit,
+  Debit
+}
+
+library AssetComparison {
   function getNextStepIndex(
     WorkflowStep memory currentStep,
-    LibAssetBalances.AssetBalances memory assetBalances
+    LibAssetBalances.AssetBalances memory assetBalances,
+    AssetComparisonType assetComparisonType
   ) internal view returns (int16) {
-    AssetBalanceBranchParams memory args = abi.decode(currentStep.argData, (AssetBalanceBranchParams));
+    AssetComparisonParams memory args = abi.decode(currentStep.argData, (AssetComparisonParams));
     Comparison comparision = args.comparison;
-    uint256 amount = assetBalances.getAssetBalance(args.asset);
+    LibAssetBalances.AssetEntry memory assetEntry = LibAssetBalances.getAssetEntry(assetBalances, args.asset);
+
+    uint256 amount;
+    if (assetComparisonType == AssetComparisonType.Balance) {
+      amount = assetEntry.balance;
+    } else  if (assetComparisonType == AssetComparisonType.Credit) {
+      amount = assetEntry.previousCredit;
+    } else {
+      amount = assetEntry.previousDebit;
+    }
+
     uint256 argsAmount = args.amount;
     bool result;
     assembly {

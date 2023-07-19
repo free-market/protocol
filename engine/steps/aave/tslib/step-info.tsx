@@ -3,6 +3,8 @@ import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import AaveIcon from './AaveIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import { STEP_TYPE_ID_AAVE_SUPPLY } from './supply-helper'
+import { STEP_TYPE_ID_AAVE_BORROW } from './borrow-helper'
+import { STEP_TYPE_ID_AAVE_REPAY } from './repay-helper'
 
 function AaveSummary(props: any) {
   return (
@@ -49,7 +51,7 @@ export const platformInfo: PlatformInfo = {
     },
     {
       stepType: 'aave-borrow',
-      stepTypeId: -1,
+      stepTypeId: STEP_TYPE_ID_AAVE_BORROW,
       nodeType: 'stepNode',
       name: 'Aave Borrow',
       description: 'Borrow an asset from Aave',
@@ -60,7 +62,7 @@ export const platformInfo: PlatformInfo = {
     },
     {
       stepType: 'aave-repay',
-      stepTypeId: -1,
+      stepTypeId: STEP_TYPE_ID_AAVE_REPAY,
       nodeType: 'stepNode',
       name: 'Aave Repay',
       description: 'Repay an asset borrowed from Aave',

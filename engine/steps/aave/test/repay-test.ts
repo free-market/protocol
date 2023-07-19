@@ -1,25 +1,15 @@
 import { expect } from 'chai'
-import hardhat, { ethers, deployments } from 'hardhat'
+import hardhat, { ethers } from 'hardhat'
 import {
-  AaveBorrowAction,
   AaveRepayAction,
-  AaveSupplyAction,
-  IAaveV3Pool__factory,
   IERC20__factory,
   IPoolAddressesProvider__factory,
   IPool__factory,
-  IPriceOracleGetter__factory,
   VariableDebtToken__factory,
 } from '../typechain-types'
-import { AaveSupplyHelper, STEP_TYPE_ID_AAVE_SUPPLY } from '../tslib/supply-helper'
-import { ADDRESS_ZERO, EncodingContext } from '@freemarket/core'
-import { getTestFixture, MockWorkflowInstance, validateAction, getUsdt, confirmTx, getUsdc } from '@freemarket/step-sdk/tslib/testing'
-import { AaveBorrow, AaveRepay, AaveSupply } from '../tslib/model'
-import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
-import { AaveBorrowHelper, STEP_TYPE_ID_AAVE_BORROW } from '../tslib/borrow-helper'
-import { Log } from '@ethersproject/providers'
-import { Interface } from '@ethersproject/abi'
-import { formatNumber } from '@freemarket/step-sdk'
+import { EncodingContext } from '@freemarket/core'
+import { getTestFixture, MockWorkflowInstance, validateAction, confirmTx, getUsdc } from '@freemarket/step-sdk/tslib/testing'
+import { AaveRepay } from '../tslib/model'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import { AaveRepayHelper, STEP_TYPE_ID_AAVE_REPAY } from '../tslib/repay-helper'
 import { getPoolAddressProviderAddress } from '../tslib/getPoolAddressProviderAddress'

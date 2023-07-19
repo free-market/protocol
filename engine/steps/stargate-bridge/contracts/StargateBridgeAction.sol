@@ -6,7 +6,6 @@ import '@freemarket/core/contracts/model/Asset.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/model/BridgePayload.sol';
 import '@freemarket/core/contracts/IWorkflowRunner.sol';
-import '@freemarket/step-sdk/contracts/LibActionHelpers.sol';
 import './IStargateRouter.sol';
 import './IStargateReceiver.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -146,7 +145,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
       emit WorkflowBridged('stargate-bridge', locals.args.dstChainId, locals.args.nonce, expectedAssets, continuationFlow);
     }
 
-    return WorkflowStepResult(inputAssetAmounts, new AssetAmount[](0), -2, -1);
+    return WorkflowStepResult(inputAssetAmounts, new AssetAmount[](0), new AssetAmount[](0), -2, -1);
   }
 
   function approveErc20(address tokenAddress, uint256 amount) internal {

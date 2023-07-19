@@ -2,7 +2,7 @@ import z, { ZodObject } from 'zod'
 import { aaveSupplySchema, aaveWithdrawalSchema, aaveBorrowSchema, aaveRepaySchema, aaveFlashLoanSchema } from '@freemarket/aave'
 import { payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
-import { assetBalanceBranchSchema, chainBranchSchema } from '@freemarket/base-branches'
+import { assetBalanceBranchSchema, chainBranchSchema, previousOutputBranchSchema } from '@freemarket/base-branches'
 import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
@@ -15,10 +15,10 @@ export const stepSchema = z.discriminatedUnion('type', [
   aaveWithdrawalSchema,
   aaveBorrowSchema,
   aaveRepaySchema,
-  aaveFlashLoanSchema,
+  // aaveFlashLoanSchema,
   addAssetSchema,
-  curveTriCrypto2SwapSchema,
-  payGelatoRelaySchema,
+  // curveTriCrypto2SwapSchema,
+  // payGelatoRelaySchema,
   uniswapExactInSchema,
   uniswapExactOutSchema,
   unwrapNativeSchema,
@@ -30,6 +30,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   // branches
   chainBranchSchema,
   assetBalanceBranchSchema,
+  previousOutputBranchSchema
 ])
 
 export type Step = z.infer<typeof stepSchema>
