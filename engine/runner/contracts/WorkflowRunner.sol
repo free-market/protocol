@@ -88,7 +88,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     // credit ETH if sent with this call
     if (msg.value != 0) {
       // TODO add event
-      // console.log('crediting native', msg.value);
       assetBalances.credit(0, msg.value);
     }
 
@@ -96,13 +95,14 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     for (uint256 i = 0; i < startingAssets.length; i++) {
       AssetAmount memory startingAsset = startingAssets[i];
       if (startingAsset.amount > 0) {
-        // console.log('crediting starting', startingAsset.asset.assetAddress, startingAsset.amount);
         assetBalances.credit(startingAsset.asset, startingAsset.amount);
       }
     }
 
     executeBeforeAlls(workflow);
-    uint256 previousOutputAmount = 0;
+
+    bool feeAlreadyTaken = false;
+
     // execute steps
     if (workflow.steps.length > 0) {
       while (true) {
@@ -119,7 +119,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           } else {
             // step type must be STEP_TYPE_ID_PREV_OUTPUT_BRANCH
             nextStepIndex = AssetComparison.getNextStepIndex(currentStep, assetBalances, AssetComparisonType.Credit);
-          } 
+          }
           if (nextStepIndex == -1) {
             break;
           }
@@ -130,43 +130,42 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         address stepAddress = resolveStepAddress(currentStep.stepAddress, currentStep.stepTypeId);
         AssetAmount[] memory inputAssetAmounts = resolveAmounts(userAddress, assetBalances, currentStep.inputAssets);
 
-        // console.log('calling id', currentStep.stepTypeId);
-        // console.log('calling addr', stepAddress);
-        // console.log('assetAmounts', inputAssetAmounts.length);
-        // for (uint256 i = 0; i < inputAssetAmounts.length; ++i) {
-        //   console.log('  input type', inputAssetAmounts[i].asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
-        //   console.log('  input addr', inputAssetAmounts[i].asset.assetAddress);
-        //   console.log('  input amount', inputAssetAmounts[i].amount);
-        // }
-
         // invoke the step
         WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
-
-        // console.log('stepResult.ouptputs', stepResult.outputAssetAmounts.length);
-        // for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-        //   console.log('output amount', stepResult.outputAssetAmounts[i].amount);
-        // }
 
         emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
 
         // debit input assets
-        // console.log('result inputs', stepResult.inputAssetAmounts.length);
         for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
-          // console.log('  debit', i);
-          // console.log('  debit addr', stepResult.inputAssetAmounts[i].asset.assetAddress);
-          // console.log('  debit amt', stepResult.inputAssetAmounts[i].amount);
           assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
         }
-        // credit output assets
-        // console.log('result outputs', stepResult.outputAssetAmounts.length);
-        for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
-          // console.log('  credit', i);
-          // console.log('  credit addr', stepResult.outputAssetAmounts[i].asset.assetAddress);
-          // console.log('  credit amt', stepResult.outputAssetAmounts[i].amount);
-          assetBalances.credit(stepResult.outputAssetAmounts[i].asset, stepResult.outputAssetAmounts[i].amount);
-          previousOutputAmount = stepResult.outputAssetAmounts[i].amount;
+
+        // determine if fee is relative or absolute, and fee amount
+        bool feeIsPercent;
+        uint256 stepFee = 0;
+        if (stepResult.fee != -1) {
+          // fee is in decibips
+          stepFee = uint24(stepResult.fee);
+          // just treat it as an absolute 0 if it's 0% to avoid extra computation later
+          feeIsPercent = stepFee > 0;
+        } else {
+          // fee is absolute
+          (stepFee, feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, currentStep.stepTypeId);
         }
-        console.logInt(currentStep.nextStepIndex);
+
+        // credit output assets
+        for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
+          // calculate exact fee
+          uint256 feeAmount;
+          if (feeIsPercent) {
+            feeAmount = LibPercent.percentageOf(stepResult.outputAssetAmounts[i].amount, stepFee);
+          } else {
+            feeAmount = stepFee;
+          }
+          feeAlreadyTaken = feeAlreadyTaken || feeAmount > 0;
+          uint256 callerAmount = stepResult.outputAssetAmounts[i].amount - feeAmount;
+          assetBalances.credit(stepResult.outputAssetAmounts[i].asset, callerAmount);
+        }
         if (currentStep.nextStepIndex == -1) {
           break;
         }
@@ -176,18 +175,16 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
 
     executeAfterAlls(workflow);
 
-    refundUser(userAddress, assetBalances);
+    refundUser(userAddress, assetBalances, feeAlreadyTaken);
   }
 
   function executeBeforeAlls(Workflow memory workflow) internal {
-    console.log('exec before alls', workflow.afterAll.length);
     for (uint256 i = 0; i < workflow.beforeAll.length; ++i) {
       executeBeforeAfter(IWorkflowStepBeforeAll.beforeAll.selector, workflow.beforeAll[i]);
     }
   }
 
   function executeAfterAlls(Workflow memory workflow) internal {
-    console.log('exec after alls', workflow.afterAll.length);
     for (uint256 i = 0; i < workflow.afterAll.length; ++i) {
       executeBeforeAfter(IWorkflowStepAfterAll.afterAll.selector, workflow.afterAll[i]);
     }
@@ -195,30 +192,43 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
 
   function executeBeforeAfter(bytes4 selector, BeforeAfter memory beforeAfter) internal {
     address stepAddress = resolveStepAddress(beforeAfter.stepAddress, beforeAfter.stepTypeId);
-    console.log('about to dc', stepAddress);
     (bool success, bytes memory returnData) = stepAddress.delegatecall(abi.encodeWithSelector(selector, beforeAfter.argData));
     require(success, string(returnData));
   }
 
-  function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances) internal {
-    // console.log('entering refundUser, numAssets=', assetBalances.getAssetCount());
+  function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances, bool feeAlreadyTaken) internal {
+    uint256 fee;
+    bool feeIsPercent;
+    if (feeAlreadyTaken) {
+      // fees taken during one or more steps
+      fee = 0;
+      feeIsPercent = false;
+    } else {
+      (fee, feeIsPercent) = LibConfigReader.getDefaultFee(eternalStorageAddress);
+      // treat 0% as absolute 0
+      feeIsPercent = feeIsPercent && fee > 0;
+    }
+
+    console.log('abcnt', assetBalances.getAssetCount());
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
+      console.log('loop', i);
       AssetAmount memory ab = assetBalances.getAssetAt(i);
-      // console.log('  refunding asset', i);
-      // console.log('    type', ab.asset.assetType == AssetType.ERC20 ? 'erc20' : 'native');
-      // console.log('    addr', ab.asset.assetAddress);
-      // console.log('    amt', ab.amount);
       Asset memory asset = ab.asset;
-      uint256 feeAmount = LibPercent.percentageOf(ab.amount, 300);
-      uint256 userAmount = ab.amount - feeAmount;
+      uint256 feeAmount;
+      if (feeIsPercent) {
+        feeAmount = LibPercent.percentageOf(ab.amount, fee);
+        console.log('ru pct a', ab.amount, fee, feeAmount);
+      } else {
+        feeAmount = fee;
+        console.log('ru abs', feeAmount);
+      }
+      uint256 userAmount = ab.amount < feeAmount ? ab.amount : ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
         require(address(this).balance >= ab.amount, 'computed native balance is greater than actual balance');
         payable(userAddress).transfer(userAmount);
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
-        // uint256 balance = token.balanceOf(address(this));
-        // console.log('  refunding erc20 balance', balance);
         SafeERC20.safeTransfer(token, userAddress, userAmount);
       } else {
         revert('unknown asset type in assetBalances');
@@ -283,7 +293,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       // it's not possible to 'trasfer from caller' for native assets
       // assetBalances should have been initialized with the correct amount
     } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
-      console.log('transferFromCaller erc20', inputAssetAmount.asset.assetAddress, inputAssetAmount.amount);
       IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
       uint256 allowance = token.allowance(userAddress, address(this));
       require(allowance >= inputAssetAmount.amount, 'insufficient allowance for erc20');

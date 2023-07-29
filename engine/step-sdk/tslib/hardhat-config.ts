@@ -12,8 +12,3 @@ export const stepHardhatConfig: HardhatUserConfig = {
     ],
   },
 }
-
-task('dumpConfig', 'Dump the current hardhat config').setAction(async (args, hre) => {
-  const replacer = (key: any, value: any) => (typeof value === 'bigint' ? value.toString() : value)
-  console.log(JSON.stringify(hre.config, replacer, 2))
-})

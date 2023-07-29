@@ -42,6 +42,21 @@ export function percentStringToDecibips(percentString: string): number {
   return parseFloat(s) * 1000
 }
 
+interface ToEvmNumberResult {
+  value: string
+  isPercent: boolean
+}
+
+export function toEvmNumber(input: string): ToEvmNumberResult {
+  let s = input.trim()
+  const isPercent = s.endsWith('%')
+  if (isPercent) {
+    s = s.substring(0, s.length - 1).trim()
+  }
+  const value = isPercent ? Math.round(parseFloat(s) * 1000).toString() : s
+  return { value, isPercent }
+}
+
 export function decibipsToPercentString(decibips: number) {
   return `${decibips / 1000}%`
 }

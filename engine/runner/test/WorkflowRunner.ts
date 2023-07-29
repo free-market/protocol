@@ -10,7 +10,7 @@ import {
   WorkflowRunner__factory,
 } from '../typechain-types'
 import { WorkflowStruct } from '../typechain-types/contracts/WorkflowRunner'
-import { ADDRESS_ZERO } from '@freemarket/core'
+import { ADDRESS_ZERO, IERC20__factory } from '@freemarket/core'
 const { ethers, deployments, getNamedAccounts } = hardhat
 
 const setup = deployments.createFixture(async () => {
@@ -52,14 +52,14 @@ describe('WorkflowRunner', async () => {
     } = await setup()
 
     const workflow: WorkflowStruct = {
-      workflowRunnerAddress: '0x0000000000000000000000000000000000000123',
+      workflowRunnerAddress: ADDRESS_ZERO,
       steps: [],
       beforeAll: [],
       afterAll: [],
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
   })
-  it.only('executes when a frozen runner address is provided', async () => {
+  it('executes when a frozen runner address is provided', async () => {
     const {
       contracts: { frontDoor, workflowRunner, configManager },
       signer,

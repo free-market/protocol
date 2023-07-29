@@ -57,6 +57,11 @@ task('deploymentDiff', 'Diffs the source code for a deployed contract against th
     }
   })
 
+task('dumpConfig', 'Dump the current hardhat config').setAction(async (args, hre) => {
+  const replacer = (key: any, value: any) => (typeof value === 'bigint' ? value.toString() : value)
+  console.log(JSON.stringify(hre.config, replacer, 2))
+})
+
 export const coreHardhatConfig: HardhatUserConfig = {
   solidity: {
     compilers: [
@@ -128,6 +133,6 @@ export const coreHardhatConfig: HardhatUserConfig = {
     otherUser: 1,
   },
   preprocess: {
-    eachLine: removeConsoleLog(hre => hre.network.name !== 'hardhat' && hre.network.name !== 'localhost'),
+    eachLine: removeConsoleLog(hre => !['hardhat', 'localhost', 'local'].includes(hre.network.name)),
   },
 }

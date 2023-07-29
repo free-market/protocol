@@ -114,7 +114,7 @@ contract ConfigManager is FreeMarketBase {
     return runners;
   }
 
-  function updateDefaultFee(uint256 fee, bool feeIsPercent) external onlyOwner {
+  function setDefaultFee(uint256 fee, bool feeIsPercent) external onlyOwner {
     require(feeIsPercent || fee & LibConfigReader.FEE_MASK == 0, 'absolute fee out of bounds');
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     uint256 encodedFee = LibConfigReader.encodeFee(fee, feeIsPercent);
@@ -127,13 +127,13 @@ contract ConfigManager is FreeMarketBase {
     }
   }
 
-  function updateStepFees(StepFee[] calldata stepFeeUpdates) external onlyOwner {
+  function setStepFees(StepFee[] calldata stepFeeUpdates) external onlyOwner {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     for (uint256 i = 0; i < stepFeeUpdates.length; ++i) {
       // if its an absolute value, it cannot have the top bit set
       require(stepFeeUpdates[i].feeIsPercent || stepFeeUpdates[i].fee & LibConfigReader.FEE_MASK == 0, 'absolute fee out of bounds');
-      // read the exising fee data and see if it's changing
       bytes32 feeKey = LibConfigReader.getStepFeeKey(stepFeeUpdates[i].stepTypeId);
+      // read the exising fee data and see if it's changing
       uint256 existingFeeEncoded = eternalStorage.getUint(feeKey);
       uint256 feeEncoded = LibConfigReader.encodeFee(stepFeeUpdates[i].fee, stepFeeUpdates[i].feeIsPercent);
       if (feeEncoded != existingFeeEncoded) {

@@ -30,7 +30,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   // branches
   chainBranchSchema,
   assetBalanceBranchSchema,
-  previousOutputBranchSchema
+  previousOutputBranchSchema,
 ])
 
 export type Step = z.infer<typeof stepSchema>

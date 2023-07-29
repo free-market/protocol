@@ -47,7 +47,7 @@ library LibConfigReader {
   function encodeFee(uint256 _fee, bool isPercent) internal pure returns (uint256) {
     uint256 fee = _fee;
     if (isPercent) {
-      fee &= FEE_MASK;
+      fee |= FEE_MASK;
     }
     return fee;
   }

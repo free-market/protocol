@@ -137,7 +137,7 @@ if (shouldRunE2e()) {
       console.log('delta', delta.toString())
       expect(delta).to.be.greaterThan(0)
     })
-    it.only('creates a leveraged long WBTC position (2 rounds only)', async () => {
+    it('creates a leveraged long WBTC position (2 rounds only)', async () => {
       const { otherUser, workflowRunner, otherUserSigner } = await setup()
 
       const workflow: Workflow = {
@@ -258,6 +258,32 @@ if (shouldRunE2e()) {
         }
       }
     })
+  })
+  it.only('does fees correctly', async () => {
+    const { otherUser, workflowRunner, otherUserSigner } = await setup()
+    const workflow: Workflow = {
+      steps: [
+        {
+          type: 'wrap-native',
+          amount: '1',
+          asset: {
+            type: 'native',
+          },
+          source: 'caller',
+        },
+      ],
+    }
+    const instance = await getWorkflowInstance(workflow, otherUserSigner)
+    const runner = await instance.getRunner(otherUser)
+    const weth = IERC20__factory.connect('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', workflowRunner.provider)
+    const weth1 = await weth.balanceOf(otherUser)
+    await runner.execute()
+    const weth2 = await weth.balanceOf(otherUser)
+    console.log('---')
+    console.log(weth1.toString())
+    console.log(weth2.toString())
+    console.log(weth2.sub(weth1).toString())
+    console.log('---')
   })
 }
 
