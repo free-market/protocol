@@ -34,6 +34,18 @@ export const TEN_BIG = new Big(10)
 export const ONE_BIG = new Big(1)
 export const TWO_BIG = new Big(2)
 
+export function percentStringToDecibips(percentString: string): number {
+  let s = percentString.trim()
+  if (s.endsWith('%')) {
+    s = s.slice(0, s.length - 1).trim()
+  }
+  return parseFloat(s) * 1000
+}
+
+export function decibipsToPercentString(decibips: number) {
+  return `${decibips / 1000}%`
+}
+
 export async function sdkAssetAndAmountToEvmInputAmount(
   assetRef: AssetReference,
   amount: Amount,
