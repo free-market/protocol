@@ -33,6 +33,7 @@ import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.j
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 import { Signer } from '@ethersproject/abstract-signer'
 import { Provider } from '@ethersproject/abstract-provider'
+import { parseEther } from '@ethersproject/units'
 
 const shouldRunE2e = () => {
   const e2e = process.env.E2E?.toLowerCase()
@@ -261,11 +262,13 @@ if (shouldRunE2e()) {
   })
   it.only('does fees correctly', async () => {
     const { otherUser, workflowRunner, otherUserSigner } = await setup()
+    const wrapAmount = '1'
+    const wrapAmountString = parseEther(wrapAmount).toString()
     const workflow: Workflow = {
       steps: [
         {
           type: 'wrap-native',
-          amount: '1',
+          amount: wrapAmount,
           asset: {
             type: 'native',
           },
@@ -279,11 +282,8 @@ if (shouldRunE2e()) {
     const weth1 = await weth.balanceOf(otherUser)
     await runner.execute()
     const weth2 = await weth.balanceOf(otherUser)
-    console.log('---')
-    console.log(weth1.toString())
-    console.log(weth2.toString())
-    console.log(weth2.sub(weth1).toString())
-    console.log('---')
+    console.log('eth sent:     ', wrapAmountString)
+    console.log('weth received:', weth2.sub(weth1).toString().padStart(wrapAmountString.length, ' '))
   })
 }
 
