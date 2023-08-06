@@ -157,4 +157,35 @@ contract ConfigManager is FreeMarketBase {
   function getDefaultFee() external view returns (uint256, bool) {
     return LibConfigReader.getDefaultFee(eternalStorageAddress);
   }
+
+  function getSubscribers() external view returns (address[] memory) {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.subscribers);
+    address[] memory subscribers = new address[](count);
+    for (uint256 i = 0; i < count; ++i) {
+      (address subscriber, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.subscribers, i);
+      subscribers[i] = subscriber;
+    }
+    return subscribers;
+  }
+
+  // not very scalable, but OK for now
+  // would be better to add/remove subscribers one at a time
+  function updateSubscribers(address[] calldata newSubscribers) external {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    // delete all existing subscribers
+    while (true) {
+      uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.subscribers);
+      if (count == 0) {
+        break;
+      }
+      (address subscriber, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.subscribers, count - 1);
+      eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.subscribers, subscriber);
+    }
+
+    // add current subscribers back in
+    for (uint256 i = 0; i < newSubscribers.length; ++i) {
+      eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.subscribers, newSubscribers[i], 0);
+    }
+  }
 }

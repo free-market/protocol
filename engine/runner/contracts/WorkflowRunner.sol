@@ -133,6 +133,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         // invoke the step
         WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
 
+        // TODO add fee
         emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
 
         // debit input assets
@@ -199,6 +200,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances, bool feeAlreadyTaken) internal {
     uint256 fee;
     bool feeIsPercent;
+    console.log('fat', feeAlreadyTaken);
     if (feeAlreadyTaken) {
       // fees taken during one or more steps
       fee = 0;

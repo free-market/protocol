@@ -22,6 +22,7 @@ export interface EngineDeploymentInfo {
   formerRunners: string[]
   steps: StepDeploymentInfo[]
   defaultFee: string
+  subscribers: string[]
 }
 
 export function getConfigManagerAddress(chain: Chain) {
@@ -44,6 +45,7 @@ export async function getDeploymentInfo(chain: string, provider: EIP1193Provider
     const x = await getStepInfo(i, cm)
     steps.push(x)
   }
+  const subscribers = await cm.getSubscribers()
   // const steps = await Promise.all(range(stepCount.toNumber()).map(i => getStepInfo(i, cm)))
   const formerRunners = removeArrayElementByValue(await cm.getRunnerAddresses(), currentRunner)
   const [defaultFeeNumber, defaultFeeIsPercent] = await defaultFeePromise
@@ -56,6 +58,7 @@ export async function getDeploymentInfo(chain: string, provider: EIP1193Provider
     formerRunners,
     steps,
     defaultFee,
+    subscribers,
   }
 }
 
