@@ -5,6 +5,7 @@ import UniswapIcon from './UniswapIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from './UniswapExactInHelper'
 import { UniswapExactIn } from './model'
+import { STEP_TYPE_ID_UNISWAP_EXACT_OUT } from './UniswapExactOutHelper'
 
 function UniswapSummary(props: any) {
   return (
@@ -54,9 +55,9 @@ export const platformInfo: PlatformInfo = {
     },
     {
       stepType: 'uniswap-exact-out',
-      stepTypeId: -1,
+      stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_OUT,
       nodeType: 'stepNode',
-      name: 'Uniswap Swap',
+      name: 'Uniswap Swap Exact Out',
       description: 'Exchange an asset for another asset on Uniswap, specifying the exact amount of the output asset',
       icon: UniswapIcon,
       operation: 'Exact Out',

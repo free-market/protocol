@@ -7,8 +7,19 @@ import './LibConfigReader.sol';
 import './FreeMarketBase.sol';
 import './FrontDoor.sol';
 
+struct StepFee {
+  uint16 stepTypeId;
+  bool feeIsPercent;
+  uint256 fee;
+}
+
 contract ConfigManager is FreeMarketBase {
   address public immutable frontDoorAddress;
+  //                                    1234567890123456789012345678901234567890123456789012345678901234
+  bytes32 constant allStepAddresses = 0x18fa4b105101c66136345367eab77cd274c0766ec0596b7e8aadd79e99139555; // keccak256('allStepAddresses')
+
+  event StepFeeUpdated(uint16 stepTypeId, uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
+  event DefaultFeeUpdated(uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
 
   constructor(
     address payable _frontDoorAddress
@@ -52,7 +63,8 @@ contract ConfigManager is FreeMarketBase {
       blacklist[i] = blacklistedAddress;
     }
 
-    return StepInfo(uint16(stepTypeId), 0, stepAddress, whitelist, blacklist);
+    (uint256 fee, bool feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, uint16(stepTypeId));
+    return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
   }
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
@@ -100,5 +112,80 @@ contract ConfigManager is FreeMarketBase {
       runners[i] = runnerAddress;
     }
     return runners;
+  }
+
+  function setDefaultFee(uint256 fee, bool feeIsPercent) external onlyOwner {
+    require(feeIsPercent || fee & LibConfigReader.FEE_MASK == 0, 'absolute fee out of bounds');
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    uint256 encodedFee = LibConfigReader.encodeFee(fee, feeIsPercent);
+    bytes32 feeKey = LibConfigReader.getDefaultFeeKey();
+    uint256 existingEncodedFee = eternalStorage.getUint(LibConfigReader.getDefaultFeeKey());
+    if (encodedFee != existingEncodedFee) {
+      eternalStorage.setUint(feeKey, encodedFee);
+      (uint256 existingFee, bool existingFeeIsPercent) = LibConfigReader.decodeFee(encodedFee);
+      emit DefaultFeeUpdated(existingFee, existingFeeIsPercent, fee, feeIsPercent);
+    }
+  }
+
+  function setStepFees(StepFee[] calldata stepFeeUpdates) external onlyOwner {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    for (uint256 i = 0; i < stepFeeUpdates.length; ++i) {
+      // if its an absolute value, it cannot have the top bit set
+      require(stepFeeUpdates[i].feeIsPercent || stepFeeUpdates[i].fee & LibConfigReader.FEE_MASK == 0, 'absolute fee out of bounds');
+      bytes32 feeKey = LibConfigReader.getStepFeeKey(stepFeeUpdates[i].stepTypeId);
+      // read the exising fee data and see if it's changing
+      uint256 existingFeeEncoded = eternalStorage.getUint(feeKey);
+      uint256 feeEncoded = LibConfigReader.encodeFee(stepFeeUpdates[i].fee, stepFeeUpdates[i].feeIsPercent);
+      if (feeEncoded != existingFeeEncoded) {
+        (uint256 existingFee, bool existingFeeIsPercent) = LibConfigReader.decodeFee(existingFeeEncoded);
+        emit StepFeeUpdated(
+          stepFeeUpdates[i].stepTypeId,
+          existingFee,
+          existingFeeIsPercent,
+          stepFeeUpdates[i].fee,
+          stepFeeUpdates[i].feeIsPercent
+        );
+        eternalStorage.setUint(feeKey, feeEncoded);
+      }
+    }
+  }
+
+  function getStepFee(uint16 stepTypeId) external view returns (uint256, bool) {
+    return LibConfigReader.getStepFee(eternalStorageAddress, stepTypeId);
+  }
+
+  function getDefaultFee() external view returns (uint256, bool) {
+    return LibConfigReader.getDefaultFee(eternalStorageAddress);
+  }
+
+  function getSubscribers() external view returns (address[] memory) {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.subscribers);
+    address[] memory subscribers = new address[](count);
+    for (uint256 i = 0; i < count; ++i) {
+      (address subscriber, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.subscribers, i);
+      subscribers[i] = subscriber;
+    }
+    return subscribers;
+  }
+
+  // not very scalable, but OK for now
+  // would be better to add/remove subscribers one at a time
+  function updateSubscribers(address[] calldata newSubscribers) external {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    // delete all existing subscribers
+    while (true) {
+      uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.subscribers);
+      if (count == 0) {
+        break;
+      }
+      (address subscriber, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.subscribers, count - 1);
+      eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.subscribers, subscriber);
+    }
+
+    // add current subscribers back in
+    for (uint256 i = 0; i < newSubscribers.length; ++i) {
+      eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.subscribers, newSubscribers[i], 0);
+    }
   }
 }

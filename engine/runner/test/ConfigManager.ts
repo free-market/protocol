@@ -29,6 +29,8 @@ const setup = deployments.createFixture(async () => {
 })
 
 describe('WorkflowRunner', async () => {
+  const someAddress = '0x9ef1dcd8af14ed2bdd16fef0ae2775e2ee8ff604'
+
   it('deploys', async () => {
     const {
       contracts: { frontDoor, configManager },
@@ -44,7 +46,6 @@ describe('WorkflowRunner', async () => {
     } = await setup()
     let count = await configManager.getStepCount()
     expect(count).to.eq(0)
-    const someAddress = '0x9ef1dcd8af14ed2bdd16fef0ae2775e2ee8ff604'
     const response = await configManager.setStepAddress(1000, someAddress)
     await response.wait()
     count = await configManager.getStepCount()
@@ -52,5 +53,51 @@ describe('WorkflowRunner', async () => {
     const stepInfo = await configManager.getStepInfoAt(0)
     expect(stepInfo.stepTypeId).to.eq(1000)
     expect(stepInfo.latest.toLowerCase()).to.eq(someAddress)
+  })
+
+  it('manages the default fee', async () => {
+    const {
+      contracts: { configManager },
+    } = await setup()
+    let fee = await configManager.getDefaultFee()
+    expect(fee[0]).to.eq(0)
+    expect(fee[1]).to.be.false
+
+    await (await configManager.setDefaultFee(1, false)).wait()
+    fee = await configManager.getDefaultFee()
+    expect(fee[0]).to.eq(1)
+    expect(fee[1]).to.be.false
+
+    await (await configManager.setDefaultFee(2, true)).wait()
+    fee = await configManager.getDefaultFee()
+    expect(fee[0]).to.eq(2)
+    expect(fee[1]).to.be.true
+  })
+
+  it('manages a step fee', async () => {
+    const {
+      contracts: { configManager },
+    } = await setup()
+    let fee = await configManager.getStepFee(99)
+    expect(fee[0]).to.eq(0)
+    expect(fee[1]).to.be.false
+
+    const feeArg = {
+      stepTypeId: '99',
+      fee: '1',
+      feeIsPercent: false,
+    }
+
+    await (await configManager.setStepFees([feeArg])).wait()
+    fee = await configManager.getStepFee(99)
+    expect(fee[0]).to.eq(1)
+    expect(fee[1]).to.be.false
+
+    feeArg.fee = '2'
+    feeArg.feeIsPercent = true
+    await (await configManager.setStepFees([feeArg])).wait()
+    fee = await configManager.getStepFee(99)
+    expect(fee[0]).to.eq(2)
+    expect(fee[1]).to.be.true
   })
 })

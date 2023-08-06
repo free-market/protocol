@@ -33,6 +33,7 @@ import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.j
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 import { Signer } from '@ethersproject/abstract-signer'
 import { Provider } from '@ethersproject/abstract-provider'
+import { parseEther } from '@ethersproject/units'
 
 const shouldRunE2e = () => {
   const e2e = process.env.E2E?.toLowerCase()
@@ -137,7 +138,7 @@ if (shouldRunE2e()) {
       console.log('delta', delta.toString())
       expect(delta).to.be.greaterThan(0)
     })
-    it.only('creates a leveraged long WBTC position (2 rounds only)', async () => {
+    it('creates a leveraged long WBTC position (2 rounds only)', async () => {
       const { otherUser, workflowRunner, otherUserSigner } = await setup()
 
       const workflow: Workflow = {
@@ -258,6 +259,31 @@ if (shouldRunE2e()) {
         }
       }
     })
+  })
+  it.only('does fees correctly', async () => {
+    const { otherUser, workflowRunner, otherUserSigner } = await setup()
+    const wrapAmount = '1'
+    const wrapAmountString = parseEther(wrapAmount).toString()
+    const workflow: Workflow = {
+      steps: [
+        {
+          type: 'wrap-native',
+          amount: wrapAmount,
+          asset: {
+            type: 'native',
+          },
+          source: 'caller',
+        },
+      ],
+    }
+    const instance = await getWorkflowInstance(workflow, otherUserSigner)
+    const runner = await instance.getRunner(otherUser)
+    const weth = IERC20__factory.connect('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', workflowRunner.provider)
+    const weth1 = await weth.balanceOf(otherUser)
+    await runner.execute()
+    const weth2 = await weth.balanceOf(otherUser)
+    console.log('eth sent:     ', wrapAmountString)
+    console.log('weth received:', weth2.sub(weth1).toString().padStart(wrapAmountString.length, ' '))
   })
 }
 

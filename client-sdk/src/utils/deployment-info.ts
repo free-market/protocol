@@ -1,17 +1,18 @@
 import { EIP1193Provider } from 'eip1193-provider'
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
 import configManagerAddressesJson from '@freemarket/runner/deployments/config-managers.json'
-import { getEthersProvider } from '@freemarket/core'
+import { Chain, decibipsToPercentString, getEthersProvider } from '@freemarket/core'
 import { ConfigManager, ConfigManager__factory, FrontDoor__factory } from '@freemarket/runner'
 import { range } from './range'
 import { removeArrayElementByValue } from './remove-array-element-by-value'
+import { BigNumberish } from '@ethersproject/bignumber'
 
 export interface StepDeploymentInfo {
   stepTypeId: number
   name: string
   current: string
   former: string[]
-  fee: number
+  fee: string
 }
 
 export interface EngineDeploymentInfo {
@@ -20,6 +21,12 @@ export interface EngineDeploymentInfo {
   currentRunner: string
   formerRunners: string[]
   steps: StepDeploymentInfo[]
+  defaultFee: string
+  subscribers: string[]
+}
+
+export function getConfigManagerAddress(chain: Chain) {
+  return (<any>configManagerAddressesJson)[chain]
 }
 
 export async function getDeploymentInfo(chain: string, provider: EIP1193Provider): Promise<EngineDeploymentInfo | null> {
@@ -32,8 +39,17 @@ export async function getDeploymentInfo(chain: string, provider: EIP1193Provider
   const currentRunner = await fd.getUpstream()
   const cm = ConfigManager__factory.connect(configManager, getEthersProvider(provider))
   const stepCount = await cm.getStepCount()
-  const steps = await Promise.all(range(stepCount.toNumber()).map(i => getStepInfo(i, cm)))
+  const steps: StepDeploymentInfo[] = []
+  const defaultFeePromise = cm.getDefaultFee()
+  for (let i = 0; i < stepCount.toNumber(); ++i) {
+    const x = await getStepInfo(i, cm)
+    steps.push(x)
+  }
+  const subscribers = await cm.getSubscribers()
+  // const steps = await Promise.all(range(stepCount.toNumber()).map(i => getStepInfo(i, cm)))
   const formerRunners = removeArrayElementByValue(await cm.getRunnerAddresses(), currentRunner)
+  const [defaultFeeNumber, defaultFeeIsPercent] = await defaultFeePromise
+  const defaultFee = defaultFeeIsPercent ? decibipsToPercentString(defaultFeeNumber.toNumber()) : defaultFeeNumber.toString()
 
   return {
     frontDoor,
@@ -41,6 +57,8 @@ export async function getDeploymentInfo(chain: string, provider: EIP1193Provider
     currentRunner,
     formerRunners,
     steps,
+    defaultFee,
+    subscribers,
   }
 }
 
@@ -51,7 +69,7 @@ async function getStepInfo(index: number, cm: ConfigManager): Promise<StepDeploy
     stepTypeId: stepInfo.stepTypeId,
     current: stepInfo.latest,
     former: removeArrayElementByValue(stepInfo.whitelist, stepInfo.latest),
-    fee: stepInfo.fee,
+    fee: stepInfo.feeIsPercent ? decibipsToPercentString(stepInfo.fee.toNumber()) : stepInfo.fee.toString(),
     name: 'TODO',
   }
 }
