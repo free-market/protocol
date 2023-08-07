@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["frontdoor", "nomicfoundation", "nomiclabs"]
+  "cSpell.words": [
+    "ethersproject",
+    "freemarket",
+    "frontdoor",
+    "nomicfoundation",
+    "nomiclabs",
+    "typechain"
+  ]
 }

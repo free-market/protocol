@@ -1,3 +1,18 @@
 {
-  "cSpell.words": ["Aave", "FRAX", "frontdoor", "hexlify", "IERC", "LUSD", "nbps", "nomicfoundation", "nomiclabs", "Numberish", "USDD"]
+  "cSpell.words": [
+    "Aave",
+    "ethersproject",
+    "FRAX",
+    "freemarket",
+    "frontdoor",
+    "hexlify",
+    "IERC",
+    "loglevel",
+    "LUSD",
+    "nbps",
+    "nomicfoundation",
+    "nomiclabs",
+    "Numberish",
+    "USDD"
+  ]
 }

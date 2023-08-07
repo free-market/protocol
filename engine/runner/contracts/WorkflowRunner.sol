@@ -52,7 +52,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     uint16 stepTypeId,
     address stepAddress,
     AssetAmount[] inputAssetAmounts,
-    WorkflowStepResult result
+    WorkflowStepResult result,
+    uint256[] feesTaken
   );
 
   /// @notice This event is emitted after the workflow has completed, once for each asset ramining with a non-zero amount.
@@ -101,7 +102,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
 
     executeBeforeAlls(workflow);
 
-    bool feeAlreadyTaken = false;
+    bool isSubscriber = LibConfigReader.isSubscriber(eternalStorageAddress, msg.sender);
+    bool feeAlreadyTaken = isSubscriber;
 
     // execute steps
     if (workflow.steps.length > 0) {
@@ -133,9 +135,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         // invoke the step
         WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
 
-        // TODO add fee
-        emit WorkflowStepExecution(currentStepIndex, currentStep, currentStep.stepTypeId, stepAddress, inputAssetAmounts, stepResult);
-
         // debit input assets
         for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
           assetBalances.debit(stepResult.inputAssetAmounts[i].asset, stepResult.inputAssetAmounts[i].amount);
@@ -154,11 +153,14 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           (stepFee, feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, currentStep.stepTypeId);
         }
 
+        uint256[] memory feesTaken = new uint256[](stepResult.outputAssetAmounts.length);
         // credit output assets
         for (uint256 i = 0; i < stepResult.outputAssetAmounts.length; ++i) {
           // calculate exact fee
           uint256 feeAmount;
-          if (feeIsPercent) {
+          if (isSubscriber) {
+            feeAmount = 0;
+          } else if (feeIsPercent) {
             feeAmount = LibPercent.percentageOf(stepResult.outputAssetAmounts[i].amount, stepFee);
           } else {
             feeAmount = stepFee;
@@ -166,7 +168,18 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           feeAlreadyTaken = feeAlreadyTaken || feeAmount > 0;
           uint256 callerAmount = stepResult.outputAssetAmounts[i].amount - feeAmount;
           assetBalances.credit(stepResult.outputAssetAmounts[i].asset, callerAmount);
+          feesTaken[i] = feeAmount;
         }
+        emit WorkflowStepExecution(
+          currentStepIndex,
+          currentStep,
+          currentStep.stepTypeId,
+          stepAddress,
+          inputAssetAmounts,
+          stepResult,
+          feesTaken
+        );
+
         if (currentStep.nextStepIndex == -1) {
           break;
         }

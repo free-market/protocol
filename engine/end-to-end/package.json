@@ -7,7 +7,8 @@
     "clean": "rimraf artifacts build cache typechain-types",
     "build-ts": "tsc",
     "dev": "tsc --watch",
-    "build": "hardhat compile && tsc",
+    "build": "pnpm build:ts",
+    "build:ts": "tsc",
     "test": "hardhat test",
     "deploy-contracts": "hardhat deploy",
     "post-deploy-contracts": "ts-node build-frontdoor-json.ts"

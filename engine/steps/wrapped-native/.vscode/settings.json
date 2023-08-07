@@ -1,3 +1,16 @@
 {
-  "cSpell.words": ["Aave", "FRAX", "frontdoor", "LUSD", "nomicfoundation", "nomiclabs", "tricrypto", "USDD"]
+  "cSpell.words": [
+    "Aave",
+    "ethersproject",
+    "FRAX",
+    "freemarket",
+    "frontdoor",
+    "loglevel",
+    "LUSD",
+    "nomicfoundation",
+    "nomiclabs",
+    "tricrypto",
+    "typechain",
+    "USDD"
+  ]
 }

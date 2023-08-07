@@ -5,10 +5,10 @@
   "main": "./build/index.js",
   "scripts": {
     "clean": "rimraf artifacts build cache typechain-types",
-    "build-sol": "hardhat compile --quiet",
-    "build-ts": "tsc",
+    "build": "pnpm build:sol && pnpm build:ts",
+    "build:sol": "hardhat compile",
+    "build:ts": "tsc",
     "dev": "tsc --watch",
-    "build": "hardhat compile && tsc",
     "test": "hardhat test --deploy-fixture",
     "deploy-contracts": "hardhat deploy --tags UniswapExactInAction,UniswapExactOutAction"
   },

@@ -1,3 +1,16 @@
 {
-  "cSpell.words": ["bignumber", "commify", "decibips", "IERC", "nomicfoundation", "nomiclabs", "Numberish", "Usdc"]
+  "cSpell.words": [
+    "bignumber",
+    "commify",
+    "decibips",
+    "ethersproject",
+    "freemarket",
+    "IERC",
+    "keccak",
+    "nomicfoundation",
+    "nomiclabs",
+    "Numberish",
+    "typechain",
+    "Usdc"
+  ]
 }

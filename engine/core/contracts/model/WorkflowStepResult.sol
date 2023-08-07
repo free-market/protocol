@@ -17,7 +17,7 @@ struct WorkflowStepResult {
   // -1 means terminate the workflow
   // -2 means do not override the statically defined nextStepIndex in WorkflowStep
   int16 nextStepIndex;
-  // the fee to be withheald out of the output assets (in decibips)
+  // the fee to be withheald out of the output assets (in absolute currency units)
   // -1 means use the default fee
   int24 fee;
 }

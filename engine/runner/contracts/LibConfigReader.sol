@@ -68,4 +68,8 @@ library LibConfigReader {
     uint256 encodedFee = EternalStorage(eternalStorageAddress).getUint(getStepFeeKey(stepTypeId));
     return decodeFee(encodedFee);
   }
+
+  function isSubscriber(address eternalStorageAddress, address callerAddress) internal view returns (bool) {
+    return EternalStorage(eternalStorageAddress).containsEnumerableMapAddressToUint(subscribers, callerAddress);
+  }
 }

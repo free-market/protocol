@@ -6,8 +6,8 @@
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "rimraf build coverage",
-    "build-ts": "tsc && pnpm run build:json-schema",
-    "build": "tsc && pnpm build:json-schema",
+    "build": "pnpm build:ts",
+    "build:ts": "tsc && pnpm build:json-schema",
     "lint": "eslint src",
     "test": "ava",
     "coverage": "c8 ava",

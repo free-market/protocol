@@ -4,13 +4,13 @@
     "clean": {
       "cache": false
     },
-    "build-sol": {
-      "dependsOn": ["^build-sol"],
+    "build:sol": {
+      "dependsOn": ["^build:sol"],
       "inputs": ["contracts/**", "package.json", "hardhat.config.ts"],
       "outputs": ["artifacts/**", "typechain-types/**", "cache/**"]
     },
-    "build-ts": {
-      "dependsOn": ["build-sol", "^build-ts"],
+    "build:ts": {
+      "dependsOn": ["build:sol", "^build:ts"],
       "inputs": ["src/**", "package.json", "tsconfig.json", "./tslib/**", "./test/**"],
       "outputs": ["build/**"]
     },
@@ -22,7 +22,7 @@
       "outputs": ["build/**", "deployments/**", "artifacts/**", "typechain-types/**", "cache/**"]
     },
     "test": {
-      "dependsOn": ["build-ts"],
+      "dependsOn": ["build:ts"],
       "outputs": []
     },
     "lint": {
@@ -30,7 +30,7 @@
     },
     "deploy-contracts": {
       "cache": false,
-      "dependsOn": ["build-ts", "^deploy-contracts"]
+      "dependsOn": ["build:ts", "^deploy-contracts"]
     },
     "post-deploy-contracts": {
       "cache": false

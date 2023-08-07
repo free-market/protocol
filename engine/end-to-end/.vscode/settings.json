@@ -1,3 +1,13 @@
 {
-  "cSpell.words": ["aave", "frontdoor", "IERC", "nomicfoundation", "nomiclabs", "tricrypto"]
+  "cSpell.words": [
+    "aave",
+    "ethersproject",
+    "freemarket",
+    "frontdoor",
+    "IERC",
+    "nomicfoundation",
+    "nomiclabs",
+    "tricrypto",
+    "typechain"
+  ]
 }
