@@ -192,7 +192,7 @@ describe('Uniswap Exact Out', async () => {
     await doNativeToUsdt(otherUser, helper, usdt, userWorkflowRunner, testAmountOut.toFixed(0))
     const usdtAfter = await usdt.balanceOf(otherUser)
     console.log('usdtAfter', usdtAfter.toString())
-    expect(usdtAfter.toString()).to.eq('997000')
+    expect(usdtAfter.toString()).to.eq('1000000')
   })
 
   // it.only('handles a swap where the starting asset is native', async () => {

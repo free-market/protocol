@@ -96,7 +96,7 @@ export async function sdkAssetAndAmountToEvmInputAmount(
   const asset = await instance.dereferenceAsset(assetRef, chain)
   return {
     asset: sdkAssetToEvmAsset(asset, chain),
-    amount: amountBn.toString(),
+    amount: amountBn.toFixed(),
     amountIsPercent,
     sourceIsCaller,
   }

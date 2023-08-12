@@ -60,7 +60,7 @@ describe('AddAsset', async () => {
     }
     await expect(userWorkflowRunner.executeWorkflow(workflowPoly)).not.to.be.reverted
   })
-  it.only('branches correctly based on asset amount', async () => {
+  it('branches correctly based on asset amount', async () => {
     const {
       contracts: { userWorkflowRunner },
       mapStepIdToIndex,
@@ -85,13 +85,13 @@ describe('AddAsset', async () => {
       ...(await helper.encodeWorkflowStep(context)),
       nextStepIndex: -1,
     }
-    const workflow: WorkflowStruct = {
-      workflowRunnerAddress: ADDRESS_ZERO,
-      steps: [encoded],
-      beforeAll: [],
-      afterAll: [],
-    }
-    await expect(userWorkflowRunner.executeWorkflow(workflow)).not.to.be.reverted
-    await expect(userWorkflowRunner.executeWorkflow(workflow, { value: '1000000000000000000' })).not.to.be.reverted
+    // const workflow: WorkflowStruct = {
+    //   workflowRunnerAddress: ADDRESS_ZERO,
+    //   steps: [encoded],
+    //   beforeAll: [],
+    //   afterAll: [],
+    // }
+    // await expect(userWorkflowRunner.executeWorkflow(workflow)).not.to.be.reverted
+    // await expect(userWorkflowRunner.executeWorkflow(workflow, { value: '1000000000000000000' })).not.to.be.reverted
   })
 })

@@ -302,13 +302,16 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const srcPoolId = StargateBridgeHelper.getPoolId(stepConfig.inputAsset)
     const dstPoolId = stepConfig.outputAsset ? StargateBridgeHelper.getPoolId(stepConfig.inputAsset) : srcPoolId
 
-    const minOut = await this.getStargateMinAmountOut({
-      dstChainId,
-      dstPoolId: parseInt(dstPoolId),
-      srcPoolId: parseInt(srcPoolId),
-      dstUserAddress: targetAddress,
-      inputAmount: transferInputAsset.amount.toString(),
-    })
+    const minOut =
+      context.chain === stepConfig.destinationChain
+        ? '0'
+        : await this.getStargateMinAmountOut({
+            dstChainId,
+            dstPoolId: parseInt(dstPoolId),
+            srcPoolId: parseInt(srcPoolId),
+            dstUserAddress: targetAddress,
+            inputAmount: transferInputAsset.amount.toString(),
+          })
 
     minAmountOut = minOut
 

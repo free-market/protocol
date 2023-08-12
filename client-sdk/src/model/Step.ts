@@ -18,7 +18,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   // aaveFlashLoanSchema,
   addAssetSchema,
   // curveTriCrypto2SwapSchema,
-  // payGelatoRelaySchema,
+  payGelatoRelaySchema,
   uniswapExactInSchema,
   uniswapExactOutSchema,
   unwrapNativeSchema,

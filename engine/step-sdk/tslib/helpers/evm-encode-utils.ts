@@ -28,11 +28,20 @@ const WorkflowStepSchema = `
     int16 nextStepIndex
   )
 `
+const BeforeAfterSchema = `
+  tuple(
+    uint16 stepTypeId,
+    address stepAddress,
+    bytes argData
+  )
+`
 
 const WorkflowSchema = `
   tuple(
     address workflowRunnerAddress,
-    ${WorkflowStepSchema}[] steps
+    ${WorkflowStepSchema}[] steps,
+    ${BeforeAfterSchema}[] beforeAll,
+    ${BeforeAfterSchema}[] afterAll
   )
 `
 

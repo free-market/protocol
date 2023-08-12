@@ -13,7 +13,10 @@ import {
   EvmAssetAmount,
   EvmAssetType,
   EvmInputAsset,
+  TEN_BIG,
+  decimalStringSchema,
 } from '@freemarket/core'
+import Big from 'big.js'
 import type z from 'zod'
 import { AddAsset } from './model'
 
@@ -33,15 +36,19 @@ export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
     } else if (typeof stepConfig.amount === 'bigint') {
       amountStr = stepConfig.amount.toString()
     } else {
-      if (!/^\d+$/.test(stepConfig.amount)) {
-        throw new Error('only absolute amounts are supported')
+      if (!decimalStringSchema.safeParse(stepConfig.amount).success) {
+        throw new Error(`only absolute amounts are supported: json=${stepConfig.amount} evm=${evmAsset.assetType}`)
       }
       amountStr = stepConfig.amount
     }
 
+    let amountBig = new Big(amountStr)
+    const decimals = sdkAsset.type === 'native' ? 18 : sdkAsset.chains[context.chain]?.decimals ?? 0
+    amountBig = amountBig.mul(TEN_BIG.pow(decimals))
+
     const evmAssetAmount: EvmInputAsset = {
       asset: evmAsset,
-      amount: amountStr,
+      amount: amountBig.toFixed(0),
       amountIsPercent: false,
       sourceIsCaller: false,
     }

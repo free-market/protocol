@@ -35,6 +35,7 @@ export abstract class AssetComparisonHelperBase extends AbstractBranchHelper<Pre
     let comparisonOrdinal = ComparisonOrdinals[comparison]
     const sdkAsset = await this.instance.dereferenceAsset(assetRef, chain)
     const evmAssetAmount = await sdkAssetAndAmountToEvmInputAmount(sdkAsset, amount, chain, this.instance, false)
+    console.log('evmAssetAmount', evmAssetAmount)
     const argData = abiCoder.encode(
       [AssetBalanceBranchParamsSchema],
       [

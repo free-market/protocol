@@ -65,8 +65,6 @@ contract AaveSupplyAction is IWorkflowStep {
     locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, msg.sender, 0);
 
     return
-      // since the asset is going straight to the caller, it's not counted as an asset 'in the workflow'
-      // but still mentioning it here with a 0 amount so it gets logged
       LibStepResultBuilder
         .create(1, 0, 1)
         .addInputAssetAmount(assetAmounts[0])

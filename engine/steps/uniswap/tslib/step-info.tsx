@@ -67,7 +67,7 @@ export const platformInfo: PlatformInfo = {
           <span style={{ ...p.labelStyle }}>
             Exact-Out&nbsp;
             <span style={{ ...p.infoStyle }}>
-              {p.step.inputAmount.toString()}
+              {p.step.inputAmount?.toString()}
               &nbsp;
               <AssetReferenceView assetRef={p.step.inputAsset} />
             </span>

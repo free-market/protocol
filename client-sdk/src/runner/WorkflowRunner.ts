@@ -11,7 +11,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 import { Wallet } from '@ethersproject/wallet'
 
-import rootLogger from 'loglevel'
+import rootLogger, { getLogger } from 'loglevel'
 import {
   ADDRESS_ZERO,
   Asset,
@@ -375,6 +375,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     const fundsSourceWallet = new Wallet(this.debugFundsSourcePrivateKey, ethersProvider)
     const sourceAsset = { type: 'native' }
     for (const expectedAsset of continuationInfo.expectedAssets) {
+      log.debug('swapping into continuation assets')
       await helper.doSwap(fundsSourceWallet, encoded.toAddress, sourceAsset, expectedAsset.asset, 'exactOut', expectedAsset.amount)
     }
   }

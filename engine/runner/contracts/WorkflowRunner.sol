@@ -170,6 +170,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           assetBalances.credit(stepResult.outputAssetAmounts[i].asset, callerAmount);
           feesTaken[i] = feeAmount;
         }
+
         emit WorkflowStepExecution(
           currentStepIndex,
           currentStep,
@@ -213,7 +214,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances, bool feeAlreadyTaken) internal {
     uint256 fee;
     bool feeIsPercent;
-    console.log('fat', feeAlreadyTaken);
+    // console.log('fat', feeAlreadyTaken);
     if (feeAlreadyTaken) {
       // fees taken during one or more steps
       fee = 0;
@@ -224,23 +225,23 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       feeIsPercent = feeIsPercent && fee > 0;
     }
 
-    console.log('abcnt', assetBalances.getAssetCount());
+    // console.log('abcnt', assetBalances.getAssetCount());
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
-      console.log('loop', i);
+      // console.log('loop', i);
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
       uint256 feeAmount;
       if (feeIsPercent) {
         feeAmount = LibPercent.percentageOf(ab.amount, fee);
-        console.log('ru pct a', ab.amount, fee, feeAmount);
+        // console.log('ru pct a', ab.amount, fee, feeAmount);
       } else {
         feeAmount = fee;
-        console.log('ru abs', feeAmount);
+        // console.log('ru abs', feeAmount);
       }
       uint256 userAmount = ab.amount < feeAmount ? ab.amount : ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
       if (asset.assetType == AssetType.Native) {
-        require(address(this).balance >= ab.amount, 'computed native balance is greater than actual balance');
+        require(address(this).balance >= ab.amount, 'computed native > actual');
         payable(userAddress).transfer(userAmount);
       } else if (asset.assetType == AssetType.ERC20) {
         IERC20 token = IERC20(asset.assetAddress);
@@ -270,7 +271,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     }
     // ensure given address is in the whitelist for given stepTypeId
     bool isWhitelisted = LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, stepTypeId, frozenStepAddress);
-    require(isWhitelisted, 'step address not in white list');
+    require(isWhitelisted, 'step not white listed');
     return frozenStepAddress;
   }
 
@@ -291,7 +292,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
         // rv[i].amount = 1;
       } else {
-        require(currentWorkflowAssetBalance >= stepInputAsset.amount, 'absolute amount exceeds workflow asset balance');
+        require(currentWorkflowAssetBalance >= stepInputAsset.amount, 'absolute amt > wf balance');
         rv[i].amount = stepInputAsset.amount;
       }
     }
@@ -303,18 +304,18 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     WorkflowStepInputAsset memory inputAssetAmount,
     LibAssetBalances.AssetBalances memory assetBalances
   ) internal {
-    require(inputAssetAmount.amountIsPercent == false, 'cannot use percentage for amount of asset from caller');
+    require(inputAssetAmount.amountIsPercent == false, 'rel not supported');
     if (inputAssetAmount.asset.assetType == AssetType.Native) {
       // it's not possible to 'trasfer from caller' for native assets
       // assetBalances should have been initialized with the correct amount
     } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
       IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
       uint256 allowance = token.allowance(userAddress, address(this));
-      require(allowance >= inputAssetAmount.amount, 'insufficient allowance for erc20');
+      require(allowance >= inputAssetAmount.amount, 'insuf allow for erc20');
       SafeERC20.safeTransferFrom(token, userAddress, address(this), inputAssetAmount.amount);
       assetBalances.credit(inputAssetAmount.asset, inputAssetAmount.amount);
     } else {
-      revert('unknown asset type in inputAssetAmounts');
+      revert('unk asset type in inputAssetAmounts');
     }
   }
 
@@ -325,20 +326,20 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     AssetAmount[] memory startingAssets
   ) external payable {
     // only step contracts are allowed to call this
-    require(LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, msg.sender), 'caller is not a valid step');
+    require(LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, msg.sender), 'caller not valid');
     emit WorkflowContinuation(nonce, userAddress, startingAssets);
     for (uint256 i = 0; i < startingAssets.length; ++i) {
       if (startingAssets[i].asset.assetType == AssetType.Native) {
         // the calling step should have sent the correct amount of native
-        require(msg.value >= startingAssets[i].amount, 'msg.value is less than starting asset amount');
+        require(msg.value >= startingAssets[i].amount, 'msg.value < starting asset amount');
       } else if (startingAssets[i].asset.assetType == AssetType.ERC20) {
         // the calling step should have approved the correct amount of the erc20
         IERC20 token = IERC20(startingAssets[i].asset.assetAddress);
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= startingAssets[i].amount, 'insufficient allowance for erc20');
+        require(allowance >= startingAssets[i].amount, 'insuf. allow for erc20');
         SafeERC20.safeTransferFrom(token, msg.sender, address(this), startingAssets[i].amount);
       } else {
-        revert('unknown asset type in startingAssets');
+        revert('unk asset type in startingAssets');
       }
     }
     executeWorkflow(userAddress, workflow, startingAssets);

@@ -1,24 +1,13 @@
 import { expect } from 'chai'
 import hardhat from 'hardhat'
-import {
-  IERC20,
-  IERC20Metadata__factory,
-  IERC20__factory,
-  IWorkflowRunner,
-  WorkflowRunner,
-  WorkflowRunner__factory,
-} from '@freemarket/runner'
+import { IERC20, IERC20Metadata__factory, IERC20__factory, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
 import {
   assert,
-  Asset,
   AssetReference,
   Chain,
-  ChainOrStart,
   createStandardProvider,
   ExecutionEvent,
-  ExecutionEventHandler,
   ExecutionLogAssetAmount,
-  ExecutionLogStep,
   formatNumber,
   getEthersProvider,
   IWorkflowInstance,
@@ -28,20 +17,13 @@ import {
   WorkflowInstance,
 } from '@freemarket/client-sdk'
 const { ethers, deployments, getNamedAccounts } = hardhat
-import { AaveSupplyAction__factory, IAaveV3Pool__factory, IERC20Detailed__factory } from '@freemarket/aave'
+import { AaveSupplyAction__factory, IAaveV3Pool__factory } from '@freemarket/aave'
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 import { Signer } from '@ethersproject/abstract-signer'
 import { Provider } from '@ethersproject/abstract-provider'
 import { parseEther } from '@ethersproject/units'
-
-const shouldRunE2e = () => {
-  const e2e = process.env.E2E?.toLowerCase()
-  if (!e2e) {
-    return false
-  }
-  return ['true', 't', 'yes', 'y', '1'].includes(e2e)
-}
+import { shouldRunE2e } from './utils'
 
 async function getErc20(symbol: string, chain: Chain, workflowInstance: IWorkflowInstance) {
   const assetRef: AssetReference = {
@@ -260,7 +242,7 @@ if (shouldRunE2e()) {
       }
     })
   })
-  it.only('does fees correctly', async () => {
+  it('does fees correctly', async () => {
     const { otherUser, workflowRunner, otherUserSigner } = await setup()
     const wrapAmount = '1'
     const wrapAmountString = parseEther(wrapAmount).toString()

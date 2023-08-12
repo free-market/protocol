@@ -23,10 +23,11 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   const mockWorkflowInstance = new MockWorkflowInstance()
   mockWorkflowInstance.registerErc20('TEST', testToken.address, 6)
 
+  const testAmountFull = testAmount * 10 ** 6
   // mint the user some of the test token
-  await (await testToken.mint(baseFixture.users.otherUser, testAmount)).wait()
+  await (await testToken.mint(baseFixture.users.otherUser, testAmountFull)).wait()
   // approve addAssetAction to transfer the test token
-  await (await testToken.approve(addAssetAction.address, testAmount)).wait()
+  await (await testToken.approve(addAssetAction.address, testAmountFull)).wait()
 
   return { contracts: { addAssetAction, testToken }, mockWorkflowInstance }
 })
@@ -68,10 +69,11 @@ describe('AddAsset', async () => {
     // console.log(encoded)
 
     const { inputAssets, argData } = encoded
+    const testAmountFull = testAmount * 10 ** 6
     await expect(addAssetAction.execute(inputAssets, argData)).to.changeTokenBalances(
       testToken,
       [otherUser, addAssetAction.address],
-      [testAmount * -1, testAmount]
+      [testAmountFull * -1, testAmountFull]
     )
   })
 })

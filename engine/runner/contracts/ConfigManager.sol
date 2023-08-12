@@ -15,8 +15,6 @@ struct StepFee {
 
 contract ConfigManager is FreeMarketBase {
   address public immutable frontDoorAddress;
-  //                                    1234567890123456789012345678901234567890123456789012345678901234
-  bytes32 constant allStepAddresses = 0x18fa4b105101c66136345367eab77cd274c0766ec0596b7e8aadd79e99139555; // keccak256('allStepAddresses')
 
   event StepFeeUpdated(uint16 stepTypeId, uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
   event DefaultFeeUpdated(uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
@@ -187,5 +185,16 @@ contract ConfigManager is FreeMarketBase {
     for (uint256 i = 0; i < newSubscribers.length; ++i) {
       eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.subscribers, newSubscribers[i], 0);
     }
+  }
+
+  function getAllStepAddesses() external view returns (address[] memory) {
+    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
+    uint256 count = eternalStorage.lengthEnumerableMapAddressToUint(LibConfigReader.allStepAddresses);
+    address[] memory subscribers = new address[](count);
+    for (uint256 i = 0; i < count; ++i) {
+      (address subscriber, ) = eternalStorage.atEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, i);
+      subscribers[i] = subscriber;
+    }
+    return subscribers;
   }
 }

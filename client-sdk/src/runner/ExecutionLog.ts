@@ -55,7 +55,7 @@ export function getAllAssets(logs: ExecutionLog[]) {
   for (const log of logs) {
     switch (log.type) {
       case 'step':
-        const allAssetAmounts = [...log.inputs, ...log.outputsToUser, ...log.outputsToUser]
+        const allAssetAmounts = [...log.inputs, ...log.outputs, ...log.outputsToUser]
         for (const assetAmount of allAssetAmounts) {
           if (!seenAddresses.has(assetAmount.address)) {
             seenAddresses.add(assetAmount.address)
