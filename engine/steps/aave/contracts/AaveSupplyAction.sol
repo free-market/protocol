@@ -36,7 +36,11 @@ contract AaveSupplyAction is IWorkflowStep {
     ReserveData reserveData;
   }
 
-  function execute(AssetAmount[] calldata assetAmounts, bytes calldata) public payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata assetAmounts,
+    bytes calldata,
+    address userAddress
+  ) public payable returns (WorkflowStepResult memory) {
     console.log('entering aave supply action', address(this));
     // validate
     require(assetAmounts.length == 1, 'there must be exactly 1 input asset');
@@ -62,7 +66,7 @@ contract AaveSupplyAction is IWorkflowStep {
 
     // invoke supply
     console.log('invoking supply');
-    locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, msg.sender, 0);
+    locals.pool.supply(locals.inputTokenAddress, assetAmounts[0].amount, userAddress, 0);
 
     return
       LibStepResultBuilder

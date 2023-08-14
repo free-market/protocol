@@ -143,7 +143,7 @@ describe('Uniswap Exact In', async () => {
 
     const { inputAssets, argData } = encoded
     const toBalanceBefore = await toToken.balanceOf(uniswapExactInAction.address)
-    await (await uniswapExactInAction.execute(inputAssets, argData)).wait()
+    await (await uniswapExactInAction.execute(inputAssets, argData, otherUser)).wait()
     // console.log('uniswapExactInAction.address', uniswapExactInAction.address)
     // console.log('toToken.address', toToken.address)
     const toBalanceAfter = await toToken.balanceOf(uniswapExactInAction.address)
@@ -192,7 +192,7 @@ describe('Uniswap Exact In', async () => {
     const encoded = await helper.encodeWorkflowStep(context)
 
     const { inputAssets, argData } = encoded
-    await expect(uniswapExactInAction.execute(inputAssets, argData))
+    await expect(uniswapExactInAction.execute(inputAssets, argData, otherUser))
       .to.changeEtherBalance(otherUser, 0)
       .and.changeTokenBalance(weth, otherUser, 0)
   })

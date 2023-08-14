@@ -18,7 +18,11 @@ contract AddAssetAction is IWorkflowStep {
   /// @param assetAmount The asset and amount that is transferred into this workflow instance
   event AssetAdded(AssetAmount assetAmount);
 
-  function execute(AssetAmount[] calldata assetAmounts, bytes calldata) external payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata assetAmounts,
+    bytes calldata,
+    address userAddress
+  ) external payable returns (WorkflowStepResult memory) {
     // validate
     require(assetAmounts.length == 1, 'AddTokenAction must have 1 AssetAmount');
 
@@ -37,7 +41,7 @@ contract AddAssetAction is IWorkflowStep {
 
     // transfer the token to this
     IERC20 erc20 = IERC20(assetAmounts[0].asset.assetAddress);
-    erc20.safeTransferFrom(msg.sender, address(this), assetAmounts[0].amount);
+    erc20.safeTransferFrom(userAddress, address(this), assetAmounts[0].amount);
 
     // WorkflowStepResult memory asdf = LibStepResultBuilder.create(0, 1).addOutputToken(
     //     assetAmounts[0].asset.assetAddress, assetAmounts[0].amount

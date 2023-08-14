@@ -10,7 +10,7 @@
     "build:sol": "hardhat compile",
     "build:ts": "tsc",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts": "hardhat deploy --tags AddAssetAction"
+    "deploy-contracts_": "hardhat deploy --tags AddAssetAction"
   },
   "keywords": [],
   "author": "",

@@ -79,7 +79,11 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     AssetAmount erc20InputAsset;
   }
 
-  function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata inputAssetAmounts,
+    bytes calldata argData,
+    address userAddress
+  ) public payable returns (WorkflowStepResult memory) {
     Locals memory locals;
     require(inputAssetAmounts.length == 2, 'there must be 2 input assets');
     if (inputAssetAmounts[0].asset.assetType == AssetType.Native) {
@@ -105,7 +109,6 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
 
     locals.args = abi.decode(argData, (StargateBridgeActionArgs));
 
-    // address payable refundAddress = payable(msg.sender);
     locals.dstActionAddressEncoded = abi.encodePacked(locals.args.dstActionAddress);
     if (locals.args.minAmountOutIsPercent) {
       locals.minAmountOut = (inputAssetAmounts[0].amount * locals.args.minAmountOut) / 100_000;
@@ -130,7 +133,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
       locals.args.dstChainId,
       locals.args.srcPoolId,
       locals.args.dstPoolId,
-      payable(msg.sender), // refundAddreess
+      payable(userAddress), // refundAddreess
       locals.erc20InputAsset.amount,
       locals.minAmountOut,
       IStargateRouter.lzTxObj(locals.args.dstGasForCall, locals.args.dstNativeAmount, abi.encodePacked(locals.args.dstUserAddress)),

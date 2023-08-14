@@ -8,5 +8,6 @@ pragma solidity ^0.8.13;
 interface IWorkflowStepBeforeAll {
   /// @notice called by WorkflowRunner to execute some logic before the workflow starts.
   /// @param argData Step specific arguments in ABI encoding
-  function beforeAll(bytes calldata argData) external payable;
+  /// @param userAddress The address of the user executing the workflow
+  function beforeAll(bytes calldata argData, address userAddress) external payable;
 }

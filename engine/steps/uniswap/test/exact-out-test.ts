@@ -129,7 +129,7 @@ describe('Uniswap Exact Out', async () => {
 
     const toBalanceBefore = await toToken.balanceOf(uniswapExactOutAction.address)
     const { inputAssets, argData } = encoded
-    await (await uniswapExactOutAction.execute(inputAssets, argData)).wait()
+    await (await uniswapExactOutAction.execute(inputAssets, argData, otherUser)).wait()
     const toBalanceAfter = await toToken.balanceOf(uniswapExactOutAction.address)
     const expectedBalanceAfter = toBalanceBefore.add(testAmountOutRaw)
     expect(toBalanceAfter).to.eq(expectedBalanceAfter)

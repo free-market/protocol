@@ -47,7 +47,11 @@ contract CurveTriCrypto2SwapAction is IWorkflowStep {
     uint256 nativeInputAmount;
   }
 
-  function execute(AssetAmount[] calldata assetAmounts, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata assetAmounts,
+    bytes calldata argData,
+    address
+  ) public payable returns (WorkflowStepResult memory) {
     // validate
     require(assetAmounts.length == 1, 'there must be exactly 1 input asset');
 

@@ -17,7 +17,7 @@ contract WrapNativeAction is IWorkflowStep {
     contractAddress = wrappedEtherContractAddress;
   }
 
-  function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata) external payable returns (WorkflowStepResult memory) {
+  function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata, address) external payable returns (WorkflowStepResult memory) {
     require(inputAssetAmounts.length == 1, 'WrapNativeAction: inputAssetAmounts.length must be 1');
     console.log('wrap native', inputAssetAmounts[0].amount);
     uint256 amount = inputAssetAmounts[0].amount;

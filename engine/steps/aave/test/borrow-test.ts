@@ -116,9 +116,9 @@ describe('AaveBorrow', async () => {
     const asset = IERC20__factory.connect(wbtcAddr, otherUserSigner)
     const balanceBefore = await asset.balanceOf(aaveBorrowAction.address)
     console.log('borrowed asset balance before', balanceBefore.toString())
-    await (await aaveBorrowAction.beforeAll(beforeAfter!.beforeAll!.argData)).wait()
+    await (await aaveBorrowAction.beforeAll(beforeAfter!.beforeAll!.argData, otherUser)).wait()
 
-    const borrowTx = await (await aaveBorrowAction.execute(borrowEncoded.inputAssets, borrowEncoded.argData)).wait()
+    const borrowTx = await (await aaveBorrowAction.execute(borrowEncoded.inputAssets, borrowEncoded.argData, otherUser)).wait()
     const balanceAfter = await asset.balanceOf(aaveBorrowAction.address)
     console.log('borrowed asset balance after', balanceAfter.toString())
     console.log('borrowed asset delta', balanceAfter.sub(balanceBefore).toString())
@@ -164,7 +164,7 @@ describe('AaveBorrow', async () => {
       mapStepIdToIndex: new Map<string, number>(),
     }
     const supplyEncoded = await supplyHelper.encodeWorkflowStep(supplyEncodingContext)
-    const supplyTx = await (await aaveSupplyAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData)).wait()
+    const supplyTx = await (await aaveSupplyAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData, otherUser)).wait()
 
     const aTokenBalanceAfter = await aToken.balanceOf(otherUser)
     console.log('aTokenBalanceAfter', aTokenBalanceAfter.toString())
@@ -208,7 +208,7 @@ describe('AaveBorrow', async () => {
     const nativeBalanceBefore = await otherUserSigner.provider!.getBalance(aaveBorrowAction.address)
     console.log('native balance before', nativeBalanceBefore.toString())
     const borrowEncoded = await borrowHelper.encodeWorkflowStep(borrowEncodingContext)
-    const borrowTx = await (await aaveBorrowAction.execute(borrowEncoded.inputAssets, borrowEncoded.argData)).wait()
+    const borrowTx = await (await aaveBorrowAction.execute(borrowEncoded.inputAssets, borrowEncoded.argData, otherUser)).wait()
     const nativeBalanceAfter = await otherUserSigner.provider!.getBalance(aaveBorrowAction.address)
     console.log('native balance after', nativeBalanceAfter.toString())
     console.log('borrowed asset delta', nativeBalanceAfter.sub(nativeBalanceBefore).toString())

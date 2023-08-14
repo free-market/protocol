@@ -17,7 +17,7 @@ contract UnwrapNativeAction is IWorkflowStep {
     wethContractAddress = wrappedEtherContractAddress;
   }
 
-  function execute(AssetAmount[] calldata assetAmounts, bytes calldata) external payable returns (WorkflowStepResult memory) {
+  function execute(AssetAmount[] calldata assetAmounts, bytes calldata, address) external payable returns (WorkflowStepResult memory) {
     console.log('unwrap', wethContractAddress, assetAmounts[0].amount);
     uint256 amount = assetAmounts[0].amount;
     emit NativeUnwrapped(address(this), amount);

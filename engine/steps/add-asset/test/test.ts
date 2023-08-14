@@ -70,7 +70,7 @@ describe('AddAsset', async () => {
 
     const { inputAssets, argData } = encoded
     const testAmountFull = testAmount * 10 ** 6
-    await expect(addAssetAction.execute(inputAssets, argData)).to.changeTokenBalances(
+    await expect(addAssetAction.execute(inputAssets, argData, otherUser)).to.changeTokenBalances(
       testToken,
       [otherUser, addAssetAction.address],
       [testAmountFull * -1, testAmountFull]

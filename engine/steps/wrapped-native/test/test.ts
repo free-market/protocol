@@ -72,7 +72,7 @@ describe('Wrapped Native', async () => {
     // console.log(JSON.stringify(encoded, null, 4))
 
     const { inputAssets, argData } = encoded
-    await expect(wrapNativeAction.execute(inputAssets, argData, { value: testAmountWei }))
+    await expect(wrapNativeAction.execute(inputAssets, argData, otherUser, { value: testAmountWei }))
       .to.changeEtherBalance(otherUser, testAmountWei.mul(-1))
       .and.changeTokenBalance(weth, wrapNativeAction.address, testAmountWei)
   })

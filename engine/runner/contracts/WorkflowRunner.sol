@@ -100,7 +100,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       }
     }
 
-    executeBeforeAlls(workflow);
+    executeBeforeAlls(workflow, userAddress);
 
     bool isSubscriber = LibConfigReader.isSubscriber(eternalStorageAddress, msg.sender);
     bool feeAlreadyTaken = isSubscriber;
@@ -133,7 +133,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         AssetAmount[] memory inputAssetAmounts = resolveAmounts(userAddress, assetBalances, currentStep.inputAssets);
 
         // invoke the step
-        WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData);
+        WorkflowStepResult memory stepResult = invokeStep(stepAddress, inputAssetAmounts, currentStep.argData, userAddress);
 
         // debit input assets
         for (uint256 i = 0; i < stepResult.inputAssetAmounts.length; ++i) {
@@ -188,26 +188,26 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       }
     }
 
-    executeAfterAlls(workflow);
+    executeAfterAlls(workflow, userAddress);
 
     refundUser(userAddress, assetBalances, feeAlreadyTaken);
   }
 
-  function executeBeforeAlls(Workflow memory workflow) internal {
+  function executeBeforeAlls(Workflow memory workflow, address userAddress) internal {
     for (uint256 i = 0; i < workflow.beforeAll.length; ++i) {
-      executeBeforeAfter(IWorkflowStepBeforeAll.beforeAll.selector, workflow.beforeAll[i]);
+      executeBeforeAfter(IWorkflowStepBeforeAll.beforeAll.selector, workflow.beforeAll[i], userAddress);
     }
   }
 
-  function executeAfterAlls(Workflow memory workflow) internal {
+  function executeAfterAlls(Workflow memory workflow, address userAddress) internal {
     for (uint256 i = 0; i < workflow.afterAll.length; ++i) {
-      executeBeforeAfter(IWorkflowStepAfterAll.afterAll.selector, workflow.afterAll[i]);
+      executeBeforeAfter(IWorkflowStepAfterAll.afterAll.selector, workflow.afterAll[i], userAddress);
     }
   }
 
-  function executeBeforeAfter(bytes4 selector, BeforeAfter memory beforeAfter) internal {
+  function executeBeforeAfter(bytes4 selector, BeforeAfter memory beforeAfter, address userAddress) internal {
     address stepAddress = resolveStepAddress(beforeAfter.stepAddress, beforeAfter.stepTypeId);
-    (bool success, bytes memory returnData) = stepAddress.delegatecall(abi.encodeWithSelector(selector, beforeAfter.argData));
+    (bool success, bytes memory returnData) = stepAddress.delegatecall(abi.encodeWithSelector(selector, beforeAfter.argData, userAddress));
     require(success, string(returnData));
   }
 
@@ -255,10 +255,11 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   function invokeStep(
     address stepAddress,
     AssetAmount[] memory inputAssetAmounts,
-    bytes memory data
+    bytes memory data,
+    address userAddress
   ) internal returns (WorkflowStepResult memory) {
     (bool success, bytes memory returnData) = stepAddress.delegatecall(
-      abi.encodeWithSelector(IWorkflowStep.execute.selector, inputAssetAmounts, data)
+      abi.encodeWithSelector(IWorkflowStep.execute.selector, inputAssetAmounts, data, userAddress)
     );
     require(success, string(returnData));
     return abi.decode(returnData, (WorkflowStepResult));

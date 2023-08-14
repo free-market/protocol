@@ -38,7 +38,11 @@ contract AaveRepayAction is IWorkflowStep {
     wethAddress = _wethAddress;
   }
 
-  function execute(AssetAmount[] calldata inputAssets, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata inputAssets,
+    bytes calldata argData,
+    address userAddress
+  ) public payable returns (WorkflowStepResult memory) {
     console.log('entering aave repay action');
     require(inputAssets.length == 1, 'there must be exactly 1 input asset');
 
@@ -60,7 +64,7 @@ contract AaveRepayAction is IWorkflowStep {
     IPool pool = IPool(poolAddress);
 
     IERC20(assetAddress).approve(poolAddress, inputAssets[0].amount);
-    pool.repay(assetAddress, inputAssets[0].amount, args.interestRateMode, msg.sender);
+    pool.repay(assetAddress, inputAssets[0].amount, args.interestRateMode, userAddress);
     return LibStepResultBuilder.create(1, 0).addInputAssetAmount(inputAssets[0]).result;
   }
 }

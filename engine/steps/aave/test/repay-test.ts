@@ -115,7 +115,7 @@ describe('AaveRepay', async () => {
     }
     const supplyEncoded = await repayHelper.encodeWorkflowStep(repayEncodingContext)
     await confirmTx(wbtc.transfer(aaveRepayAction.address, '1000000'))
-    const repayTx = await (await aaveRepayAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData)).wait()
+    const repayTx = await (await aaveRepayAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData, otherUser)).wait()
     const debtAfter = await debtToken.balanceOf(otherUser)
     console.log('debtAfter', debtAfter.toString())
     expect(debtAfter).to.be.lessThan(debtBefore)
@@ -159,7 +159,9 @@ describe('AaveRepay', async () => {
       mapStepIdToIndex: new Map<string, number>(),
     }
     const supplyEncoded = await repayHelper.encodeWorkflowStep(repayEncodingContext)
-    const repayTx = await (await aaveRepayAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData, { value: pointOneEth })).wait()
+    const repayTx = await (
+      await aaveRepayAction.execute(supplyEncoded.inputAssets, supplyEncoded.argData, otherUser, { value: pointOneEth })
+    ).wait()
     const debtAfter = await debtToken.balanceOf(otherUser)
     console.log('debtAfter', debtAfter.toString())
     expect(debtAfter).to.be.lessThan(debtBefore)

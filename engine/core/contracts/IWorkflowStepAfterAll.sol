@@ -8,5 +8,6 @@ pragma solidity ^0.8.13;
 interface IWorkflowStepAfterAll {
   /// @notice called by WorkflowRunner to execute some logic after the workflow ends.
   /// @param argData Step specific arguments in ABI encoding
-  function afterAll(bytes calldata argData) external payable;
+  /// @param userAddress The address of the user executing the workflow
+  function afterAll(bytes calldata argData, address userAddress) external payable;
 }

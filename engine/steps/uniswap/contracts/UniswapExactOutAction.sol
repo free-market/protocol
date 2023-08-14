@@ -48,7 +48,11 @@ contract UniswapExactOutAction is AbstractUniswapAction, IWorkflowStep {
     uint256 worstTolerableAmountTaken;
   }
 
-  function execute(AssetAmount[] calldata inputAssetAmounts, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+  function execute(
+    AssetAmount[] calldata inputAssetAmounts,
+    bytes calldata argData,
+    address
+  ) public payable returns (WorkflowStepResult memory) {
     console.log('entering uniswap exact out action');
 
     // validate

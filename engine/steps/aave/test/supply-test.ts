@@ -74,7 +74,7 @@ describe('AaveSupply', async () => {
       mapStepIdToIndex: new Map<string, number>(),
     }
     const encoded = await helper.encodeWorkflowStep(context)
-    await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData)).to.changeTokenBalance(
+    await expect(aaveSupplyAction.execute(encoded.inputAssets, encoded.argData, otherUser)).to.changeTokenBalance(
       usdt,
       aaveSupplyAction.address,
       testAmountUsdtFull * -1

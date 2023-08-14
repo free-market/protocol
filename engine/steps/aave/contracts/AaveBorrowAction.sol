@@ -64,7 +64,7 @@ contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowSte
     TEN_FLOAT = ABDKMathQuad.fromUInt(10);
   }
 
-  function execute(AssetAmount[] calldata, bytes calldata argData) public payable returns (WorkflowStepResult memory) {
+  function execute(AssetAmount[] calldata, bytes calldata argData, address userAddress) public payable returns (WorkflowStepResult memory) {
     console.log('entering aave borrow action');
 
     // Locals memory locals;
@@ -80,63 +80,20 @@ contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowSte
     uint256 borrowAmount = args.amount;
     console.log('borrowAmount', borrowAmount);
 
-    // {
-    //   // IPriceOracleSentinel priceOracleSentinel = IPriceOracleSentinel(poolAddressProvider.getPriceOracleSentinel());
-    //   // console.log('isBorrowAllowed', priceOracleSentinel.isBorrowAllowed());
-    //   // require(priceOracleSentinel.isBorrowAllowed(), 'borrow is not allowed');
-    // }
-
     IPool pool = getPool();
     address assetAddress = args.asset.assetType == AssetType.ERC20 ? args.asset.assetAddress : wethAddress;
     if (args.amountIsPercent) {
-      borrowAmount = computeRelativeAmount(args.amount, assetAddress, pool);
+      borrowAmount = computeRelativeAmount(args.amount, assetAddress, pool, userAddress);
     }
     console.log('borrowAmount', borrowAmount);
-
-    // ICreditDelegationToken debtToken;
-    // {
-    //   DataTypes.ReserveData memory reserveData = pool.getReserveData(assetAddress);
-    //   if (args.interestRateMode == 1) {
-    //     debtToken = ICreditDelegationToken(reserveData.stableDebtTokenAddress);
-    //   } else {
-    //     debtToken = ICreditDelegationToken(reserveData.variableDebtTokenAddress);
-    //   }
-    // }
-    // // the first sig is to delegate max uint to this
-    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
-    // console.log('delegating max');
-    // debtToken.delegationWithSig(
-    //   msg.sender,
-    //   address(this),
-    //   MAX_UINT256,
-    //   MAX_UINT256,
-    //   args.delegateSignatures[0].v,
-    //   args.delegateSignatures[0].r,
-    //   args.delegateSignatures[0].s
-    // );
-
-    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
 
     console.log('borrowing this:', address(this));
     console.log('borrowing asset:', assetAddress);
     console.log('borrowing amount:', borrowAmount);
     console.log('borrowing interestRateMode:', args.interestRateMode);
     console.log('borrowing referralCode:', args.referralCode);
-    console.log('borrowing msg.sender (on-behalf of):', msg.sender);
-    pool.borrow(assetAddress, borrowAmount, args.interestRateMode, args.referralCode, msg.sender);
-
-    // the second sig is to delegate 0 to this
-    // console.log('delegating 0');
-    // debtToken.delegationWithSig(
-    //   msg.sender,
-    //   address(this),
-    //   0,
-    //   MAX_UINT256,
-    //   args.delegateSignatures[1].v,
-    //   args.delegateSignatures[1].r,
-    //   args.delegateSignatures[1].s
-    // );
-    // console.log('borrowAllowance', debtToken.borrowAllowance(msg.sender, address(this)));
+    console.log('borrowing userAddress (on-behalf of):', userAddress);
+    pool.borrow(assetAddress, borrowAmount, args.interestRateMode, args.referralCode, userAddress);
 
     if (args.asset.assetType == AssetType.Native) {
       console.log('unwrapping native');
@@ -146,7 +103,12 @@ contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowSte
     return LibStepResultBuilder.create(0, 1).addOutputAssetAmount(AssetAmount(args.asset, borrowAmount)).result;
   }
 
-  function computeRelativeAmount(uint256 borrowAmountPercent, address assetAddress, IPool pool) internal view returns (uint256) {
+  function computeRelativeAmount(
+    uint256 borrowAmountPercent,
+    address assetAddress,
+    IPool pool,
+    address userAddress
+  ) internal view returns (uint256) {
     console.log('computing relative borrow amount');
     // get borrowing power (in base currency)
     uint256 availableBorrowsBase;
@@ -158,7 +120,7 @@ contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowSte
       uint256 healthFactor;
 
       (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) = pool.getUserAccountData(
-        msg.sender
+        userAddress
       );
     }
     console.log('availableBorrowsBase', availableBorrowsBase);
@@ -195,24 +157,24 @@ contract AaveBorrowAction is IWorkflowStep, IWorkflowStepBeforeAll, IWorkflowSte
     return borrowAmountFloat.toUInt();
   }
 
-  function beforeAll(bytes calldata argData) external payable {
+  function beforeAll(bytes calldata argData, address userAddress) external payable {
     console.log('entering beforeAll');
-    invokeDelegateWithSigs(argData);
+    invokeDelegateWithSigs(argData, userAddress);
   }
 
-  function afterAll(bytes calldata argData) external payable {
+  function afterAll(bytes calldata argData, address userAddress) external payable {
     console.log('entering afterAll');
-    invokeDelegateWithSigs(argData);
+    invokeDelegateWithSigs(argData, userAddress);
   }
 
-  function invokeDelegateWithSigs(bytes calldata argData) internal {
+  function invokeDelegateWithSigs(bytes calldata argData, address userAddress) internal {
     DelegationWithSignatureArgs[] memory args = abi.decode(argData, (DelegationWithSignatureArgs[]));
     IPool pool = getPool();
     for (uint256 i = 0; i < args.length; i++) {
       console.log('delegationWithSig', args[i].assetAddress);
       ICreditDelegationToken debtToken = getDebtToken(pool, args[i].assetAddress, args[i].interestRateMode);
       emit Eraseme(address(debtToken), args[i].amount, args[i].interestRateMode, args[i].assetAddress, args[i].v, args[i].r, args[i].s);
-      debtToken.delegationWithSig(msg.sender, address(this), args[i].amount, MAX_UINT256, args[i].v, args[i].r, args[i].s);
+      debtToken.delegationWithSig(userAddress, address(this), args[i].amount, MAX_UINT256, args[i].v, args[i].r, args[i].s);
     }
   }
 
