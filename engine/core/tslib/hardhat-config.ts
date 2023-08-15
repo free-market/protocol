@@ -62,6 +62,16 @@ task('dumpConfig', 'Dump the current hardhat config').setAction(async (args, hre
   console.log(JSON.stringify(hre.config, replacer, 2))
 })
 
+function accountIfMnemonicDefined() {
+  if (!!process.env.WALLET_MNEMONIC) {
+    return {
+      accounts: {
+        mnemonic: process.env.WALLET_MNEMONIC,
+      },
+    }
+  }
+}
+
 export const coreHardhatConfig: HardhatUserConfig = {
   solidity: {
     compilers: [
@@ -77,35 +87,25 @@ export const coreHardhatConfig: HardhatUserConfig = {
   networks: {
     ethereum: {
       url: 'https://rpc.ankr.com/eth',
-      accounts: {
-        mnemonic: process.env.WALLET_MNEMONIC,
-      },
+      ...accountIfMnemonicDefined(),
     },
     arbitrum: {
-      url: process.env.ARBITRUM_MAINNET_URL,
-      accounts: {
-        mnemonic: process.env.WALLET_MNEMONIC,
-      },
+      url: process.env.ARBITRUM_MAINNET_URL ?? 'https://rpc.ankr.com/arbitrum',
+      ...accountIfMnemonicDefined(),
     },
     optimism: {
-      url: process.env.OPTIMISM_MAINNET_URL,
-      accounts: {
-        mnemonic: process.env.WALLET_MNEMONIC,
-      },
+      url: process.env.OPTIMISM_MAINNET_URL ?? 'https://rpc.ankr.com/optimism',
+      ...accountIfMnemonicDefined(),
     },
     ethereumGoerli: {
       chainId: 5,
       url: 'https://rpc.ankr.com/eth_goerli',
-      accounts: {
-        mnemonic: process.env.WALLET_MNEMONIC,
-      },
+      ...accountIfMnemonicDefined(),
     },
     arbitrumGoerli: {
       chainId: 421613,
       url: 'https://goerli-rollup.arbitrum.io/rpc',
-      accounts: {
-        mnemonic: process.env.WALLET_MNEMONIC,
-      },
+      ...accountIfMnemonicDefined(),
     },
     // for testing deployments with local hh node, but not named 'localhost' so is considered 'live' by hardhat-deploy
     hardhat: {
