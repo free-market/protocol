@@ -6,7 +6,7 @@ gitRef=$2
 if [[ $gitRef =~ $prefix(.*) ]]; then
   refVersion=${BASH_REMATCH[1]}
   echo "gitRef '$gitRef' is prefixed by '$prefix'"
-  packageVersion=`cat evm/package.json | jq -r '.version'`
+  packageVersion=`cat client-sdk/package.json | jq -r '.version'`
   echo "gitRef version  = $refVersion"
   echo "package version = $packageVersion"
   if [ $packageVersion == $refVersion ]; then
