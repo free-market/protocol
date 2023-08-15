@@ -7,6 +7,7 @@
     "clean": "rimraf build",
     "build": "pnpm build:ts",
     "build:ts": "tsc",
+    "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture"
   },

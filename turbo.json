@@ -6,7 +6,13 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**", "deployments/**", "artifacts/**", "typechain-types/**", "cache/**"]
+      "outputs": [
+        "build/**",
+        "deployments/**",
+        "artifacts/**",
+        "typechain-types/**",
+        "cache/**"
+      ]
     },
     "build:sol": {
       "dependsOn": ["^build:sol"],
@@ -15,8 +21,17 @@
     },
     "build:ts": {
       "dependsOn": ["build:sol", "^build:ts"],
-      "inputs": ["src/**", "package.json", "tsconfig.json", "./tslib/**", "./test/**"],
+      "inputs": [
+        "src/**",
+        "package.json",
+        "tsconfig.json",
+        "./tslib/**",
+        "./test/**"
+      ],
       "outputs": ["build/**"]
+    },
+    "publish-packages": {
+      "dependsOn": ["build"]
     },
     "dev": {
       "persistent": true
