@@ -24,7 +24,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           pnpm install \
-          && pnpm exec turbo build-ts \
+          && pnpm exec turbo build \
           && cd client-sdk \
           && npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}" \
           && pnpm publish --no-git-checks --access public
