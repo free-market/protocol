@@ -25,4 +25,4 @@ jobs:
         run: |
           pnpm install \
           && npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}" \
-          && turbo run publish-packages
+          && pnpm exec turbo run publish-packages
