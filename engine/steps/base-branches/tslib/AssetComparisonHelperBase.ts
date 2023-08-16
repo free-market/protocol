@@ -25,9 +25,13 @@ const AssetBalanceBranchParamsSchema = `
     int16 ifYes
   )
 `
+type AssetBalanceComparisonBranch = PreviousOutputBranch | AssetBalanceBranch
 
-export abstract class AssetComparisonHelperBase extends AbstractBranchHelper<PreviousOutputBranch | AssetBalanceBranch> {
-  async encodeWorkflowStepForStepId(context: EncodingContext<AssetBalanceBranch>, stepTypeId: number): Promise<EncodedWorkflowStep> {
+export abstract class AssetComparisonHelperBase extends AbstractBranchHelper<AssetBalanceComparisonBranch> {
+  async encodeWorkflowStepForStepId(
+    context: EncodingContext<AssetBalanceComparisonBranch>,
+    stepTypeId: number
+  ): Promise<EncodedWorkflowStep> {
     const { stepConfig, mapStepIdToIndex, chain } = context
     const { ifYes, asset: assetRef, comparison, amount } = stepConfig
     const ifYesIndex = ifYes ? mapStepIdToIndex.get(ifYes) : -1

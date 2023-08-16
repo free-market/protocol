@@ -251,9 +251,6 @@ if (shouldRunE2e()) {
         {
           type: 'wrap-native',
           amount: wrapAmount,
-          asset: {
-            type: 'native',
-          },
           source: 'caller',
         },
       ],
