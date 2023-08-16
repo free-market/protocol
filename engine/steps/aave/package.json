@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/aave",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -20,9 +20,9 @@
     "@aave/core-v3": "^1.17.2",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/experimental": "^5.7.0",
-    "@freemarket/core": "workspace:^0.0.1",
-    "@freemarket/runner": "workspace:^0.0.1",
-    "@freemarket/step-sdk": "workspace:^0.0.1",
+    "@freemarket/core": "workspace:*",
+    "@freemarket/runner": "workspace:*",
+    "@freemarket/step-sdk": "workspace:*",
     "@openzeppelin/contracts": "^4.8.0",
     "big.js": "^6.2.1",
     "eth-sig-util": "2.5.3",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
     "@ethersproject/providers": "^5.4.7",
-    "@freemarket/curve": "workspace:^0.0.1",
+    "@freemarket/curve": "workspace:*",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",

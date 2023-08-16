@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/end-to-end",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -20,14 +20,14 @@
     "@ethersproject/abstract-provider": "^5.7.0",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
-    "@freemarket/aave": "workspace:^0.0.1",
-    "@freemarket/core": "workspace:^0.0.1",
-    "@freemarket/runner": "workspace:^0.0.1"
+    "@freemarket/client-sdk": "workspace:*",
+    "@freemarket/aave": "workspace:*",
+    "@freemarket/core": "workspace:*",
+    "@freemarket/runner": "workspace:*"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
     "@ethersproject/providers": "^5.4.7",
-    "@freemarket/client-sdk": "workspace:^0.1.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",

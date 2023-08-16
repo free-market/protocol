@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/runner",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@ethersproject/bytes": "^5.0.0",
-    "@freemarket/core": "workspace:^0.0.1",
+    "@freemarket/core": "workspace:*",
     "@openzeppelin/contracts": "^4.8.0",
     "eip1193-provider": "^1.0.1",
     "lodash.merge": "^4.6.2",

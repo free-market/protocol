@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/stargate-bridge",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -17,9 +17,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@freemarket/core": "workspace:^0.0.1",
-    "@freemarket/runner": "workspace:^0.0.1",
-    "@freemarket/step-sdk": "workspace:^0.0.1",
+    "@freemarket/core": "workspace:*",
+    "@freemarket/runner": "workspace:*",
+    "@freemarket/step-sdk": "workspace:*",
     "@openzeppelin/contracts": "^4.8.0",
     "big.js": "^6.2.1",
     "loglevel": "^1.8.1",
