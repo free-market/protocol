@@ -11,7 +11,7 @@ export const COMPARISON_OPERATORS = ['greater-than', 'greater-than-equal', 'less
 export const comparisonOperatorSchema = z.enum(COMPARISON_OPERATORS)
 export type ComparisonOperator = z.infer<typeof comparisonOperatorSchema>
 
-function createAssetComparisonBranchSchema(stepType: string) {
+function createAssetComparisonBranchSchema<T extends string>(stepType: T) {
   return createBranchStepSchema(stepType).extend({
     asset: assetReferenceSchema.describe(stepProperties('Asset', 'the asset to compare against')),
     comparison: comparisonOperatorSchema.describe(stepProperties('Comparison', 'the comparison operator to use')),
