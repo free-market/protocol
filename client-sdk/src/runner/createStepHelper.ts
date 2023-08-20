@@ -9,6 +9,7 @@ import { WrapNativeHelper, UnwrapNativeHelper } from '@freemarket/wrapped-native
 import { UniswapExactInHelper } from '@freemarket/uniswap'
 import { CurveTriCrypto2SwapHelper } from '@freemarket/curve'
 import { AssetBalanceBranchHelper, ChainBranchHelper, PreviousOutputBranchHelper } from '@freemarket/base-branches'
+import { StubHelper } from '@freemarket/roadmap'
 
 interface StepHelperConstructor {
   new (runner: IWorkflowInstance, provider?: EIP1193Provider): IStepHelper<any>
@@ -26,7 +27,8 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'unwrap-native': UnwrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
   'curve-tricrypto2-swap': CurveTriCrypto2SwapHelper,
-  'previous-output-branch': PreviousOutputBranchHelper
+  'previous-output-branch': PreviousOutputBranchHelper,
+  '1inch': StubHelper,
 }
 
 export function createStepHelper(type: string, runner: IWorkflowInstance) {

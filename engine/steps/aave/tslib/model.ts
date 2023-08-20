@@ -1,5 +1,14 @@
 import z from 'zod'
-import { amountSchema, createStepSchema, assetReferenceSchema, stepProperties, assetSourceSchema } from '@freemarket/core'
+import {
+  amountSchema,
+  createStepSchema,
+  assetReferenceSchema,
+  stepProperties,
+  assetSourceSchema,
+  fungibleTokenAssetReferenceSchema,
+  nonEmptyStringSchema,
+  absoluteAmountSchema,
+} from '@freemarket/core'
 import { assetSourceDescription } from '@freemarket/step-sdk'
 
 const sourceDescription = `The source of the asset. ${assetSourceDescription} `
@@ -56,3 +65,8 @@ export const aaveFlashLoanSchema = createStepSchema('aave-flash-loan').extend({
 })
 
 export interface AaveFlashLoan extends z.infer<typeof aaveFlashLoanSchema> {}
+
+export const aaveLoanHealthSchema = createStepSchema('aave-loan-health').extend({
+  asset: nonEmptyStringSchema.describe(stepProperties('Asset Symbol', 'The asset to check the health of.')),
+  threshold: absoluteAmountSchema.describe(stepProperties('Health Threshold', 'The health threshold below which this trigger will fire.')),
+})

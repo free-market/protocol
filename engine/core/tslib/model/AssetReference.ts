@@ -14,6 +14,8 @@ export const fungibleTokenAssetReferenceSchema = createAssetReferenceSchema('fun
   symbol: nonEmptyStringSchema.describe('The symbol for this token.'),
 })
 
+export type FungibleTokenReference = z.infer<typeof fungibleTokenAssetReferenceSchema>
+
 export const assetReferenceSchema = registerParameterType(
   'asset-ref',
   z.discriminatedUnion('type', [nativeAssetReferenceSchema, fungibleTokenAssetReferenceSchema])

@@ -49,6 +49,10 @@
       "path": "../engine/steps/wrapped-native"
     }
     {
+      "name": "[step] roadmap",
+      "path": "../engine/steps/roadmap"
+    }
+    {
       "name": "end-to-end",
       "path": "../engine/end-to-end"
     }

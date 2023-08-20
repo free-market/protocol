@@ -1,5 +1,5 @@
 export * from './helpers'
-export * from './StepInfo'
+export * from './PlatformInfo'
 export * from './formatNumber'
 export * from './getWrappedNativeAddress'
 export * from './deploy-step'

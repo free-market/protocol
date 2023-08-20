@@ -11,10 +11,22 @@ function AaveSummary(props: any) {
     <span style={{ ...props.labelStyle }}>
       {props.operation}&nbsp;
       <span style={{ ...props.infoStyle }}>
-        {props.step.amount.toString()}
-        &nbsp;
+        {props.step.amount && props.step.amount.toString()}
+        {props.step.amount && <span>&nbsp;</span>}
         <AssetReferenceView assetRef={props.step.asset} />
       </span>
+    </span>
+  )
+}
+
+function AaveLoanHealth(props: any) {
+  return (
+    <span style={{ ...props.labelStyle }}>
+      <span style={{ ...props.infoStyle }}>
+        <AssetReferenceView assetRef={props.step.asset} />
+      </span>
+      <span style={{ ...props.labelStyle }}>&nbsp;health below&nbsp;</span>
+      <span style={{ ...props.infoStyle }}>{props.step.threshold}</span>
     </span>
   )
 }
@@ -81,6 +93,18 @@ export const platformInfo: PlatformInfo = {
       operation: 'Flash Loan',
       comingSoon: true,
       summary: p => <AaveSummary {...p} operation="Flash Loan" />,
+      platformName: 'Aave',
+    },
+    {
+      stepType: 'aave-loan-health',
+      stepTypeId: -1,
+      nodeType: 'triggerNode',
+      name: 'Aave Loan Health',
+      description: 'A trigger that fires when the health factor of an Aave loan drops below a threshold',
+      icon: AaveIcon,
+      operation: 'Loan Health',
+      comingSoon: true,
+      summary: p => <AaveLoanHealth {...p} operation="Loan Health" />,
       platformName: 'Aave',
     },
   ],

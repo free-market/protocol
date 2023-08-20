@@ -1,5 +1,12 @@
 import z, { ZodObject } from 'zod'
-import { aaveSupplySchema, aaveWithdrawalSchema, aaveBorrowSchema, aaveRepaySchema, aaveFlashLoanSchema } from '@freemarket/aave'
+import {
+  aaveSupplySchema,
+  aaveWithdrawalSchema,
+  aaveBorrowSchema,
+  aaveRepaySchema,
+  aaveFlashLoanSchema,
+  aaveLoanHealthSchema,
+} from '@freemarket/aave'
 import { payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
 import { assetBalanceBranchSchema, chainBranchSchema, previousOutputBranchSchema } from '@freemarket/base-branches'
@@ -7,6 +14,7 @@ import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'
+import { oneInchSchema } from '@freemarket/roadmap'
 import { assert } from '@freemarket/core'
 
 export const stepSchema = z.discriminatedUnion('type', [
@@ -15,6 +23,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   aaveWithdrawalSchema,
   aaveBorrowSchema,
   aaveRepaySchema,
+  // aaveLoanHealthSchema,
   // aaveFlashLoanSchema,
   addAssetSchema,
   // curveTriCrypto2SwapSchema,
@@ -23,6 +32,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   uniswapExactOutSchema,
   unwrapNativeSchema,
   wrapNativeSchema,
+  // oneInchSchema,
 
   // bridges
   stargateBridgeSchema,
