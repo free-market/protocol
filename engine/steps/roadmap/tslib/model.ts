@@ -8,6 +8,7 @@ import {
   percentSchema,
   stepProperties,
   assetSourceSchema,
+  nonEmptyStringSchema,
 } from '@freemarket/core'
 import { assetSourceDescription } from '@freemarket/step-sdk'
 
@@ -38,3 +39,20 @@ export const oneInchSchema = createStepSchema('oneInch').extend({
 })
 
 export interface OneInch extends z.infer<typeof oneInchSchema> {}
+
+export const telegramSendMessageSchema = createStepSchema('telegram-send').extend({
+  to: nonEmptyStringSchema.describe(stepProperties('To', 'The destination to send the message to')),
+  message: nonEmptyStringSchema.describe(stepProperties('Message', 'The message to send')),
+})
+
+export const stripeCryptoOnrampSchema = createStepSchema('stripe-crypto-onramp').extend({
+  asset: assetReferenceSchema.describe(stepProperties('Asset', 'The crypto asset to purchase with fiat.')),
+})
+
+export const zeroExSchema = createStepSchema('zeroEx-swap').extend({
+  inputAsset,
+  inputAssetSource,
+  inputAmount: amountSchema.describe(stepProperties('Amount', 'The amount of input asset to swap')),
+  outputAsset,
+  slippageTolerance,
+})

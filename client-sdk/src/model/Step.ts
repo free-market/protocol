@@ -14,7 +14,7 @@ import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'
-import { oneInchSchema } from '@freemarket/roadmap'
+import { oneInchSchema, stripeCryptoOnrampSchema, telegramSendMessageSchema, zeroExSchema } from '@freemarket/roadmap'
 import { assert } from '@freemarket/core'
 
 export const stepSchema = z.discriminatedUnion('type', [
@@ -23,7 +23,7 @@ export const stepSchema = z.discriminatedUnion('type', [
   aaveWithdrawalSchema,
   aaveBorrowSchema,
   aaveRepaySchema,
-  // aaveLoanHealthSchema,
+  aaveLoanHealthSchema,
   // aaveFlashLoanSchema,
   addAssetSchema,
   // curveTriCrypto2SwapSchema,
@@ -32,7 +32,10 @@ export const stepSchema = z.discriminatedUnion('type', [
   uniswapExactOutSchema,
   unwrapNativeSchema,
   wrapNativeSchema,
-  // oneInchSchema,
+  oneInchSchema,
+  telegramSendMessageSchema,
+  stripeCryptoOnrampSchema,
+  zeroExSchema,
 
   // bridges
   stargateBridgeSchema,
