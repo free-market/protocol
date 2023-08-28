@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/add-asset",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -60,5 +60,12 @@
   },
   "peerDependencies": {
     "@ethersproject/bytes": "^5.0.0"
-  }
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "artifacts/contracts/*.json",
+    "typechain-types/**/*",
+    "tslib/**/*",
+    "build/**/*"
+  ]
 }

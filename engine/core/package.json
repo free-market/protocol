@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/core",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -13,13 +13,6 @@
     "dev": "tsc --watch",
     "test": "hardhat test"
   },
-  "files": [
-    "contracts/**/*.sol",
-    "/artifacts/contracts/*.json",
-    "typechain-types/**/*",
-    "tslib/**/*",
-    "build/**/*"
-  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -68,5 +61,12 @@
     "big.js": "^6.2.1",
     "eip1193-provider": "^1.0.1",
     "zod": "^3.21.4"
-  }
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "artifacts/contracts/*.json",
+    "typechain-types/**/*",
+    "tslib/**/*",
+    "build/**/*"
+  ]
 }
