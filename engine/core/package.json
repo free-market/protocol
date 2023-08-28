@@ -15,7 +15,10 @@
   },
   "files": [
     "contracts/**/*.sol",
-    "/artifacts/contracts/*.json"
+    "/artifacts/contracts/*.json",
+    "typechain-types/**/*",
+    "tslib/**/*",
+    "build/**/*"
   ],
   "keywords": [],
   "author": "",
