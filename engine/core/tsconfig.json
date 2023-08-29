@@ -8,9 +8,12 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "outDir": "./build",
+    "declaration": true,
+    "declarationMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true
+    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
   },
   "files": ["./index.ts"],
   "include": ["./hardhat.config.ts", "./typechain-types", "tslib"],

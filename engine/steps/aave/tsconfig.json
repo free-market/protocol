@@ -12,6 +12,7 @@
     "outDir": "./build",
     "jsx": "react",
     "declaration": true,
+    "declarationMap": true,
     "resolveJsonModule": true
   },
   "files": ["./index.ts"],
