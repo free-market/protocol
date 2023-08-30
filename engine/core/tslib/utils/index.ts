@@ -1,6 +1,5 @@
 export * from './assert'
 export * from './utils'
 export * from './evm-utils'
-export * from './env-utils'
 export * from './types'
 export * from './memoize-decorator'

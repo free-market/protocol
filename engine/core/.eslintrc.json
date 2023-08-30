@@ -9,6 +9,9 @@
       "node": true
     }
   },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "rules": {
     "no-console": "error",
     "@typescript-eslint/no-non-null-assertion": "warn",

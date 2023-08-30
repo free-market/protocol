@@ -7,7 +7,6 @@
     "strict": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "declaration": true,
     "declarationMap": true,
     "outDir": "./build",
     "experimentalDecorators": true,
