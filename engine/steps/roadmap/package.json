@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/roadmap",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "",
   "main": "./build/index.js",
   "types": "build/index.d.ts",
