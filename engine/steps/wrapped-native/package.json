@@ -1,8 +1,9 @@
 {
   "name": "@freemarket/wrapped-native",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "",
   "main": "./build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "clean": "rimraf artifacts build cache typechain-types",
     "build": "pnpm build:sol && pnpm build:ts",
