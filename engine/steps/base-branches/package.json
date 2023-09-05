@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/base-branches",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "",
   "main": "./build/index.js",
   "types": "build/index.d.ts",
@@ -60,6 +60,7 @@
     "@ethersproject/bytes": "^5.0.0"
   },
   "files": [
+    "index.ts",
     "tslib/**/*",
     "build/**/*"
   ]

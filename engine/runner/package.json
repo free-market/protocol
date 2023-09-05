@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/runner",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "",
   "main": "./build/index.js",
   "types": "build/index.d.ts",
@@ -57,5 +57,13 @@
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",
     "typescript": ">=4.5.0"
-  }
+  },
+  "files": [
+    "index.ts",
+    "contracts/**/*.sol",
+    "artifacts/contracts/*.json",
+    "typechain-types/**/*",
+    "tslib/**/*",
+    "build/**/*"
+  ]
 }
