@@ -3,6 +3,7 @@ import hardhat from 'hardhat'
 import { IERC20, IERC20Metadata__factory, IERC20__factory, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
 import {
   assert,
+  AssetInfoService,
   AssetReference,
   Chain,
   createStandardProvider,

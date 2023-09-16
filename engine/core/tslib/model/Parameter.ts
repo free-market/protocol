@@ -50,3 +50,5 @@ export function getParameterSchema(parameterTypeName: ParameterType): ZodTypeAny
   assert(rv)
   return rv
 }
+
+export type Foo = 'Foo'

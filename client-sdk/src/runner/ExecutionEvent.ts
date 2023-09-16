@@ -32,6 +32,9 @@ export interface Erc20ApprovalSubmitting {
   symbol: string
   amount: string
 }
+export interface Erc20ApprovalsSubmitted {
+  code: 'Erc20ApprovalsSubmitted'
+}
 export interface Erc20ApprovalConfirmed {
   code: 'Erc20ApprovalConfirmed'
   symbol: string
@@ -74,6 +77,7 @@ export interface WorkflowComplete {
 export type CreateExecutionEventArg =
   | Erc20ApprovalsSubmitting
   | Erc20ApprovalSubmitting
+  | Erc20ApprovalsSubmitted
   | Erc20ApprovalsConfirmed
   | Erc20ApprovalConfirmed
   | WorkflowSubmitting
@@ -90,7 +94,8 @@ export function createExecutionEvent(event: CreateExecutionEventArg): ExecutionE
       return { ...event, message: `Submitting approvals for ERC20: ${event.symbols.join(', ')}` }
     case 'Erc20ApprovalSubmitting':
       return { ...event, message: `Submitting approval for ERC20 '${event.symbol}' amount=${event.amount}` }
-
+    case 'Erc20ApprovalsSubmitted':
+      return { ...event, message: `All approvals for ERC20s submitted, waiting for confirmation` }
     case 'Erc20ApprovalConfirmed':
       return { ...event, message: `Approval for ${event.symbol} confirmed, tx=${event.transactionHash}` }
     case 'Erc20ApprovalsConfirmed':

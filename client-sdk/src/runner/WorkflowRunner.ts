@@ -3,7 +3,6 @@ import type { AddAssetInfo } from './AddAssetInfo'
 import { createExecutionEvent, CreateExecutionEventArg, ExecutionEventHandler } from './ExecutionEvent'
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
-// import { IERC20__factory, BridgeBase__factory, WorkflowRunner__factory } from '@freemarket/evm'
 import assert from '../utils/assert'
 import type Big from 'big.js'
 import type { Signer } from '@ethersproject/abstract-signer'
@@ -16,6 +15,7 @@ import {
   ADDRESS_ZERO,
   Asset,
   AssetAmount,
+  AssetInfoService,
   AssetReference,
   Chain,
   ContinuationInfo,
@@ -23,7 +23,9 @@ import {
   EncodedWorkflow,
   getEthersProvider,
   getEthersSigner,
+  IERC20,
   IERC20__factory,
+  IWorkflowRunner__factory,
   Memoize,
   translateChain,
 } from '@freemarket/core'
@@ -32,7 +34,7 @@ import { WorkflowContinuingStep__factory } from '@freemarket/stargate-bridge'
 
 import { AssetAmountStructOutput, AssetStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { LogDescription } from '@ethersproject/abi'
-import { Log } from '@ethersproject/providers'
+import { Log, TransactionReceipt, TransactionResponse } from '@ethersproject/providers'
 import {
   ExecutionLog,
   ExecutionLogAssetAmount,
@@ -42,7 +44,8 @@ import {
 } from './ExecutionLog'
 import { getPlatformInfos, StepInfo } from '../platform-infos'
 import { AaveBorrowAction__factory } from '@freemarket/aave'
-
+import { EthersTransactionExecutor } from './EthersTransactionExecutor'
+import { TransactionParams } from './EvmTransactionExecutor'
 const log = rootLogger.getLogger('WorkflowRunner')
 
 export interface WaitForContinuationResult {
@@ -80,12 +83,12 @@ export class WorkflowRunner implements IWorkflowRunner {
     this.eventHandlers.push(handler)
   }
 
-  async execute(): Promise<void> {
+  async execute(): Promise<ExecutionLog[]> {
     try {
       const stdProvider = this.instance.getProvider('start-chain')
       const startChainSigner = getEthersSigner(stdProvider)
-      await this.doErc20Approvals(startChainSigner)
-      await this.submitWorkflow(startChainSigner)
+      const erc20Approvals = await this.getErc20ApprovalTransaction()
+      return this.submitWorkflow(startChainSigner, erc20Approvals)
     } catch (e) {
       const s = e instanceof Error ? e.stack : (e as any)
       log.error(`Workflow unsuccessful: ${s}`)
@@ -93,30 +96,43 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  async submitWorkflow(signer: Signer): Promise<ExecutionLog[]> {
+  private async submitWorkflow(signer: Signer, erc20Approvals: TransactionParams[]): Promise<ExecutionLog[]> {
     const events: ExecutionLog[] = []
     this.signer = signer
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(this.startChain)
-    const runner = WorkflowRunner__factory.connect(frontDoorAddr, signer)
+    const runnerContract = WorkflowRunner__factory.connect(frontDoorAddr, signer)
 
     this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
-    log.debug('estimating gas', await runner.signer.getAddress())
-    const srcWorkflowGasEstimate = await runner.estimateGas.executeWorkflow(this.startChainWorkflow, {
-      value: nativeAmount,
-      gasLimit: 30_000_000,
-    })
-    const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
-    log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
-    const txResponse = await runner.executeWorkflow(this.startChainWorkflow, { value: nativeAmount, gasLimit })
-    log.debug(`tx submitted, hash=${txResponse.hash}`)
-    this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
-    const txReceipt = await txResponse.wait(1)
-    log.debug(`tx txReceipt, hash=${txReceipt.transactionHash}`)
-    const logs = await this.toExecutionLogs(this.startChain, txReceipt.logs)
-    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: txReceipt.transactionHash, logs })
-    const startChainEvents = WorkflowRunner.parseLogs(txReceipt.logs)
+    // log.debug('estimating gas', await runnerContract.signer.getAddress())
+    // const srcWorkflowGasEstimate = await runnerContract.estimateGas.executeWorkflow(this.startChainWorkflow, {
+    //   value: nativeAmount,
+    //   gasLimit: 30_000_000,
+    // })
+    // const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
+    // log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
+    const iface = IWorkflowRunner__factory.createInterface()
+    const data = iface.encodeFunctionData('executeWorkflow', [this.startChainWorkflow])
+    const txExecutor = this.instance.getTransactionExecutor(this.startChain) || new EthersTransactionExecutor(this.signer)
+    const txParams = [
+      ...erc20Approvals,
+      {
+        to: frontDoorAddr,
+        value: nativeAmount,
+        data,
+        // gasLimit: gasLimit?.toString(),
+      },
+    ]
+    const txReceipts = await txExecutor.executeTransactions(txParams)
+    const workflowTxReceipt = txReceipts[txReceipts.length - 1]
+
+    const txId = workflowTxReceipt.transactionHash
+    // this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
+    log.debug(`tx txReceipt, hash=${txId}`)
+    const logs = await this.toExecutionLogs(this.startChain, workflowTxReceipt.logs)
+    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: workflowTxReceipt.transactionHash, logs })
+    const startChainEvents = WorkflowRunner.parseLogs(workflowTxReceipt.logs)
     events.push(...logs)
 
     const sourceChain = this.startChain
@@ -133,7 +149,7 @@ export class WorkflowRunner implements IWorkflowRunner {
         code: 'WorkflowWaitingForBridge',
         stepType: continuationInfo.stepType,
         sourceChain,
-        sourceChainTransactionHash: txReceipt.transactionHash,
+        sourceChainTransactionHash: workflowTxReceipt.transactionHash,
         targetChain: continuationInfo.targetChain,
       })
       if (this.isDebug) {
@@ -152,7 +168,13 @@ export class WorkflowRunner implements IWorkflowRunner {
 
     const failureLog = events.find(log => log.type === 'continuation-failure')
     const success = !failureLog
-    this.sendEvent({ code: 'WorkflowComplete', chain: this.startChain, transactionHash: txReceipt.transactionHash, events, success })
+    this.sendEvent({
+      code: 'WorkflowComplete',
+      chain: this.startChain,
+      transactionHash: workflowTxReceipt.transactionHash,
+      events,
+      success,
+    })
 
     return events
   }
@@ -219,48 +241,91 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  private async doErc20Approvals(signer: Signer) {
+  private getErc20ApprovalTransaction(): Promise<TransactionParams[]> {
     const symbols = [] as string[]
+    // build a list of erc20s that need an allowance increase
     for (const [symbol, amounts] of this.addAssetInfo.erc20s) {
       if (amounts.currentAllowance.lt(amounts.requiredAllowance)) {
         symbols.push(symbol)
       }
     }
-    if (symbols.length === 0) {
-      return
-    }
 
-    this.sendEvent({ code: 'Erc20ApprovalsSubmitting', symbols })
-
-    const promises: Promise<ContractReceipt>[] = []
-    for (const symbol of symbols) {
+    // construct the transactions for each
+    const promises = symbols.map(async symbol => {
       const amounts = this.addAssetInfo.erc20s.get(symbol)
       assert(amounts)
-      const amount = amounts.requiredAllowance
-      this.sendEvent({ code: 'Erc20ApprovalSubmitting', symbol, amount: amount.toFixed(0) })
-      promises.push(this.doErc20Approval(signer, symbol, amount))
-    }
-    const results = await Promise.all(promises)
-    for (let i = 0; i < results.length; ++i) {
-      const symbol = symbols[i]
-      const txReceipt = results[i]
-      this.sendEvent({ code: 'Erc20ApprovalConfirmed', symbol, transactionHash: txReceipt.transactionHash })
-    }
-    this.sendEvent({ code: 'Erc20ApprovalsConfirmed', symbols })
+      const { requiredAllowance } = amounts
+      const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(this.startChain)
+      const fungi = await this.instance.getFungibleToken(symbol)
+      assert(fungi)
+      const chain = translateChain(this.startChain)
+      const erc20Address = fungi.chains[chain]?.address
+      const iface = IERC20__factory.createInterface()
+      const data = iface.encodeFunctionData('approve', [frontDoorAddress, requiredAllowance.toFixed(0)])
+      assert(erc20Address)
+      return {
+        to: erc20Address,
+        value: 0,
+        data,
+      }
+    })
+    return Promise.all(promises)
   }
 
-  private async doErc20Approval(signer: Signer, symbol: string, amount: Big) {
-    const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(this.startChain)
-    const fungi = await this.instance.getFungibleToken(symbol)
-    assert(fungi)
-    const chain = translateChain(this.startChain)
-    const addr = fungi.chains[chain]?.address
-    assert(addr)
-    log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
-    const erc20 = IERC20__factory.connect(addr, signer)
-    const response = await erc20.approve(frontDoorAddress, amount.toFixed(0), { gasLimit: 1000000 })
-    return await response.wait(1)
-  }
+  // private async doErc20Approvals(signer: Signer): Promise<void> {
+  //   const symbols = [] as string[]
+  //   for (const [symbol, amounts] of this.addAssetInfo.erc20s) {
+  //     if (amounts.currentAllowance.lt(amounts.requiredAllowance)) {
+  //       symbols.push(symbol)
+  //     }
+  //   }
+  //   if (symbols.length === 0) {
+  //     return
+  //   }
+
+  //   this.sendEvent({ code: 'Erc20ApprovalsSubmitting', symbols })
+
+  //   const promises: Promise<TransactionResponse>[] = []
+  //   for (const symbol of symbols) {
+  //     const amounts = this.addAssetInfo.erc20s.get(symbol)
+  //     assert(amounts)
+  //     const amount = amounts.requiredAllowance
+  //     this.sendEvent({ code: 'Erc20ApprovalSubmitting', symbol, amount: amount.toFixed(0) })
+  //     promises.push(this.doErc20Approval(signer, symbol, amount))
+  //   }
+  //   this.sendEvent({ code: 'Erc20ApprovalsSubmitted' })
+  //   const results = await Promise.all(promises)
+  //   for (let i = 0; i < results.length; ++i) {
+  //     const symbol = symbols[i]
+  //     const txResponse = results[i]
+  //     this.sendEvent({ code: 'Erc20ApprovalConfirmed', symbol, transactionHash: txResponse.hash })
+  //   }
+  //   this.sendEvent({ code: 'Erc20ApprovalsConfirmed', symbols })
+  // }
+
+  // private async doErc20Approval(signer: Signer, symbol: string, amount: Big): Promise<TransactionResponse> {
+  //   const frontDoorAddress = await this.instance.getFrontDoorAddressForChain(this.startChain)
+  //   const fungi = await this.instance.getFungibleToken(symbol)
+  //   assert(fungi)
+  //   const chain = translateChain(this.startChain)
+  //   const addr = fungi.chains[chain]?.address
+  //   assert(addr)
+  //   log.debug(`approving ${symbol}<${addr}>  amount=${amount.toFixed(0)} to ${frontDoorAddress}`)
+
+  //   const iface = IERC20__factory.createInterface()
+  //   assert(this.signer)
+
+  //   const data = iface.encodeFunctionData('approve', [frontDoorAddress, amount.toFixed(0)])
+  //   const txExecutor = this.instance.getTransactionExecutor(this.startChain) || new EthersTransactionExecutor(this.signer)
+  //   return txExecutor.executeTransaction({
+  //     to: frontDoorAddress,
+  //     value: 0,
+  //     data,
+  //   })
+  //   // const erc20 = IERC20__factory.connect(addr, signer)
+  //   // const response = await erc20.approve(frontDoorAddress, amount.toFixed(0), { gasLimit: 1000000 })
+  //   // void (await response.wait(1))
+  // }
 
   private static getChainFromCode(chainId: number): Chain {
     switch (chainId) {
@@ -520,15 +585,3 @@ export class WorkflowRunner implements IWorkflowRunner {
     return ret
   }
 }
-
-// function logDescriptionToOnChainEvent(logDescription: LogDescription): OnChainEvent {
-//   const { name, signature, args } = logDescription
-//   const outArgs: Record<string, string> = {}
-//   for (const key of Object.keys(args)) {
-//     // skip numeric keys (they are array indices
-//     if (parseInt(key).toString() !== key) {
-//       outArgs[key] = args[key].toString()
-//     }
-//   }
-//   return { name, signature, args: outArgs }
-// }

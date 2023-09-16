@@ -124,8 +124,9 @@ export async function getChainFromProvider(provider: EIP1193Provider): Promise<C
 export function getChainFromId(chainId: number): Chain {
   switch (chainId) {
     case 1:
-    case 5:
       return 'ethereum'
+    case 5:
+      return 'ethereumGoerli'
     case 56:
     case 97:
       return 'binance'
@@ -155,6 +156,7 @@ export function getChainIdFromChain(chain: Chain, isTestNet: boolean) {
   if (isTestNet) {
     switch (chain) {
       case 'ethereum':
+      case 'ethereumGoerli':
         return 5
       case 'binance':
         return 97
@@ -173,6 +175,8 @@ export function getChainIdFromChain(chain: Chain, isTestNet: boolean) {
     switch (chain) {
       case 'ethereum':
         return 1
+      case 'ethereumGoerli':
+        return 5
       case 'binance':
         return 56
       case 'arbitrum':

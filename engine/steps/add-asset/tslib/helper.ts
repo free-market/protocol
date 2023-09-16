@@ -15,6 +15,7 @@ import {
   EvmInputAsset,
   TEN_BIG,
   decimalStringSchema,
+  AssetInfoService,
 } from '@freemarket/core'
 import Big from 'big.js'
 import type z from 'zod'
