@@ -15,6 +15,7 @@
     "deploy-contracts": "hardhat deploy --tags AaveSupplyAction,AaveBorrowAction,AaveRepayAction"
   },
   "files": [
+    "index.ts",
     "contracts/**/*.sol",
     "artifacts/contracts/*.json",
     "typechain-types/**/*",
