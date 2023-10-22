@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/runner",
-  "version": "0.2.16",
+  "version": "0.3.0",
   "description": "",
   "main": "./build/index.js",
   "types": "build/index.d.ts",
