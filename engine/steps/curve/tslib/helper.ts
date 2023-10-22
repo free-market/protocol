@@ -8,6 +8,7 @@ import {
   AssetReference,
   sdkAssetToEvmAsset,
   EvmAsset,
+  AssetInfoService,
 } from '@freemarket/core'
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'

@@ -7,6 +7,7 @@ import {
   getChainIdFromChain,
   sdkAssetAndAmountToEvmInputAmount,
   sdkAssetToEvmAsset,
+  AssetInfoService,
 } from '@freemarket/core'
 import { AbstractBranchHelper, AssetSchema } from '@freemarket/step-sdk'
 

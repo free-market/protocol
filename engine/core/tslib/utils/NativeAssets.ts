@@ -1,4 +1,4 @@
-import type { Chain, NativeAsset } from '@freemarket/core'
+import { Chain, NativeAsset } from '../model'
 
 const ETH_ICON_URL = 'https://metadata.fmprotocol.com/icons/native/eth.png'
 
@@ -6,6 +6,13 @@ export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
   ethereum: {
     type: 'native',
     name: 'Ethereum',
+    symbol: 'ETH',
+    iconUrl: ETH_ICON_URL,
+    chain: 'ethereum',
+  },
+  ethereumGoerli: {
+    type: 'native',
+    name: 'Ethereum Goerli',
     symbol: 'ETH',
     iconUrl: ETH_ICON_URL,
     chain: 'ethereum',

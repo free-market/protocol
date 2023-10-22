@@ -1,11 +1,8 @@
 import assert from '../utils/assert'
-import axios from 'axios'
 import cloneDeep from 'lodash.clonedeep'
-import z from 'zod'
 import { AssetNotFoundError, AssetNotFoundProblem } from './AssetNotFoundError'
 import { createStepHelper } from './createStepHelper'
 import { MapWithDefault } from '../utils/MapWithDefault'
-import { NATIVE_ASSETS } from '../NativeAssets'
 import { WORKFLOW_END_STEP_ID } from './constants'
 import { WorkflowArgumentError, WorkflowArgumentProblem, WorkflowArgumentProblemType } from './WorkflowArgumentError'
 import { WorkflowRunner } from './WorkflowRunner'
@@ -22,7 +19,6 @@ import Big from 'big.js'
 import type { Provider } from '@ethersproject/providers'
 import type { AddAssetInfo, Erc20Info } from './AddAssetInfo'
 import {
-  Asset,
   AssetAmount,
   getParameterSchema,
   PARAMETER_REFERENCE_REGEXP,
@@ -37,8 +33,6 @@ import {
   type NextSteps,
   type EncodedWorkflow,
   type StepBase,
-  type FungibleToken,
-  fungibleTokenSchema,
   EvmWorkflowStep,
   IERC20__factory,
   ParameterType,
@@ -51,9 +45,13 @@ import {
   MultiStepEncodingContext,
   translateChain,
   BeforeAfterResult,
+  AssetInfoService,
+  Asset,
+  FungibleToken,
 } from '@freemarket/core'
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
+import { EvmTransactionExecutor } from './EvmTransactionExecutor'
 
 const frontDoorAddresses: Record<string, string> = frontDoorAddressesJson
 
@@ -64,8 +62,6 @@ interface WorkflowInstanceConstructorOptions {
   skipValidation?: boolean
 }
 
-export type AddressToSymbol = Record<string, string>
-
 interface BeforeAfter {
   beforeAll: EncodedBeforeAfter | null
   afterAll: EncodedBeforeAfter | null
@@ -74,6 +70,7 @@ interface BeforeAfter {
 export class WorkflowInstance implements IWorkflowInstance {
   private workflow: Workflow
   private providers = new Map<ChainOrStart, EIP1193Provider>()
+  private executors = new Map<ChainOrStart, EvmTransactionExecutor>()
   // need for uniswap which doesn't support routing on forked chains
   private nonForkedProviders = new Map<ChainOrStart, EIP1193Provider>()
   private stepHelpers = new MapWithDefault<ChainOrStart, Map<string, IStepHelper<any>>>(() => new Map())
@@ -91,6 +88,15 @@ export class WorkflowInstance implements IWorkflowInstance {
       this.validateParameters()
     }
     // TODO validateAssetRefs -- but may need to skip unresolved parameters
+  }
+  getFungibleToken(symbol: string): Promise<FungibleToken | undefined> {
+    return AssetInfoService.getFungibleToken(symbol, this.workflow.fungibleTokens || [])
+  }
+  getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
+    return AssetInfoService.getFungibleTokenByChainAndAddress(chain, address, this.workflow.fungibleTokens || [])
+  }
+  dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
+    return AssetInfoService.dereferenceAsset(assetRef, chain, this.workflow.fungibleTokens || [])
   }
 
   setProvider(chainOrStart: ChainOrStart, provider: EIP1193Provider, nonForkedProvider?: EIP1193Provider): void {
@@ -111,6 +117,14 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   getNonForkedProvider(chainOrStart: ChainOrStart): EIP1193Provider | undefined {
     return this.nonForkedProviders.get(chainOrStart)
+  }
+
+  setTransactionExecutor(chainOrStart: ChainOrStart, executor: EvmTransactionExecutor): void {
+    this.executors.set(chainOrStart, executor)
+  }
+
+  getTransactionExecutor(chainOrStart: ChainOrStart) {
+    return this.executors.get(chainOrStart)
   }
 
   async getRunner(userAddress: string, args?: Arguments, isDebug?: boolean): Promise<IWorkflowRunner> {
@@ -180,7 +194,7 @@ export class WorkflowInstance implements IWorkflowInstance {
     frontDoorAddress: string,
     symbol: string
   ): Promise<Erc20Info> {
-    const token = await this.getFungibleToken(symbol)
+    const token = await AssetInfoService.getFungibleToken(symbol, this.workflow.fungibleTokens || [])
     const { address, decimals } = token?.chains[chain] || {}
     assert(address && decimals)
     const erc20 = IERC20__factory.connect(address, getEthersProvider(provider))
@@ -574,7 +588,7 @@ export class WorkflowInstance implements IWorkflowInstance {
           const assetRefPaths = getAssetRefPaths([], step)
           for (const ref of assetRefPaths) {
             try {
-              await this.dereferenceAsset(ref.assetRef, chain)
+              await AssetInfoService.dereferenceAsset(ref.assetRef, chain, this.workflow.fungibleTokens || [])
             } catch (e) {
               if (e instanceof AssetNotFoundError) {
                 const pathPrefix = [stepId]
@@ -811,11 +825,11 @@ export class WorkflowInstance implements IWorkflowInstance {
     if (chain === 'hardhat' || chain === 'local') {
       address = frontDoorAddresses['local']
     } else {
-      if (isTestnet) {
-        address = frontDoorAddresses[chain + 'Goerli']
-      } else {
-        address = frontDoorAddresses[chain]
-      }
+      // if (isTestnet) {
+      //   address = frontDoorAddresses[chain + 'Goerli']
+      // } else {
+      address = frontDoorAddresses[chain]
+      // }
     }
     if (address === undefined) {
       throw new Error(`freemarket is not deployed on ${chain} ${isTestnet ? 'testnet' : 'mainnet'}`)
@@ -883,52 +897,6 @@ export class WorkflowInstance implements IWorkflowInstance {
     }
   }
 
-  async dereferenceAsset(assetRef: AssetReference, chain: Chain): Promise<Asset> {
-    assert(typeof assetRef !== 'string')
-    if (assetRef.type === 'native') {
-      const nativeAsset = NATIVE_ASSETS[chain]
-      if (!nativeAsset) {
-        throw new AssetNotFoundError([new AssetNotFoundProblem(null, chain)])
-      }
-      return nativeAsset
-    }
-    const token = await this.getFungibleToken(assetRef.symbol)
-    if (!token) {
-      throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, null)])
-    }
-    const c = translateChain(chain)
-    if (!token.chains[c as Chain]) {
-      throw new AssetNotFoundError([new AssetNotFoundProblem(assetRef.symbol, chain)])
-    }
-    return token
-  }
-
-  @Memoize()
-  async getFungibleToken(symbol: string): Promise<FungibleToken | undefined> {
-    if (this.workflow.fungibleTokens) {
-      for (const asset of this.workflow.fungibleTokens) {
-        if (asset.symbol === symbol) {
-          return asset
-        }
-      }
-    }
-    const defaultTokens = await WorkflowInstance.getDefaultFungibleTokens()
-    return defaultTokens[symbol]
-  }
-
-  @Memoize()
-  private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
-    const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
-    const tokenSchema = z.record(z.string(), fungibleTokenSchema)
-    return tokenSchema.parse(response.data)
-  }
-
-  @Memoize()
-  private static async getDefaultFungibleTokensByAddress(): Promise<Record<string, AddressToSymbol>> {
-    const response = await axios.get('https://metadata.fmprotocol.com/tokens-by-address.json')
-    return response.data
-  }
-
   @Memoize()
   private getStepMap(): Map<string, StepNode> {
     const mapStepIdToStep = new Map<string, StepNode>()
@@ -973,15 +941,5 @@ export class WorkflowInstance implements IWorkflowInstance {
       chainMap.set(type, helper)
     }
     return helper
-  }
-
-  async getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
-    const mapAddressToSymbol = await WorkflowInstance.getDefaultFungibleTokensByAddress()
-    const c = translateChain(chain)
-    const symbol = mapAddressToSymbol[c]?.[address]
-    if (!symbol) {
-      return undefined
-    }
-    return this.getFungibleToken(symbol)
   }
 }

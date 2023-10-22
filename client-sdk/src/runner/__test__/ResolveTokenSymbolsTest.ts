@@ -1,6 +1,6 @@
 import test from 'ava'
 import type { Workflow } from '../../model'
-import type { AssetReference } from '@freemarket/core'
+import { AssetInfoService, type AssetReference } from '@freemarket/core'
 import { assert, throwsAsync } from '../../private/test-utils'
 import { WorkflowInstance } from '../WorkflowInstance'
 import { addAssetStep } from './common'
@@ -11,12 +11,12 @@ const workflow: Workflow = {
 }
 
 test('resolves fungible token symbols from the default symbols list', async t => {
-  const runner = new WorkflowInstance(workflow)
+  const instance = new WorkflowInstance(workflow)
   const usdcAssetRef: AssetReference = {
     type: 'fungible-token',
     symbol: 'USDC',
   }
-  const asset = await runner.dereferenceAsset(usdcAssetRef, 'ethereum')
+  const asset = await instance.dereferenceAsset(usdcAssetRef, 'ethereum')
   assert(t, asset.type === 'fungible-token')
   t.is(asset.symbol, 'USDC')
   const address = asset.chains['ethereum']?.address
@@ -42,12 +42,12 @@ const workflowWithCustomToken: Workflow = {
 }
 
 test('resolves fungible token from workflow.fungibleTokens', async t => {
-  const runner = new WorkflowInstance(workflowWithCustomToken)
+  const instance = new WorkflowInstance(workflowWithCustomToken)
   const fakeAssetRef: AssetReference = {
     type: 'fungible-token',
     symbol: fakeTokenSymbol,
   }
-  const asset = await runner.dereferenceAsset(fakeAssetRef, 'ethereum')
+  const asset = await instance.dereferenceAsset(fakeAssetRef, 'ethereum')
   assert(t, asset.type === 'fungible-token')
   t.is(asset.symbol, fakeTokenSymbol)
   const address = asset.chains['ethereum']?.address
@@ -55,31 +55,31 @@ test('resolves fungible token from workflow.fungibleTokens', async t => {
 })
 
 test("throws when it can't find a symbol", async t => {
-  const runner = new WorkflowInstance(workflow)
+  const instance = new WorkflowInstance(workflow)
   const fakeAssetRef: AssetReference = {
     type: 'fungible-token',
     symbol: fakeTokenSymbol,
   }
-  await t.throwsAsync(() => runner.dereferenceAsset(fakeAssetRef, 'ethereum'))
+  await t.throwsAsync(() => instance.dereferenceAsset(fakeAssetRef, 'ethereum'))
 })
 
 test("throws when it can't find a symbol for a chain", async t => {
-  const runner = new WorkflowInstance(workflowWithCustomToken)
+  const instance = new WorkflowInstance(workflowWithCustomToken)
   const fakeAssetRef: AssetReference = {
     type: 'fungible-token',
     symbol: fakeTokenSymbol,
   }
   await throwsAsync(t, async () => {
-    await runner.dereferenceAsset(fakeAssetRef, 'fantom')
+    await instance.dereferenceAsset(fakeAssetRef, 'fantom')
   })
 })
 
 test('dereferences a native', async t => {
-  const runner = new WorkflowInstance(workflowWithCustomToken)
+  const instance = new WorkflowInstance(workflowWithCustomToken)
   const nativeAssetRef: AssetReference = {
     type: 'native',
   }
-  const asset = await runner.dereferenceAsset(nativeAssetRef, 'ethereum')
+  const asset = await instance.dereferenceAsset(nativeAssetRef, 'ethereum')
   t.is(asset.type, 'native')
   t.is(asset.symbol, 'ETH')
 })

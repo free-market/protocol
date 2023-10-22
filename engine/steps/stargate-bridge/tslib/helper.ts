@@ -20,6 +20,7 @@ import {
   ContinuationInfo,
   EncodeContinuationResult,
   Memoize,
+  AssetInfoService,
 } from '@freemarket/core'
 import rootLogger from 'loglevel'
 import type { StargateBridge } from './model'

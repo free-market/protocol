@@ -8,6 +8,10 @@ export const assetBaseSchema = z.object({
   type: assetTypeSchema,
   /** The url of an icon for the asset, useful in UIs. */
   iconUrl: z.string().min(1).optional(),
+  /** The user friendly display name of the asset. */
+  name: z.string().min(1).optional(),
+  /** The symbol of the asset. Used as the primary identifier for the asset */
+  symbol: z.string().min(1),
 })
 
 export function createAssetSchema<T extends string>(type: T) {
@@ -19,7 +23,6 @@ export function createAssetSchema<T extends string>(type: T) {
 export const nativeAssetSchema = createAssetSchema('native').extend({
   /** The user friendly display name of the asset. */
   name: nonEmptyStringSchema,
-  symbol: nonEmptyStringSchema,
 
   chain: chainSchema,
 })
@@ -37,12 +40,6 @@ export const assetChainInfoSchema = z.object({
 export interface FungibleTokenChainInfo extends z.infer<typeof assetChainInfoSchema> {}
 
 export const fungibleTokenSchema = createAssetSchema('fungible-token').extend({
-  /** The symbol of the asset. Used as the primary identifier for the asset */
-  symbol: z.string().min(1),
-
-  /** The user friendly display name of the asset. */
-  name: z.string().min(1).optional(),
-
   /** Info about the asset on each supported chain */
   chains: z.record(chainSchema, assetChainInfoSchema),
 })
