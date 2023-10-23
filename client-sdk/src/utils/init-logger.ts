@@ -1,16 +1,7 @@
 import log, { LogLevelNames } from 'loglevel'
-import chalk from 'chalk'
 import prefix from 'loglevel-plugin-prefix'
 
 export function initLogger(level?: LogLevelNames) {
-  const colors: any = {
-    TRACE: chalk.magenta,
-    DEBUG: chalk.cyan,
-    INFO: chalk.blue,
-    WARN: chalk.yellow,
-    ERROR: chalk.red,
-  }
-
   prefix.reg(log)
   if (!level) {
     log.enableAll()
@@ -23,14 +14,14 @@ export function initLogger(level?: LogLevelNames) {
   }
   prefix.apply(log, {
     format(level, name, timestamp) {
-      return `${chalk.gray(`[${timestamp}]`)} ${colors[level.toUpperCase()](level)} ${chalk.green(`${name}:`)}`
+      return `${timestamp} ${level} ${name}:`
     },
     timestampFormatter,
   })
 
   prefix.apply(log.getLogger('critical'), {
     format(level, name, timestamp) {
-      return chalk.red.bold(`[${timestamp}] ${level} ${name}:`)
+      return `[${timestamp}] ${level} ${name}:`
     },
     timestampFormatter,
   })
