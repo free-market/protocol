@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/uniswap",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "./build/index.js",
   "types": "build/index.d.ts",
