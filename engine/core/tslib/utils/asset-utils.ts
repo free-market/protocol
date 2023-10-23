@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { assert } from 'chai'
 import z from 'zod'
 import { AssetReference, Chain, Asset, FungibleToken, fungibleTokenSchema } from '../model'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner'
 import { NATIVE_ASSETS } from './NativeAssets'
 import { translateChain } from './evm-utils'
 import { Memoize } from './memoize-decorator'
+import { assert } from './assert'
 
 export type AddressToSymbol = Record<string, string>
 
