@@ -1,13 +1,12 @@
 import type { Amount, Asset, AssetAmount, AssetReference, Chain } from '../model'
 import { EvmAsset, EvmAssetType, EvmInputAsset } from '../evm'
-import { ADDRESS_ZERO, assert } from '../utils'
+import { ADDRESS_ZERO, assert, capitalize } from '../utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
 import type { IWorkflow } from '../runner/IWorkflow'
 import type { EIP1193Provider } from 'eip1193-provider'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { Provider, Web3Provider } from '@ethersproject/providers'
-import { Wallet } from '@ethersproject/wallet'
 import Big from 'big.js'
 
 export const HARDHAT_FORK_CHAIN = 'ethereum'
@@ -243,4 +242,24 @@ export function getEthersProvider(provider: EIP1193Provider): Provider {
 
 export function translateChain(chain: Chain): Chain {
   return chain === 'hardhat' || chain === 'local' ? HARDHAT_FORK_CHAIN : chain
+}
+
+export function getChainDisplayName(chainId: string | null) {
+  if (chainId === null) {
+    return ''
+  }
+  let s = chainId
+  if (s.startsWith('0x')) {
+    s = s.slice(2)
+  }
+  const chainNum = parseInt(s, 16)
+  const chain = getChainFromId(chainNum)
+  return capitalize(chain)
+}
+
+export function shortAddress(address: string | undefined | null) {
+  if (address === undefined || address === null) {
+    return ''
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
