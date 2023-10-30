@@ -115,4 +115,8 @@ export class MockWorkflowInstance implements IWorkflow {
   getNonForkedProvider(chain: Chain): EIP1193Provider | undefined {
     return undefined
   }
+
+  getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
+    throw new Error('Method not implemented.')
+  }
 }

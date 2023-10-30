@@ -70,7 +70,7 @@ export class AssetInfoService {
     return response.data
   }
 
-  @Memoize()
+  // @Memoize()
   static async getFungibleTokenByChainAndAddress(
     chain: Chain,
     address: string,

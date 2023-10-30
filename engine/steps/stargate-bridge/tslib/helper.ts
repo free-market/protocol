@@ -21,6 +21,7 @@ import {
   EncodeContinuationResult,
   Memoize,
   AssetInfoService,
+  FungibleToken,
 } from '@freemarket/core'
 import rootLogger from 'loglevel'
 import type { StargateBridge } from './model'
@@ -241,6 +242,14 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const { stepConfig, chain, userAddress } = context
     assert(stepConfig.nextStepId)
     assert(typeof stepConfig.inputAsset !== 'string')
+
+    const [supportedTokensSource, supportedTokensTarget] = await Promise.all([
+      this.getSupportedTokensForChain(chain),
+      this.getSupportedTokensForChain(stepConfig.destinationChain),
+    ])
+    console.log('supported tokens source', supportedTokensSource)
+    console.log('supported tokens target', supportedTokensTarget)
+
     // const [transferInputAsset, payload, targetAddress, dstChainId, remittance] = await Promise.all([
     //   sdkAssetAndAmountToEvmInputAmount(
     //     stepConfig.inputAsset,
@@ -366,10 +375,35 @@ export class StargateBridgeHelper extends AbstractStepHelper<StargateBridge> {
     const sgPoolAddr = await this.getPoolAddress(srcPoolId)
     assert(this.ethersProvider)
     const sgPool = IStargatePool__factory.connect(sgPoolAddr, this.ethersProvider)
+    const tokenAddress = await sgPool.token()
+    console.log('stargate token address', tokenAddress)
     const sgFeeLibraryAddr = await sgPool.feeLibrary()
     log.debug(`StargateFeeLibrary address=${sgFeeLibraryAddr}`)
     return sgFeeLibraryAddr
   }
+
+  @Memoize()
+  private async getSupportedTokensForChain(chain: Chain): Promise<{ address: string; token: FungibleToken | undefined }[]> {
+    assert(this.ethersProvider)
+    const sgFactoryAddr = await this.getFactoryAddress()
+    const sgFactory = IStargateFactory__factory.connect(sgFactoryAddr, this.ethersProvider)
+    const numPools = (await sgFactory.allPoolsLength()).toNumber()
+    const promises: Promise<string>[] = []
+    for (let i = 0; i < numPools; i++) {
+      promises.push(sgFactory.allPools(i))
+    }
+
+    const tokenPromises: Promise<string>[] = []
+    for (let i = 0; i < numPools; i++) {
+      const sgPoolAddr = await promises[i]
+      const sgPool = IStargatePool__factory.connect(sgPoolAddr, this.ethersProvider)
+      tokenPromises.push(sgPool.token())
+    }
+    const tokenAddrs = await Promise.all(tokenPromises)
+    const assets = await Promise.all(tokenAddrs.map(tokenAddr => this.instance.getFungibleTokenByChainAndAddress(chain, tokenAddr)))
+    return tokenAddrs.map((tokenAddr, i) => ({ address: tokenAddr, token: assets[i] }))
+  }
+
   async getStargateMinAmountOut(args: StargateMinAmountOutArgs): Promise<string> {
     assert(this.ethersProvider)
     const sgFeeLibraryAddr = await this.getFeeLibraryAddress(args.srcPoolId)

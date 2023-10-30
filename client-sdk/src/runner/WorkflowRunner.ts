@@ -110,7 +110,7 @@ export class WorkflowRunner implements IWorkflowRunner {
     //   value: nativeAmount,
     //   gasLimit: 30_000_000,
     // })
-    // const gasLimit = srcWorkflowGasEstimate.mul(15).div(10)
+    // const gasLimit = srcWorkflowGasEstimate.mul(3).div(2)
     // log.debug(`submitting tx, gas estimate =${gasLimit.toString()}`)
     const iface = IWorkflowRunner__factory.createInterface()
     const data = iface.encodeFunctionData('executeWorkflow', [this.startChainWorkflow])
@@ -121,12 +121,13 @@ export class WorkflowRunner implements IWorkflowRunner {
         to: frontDoorAddr,
         value: nativeAmount,
         data,
-        // gasLimit: gasLimit?.toString(),
+        ...(this.isDebug && { gasLimit: 30_000_000 }),
       },
     ]
+    log.debug('workflow tx params', txParams)
     const txReceipts = await txExecutor.executeTransactions(txParams)
     const workflowTxReceipt = txReceipts[txReceipts.length - 1]
-
+    log.debug('tx receipt', workflowTxReceipt)
     const txId = workflowTxReceipt.transactionHash
     // this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
     log.debug(`tx txReceipt, hash=${txId}`)
@@ -267,6 +268,7 @@ export class WorkflowRunner implements IWorkflowRunner {
         to: erc20Address,
         value: 0,
         data,
+        ...(this.isDebug && { gasLimit: 30_000_000 }),
       }
     })
     return Promise.all(promises)

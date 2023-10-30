@@ -2,6 +2,9 @@ import { TransactionReceipt, TransactionResponse } from '@ethersproject/provider
 import { EvmTransactionExecutor, TransactionParams } from './EvmTransactionExecutor'
 import { Signer } from '@ethersproject/abstract-signer'
 
+import rootLogger from 'loglevel'
+const logger = rootLogger.getLogger('WorkflowRunner')
+
 export class EthersTransactionExecutor implements EvmTransactionExecutor {
   signer: Signer
 
@@ -12,9 +15,13 @@ export class EthersTransactionExecutor implements EvmTransactionExecutor {
   async executeTransactions(transactionParamsArray: TransactionParams[]): Promise<TransactionReceipt[]> {
     const ret: TransactionReceipt[] = []
     // doing this sequentially to avoid nonce issues, and erc20 approvals must come first
-    for (const transactionParams of transactionParamsArray) {
+    logger.debug(`executing ${transactionParamsArray.length} transactions`)
+    for (let i = 0; i < transactionParamsArray.length; ++i) {
+      const transactionParams = transactionParamsArray[i]
+      logger.debug(`  executing ${i + 1} of ${transactionParamsArray.length} transactions`)
       const txResponse = await this.signer.sendTransaction({ ...transactionParams })
       ret.push(await txResponse.wait())
+      logger.debug(`  confirmed ${i + 1} of ${transactionParamsArray.length} transactions`)
     }
     return ret
   }

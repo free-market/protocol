@@ -1,5 +1,6 @@
 export const StargatePoolIds: { [index: string]: number } = {
   USDC: 1,
+  'USDC.e': 1,
   USDT: 2,
   DAI: 3,
   BUSD: 5,

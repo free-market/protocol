@@ -25,6 +25,5 @@ export interface IWorkflowInstance extends IWorkflow {
 
   getWorkflowSegments(): WorkflowSegment[]
   getFungibleToken(symbol: string): Promise<FungibleToken | undefined>
-  getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined>
   getStepHelper(chainOrStart: ChainOrStart, type: string): IStepHelper<any>
 }
