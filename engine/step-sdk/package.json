@@ -11,7 +11,9 @@
     "build:ts": "tsc",
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "format": " prettier --write tslib",
+    "lint": "eslint tslib/**/*.ts"
   },
   "files": [
     "index.ts",

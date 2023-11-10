@@ -40,6 +40,9 @@
       "dependsOn": ["build:ts"],
       "outputs": []
     },
+    "format": {
+      "outputs": []
+    },
     "lint": {
       "outputs": []
     },

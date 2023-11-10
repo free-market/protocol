@@ -2,7 +2,6 @@
 /* eslint-disable no-console */
 import rootLogger from 'loglevel'
 rootLogger.setLevel('debug')
-import { initLogger } from '../utils/init-logger'
 initLogger()
 import fs from 'fs'
 import chalk from 'chalk'
@@ -13,7 +12,7 @@ import { Wallet } from '@ethersproject/wallet'
 import { JsonRpcProvider, Provider, WebSocketProvider } from '@ethersproject/providers'
 import assert from '../utils/assert'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { createStandardProvider } from '@freemarket/core'
+import { createStandardProvider, initLogger } from '@freemarket/core'
 
 import dotenv from 'dotenv'
 import os from 'os'

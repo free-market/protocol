@@ -56,10 +56,10 @@ const BridgePayloadSchema = `
 export function toChecksumAddress(address: number | string) {
   let addr = typeof address === 'number' ? address.toString(16) : address.toLowerCase().replace('0x', '')
   addr = addr.padStart(40, '0')
-  var hash = createKeccakHash('keccak256').update(addr).digest('hex')
-  var ret = '0x'
+  const hash = createKeccakHash('keccak256').update(addr).digest('hex')
+  let ret = '0x'
 
-  for (var i = 0; i < addr.length; i++) {
+  for (let i = 0; i < addr.length; i++) {
     if (parseInt(hash[i], 16) >= 8) {
       ret += addr[i].toUpperCase()
     } else {

@@ -16,7 +16,6 @@ import {
   ContinuationInfo,
   EncodeContinuationResult,
   Memoize,
-  EncodedBeforeAfter,
   MultiStepEncodingContext,
   translateChain,
   BeforeAfterResult,
@@ -110,7 +109,7 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     }
   }
 
-  getAddAssetInfo(stepConfig: T): Promise<AssetAmount[]> {
+  getAddAssetInfo(_stepConfig: T): Promise<AssetAmount[]> {
     return Promise.resolve([])
   }
 
@@ -119,11 +118,11 @@ export abstract class AbstractStepHelper<T extends StepBase> implements IStepHel
     return context.stepConfig.stepAddresses?.[c] || ADDRESS_ZERO
   }
 
-  encodeContinuation(continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult> {
+  encodeContinuation(_continuationInfo: ContinuationInfo): Promise<EncodeContinuationResult> {
     throw new Error('Method not implemented.')
   }
 
-  getBeforeAfterAll(context: MultiStepEncodingContext<T>): Promise<BeforeAfterResult | null> {
+  getBeforeAfterAll(_context: MultiStepEncodingContext<T>): Promise<BeforeAfterResult | null> {
     return Promise.resolve(null)
   }
 }

@@ -1,5 +1,4 @@
 import type { EvmInputAsset } from './EvmInputAsset'
-import type { EvmAsset } from './EvmAsset'
 /**
  * A workflow step structure expected by the EVM workflow engine.
  */

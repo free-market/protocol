@@ -8,11 +8,9 @@ import {
   Chain,
   ChainOrStart,
   EncodedWorkflow,
-  EvmWorkflow,
   FungibleToken,
   IWorkflow,
   getDefaultFungibleTokens,
-  nonEmptyStringSchema,
   Memoize,
 } from '@freemarket/core'
 
@@ -32,7 +30,7 @@ export class MockWorkflowInstance implements IWorkflow {
   testNet = false
   frontDoorAddress?: string
 
-  getFrontDoorAddressForChain(chain: Chain): Promise<string> {
+  getFrontDoorAddressForChain(_chain: Chain): Promise<string> {
     if (!this.frontDoorAddress) {
       throw new Error('frontDoorAddress not set in not MockWorkflowInstance')
     }
@@ -44,7 +42,7 @@ export class MockWorkflowInstance implements IWorkflow {
   }
 
   @Memoize()
-  private static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
+  static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
     const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
     return response.data
   }
@@ -70,6 +68,7 @@ export class MockWorkflowInstance implements IWorkflow {
       const chains: FungibleToken['chains'] = {}
       chains[chain] = {
         address,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         decimals: this.decimals.get(assetRef.symbol)!,
       }
 
@@ -104,7 +103,7 @@ export class MockWorkflowInstance implements IWorkflow {
     const ethersProvider = new StaticJsonRpcProvider(process.env.ETHEREUM_MAINNET_URL || 'https://rpc.ankr.com/eth')
     return new Eip1193Bridge(new VoidSigner(ADDRESS_ZERO), ethersProvider)
   }
-  encodeSegment(startStepId: string, chain: Chain, userAddress: string, runnerAddress: string): Promise<EncodedWorkflow> {
+  encodeSegment(_startStepId: string, _chain: Chain, _userAddress: string, _runnerAddress: string): Promise<EncodedWorkflow> {
     throw new Error('not implemented')
   }
 
@@ -112,11 +111,11 @@ export class MockWorkflowInstance implements IWorkflow {
     this.erc20s.set(symbol, address)
     this.decimals.set(symbol, decimals)
   }
-  getNonForkedProvider(chain: Chain): EIP1193Provider | undefined {
+  getNonForkedProvider(_chain: Chain): EIP1193Provider | undefined {
     return undefined
   }
 
-  getFungibleTokenByChainAndAddress(chain: Chain, address: string): Promise<FungibleToken | undefined> {
+  getFungibleTokenByChainAndAddress(_chain: Chain, _address: string): Promise<FungibleToken | undefined> {
     throw new Error('Method not implemented.')
   }
 }

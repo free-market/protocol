@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import './IStargateComposer.sol';
+import './IStargateReceiver.sol';
 import './WorkflowContinuingStep.sol';
+import 'hardhat/console.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@freemarket/core/contracts/model/Asset.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/model/BridgePayload.sol';
 import '@freemarket/core/contracts/IWorkflowRunner.sol';
-import './IStargateRouter.sol';
-import './IStargateReceiver.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
-import 'hardhat/console.sol';
 
 using LibStepResultBuilder for StepResultBuilder;
+using LibErc20 for IERC20;
 
 // StargateBridgeAction specific arguments
 struct StargateBridgeActionArgs {
@@ -45,7 +47,7 @@ struct StargateBridgeActionArgs {
 
 contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
   address public immutable frontDoorAddress;
-  address public immutable stargateRouterAddress;
+  address public immutable stargateComposerAddress;
 
   /// @notice This event is emitted on the destination chain when Stargate invokes our sgReceive method
   /// @param tokenAddress the address of the erc20 that was transfered from the source chain to this chain.abi
@@ -64,9 +66,9 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     bytes continuationWorkflow
   );
 
-  constructor(address _frontDoorAddress, address _stargateRouterAddress) {
+  constructor(address _frontDoorAddress, address _stargateComposerAddress) {
     frontDoorAddress = _frontDoorAddress;
-    stargateRouterAddress = _stargateRouterAddress;
+    stargateComposerAddress = _stargateComposerAddress;
   }
 
   //  need to gather things up into a struct to prevent 'Stack too deep'
@@ -107,7 +109,9 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
       approveErc20(inputAssetAmounts[0].asset.assetAddress, inputAssetAmounts[0].amount);
     }
 
+    console.log('decoding');
     locals.args = abi.decode(argData, (StargateBridgeActionArgs));
+    console.log('decoded');
 
     locals.dstActionAddressEncoded = abi.encodePacked(locals.args.dstActionAddress);
     if (locals.args.minAmountOutIsPercent) {
@@ -115,6 +119,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     } else {
       locals.minAmountOut = locals.args.minAmountOut;
     }
+    console.log('aaa');
 
     emit StargateBridgeParamsEvent(
       locals.nativeInputAsset.amount, // native amount
@@ -129,7 +134,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
       locals.args.continuationWorkflow
     );
 
-    IStargateRouter(stargateRouterAddress).swap{value: locals.nativeInputAsset.amount}(
+    IStargateComposer(stargateComposerAddress).swap{value: locals.nativeInputAsset.amount}(
       locals.args.dstChainId,
       locals.args.srcPoolId,
       locals.args.dstPoolId,
@@ -153,7 +158,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
 
   function approveErc20(address tokenAddress, uint256 amount) internal {
     IERC20 inputToken = IERC20(tokenAddress);
-    inputToken.approve(stargateRouterAddress, amount);
+    inputToken.safeApprove(stargateComposerAddress, amount);
   }
 
   function sgReceive(
@@ -164,7 +169,7 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     uint256 amount, // the qty of local token contract tokens
     bytes memory payload
   ) external {
-    require(msg.sender == stargateRouterAddress, 'only Stargate is permitted to call sgReceive');
+    require(msg.sender == stargateComposerAddress, 'only Stargate is permitted to call sgReceive');
     BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
     emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
     IERC20 startingToken = IERC20(tokenAddress);

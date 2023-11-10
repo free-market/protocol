@@ -156,7 +156,7 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
         .result;
   }
 
-  function logArgs(UniswapExactInActionParams memory args) internal view {
+  function logArgs(UniswapExactInActionParams memory args) internal pure {
     console.log('toAsset address', args.toAsset.assetAddress);
     // console.log('minExchangeRate', args.worstExchangeRate);
     for (uint256 i = 0; i < args.routes.length; i++) {

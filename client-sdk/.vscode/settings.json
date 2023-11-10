@@ -21,7 +21,8 @@
     "sonarjs",
     "treeify",
     "tricrypto",
-    "tsdoc"
+    "tsdoc",
+    "typechain"
   ],
   "json.schemas": [
     {

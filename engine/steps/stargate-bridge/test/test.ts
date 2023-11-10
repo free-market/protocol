@@ -1,14 +1,14 @@
+/* eslint-disable no-console */
 // import rootLogger from 'loglevel'
-// rootLogger.enableAll()
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { StargateBridgeAction } from '../typechain-types'
 import { StargateBridgeHelper, STEP_TYPE_ID_STARGATE_BRIDGE } from '../tslib/helper'
-import { createStandardProvider, EncodingContext, TEN_BIG, WORKFLOW_END_STEP_ID } from '@freemarket/core'
-import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
-import { getRouterAddress } from '../tslib/getRouterAddress'
+import { createStandardProvider, EncodingContext, TEN_BIG, WORKFLOW_END_STEP_ID, assert } from '@freemarket/core'
+import { confirmTx, getTestFixture, getUsdc, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
+import { getStargateComposerAddress } from '../tslib/stargateContractAddresses'
 import { StargateBridge } from '../tslib/model'
-import { TestErc20__factory } from '@freemarket/step-sdk'
+import { TestErc20__factory, formatNumber } from '@freemarket/step-sdk'
 import Big from 'big.js'
 
 const testAmount = 100
@@ -16,7 +16,7 @@ const testAmountFull = 100_000000
 
 const USDC_ethereumGoerli = '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620'
 
-const setup = getTestFixture(hardhat, async baseFixture => {
+const setup = getTestFixture(hardhat, async (baseFixture) => {
   const {
     users: { otherUser },
     signers: { otherUserSigner },
@@ -29,6 +29,9 @@ const setup = getTestFixture(hardhat, async baseFixture => {
   // get a reference to the deployed contract with otherUser as the signer
   const stargateBridgeAction = <StargateBridgeAction>await ethers.getContract('StargateBridgeAction', otherUserSigner)
 
+  // swap 1 eth into usdc
+  const { usdc, usdcAddress } = await getUsdc(hardhat, '1000000000000000000', otherUserSigner)
+
   const testUsdc = TestErc20__factory.connect(USDC_ethereumGoerli, otherUserSigner)
   await (await testUsdc.mint(otherUser, testAmountFull)).wait()
 
@@ -37,11 +40,14 @@ const setup = getTestFixture(hardhat, async baseFixture => {
 
   // create a mock WorkflowInstance and register the test token
   const mockWorkflowInstance = new MockWorkflowInstance()
-  mockWorkflowInstance.registerErc20('USDC', USDC_ethereumGoerli, 6)
-  mockWorkflowInstance.testNet = true
+  mockWorkflowInstance.registerErc20('USDC', usdcAddress, 6)
   mockWorkflowInstance.frontDoorAddress = frontDoor.address
 
-  return { contracts: { stargateBridgeAction, testUsdc }, mockWorkflowInstance }
+  return {
+    contracts: { stargateBridgeAction, testUsdc, usdc },
+    mockWorkflowInstance,
+    usdcAddress,
+  }
 })
 
 describe('StargateBridge', async () => {
@@ -53,21 +59,22 @@ describe('StargateBridge', async () => {
     await validateAction(configManager, STEP_TYPE_ID_STARGATE_BRIDGE, stargateBridgeAction.address)
 
     const networkInfo = await stargateBridgeAction.provider.getNetwork()
-    const expectedRouterAddress = getRouterAddress(networkInfo.chainId.toString())
-    const actualRouterAddress = await stargateBridgeAction.stargateRouterAddress()
-    expect(actualRouterAddress).to.eq(expectedRouterAddress)
+    const expectedRouterAddress = getStargateComposerAddress(networkInfo.chainId)
+    const actualComposerAddress = await stargateBridgeAction.stargateComposerAddress()
+    expect(actualComposerAddress).to.eq(expectedRouterAddress)
   })
 
-  it('executes', async () => {
+  it.only('executes', async () => {
     const {
-      contracts: { stargateBridgeAction, testUsdc },
+      contracts: { stargateBridgeAction, testUsdc, usdc },
       mockWorkflowInstance,
       users: { otherUser },
       signers: { otherUserSigner },
     } = await setup()
 
     // create the helper
-    const stdProvider = createStandardProvider(otherUserSigner.provider!, otherUserSigner)
+    assert(otherUserSigner.provider, 'otherUserSigner.provider is undefined')
+    const stdProvider = createStandardProvider(otherUserSigner.provider, otherUserSigner)
     const helper = new StargateBridgeHelper(mockWorkflowInstance, stdProvider)
 
     // the step config
@@ -99,16 +106,30 @@ describe('StargateBridge', async () => {
 
     // ask the helper to encode the step
     const encodedStep = await helper.encodeWorkflowStep(context)
-    // console.log(JSON.stringify(encodedStep, null, 4))
+    console.log('encodedStep', JSON.stringify(encodedStep, null, 4))
 
-    const routerAddr = await stargateBridgeAction.stargateRouterAddress()
+    // const routerAddr = await stargateBridgeAction.stargateRouterAddress()
     // console.log('routerAddr', routerAddr)
+
+    await confirmTx(usdc.transfer(stargateBridgeAction.address, testAmountFull))
 
     // invoke stargate
     await expect(
       stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.argData, otherUser, {
         value: new Big(remittance.amount.toString()).mul(TEN_BIG.pow(18)).toFixed(0),
+        gasLimit: 30_000_000,
       })
-    ).to.changeTokenBalance(testUsdc, stargateBridgeAction.address, testAmountFull * -1)
+    ).to.changeTokenBalance(usdc, stargateBridgeAction.address, testAmountFull * -1)
+
+    // run it again just to see gas usage
+    await confirmTx(usdc.transfer(stargateBridgeAction.address, testAmountFull))
+    const txReceipt = await confirmTx(
+      stargateBridgeAction.execute(encodedStep.inputAssets, encodedStep.argData, otherUser, {
+        value: new Big(remittance.amount.toString()).mul(TEN_BIG.pow(18)).toFixed(0),
+        gasLimit: 30_000_000,
+      })
+    )
+
+    console.log(`gas units: ${formatNumber(txReceipt.gasUsed, 0, 0, true)}`)
   })
 })

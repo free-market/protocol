@@ -40,7 +40,6 @@ import {
   RemittanceInfo,
   TEN_BIG,
   Memoize,
-  EncodedBeforeAfter,
   EvmBeforeAfter,
   MultiStepEncodingContext,
   translateChain,
@@ -60,11 +59,6 @@ type VisitStepCallback = (stepObject: any, path: string[]) => void
 
 interface WorkflowInstanceConstructorOptions {
   skipValidation?: boolean
-}
-
-interface BeforeAfter {
-  beforeAll: EncodedBeforeAfter | null
-  afterAll: EncodedBeforeAfter | null
 }
 
 export class WorkflowInstance implements IWorkflowInstance {

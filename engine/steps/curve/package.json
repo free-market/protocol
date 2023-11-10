@@ -12,7 +12,9 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts_": "hardhat deploy --tags CurveTriCrypto2SwapAction"
+    "deploy-contracts_": "hardhat deploy --tags CurveTriCrypto2SwapAction",
+    "format": " prettier --write tslib",
+    "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],
   "author": "",

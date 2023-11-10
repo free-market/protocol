@@ -1,4 +1,4 @@
-import z, { ZodLiteral } from 'zod'
+import z from 'zod'
 import { chainSchema } from './Chain'
 import { addressSchema } from './Address'
 

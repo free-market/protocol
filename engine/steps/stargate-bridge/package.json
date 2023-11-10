@@ -12,6 +12,8 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture",
+    "lint": "eslint tslib/**/*.ts",
+    "format": " prettier --write tslib",
     "deploy-contracts": "hardhat deploy --tags StargateBridgeAction"
   },
   "keywords": [],

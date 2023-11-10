@@ -11,7 +11,9 @@
     "build:ts": "tsc",
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "format": " prettier --write tslib",
+    "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,20 +34,20 @@
     "@types/events": "^3.0.1",
     "@types/mocha": ">=9.1.0",
     "@types/node": ">=12.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "ava": "^5.2.0",
     "chai": "^4.3.6",
     "dotenv": "^16.0.3",
-    "eslint": "^8.36.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "ethers": "^5.4.7",
     "hardhat": "^2.13.0",
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.8",
     "hardhat-preprocessor": "^0.1.5",
-    "prettier": "^2.8.5",
+    "prettier": "^2.8.8",
     "rimraf": "^4.4.0",
     "solidity-coverage": "^0.8.0",
     "solidity-docgen": "0.6.0-beta.35",
@@ -62,6 +64,8 @@
     "big.js": "^6.2.1",
     "eip1193-provider": "^1.0.1",
     "events": "^3.3.0",
+    "loglevel": "^1.8.1",
+    "loglevel-plugin-prefix": "^0.8.4",
     "zod": "^3.21.4"
   },
   "files": [
@@ -71,6 +75,7 @@
     "typechain-types/**/*",
     "tslib/**/*",
     "build/**/*",
-    ".eslintrc.json"
+    ".eslintrc.js",
+    "prettier.config.js"
   ]
 }

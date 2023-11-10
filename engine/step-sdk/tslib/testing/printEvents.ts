@@ -1,5 +1,8 @@
 import { Log } from '@ethersproject/providers'
 import { Interface } from '@ethersproject/abi'
+import { getLogger } from '@freemarket/core'
+
+const logger = getLogger('testing')
 
 export function printEvents(logs: Log[], interfaces: Interface[]) {
   for (const log of logs) {
@@ -12,7 +15,7 @@ export function printEvents(logs: Log[], interfaces: Interface[]) {
             args.push(`${key}: ${event.args[key].toString()}`)
           }
         }
-        console.log(`event ${event.name}(${args.join(', ')})`)
+        logger.debug(`event ${event.name}(${args.join(', ')})`)
       } catch (e) {
         // ignore
       }

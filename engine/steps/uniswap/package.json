@@ -12,7 +12,9 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts": "hardhat deploy --tags UniswapExactInAction,UniswapExactOutAction"
+    "deploy-contracts": "hardhat deploy --tags UniswapExactInAction,UniswapExactOutAction",
+    "format": " prettier --write tslib",
+    "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],
   "author": "",

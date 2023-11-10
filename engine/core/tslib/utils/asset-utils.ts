@@ -6,9 +6,10 @@ import { NATIVE_ASSETS } from './NativeAssets'
 import { translateChain } from './evm-utils'
 import { Memoize } from './memoize-decorator'
 import { assert } from './assert'
+import { getLogger } from './logging'
 
 export type AddressToSymbol = Record<string, string>
-
+const logger = getLogger('asset-utils')
 export class AssetInfoService {
   static async dereferenceAsset(assetRef: AssetReference, chain: Chain, fungibleTokens: FungibleToken[]): Promise<Asset> {
     assert(typeof assetRef !== 'string')
@@ -38,16 +39,20 @@ export class AssetInfoService {
 
   @Memoize()
   static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
-    console.log('requesting default fungible tokens')
+    logger.debug('requesting default fungible tokens')
     const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
-    console.log('received default fungible tokens')
+    logger.debug('received default fungible tokens')
     const tokenSchema = z.record(z.string(), fungibleTokenSchema)
-    console.log('about to parse')
+    logger.debug('about to parse')
     try {
       return tokenSchema.parse(response.data)
     } catch (e) {
-      console.log('error parsing default fungible tokens')
-      console.log(e)
+      logger.error('error parsing default fungible tokens')
+      if (e instanceof Error) {
+        logger.error(e.stack)
+      } else {
+        logger.error(JSON.stringify(e))
+      }
       throw e
     }
   }

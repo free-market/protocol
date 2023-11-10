@@ -1,4 +1,4 @@
-{
+module.exports = {
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "prettier"],
@@ -9,6 +9,9 @@
       "node": true
     }
   },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "rules": {
     "no-console": "error",
     "@typescript-eslint/no-non-null-assertion": "warn",
@@ -16,5 +19,6 @@
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-explicit-any": "off"
-  }
+  },
+  ignorePatterns: [".eslintrc.js", "prettier.config.js"]
 }

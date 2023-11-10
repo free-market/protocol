@@ -2,12 +2,15 @@ import { ConfigManager, FrontDoor, WorkflowRunner, WorkflowRunner__factory } fro
 import merge from 'lodash.merge'
 import { expect } from 'chai'
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { BigNumber, type BigNumberish, type Signer } from 'ethers'
+import { type BigNumberish, type Signer } from 'ethers'
 import { getCurve3PoolAddress, getCurveTriCrypto2Address } from './curve'
 import { I3Pool__factory, IERC20__factory, ITriCrypto2__factory, Weth__factory } from '../../typechain-types'
 import { TransactionReceipt } from '@ethersproject/providers'
 import { ContractTransaction } from '@ethersproject/contracts'
 export const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+import { assert, getLogger } from '@freemarket/core'
+
+const logger = getLogger('testing')
 
 interface BaseTestFixture {
   contracts: {
@@ -37,10 +40,11 @@ export function getTestFixture<T>(hardhat: HardhatRuntimeEnvironment, localFunc:
         ethers.getSigner(users.deployer),
         ethers.getSigner(users.otherUser),
       ])
-      const blockNumber = await otherUserSigner.provider!.getBlockNumber()
-      const block = await otherUserSigner.provider!.getBlock(blockNumber)
+      assert(otherUserSigner.provider)
+      const blockNumber = await otherUserSigner.provider.getBlockNumber()
+      const block = await otherUserSigner.provider.getBlock(blockNumber)
       const timestamp = new Date(block.timestamp * 1000)
-      console.log(`blockNumber=${blockNumber} timestamp=${timestamp.toLocaleString()}`)
+      logger.debug(`blockNumber=${blockNumber} timestamp=${timestamp.toLocaleString()}`)
 
       const workflowRunner = WorkflowRunner__factory.connect(frontDoor.address, deployerSigner)
       const userWorkflowRunner = WorkflowRunner__factory.connect(frontDoor.address, otherUserSigner)
@@ -101,7 +105,7 @@ export async function getWeth(wei: BigNumberish, signer: Signer) {
 
 export async function getUsdc(hardhat: HardhatRuntimeEnvironment, wei: BigNumberish, signer: Signer) {
   const [chainId, signerAddr] = await Promise.all([hardhat.getChainId(), signer.getAddress()])
-  const { usdtAddress, usdtBalance, usdt } = await getUsdt(hardhat, wei, signer)
+  const { usdtBalance, usdt } = await getUsdt(hardhat, wei, signer)
   // console.log('usdtAddress', usdtAddress)
   // console.log('usdtBalance', usdtBalance.toString())
   const threePoolAddress = getCurve3PoolAddress(chainId)
@@ -115,8 +119,6 @@ export async function getUsdc(hardhat: HardhatRuntimeEnvironment, wei: BigNumber
   // console.log('usdcAddress', usdcAddress)
   await (await usdt.approve(threePoolAddress, usdtBalance)).wait()
   // console.log('approved usdt')
-  const dy = await threePool.get_dy(2, 1, usdtBalance)
-  // console.log('dy', dy.toString())
   await (await threePool.exchange(2, 1, usdtBalance, 1, { gasLimit: 30_000_000 })).wait()
   // console.log('exchanged usdt')
   const usdc = IERC20__factory.connect(usdcAddress, signer)
@@ -125,7 +127,7 @@ export async function getUsdc(hardhat: HardhatRuntimeEnvironment, wei: BigNumber
   return { usdcAddress, usdcBalance, usdc }
 }
 
-export async function confirmTx<T>(ctPromise: Promise<ContractTransaction>): Promise<TransactionReceipt> {
+export async function confirmTx(ctPromise: Promise<ContractTransaction>): Promise<TransactionReceipt> {
   const ct = await ctPromise
   return ct.wait()
 }

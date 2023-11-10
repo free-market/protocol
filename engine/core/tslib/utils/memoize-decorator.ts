@@ -17,7 +17,7 @@ export function Memoize(args?: MemoizeArgs | MemoizeArgs['hashFunction']) {
     hashFunction = args
   }
 
-  return (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => {
+  return (target: NonNullable<unknown>, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => {
     if (descriptor.value != null) {
       descriptor.value = getNewFunction(descriptor.value, hashFunction, duration, tags)
     } else if (descriptor.get != null) {
@@ -57,7 +57,7 @@ function getNewFunction(
   this: any,
   originalMethod: () => void,
   hashFunction?: MemoizeArgs['hashFunction'],
-  duration: number = 0,
+  duration = 0,
   tags?: MemoizeArgs['tags']
 ) {
   const propMapName = Symbol(`__memoized_map__`)
@@ -67,7 +67,7 @@ function getNewFunction(
     let returnedValue: any
 
     // Get or create map
-    if (!this.hasOwnProperty(propMapName)) {
+    if (!Object.prototype.hasOwnProperty.call(this, propMapName)) {
       Object.defineProperty(this, propMapName, {
         configurable: false,
         enumerable: false,
@@ -75,7 +75,7 @@ function getNewFunction(
         value: new Map<any, any>(),
       })
     }
-    let myMap: Map<any, any> = this[propMapName]
+    const myMap: Map<any, any> = this[propMapName]
 
     if (Array.isArray(tags)) {
       for (const tag of tags) {
@@ -100,13 +100,13 @@ function getNewFunction(
       }
 
       const timestampKey = `${hashKey}__timestamp`
-      let isExpired: boolean = false
+      let isExpired = false
       if (duration > 0) {
         if (!myMap.has(timestampKey)) {
           // "Expired" since it was never called before
           isExpired = true
         } else {
-          let timestamp = myMap.get(timestampKey)
+          const timestamp = myMap.get(timestampKey)
           isExpired = Date.now() - timestamp > duration
         }
       }
@@ -121,12 +121,11 @@ function getNewFunction(
         }
       }
     } else {
-      const hashKey = this
-      if (myMap.has(hashKey)) {
-        returnedValue = myMap.get(hashKey)
+      if (myMap.has(this)) {
+        returnedValue = myMap.get(this)
       } else {
         returnedValue = originalMethod.apply(this, args as any)
-        myMap.set(hashKey, returnedValue)
+        myMap.set(this, returnedValue)
       }
     }
 

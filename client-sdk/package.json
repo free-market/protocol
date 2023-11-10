@@ -16,7 +16,8 @@
     "dev:json-schema": "nodemon  --delay 500ms --watch 'build/model' --exec pnpm run build:json-schema",
     "dev:test": "SKIP_E2E=true ava -w",
     "publish-packages": "pnpm publish --no-git-checks --access public",
-    "typedoc:watch": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docs src/index.ts --watch"
+    "typedoc:watch": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docs src/index.ts --watch",
+    "format": " prettier --write src"
   },
   "keywords": [],
   "author": "",
