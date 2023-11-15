@@ -3,9 +3,7 @@ import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.j
 import configManagerAddressesJson from '@freemarket/runner/deployments/config-managers.json'
 import { Chain, decibipsToPercentString, getEthersProvider } from '@freemarket/core'
 import { ConfigManager, ConfigManager__factory, FrontDoor__factory } from '@freemarket/runner'
-import { range } from './range'
 import { removeArrayElementByValue } from './remove-array-element-by-value'
-import { BigNumberish } from '@ethersproject/bignumber'
 
 export interface StepDeploymentInfo {
   stepTypeId: number

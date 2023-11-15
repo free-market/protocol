@@ -1,6 +1,6 @@
 import test from 'ava'
 import type { Workflow } from '../../model'
-import { AssetInfoService, type AssetReference } from '@freemarket/core'
+import { type AssetReference } from '@freemarket/core'
 import { assert, throwsAsync } from '../../private/test-utils'
 import { WorkflowInstance } from '../WorkflowInstance'
 import { addAssetStep } from './common'
@@ -86,7 +86,7 @@ test('dereferences a native', async t => {
 
 test("validates a workflow's symbols", async t => {
   const runner = new WorkflowInstance(workflowWithCustomToken)
-  runner['validateAssetRefs']('ethereum')
+  void runner['validateAssetRefs']('ethereum')
   t.pass()
 })
 

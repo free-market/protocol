@@ -1,4 +1,4 @@
-import type { ChainOrStart, IWorkflow, AssetReference, Amount, AssetAmount, FungibleToken, Chain, IStepHelper } from '@freemarket/core'
+import type { ChainOrStart, IWorkflow, AssetReference, Amount, AssetAmount, FungibleToken, IStepHelper } from '@freemarket/core'
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { ReadonlyDeep } from 'type-fest'
 import type { Arguments, Workflow } from '../model'

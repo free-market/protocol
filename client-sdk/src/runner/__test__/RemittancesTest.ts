@@ -1,7 +1,6 @@
 import test from 'ava'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { WorkflowInstance } from '../WorkflowInstance'
-import type { Step } from '../../model'
 import dotenv from 'dotenv'
 import { shouldRunE2e } from '../../private/test-utils'
 import { createStandardProvider } from '@freemarket/core'
@@ -40,11 +39,11 @@ test('gets remittances', async t => {
   t.snapshot(remittances)
 })
 
-const addAssetStep: Step = {
-  type: 'add-asset',
-  asset: { type: 'native' },
-  amount: '{{ remittances.stargate.amount }}',
-}
+// const addAssetStep: Step = {
+//   type: 'add-asset',
+//   asset: { type: 'native' },
+//   amount: '{{ remittances.stargate.amount }}',
+// }
 
 // test('validates parameters that refer to remittances', async t => {
 //   if (!shouldRunE2e()) {

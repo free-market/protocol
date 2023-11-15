@@ -1,24 +1,15 @@
 import { AbstractStepHelper } from '@freemarket/step-sdk'
-import { defaultAbiCoder } from '@ethersproject/abi'
 import {
-  addressSchema,
-  amountSchema,
-  assetReferenceSchema,
-  createStepSchema,
   ADDRESS_ZERO,
   assert,
   EncodedWorkflowStep,
   EncodingContext,
   sdkAssetToEvmAsset,
-  EvmAssetAmount,
-  EvmAssetType,
   EvmInputAsset,
   TEN_BIG,
   decimalStringSchema,
-  AssetInfoService,
 } from '@freemarket/core'
 import Big from 'big.js'
-import type z from 'zod'
 import { AddAsset } from './model'
 
 export const STEP_TYPE_ID_ADD_ASSET = 100

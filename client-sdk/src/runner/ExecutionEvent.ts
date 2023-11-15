@@ -1,4 +1,4 @@
-import { assert, type Chain, type PartialRecord } from '@freemarket/core'
+import { assert, type Chain } from '@freemarket/core'
 import { ExecutionLog } from './ExecutionLog'
 
 export enum ExecutionEventCode {

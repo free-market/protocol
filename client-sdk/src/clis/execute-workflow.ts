@@ -28,7 +28,7 @@ if (process.argv.length != 5) {
 
 const workflowFileName = process.argv[2]
 const argumentsFileName = process.argv[3]
-const sourceChain = process.argv[4]
+const _sourceChain = process.argv[4]
 
 function myEventListener(event: ExecutionEvent) {
   log.info(`${chalk.cyan('Workflow Event')} ${chalk.yellow(event.code)} ${event.message}`)

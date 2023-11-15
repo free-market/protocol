@@ -13,7 +13,7 @@
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture",
     "deploy-contracts_": "hardhat deploy --tags CurveTriCrypto2SwapAction",
-    "format": " prettier --write tslib",
+    "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],

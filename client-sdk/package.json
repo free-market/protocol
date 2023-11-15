@@ -17,7 +17,7 @@
     "dev:test": "SKIP_E2E=true ava -w",
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "typedoc:watch": "typedoc --plugin typedoc-plugin-markdown --entryDocument docs/README.md --excludePrivate --out docs src/index.ts --watch",
-    "format": " prettier --write src"
+    "format": " prettier src --write"
   },
   "keywords": [],
   "author": "",

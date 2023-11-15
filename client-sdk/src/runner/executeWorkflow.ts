@@ -23,7 +23,6 @@ export interface ExecuteWorkflowOptions {
   startChain?: Chain
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function executeWorkflow(executeWorkflowOptions: ExecuteWorkflowOptions): Promise<ExecutionLog[]> {
   const { workflow, userAddress, providers, executors, handler, args, startChain } = executeWorkflowOptions
   const instance = new WorkflowInstance(workflow)

@@ -1,4 +1,3 @@
-import z, { ZodTypeAny } from 'zod'
 import chalk from 'chalk'
 import { WorkflowInstance } from '../runner/WorkflowInstance'
 import fs from 'fs'

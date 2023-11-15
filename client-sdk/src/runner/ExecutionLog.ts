@@ -48,18 +48,19 @@ export type ExecutionLog =
   | ExecutionLogContinuationSuccess
   | ExecutionLogContinuationFailure
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function getAllAssets(logs: ExecutionLog[]) {
   const seenAddresses = new Set<string>()
   const ret = new Set<ExecutionLogAssetAmount>()
   for (const log of logs) {
     switch (log.type) {
       case 'step':
-        const allAssetAmounts = [...log.inputs, ...log.outputs, ...log.outputsToUser]
-        for (const assetAmount of allAssetAmounts) {
-          if (!seenAddresses.has(assetAmount.address)) {
-            seenAddresses.add(assetAmount.address)
-            ret.add(assetAmount)
+        {
+          const allAssetAmounts = [...log.inputs, ...log.outputs, ...log.outputsToUser]
+          for (const assetAmount of allAssetAmounts) {
+            if (!seenAddresses.has(assetAmount.address)) {
+              seenAddresses.add(assetAmount.address)
+              ret.add(assetAmount)
+            }
           }
         }
         break

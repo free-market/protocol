@@ -7,9 +7,7 @@ import {
   sdkAssetAndAmountToEvmInputAmount,
   assert,
   ADDRESS_ZERO,
-  AssetAmount,
   sdkAssetToEvmAsset,
-  AssetInfoService,
 } from '@freemarket/core'
 import { AssetSchema } from '@freemarket/step-sdk'
 import type { UniswapExactOut } from './model'

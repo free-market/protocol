@@ -1,7 +1,6 @@
 import {
   EncodingContext,
   EncodedWorkflowStep,
-  sdkAssetAmountToEvmInputAmount,
   assert,
   ADDRESS_ZERO,
   sdkAssetAndAmountToEvmInputAmount,

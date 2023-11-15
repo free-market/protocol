@@ -1,36 +1,26 @@
 import {
   EncodingContext,
   EncodedWorkflowStep,
-  sdkAssetAmountToEvmInputAmount,
   assert,
   ADDRESS_ZERO,
   sdkAssetAndAmountToEvmInputAmount,
-  AssetAmount,
-  sdkAssetToEvmAsset,
-  Asset,
   EvmAsset,
   getEthersSigner,
   getEthersProvider,
   Chain,
   Memoize,
   MAX_UINT256,
-  EvmInputAsset,
-  getChainIdFromChain,
   MultiStepEncodingContext,
   BeforeAfterResult,
 } from '@freemarket/core'
-import { WorkflowStepInputAssetStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
-import { TypedDataUtils, signTypedData_v4 } from 'eth-sig-util'
 
-import { AbstractStepHelper, AssetSchema, InputAssetSchema, getWrappedNativeAddress } from '@freemarket/step-sdk'
-import type { AaveBorrow, AaveInterestRateMode, AaveSupply } from './model'
+import { AbstractStepHelper, AssetSchema, getWrappedNativeAddress } from '@freemarket/step-sdk'
+import type { AaveBorrow, AaveInterestRateMode } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { TypedDataSigner } from '@ethersproject/abstract-signer'
-import { ECDSASignature } from 'ethereumjs-util'
 import { IPoolAddressesProvider__factory, IPool__factory, StableDebtToken__factory, VariableDebtToken__factory } from '../typechain-types'
 import { getPoolAddressProviderAddress } from './getPoolAddressProviderAddress'
-import { hexlify, splitSignature } from '@ethersproject/bytes'
-import { recoverAddress, verifyTypedData } from 'ethers/lib/utils'
+import { splitSignature } from '@ethersproject/bytes'
 import rootLogger from 'loglevel'
 
 const log = rootLogger.getLogger('borrow-helper')
@@ -38,12 +28,6 @@ const log = rootLogger.getLogger('borrow-helper')
 export const STEP_TYPE_ID_AAVE_BORROW = 110
 
 const EIP712_REVISION = '1'
-
-interface DelegationWithSigParams {
-  v: string
-  r: string
-  s: string
-}
 
 interface AaveBorrowActionArgs {
   amount: string | number
@@ -117,8 +101,6 @@ export class AaveBorrowHelper extends AbstractStepHelper<AaveBorrow> {
 
       // get the current nonce for the user + debt token
       const nonce = (await debtToken.nonces(context.userAddress)).toNumber()
-
-      const ret: DelegationWithSigParams[] = []
 
       // prepare for signing
       const delegateeAddress = await this.getFrontDoorAddress()

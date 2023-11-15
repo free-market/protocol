@@ -5,10 +5,8 @@ import {
   assert,
   ADDRESS_ZERO,
   AssetAmount,
-  AssetReference,
   sdkAssetToEvmAsset,
   EvmAsset,
-  AssetInfoService,
 } from '@freemarket/core'
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'
@@ -24,7 +22,7 @@ export const STEP_TYPE_ID_CURVE = 103
 export class CurveTriCrypto2SwapHelper extends AbstractStepHelper<CurveTriCrypto2Swap> {
   async encodeWorkflowStep(context: EncodingContext<CurveTriCrypto2Swap>): Promise<EncodedWorkflowStep> {
     const { chain, stepConfig } = context
-    const { inputAsset, outputAsset, inputAmount } = stepConfig
+    const { inputAsset, outputAsset } = stepConfig
     const inputAssetAmount: AssetAmount = {
       asset: inputAsset,
       amount: context.stepConfig.inputAmount,

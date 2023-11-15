@@ -140,7 +140,6 @@ export class WorkflowInstance implements IWorkflowInstance {
     return this.workflow.startStepId || this.steps[0].stepId
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private async getAddAssetTokenInfo(userAddress: string, provider: EIP1193Provider): Promise<Map<string, Erc20Info>> {
     const symbols = new Set<string>()
 
@@ -207,7 +206,6 @@ export class WorkflowInstance implements IWorkflowInstance {
     return helper.getRemittance(step)
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private async getAddAssetAmountsMap() {
     type Amounts = { absolute: Big; percent: number }
     const amountsMap = new MapWithDefault<string, Amounts>(() => ({ absolute: Big(0), percent: 0 }))
@@ -246,7 +244,6 @@ export class WorkflowInstance implements IWorkflowInstance {
     return amountsMap
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private async getAddAssetInfo(userAddress: string): Promise<AddAssetInfo> {
     const startChainProvider = this.getProvider('start-chain')
     const erc20Info = await this.getAddAssetTokenInfo(userAddress, startChainProvider)
@@ -432,7 +429,6 @@ export class WorkflowInstance implements IWorkflowInstance {
     return mapParamNameToPaths
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private validateParameters() {
     const problems = [] as WorkflowValidationProblem[]
 
@@ -544,7 +540,7 @@ export class WorkflowInstance implements IWorkflowInstance {
 
   // can be called before arguments are applied,
   // but may miss some if asset-refs are still not dereferenced
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   private async validateAssetRefs(startChain: Chain): Promise<void> {
     // not sure if there is a better way to find all assetRefs in a workflow
     const assetRefs: { path: string[]; assetRef: AssetReference }[] = []
@@ -602,7 +598,6 @@ export class WorkflowInstance implements IWorkflowInstance {
   }
 
   @Memoize()
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private getReachableSet(stepId: string): string[] {
     const mapStepIdToNextStepInfo = this.getNextStepsMap()
     const seenIds = new Set<string>()

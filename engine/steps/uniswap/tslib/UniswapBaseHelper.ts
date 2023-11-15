@@ -21,7 +21,6 @@ import {
   Percent as FmPercent,
   TWO_BIG,
   translateChain,
-  AssetInfoService,
 } from '@freemarket/core'
 import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
 // import { IQuoter__factory } from '../typechain-types'
@@ -173,7 +172,6 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
   static encodeRoute(route: SwapRoute): UniswapRoute[] {
     const encodedPaths: UniswapRoute[] = []
     for (const route2 of route.route) {
-      const amount = BigNumber.from(route2.amount.numerator.toString()).div(route2.amount.denominator.toString()).toString()
       const tokenPath = route2.tokenPath.map(it => it.address)
       let tokenPathIndex = 0
       assert(route2.route.protocol === Protocol.V3)
@@ -246,13 +244,17 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
       const oneEth = BigNumber.from(10).pow(18)
       if (nativeBalance.gt(oneEth)) {
         const toWrap = nativeBalance.sub(oneEth)
-        const weth = Weth__factory.connect(fromAsset.chains[chain]!.address, signer)
+        const fromAssetChainInfo = fromAsset.chains[chain]
+        assert(fromAssetChainInfo)
+        const weth = Weth__factory.connect(fromAssetChainInfo.address, signer)
         await (await weth.deposit({ value: toWrap, gasLimit })).wait()
       }
     }
 
     // approve uniswap router to spend the from input asset
-    const token = IERC20__factory.connect(fromAsset.chains[chain]!.address, signer)
+    const fromAssetChainInfo = fromAsset.chains[chain]
+    assert(fromAssetChainInfo)
+    const token = IERC20__factory.connect(fromAssetChainInfo.address, signer)
     await (await token.approve(SWAP_ROUTER_02_ADDRESS, MAX_UINT256, { gasLimit })).wait()
 
     // ask uniswap sdk for the route
@@ -276,7 +278,8 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     )
 
     const swapRouter = IV3SwapRouter__factory.connect(SWAP_ROUTER_02_ADDRESS, signer)
-    const encodedRoute = UniswapBaseHelper.encodeRoute(route!)
+    assert(route)
+    const encodedRoute = UniswapBaseHelper.encodeRoute(route)
     const firstRoute = encodedRoute[0]
 
     if (type === 'exactOut') {
@@ -305,7 +308,9 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
 
     // if the caller is starting with native, unwrap whatever is left
     if (fromAssetRef.type === 'native') {
-      const weth = Weth__factory.connect(fromAsset.chains[chain]!.address, signer)
+      const fromAssetChainInfo = fromAsset.chains[chain]
+      assert(fromAssetChainInfo)
+      const weth = Weth__factory.connect(fromAssetChainInfo.address, signer)
       const signerAddress = await signer.getAddress()
       const wethBalance = await weth.balanceOf(signerAddress)
       if (wethBalance.gt(0)) {
@@ -314,7 +319,9 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     }
 
     // log out the target asset balance
-    const targetAsset = IERC20__factory.connect(toAsset.chains[chain]!.address, signer)
+    const toAssetChainInfo = toAsset.chains[chain]
+    assert(toAssetChainInfo)
+    const targetAsset = IERC20__factory.connect(toAssetChainInfo.address, signer)
     const targetAssetBalance = await targetAsset.balanceOf(recipientAddress)
     logger.debug('targetAssetBalance', targetAssetBalance.toString())
   }

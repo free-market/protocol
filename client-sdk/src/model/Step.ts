@@ -1,16 +1,8 @@
 import z, { ZodObject } from 'zod'
-import {
-  aaveSupplySchema,
-  aaveWithdrawalSchema,
-  aaveBorrowSchema,
-  aaveRepaySchema,
-  aaveFlashLoanSchema,
-  aaveLoanHealthSchema,
-} from '@freemarket/aave'
+import { aaveSupplySchema, aaveWithdrawalSchema, aaveBorrowSchema, aaveRepaySchema, aaveLoanHealthSchema } from '@freemarket/aave'
 import { payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
 import { assetBalanceBranchSchema, chainBranchSchema, previousOutputBranchSchema } from '@freemarket/base-branches'
-import { curveTriCrypto2SwapSchema } from '@freemarket/curve'
 import { stargateBridgeSchema } from '@freemarket/stargate-bridge'
 import { uniswapExactInSchema, uniswapExactOutSchema } from '@freemarket/uniswap'
 import { unwrapNativeSchema, wrapNativeSchema } from '@freemarket/wrapped-native'

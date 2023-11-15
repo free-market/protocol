@@ -12,7 +12,7 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test",
-    "format": " prettier --write tslib",
+    "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],

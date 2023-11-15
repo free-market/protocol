@@ -13,7 +13,7 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "test": "hardhat test --deploy-fixture",
     "deploy-contracts_": "hardhat deploy --tags AddAssetAction",
-    "format": " prettier --write tslib",
+    "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"
   },
   "keywords": [],

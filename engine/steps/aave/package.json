@@ -13,7 +13,8 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "test": "hardhat test --deploy-fixture",
     "deploy-contracts": "hardhat deploy --tags AaveSupplyAction,AaveBorrowAction,AaveRepayAction",
-    "format": " prettier --write tslib",
+    "format": " prettier tslib --write",
+    "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"
   },
   "files": [

@@ -5,7 +5,6 @@ import {
   assetReferenceSchema,
   stepProperties,
   assetSourceSchema,
-  fungibleTokenAssetReferenceSchema,
   nonEmptyStringSchema,
   absoluteAmountSchema,
 } from '@freemarket/core'

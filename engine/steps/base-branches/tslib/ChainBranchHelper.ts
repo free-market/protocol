@@ -1,6 +1,6 @@
 import type { ChainBranch } from './model'
-import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, assert, getChainIdFromChain } from '@freemarket/core'
-import { AbstractBranchHelper, AssetSchema } from '@freemarket/step-sdk'
+import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain } from '@freemarket/core'
+import { AbstractBranchHelper } from '@freemarket/step-sdk'
 
 import * as ethers from 'ethers'
 
@@ -11,15 +11,6 @@ export const STEP_TYPE_ID_CHAIN_BRANCH = 1
 const ChainBranchParamsSchema = `
   tuple(
     uint256 chainId,
-    int16 ifYes
-  )
-`
-
-const AssetAmountBranchParamsSchema = `
-  tuple AssetAmountBranchParams (
-    ${AssetSchema} asset,
-    Comparison comparison,
-    uint256 amount,
     int16 ifYes
   )
 `

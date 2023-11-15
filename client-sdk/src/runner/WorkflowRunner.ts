@@ -4,18 +4,16 @@ import { createExecutionEvent, CreateExecutionEventArg, ExecutionEventHandler } 
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import type { IWorkflowRunner } from './IWorkflowRunner'
 import assert from '../utils/assert'
-import type Big from 'big.js'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 import { Wallet } from '@ethersproject/wallet'
 
-import rootLogger, { getLogger } from 'loglevel'
+import rootLogger from 'loglevel'
 import {
   ADDRESS_ZERO,
   Asset,
   AssetAmount,
-  AssetInfoService,
   AssetReference,
   Chain,
   ContinuationInfo,
@@ -23,7 +21,6 @@ import {
   EncodedWorkflow,
   getEthersProvider,
   getEthersSigner,
-  IERC20,
   IERC20__factory,
   IWorkflowRunner__factory,
   Memoize,
@@ -34,7 +31,7 @@ import { WorkflowContinuingStep__factory } from '@freemarket/stargate-bridge'
 
 import { AssetAmountStructOutput, AssetStructOutput } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { LogDescription } from '@ethersproject/abi'
-import { Log, TransactionReceipt, TransactionResponse } from '@ethersproject/providers'
+import { Log } from '@ethersproject/providers'
 import {
   ExecutionLog,
   ExecutionLogAssetAmount,
@@ -100,9 +97,8 @@ export class WorkflowRunner implements IWorkflowRunner {
     const events: ExecutionLog[] = []
     this.signer = signer
     const frontDoorAddr = await this.instance.getFrontDoorAddressForChain(this.startChain)
-    const runnerContract = WorkflowRunner__factory.connect(frontDoorAddr, signer)
 
-    this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
+    void this.sendEvent({ code: 'WorkflowSubmitting', chain: this.startChain })
     const nativeAmount: string = this.addAssetInfo.native.toFixed(0)
 
     // log.debug('estimating gas', await runnerContract.signer.getAddress())
@@ -132,21 +128,20 @@ export class WorkflowRunner implements IWorkflowRunner {
     // this.sendEvent({ code: 'WorkflowSubmitted', chain: this.startChain })
     log.debug(`tx txReceipt, hash=${txId}`)
     const logs = await this.toExecutionLogs(this.startChain, workflowTxReceipt.logs)
-    this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: workflowTxReceipt.transactionHash, logs })
+    void this.sendEvent({ code: 'WorkflowConfirmed', chain: this.startChain, transactionHash: workflowTxReceipt.transactionHash, logs })
     const startChainEvents = WorkflowRunner.parseLogs(workflowTxReceipt.logs)
     events.push(...logs)
 
     const sourceChain = this.startChain
 
     // TODO do something here to support multiple bridges in one workflow
-    // eslint-disable-next-line sonarjs/no-one-iteration-loop
     for (;;) {
       const continuationInfo = await this.getContinuationInfoFromEvents(startChainEvents, this.startChain)
       if (!continuationInfo) {
         break
       }
 
-      this.sendEvent({
+      void this.sendEvent({
         code: 'WorkflowWaitingForBridge',
         stepType: continuationInfo.stepType,
         sourceChain,
@@ -169,7 +164,7 @@ export class WorkflowRunner implements IWorkflowRunner {
 
     const failureLog = events.find(log => log.type === 'continuation-failure')
     const success = !failureLog
-    this.sendEvent({
+    void this.sendEvent({
       code: 'WorkflowComplete',
       chain: this.startChain,
       transactionHash: workflowTxReceipt.transactionHash,
@@ -235,11 +230,9 @@ export class WorkflowRunner implements IWorkflowRunner {
     return null
   }
 
-  private sendEvent(eventArg: CreateExecutionEventArg) {
+  private async sendEvent(eventArg: CreateExecutionEventArg) {
     const event = createExecutionEvent(eventArg)
-    for (const handler of this.eventHandlers) {
-      handler(event)
-    }
+    await Promise.all(this.eventHandlers.map(h => h(event)))
   }
 
   private getErc20ApprovalTransaction(): Promise<TransactionParams[]> {
@@ -573,7 +566,6 @@ export class WorkflowRunner implements IWorkflowRunner {
     }
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async toExecutionLogs(chain: Chain, events: Array<Log>): Promise<ExecutionLog[]> {
     const ret: ExecutionLog[] = []
     const logs = WorkflowRunner.parseLogs(events)

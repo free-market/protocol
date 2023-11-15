@@ -1,4 +1,4 @@
-import { TransactionReceipt, TransactionResponse } from '@ethersproject/providers'
+import { TransactionReceipt } from '@ethersproject/providers'
 import { EvmTransactionExecutor, TransactionParams } from './EvmTransactionExecutor'
 import { Signer } from '@ethersproject/abstract-signer'
 
