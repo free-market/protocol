@@ -1,12 +1,10 @@
+import '@freemarket/core/build/tslib/nodejs-utils'
 import test from 'ava'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { WorkflowInstance } from '../WorkflowInstance'
-import dotenv from 'dotenv'
 import { shouldRunE2e } from '../../private/test-utils'
 import { createStandardProvider } from '@freemarket/core'
 import { StargateBridge } from '@freemarket/stargate-bridge'
-
-dotenv.config()
 
 const stargateStep: StargateBridge = {
   stepId: 'stargate',

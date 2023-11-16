@@ -1,13 +1,10 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { CurveTriCrypto2SwapHelper, STEP_TYPE_ID_CURVE } from '../tslib/helper'
-import { createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
-import { getTestFixture, getUsdt, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
-import { TestErc20__factory } from '@freemarket/step-sdk'
-import { IERC20 } from '@freemarket/runner'
+import { EncodingContext, IERC20__factory } from '@freemarket/core'
+import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { CurveTriCrypto2SwapAction } from '../typechain-types'
 import { CurveTriCrypto2Swap } from '../tslib/model'
-import { BigNumber } from 'ethers'
 import Big from 'big.js'
 
 const testAmountEth = new Big('1')
@@ -77,7 +74,7 @@ describe('Curve Tricrypo2 swap', async () => {
     let encoded = await helper.encodeWorkflowStep(context)
 
     const tetherBalanceBefore = await usdt.balanceOf(triCryptoAction.address)
-    let { inputAssets, argData } = encoded
+    const { inputAssets, argData } = encoded
     await expect(triCryptoAction.execute(inputAssets, argData, otherUser, { value: testAmountWei })).not.to.be.reverted
     let tetherBalanceAfter = await usdt.balanceOf(triCryptoAction.address)
     expect(tetherBalanceAfter).to.be.greaterThan(tetherBalanceBefore)

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-console */
+import '@freemarket/core/tslib/utils/init-env'
 import rootLogger from 'loglevel'
 rootLogger.setLevel('debug')
 initLogger()
@@ -13,12 +14,6 @@ import { JsonRpcProvider, Provider, WebSocketProvider } from '@ethersproject/pro
 import assert from '../utils/assert'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { createStandardProvider, initLogger } from '@freemarket/core'
-
-import dotenv from 'dotenv'
-import os from 'os'
-import path from 'path'
-
-dotenv.config({ path: path.join(os.homedir(), '.env') })
 
 const log = rootLogger.getLogger('execute-workflow')
 

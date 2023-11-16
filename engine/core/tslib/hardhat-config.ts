@@ -1,3 +1,4 @@
+import './nodejs-utils/init-env'
 import { HardhatUserConfig, task } from 'hardhat/config'
 import os from 'os'
 import path from 'path'
@@ -12,8 +13,6 @@ const execSync = require('child_process').execSync
 function tmpFile(ext: string) {
   return path.join(tmpdir(), `temp.${Crypto.randomBytes(6).readUIntLE(0, 6).toString(36)}.${ext}`)
 }
-
-dotenv.config({ path: path.join(os.homedir(), '.env') })
 
 task('deploymentSource', 'Prints the source code for a deployed contract')
   .addParam('contract', 'The name of the contract, e.g., MyAwesomeContract')
@@ -63,7 +62,7 @@ task('dumpConfig', 'Dump the current hardhat config').setAction(async (args, hre
 })
 
 function accountIfMnemonicDefined() {
-  if (!!process.env.WALLET_MNEMONIC) {
+  if (process.env.WALLET_MNEMONIC) {
     return {
       accounts: {
         mnemonic: process.env.WALLET_MNEMONIC,

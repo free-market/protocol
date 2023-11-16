@@ -1,12 +1,9 @@
+import '@freemarket/core/build/tslib/nodejs-utils'
 import test, { ExecutionContext } from 'ava'
 import { WorkflowInstance } from '../WorkflowInstance'
 import type { Workflow, Arguments } from '../../model'
 import { throws, assert, shouldRunE2e, getStandardProvider, getStandardWebSocketProvider } from '../../private/test-utils'
 import { crossChainAaveDeposit } from '../../examples/cross-chain-deposit'
-import dotenv from 'dotenv'
-import os from 'os'
-
-dotenv.config({ path: os.homedir() + '/.env' })
 
 const testWorkflowJson = `
 {

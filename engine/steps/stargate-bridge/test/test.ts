@@ -16,7 +16,7 @@ const testAmountFull = 100_000000
 
 const USDC_ethereumGoerli = '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620'
 
-const setup = getTestFixture(hardhat, async (baseFixture) => {
+const setup = getTestFixture(hardhat, async baseFixture => {
   const {
     users: { otherUser },
     signers: { otherUserSigner },
@@ -64,7 +64,7 @@ describe('StargateBridge', async () => {
     expect(actualComposerAddress).to.eq(expectedRouterAddress)
   })
 
-  it.only('executes', async () => {
+  it('executes', async () => {
     const {
       contracts: { stargateBridgeAction, testUsdc, usdc },
       mockWorkflowInstance,

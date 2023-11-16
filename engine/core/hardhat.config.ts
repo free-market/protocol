@@ -1,16 +1,10 @@
+import './tslib/nodejs-utils/init-env'
 import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import 'hardhat-deploy'
 import '@nomiclabs/hardhat-ethers'
 import '@nomicfoundation/hardhat-chai-matchers'
 import 'solidity-docgen'
-
-// import 'hardhat-deploy-ethers'
-import os from 'os'
-import path from 'path'
-import dotenv from 'dotenv'
-
-dotenv.config({ path: path.join(os.homedir(), '.env') })
 
 const config: HardhatUserConfig = {
   solidity: '0.8.18',
@@ -37,7 +31,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       // chainId: 1,
       forking: {
-        url: 'https://rpc.ankr.com/eth',
+        url: process.env.HARDHAT_FORK_URL || 'https://rpc.ankr.com/eth',
         blockNumber: 16889307,
       },
       accounts: {
