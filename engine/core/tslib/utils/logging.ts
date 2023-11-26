@@ -34,3 +34,7 @@ export function initLogger(level?: LogLevelNames) {
 export function getLogger(name: string) {
   return log.getLogger(name)
 }
+
+export function isDebugLoggingEnabled(logger: log.Logger) {
+  return logger.getLevel() <= log.levels.DEBUG
+}
