@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import './IAaveV3Pool.sol';
+import './aave-interfaces/IAaveV3Pool.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 // import '../../mocks/MockToken.sol';
 import '@freemarket/step-sdk/contracts/TestErc20.sol';
@@ -43,4 +43,8 @@ contract MockAavePool is IAaveV3Pool {
   function getUserConfiguration(address user) external view override returns (UserConfigurationMap memory) {}
 
   function setUserUseReserveAsCollateral(address asset, bool useAsCollateral) external override {}
+
+  function ADDRESSES_PROVIDER() external override returns (IPoolAddressesProvider) {}
+
+  function withdraw(address asset, uint256 amount, address to) external override returns (uint256) {}
 }

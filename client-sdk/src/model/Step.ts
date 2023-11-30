@@ -1,5 +1,5 @@
 import z, { ZodObject } from 'zod'
-import { aaveSupplySchema, aaveWithdrawalSchema, aaveBorrowSchema, aaveRepaySchema, aaveLoanHealthSchema } from '@freemarket/aave'
+import { aaveSupplySchema, aaveWithdrawSchema, aaveBorrowSchema, aaveRepaySchema, aaveLoanHealthSchema } from '@freemarket/aave'
 import { payGelatoRelaySchema } from './steps'
 import { addAssetSchema } from '@freemarket/add-asset'
 import { assetBalanceBranchSchema, chainBranchSchema, previousOutputBranchSchema } from '@freemarket/base-branches'
@@ -12,7 +12,7 @@ import { assert } from '@freemarket/core'
 export const stepSchema = z.discriminatedUnion('type', [
   // actions
   aaveSupplySchema,
-  aaveWithdrawalSchema,
+  aaveWithdrawSchema,
   aaveBorrowSchema,
   aaveRepaySchema,
   aaveLoanHealthSchema,

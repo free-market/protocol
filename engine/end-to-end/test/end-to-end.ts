@@ -230,7 +230,7 @@ if (shouldRunE2e()) {
       for (const event of events) {
         console.log(event.code, event.message)
         if (event.code === 'WorkflowComplete') {
-          for (const wfEvent of event.events) {
+          for (const wfEvent of event.logs) {
             console.log(`  ${wfEvent.chain} ${wfEvent.type}`)
             if (wfEvent.type === 'step') {
               console.log(`  ${wfEvent.stepInfo.name}`)

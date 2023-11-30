@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
-import './IAaveV3Pool.sol';
+import './aave-interfaces/IAaveV3Pool.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';

@@ -1,6 +1,7 @@
+import { baseTokenUrl } from '../getDefaultFungibleTokens'
 import { Chain, NativeAsset } from '../model'
 
-const ETH_ICON_URL = 'https://metadata.fmprotocol.com/icons/native/eth.png'
+const ETH_ICON_URL = `${baseTokenUrl}/icons/native/eth.png`
 
 export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
   ethereum: {
@@ -35,28 +36,28 @@ export const NATIVE_ASSETS: Record<Chain, NativeAsset> = {
     type: 'native',
     name: 'Matic',
     symbol: 'MATIC',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/matic.png',
+    iconUrl: `${baseTokenUrl}/icons/native/matic.png`,
     chain: 'polygon',
   },
   binance: {
     type: 'native',
     name: 'BNB',
     symbol: 'BNB',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/bnb.png',
+    iconUrl: `${baseTokenUrl}/icons/native/bnb.png`,
     chain: 'binance',
   },
   avalanche: {
     type: 'native',
     name: 'AVAX',
     symbol: 'AVAX',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/avax.png',
+    iconUrl: `${baseTokenUrl}/icons/native/avax.png`,
     chain: 'avalanche',
   },
   fantom: {
     type: 'native',
     name: 'FTM',
     symbol: 'FTM',
-    iconUrl: 'https://metadata.fmprotocol.com/icons/native/ftm.png',
+    iconUrl: `${baseTokenUrl}/icons/native/ftm.png`,
     chain: 'fantom',
   },
   hardhat: {

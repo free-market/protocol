@@ -62,36 +62,43 @@ const workflow: Workflow = {
       iconUrl: 'https://etherscan.io/token/images/centre-usdc_28.png',
       chains: {
         ethereum: {
+          type: 'erc20',
           address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
           usd: 1,
           decimals: 6,
         },
         binance: {
+          type: 'erc20',
           address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
           usd: 0.9994,
           decimals: 18,
         },
         avalanche: {
+          type: 'erc20',
           address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
           usd: 0.9999,
           decimals: 6,
         },
         polygon: {
+          type: 'erc20',
           address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
           usd: 0.9994,
           decimals: 6,
         },
         arbitrum: {
+          type: 'erc20',
           address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
           usd: 1,
           decimals: 6,
         },
         optimism: {
+          type: 'erc20',
           address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
           usd: 1.001,
           decimals: 6,
         },
         fantom: {
+          type: 'erc20',
           address: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
           usd: 1.001,
           decimals: 6,

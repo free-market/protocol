@@ -2,11 +2,11 @@ import z, { ZodType, ZodTypeAny } from 'zod'
 import { assert } from '../utils/assert'
 import { nonEmptyStringSchema } from './NonEmptyString'
 
-export const PARAMETER_NAME_REGEX = '[a-zA-Z0-9-.]+'
+export const PARAMETER_NAME_REGEX = '[a-zA-Z0-9-. ]+'
 export const PARAMETER_NAME_REGEXP = new RegExp(PARAMETER_NAME_REGEX)
 export const parameterNameSchema = z.string().regex(PARAMETER_NAME_REGEXP)
 
-export const PARAMETER_REFERENCE_REGEX = `^ *{{ *(${PARAMETER_NAME_REGEX}) *}} *$`
+export const PARAMETER_REFERENCE_REGEX = `^ *{{ *(${PARAMETER_NAME_REGEX}) }} *$`
 
 export const PARAMETER_REFERENCE_REGEXP = new RegExp(PARAMETER_REFERENCE_REGEX)
 export const parameterReferenceSchema = z.string().regex(PARAMETER_REFERENCE_REGEXP)

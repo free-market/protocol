@@ -22,15 +22,14 @@ export const aaveSupplySchema = createStepSchema('aave-supply')
 
 export interface AaveSupply extends z.infer<typeof aaveSupplySchema> {}
 
-export const aaveWithdrawalSchema = createStepSchema('aave-withdrawal')
+export const aaveWithdrawSchema = createStepSchema('aave-withdraw')
   .describe('Withdraws assets from Aave.')
   .extend({
     asset: assetReferenceSchema.describe(stepProperties('Asset', 'The asset to withdrawal from Aave.')),
     amount: amountSchema.describe(stepProperties('Amount', 'The asset to withdrawal from Aave.')),
-    source: assetSourceSchema.describe(stepProperties('Source', sourceDescription)),
   })
 
-export interface AaveWithdrawal extends z.infer<typeof aaveWithdrawalSchema> {}
+export interface AaveWithdraw extends z.infer<typeof aaveWithdrawSchema> {}
 
 export const aaveInterestRateModeSchema = z.enum(['stable', 'variable'])
 

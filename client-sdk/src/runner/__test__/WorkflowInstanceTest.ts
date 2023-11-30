@@ -372,6 +372,7 @@ test.skip('handles asset source caller', async t => {
         type: 'fungible-token',
         chains: {
           ethereum: {
+            type: 'erc20',
             address: '0xDf0360Ad8C5ccf25095Aa97ee5F2785c8d848620',
             decimals: 6,
           },
@@ -383,6 +384,7 @@ test.skip('handles asset source caller', async t => {
         type: 'fungible-token',
         chains: {
           ethereum: {
+            type: 'erc20',
             address: '0x5BCc22abEC37337630C0E0dd41D64fd86CaeE951',
             decimals: 6,
           },

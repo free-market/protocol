@@ -1,4 +1,4 @@
-interface MemoizeArgs {
+export interface MemoizeArgs {
   expiring?: number
   hashFunction?: boolean | ((...args: any[]) => any)
   tags?: string[]

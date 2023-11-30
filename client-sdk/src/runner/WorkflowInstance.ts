@@ -362,29 +362,37 @@ export class WorkflowInstance implements IWorkflowInstance {
   // TODO probably don't need to instantiate WorkflowInstance here
   private applyArguments(ignoreInternalParams: boolean, args: Arguments = {}): WorkflowInstance {
     // validation only works after setting providers
-    const rv = new WorkflowInstance(cloneDeep(this.workflow), { skipValidation: true })
-    rv.providers = new Map(this.providers)
-    rv.nonForkedProviders = new Map(this.nonForkedProviders)
-    this.validateWorkflowSteps()
-    this.validateParameters()
-    const allParams = rv.findAllParameterReferences()
-    for (const [paramName, paths] of allParams) {
-      if (ignoreInternalParams && paramName.startsWith('remittances.')) {
-        continue
-      }
-      const argValue = args[paramName]
-      for (const path of paths) {
-        assert(path.length > 0)
-        const step = rv.getStep(path[0])
-        let obj = step as Record<string, any>
-        for (let i = 1; i < path.length - 1; ++i) {
-          obj = obj[path[i]]
+    try {
+      const rv = new WorkflowInstance(cloneDeep(this.workflow), { skipValidation: true })
+      rv.providers = new Map(this.providers)
+      rv.nonForkedProviders = new Map(this.nonForkedProviders)
+      this.validateWorkflowSteps()
+      this.validateParameters()
+      const allParams = rv.findAllParameterReferences()
+      for (const [paramName, paths] of allParams) {
+        if (ignoreInternalParams && paramName.startsWith('remittances.')) {
+          continue
         }
-        obj[path[path.length - 1]] = argValue
+        const argValue = args[paramName]
+        if (argValue === undefined) {
+          throw new Error(`Argument '${paramName}' is not provided`)
+        }
+        for (const path of paths) {
+          assert(path.length > 0)
+          const step = rv.getStep(path[0])
+          let obj = step as Record<string, any>
+          for (let i = 1; i < path.length - 1; ++i) {
+            obj = obj[path[i]]
+          }
+          obj[path[path.length - 1]] = argValue
+        }
       }
+      delete rv.workflow.parameters
+      return rv
+    } catch (e) {
+      console.log('applyArguments', e)
+      throw e
     }
-    delete rv.workflow.parameters
-    return rv
   }
 
   @Memoize()

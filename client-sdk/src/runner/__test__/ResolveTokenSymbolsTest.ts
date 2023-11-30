@@ -32,6 +32,7 @@ const workflowWithCustomToken: Workflow = {
       symbol: fakeTokenSymbol,
       chains: {
         ethereum: {
+          type: 'erc20',
           address: fakeTokenAddress,
           decimals: 18,
         },

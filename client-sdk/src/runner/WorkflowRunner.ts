@@ -19,11 +19,13 @@ import {
   ContinuationInfo,
   EncodeContinuationResult,
   EncodedWorkflow,
+  FungibleToken,
   getEthersProvider,
   getEthersSigner,
   IERC20__factory,
   IWorkflowRunner__factory,
   Memoize,
+  MemoizeArgs,
   translateChain,
 } from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
@@ -40,7 +42,7 @@ import {
   ExecutionLogStep,
 } from './ExecutionLog'
 import { getPlatformInfos, StepInfo } from '../platform-infos'
-import { AaveBorrowAction__factory } from '@freemarket/aave'
+import { AaveBorrowAction__factory, IERC20Detailed__factory } from '@freemarket/aave'
 import { EthersTransactionExecutor } from './EthersTransactionExecutor'
 import { TransactionParams } from './EvmTransactionExecutor'
 const log = rootLogger.getLogger('WorkflowRunner')
@@ -85,11 +87,16 @@ export class WorkflowRunner implements IWorkflowRunner {
       const stdProvider = this.instance.getProvider('start-chain')
       const startChainSigner = getEthersSigner(stdProvider)
       const erc20Approvals = await this.getErc20ApprovalTransaction()
-      return this.submitWorkflow(startChainSigner, erc20Approvals)
+      // await this to trigger the catch block if there's an error
+      return await this.submitWorkflow(startChainSigner, erc20Approvals)
     } catch (e) {
       const s = e instanceof Error ? e.stack : (e as any)
       log.error(`Workflow unsuccessful: ${s}`)
-      throw e
+      // throw e
+      const isRevert = (<any>e).revert === true
+      const failureType = isRevert ? 'revert' : 'unknown'
+      await this.sendEvent({ code: 'WorkflowFailed', chain: this.startChain, error: e, type: failureType })
+      return []
     }
   }
 
@@ -168,7 +175,7 @@ export class WorkflowRunner implements IWorkflowRunner {
       code: 'WorkflowComplete',
       chain: this.startChain,
       transactionHash: workflowTxReceipt.transactionHash,
-      events,
+      logs: events,
       success,
     })
 
@@ -484,12 +491,33 @@ export class WorkflowRunner implements IWorkflowRunner {
     return ret
   }
 
+  @Memoize({ hashFunction: (chain: Chain, evmAsset: AssetStructOutput) => JSON.stringify({ chain, addr: evmAsset.assetAddress }) })
   private async toAsset(chain: Chain, evmAsset: AssetStructOutput): Promise<Asset | undefined> {
     if (evmAsset.assetType === 0) {
       const assetRef: AssetReference = { type: 'native' }
       return await this.instance.dereferenceAsset(assetRef, chain)
     }
-    return this.instance.getFungibleTokenByChainAndAddress(chain, evmAsset.assetAddress)
+    const knownAsset = await this.instance.getFungibleTokenByChainAndAddress(chain, evmAsset.assetAddress)
+    if (knownAsset) {
+      return knownAsset
+    }
+
+    const provider = getEthersProvider(this.instance.getProvider(chain))
+    const erc20 = IERC20Detailed__factory.connect(evmAsset.assetAddress, provider)
+    const [symbol, name, decimals] = await Promise.all([erc20.symbol(), erc20.name(), erc20.decimals()])
+    const asset: FungibleToken = {
+      type: 'fungible-token',
+      symbol,
+      name,
+      chains: {
+        [chain]: {
+          address: evmAsset.assetAddress,
+          decimals: decimals,
+          name,
+        },
+      },
+    }
+    return asset
   }
 
   private async toExecutionLogAssetAmount(chain: Chain, aa: AssetAmountStructOutput): Promise<ExecutionLogAssetAmount> {

@@ -7,6 +7,7 @@ import { translateChain } from './evm-utils'
 import { Memoize } from './memoize-decorator'
 import { assert } from './assert'
 import { getLogger } from './logging'
+import { baseTokenUrl } from '../getDefaultFungibleTokens'
 
 export type AddressToSymbol = Record<string, string>
 const logger = getLogger('asset-utils')
@@ -40,7 +41,7 @@ export class AssetInfoService {
   @Memoize()
   static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
     logger.debug('requesting default fungible tokens')
-    const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
+    const response = await axios.get(`${baseTokenUrl}/tokens.json`)
     logger.debug('received default fungible tokens')
     const tokenSchema = z.record(z.string(), fungibleTokenSchema)
     logger.debug('about to parse')
@@ -66,12 +67,16 @@ export class AssetInfoService {
       }
     }
     const defaultTokens = await AssetInfoService.getDefaultFungibleTokens()
-    return defaultTokens[symbol]
+    const defaultToken = defaultTokens[symbol]
+    if (defaultToken) {
+      return defaultToken
+    }
+    return undefined
   }
 
-  @Memoize()
+  // @Memoize()
   static async getDefaultFungibleTokensByAddress(): Promise<Record<string, AddressToSymbol>> {
-    const response = await axios.get('https://metadata.fmprotocol.com/tokens-by-address.json')
+    const response = await axios.get(`${baseTokenUrl}/tokens-by-address.json`)
     return response.data
   }
 

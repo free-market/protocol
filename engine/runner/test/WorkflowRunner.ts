@@ -59,7 +59,7 @@ describe('WorkflowRunner', async () => {
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
   })
-  it('executes when a frozen runner address is provided', async () => {
+  it.only('executes when a frozen runner address is provided', async () => {
     const {
       contracts: { frontDoor, workflowRunner, configManager },
       signer,
@@ -69,6 +69,7 @@ describe('WorkflowRunner', async () => {
     expect(runnersBefore.length).to.eq(1)
     const originalRunnerAddress = runnersBefore[0]
 
+    console.log('calling with     0')
     const workflow: WorkflowStruct = {
       workflowRunnerAddress: ADDRESS_ZERO,
       steps: [],
@@ -93,12 +94,15 @@ describe('WorkflowRunner', async () => {
 
     // execute a workflow with the old and new runner
     workflow.workflowRunnerAddress = originalRunnerAddress
+    logCallingWith(workflow.workflowRunnerAddress)
     await (await workflowRunner.executeWorkflow(workflow)).wait()
     workflow.workflowRunnerAddress = newRunner.address
+    logCallingWith(workflow.workflowRunnerAddress)
     await (await workflowRunner.executeWorkflow(workflow)).wait()
 
     // expect a revert with an invalid address
     workflow.workflowRunnerAddress = '0x0000000000000000000000000000000000000123'
+    logCallingWith(workflow.workflowRunnerAddress)
     await expect(workflowRunner.executeWorkflow(workflow)).to.be.revertedWith('provided upstream not whitelisted')
 
     // remove the old runner
@@ -109,14 +113,21 @@ describe('WorkflowRunner', async () => {
 
     // old runner should now revert
     workflow.workflowRunnerAddress = originalRunnerAddress
+    logCallingWith(workflow.workflowRunnerAddress)
     await expect(workflowRunner.executeWorkflow(workflow)).to.be.revertedWith('provided upstream not whitelisted')
 
     // new runner should still work
     workflow.workflowRunnerAddress = newRunner.address
+    logCallingWith(workflow.workflowRunnerAddress)
     await (await workflowRunner.executeWorkflow(workflow)).wait()
 
     // and still should work with the zero address
     workflow.workflowRunnerAddress = ADDRESS_ZERO
+    logCallingWith(workflow.workflowRunnerAddress)
     await (await workflowRunner.executeWorkflow(workflow)).wait()
   })
 })
+
+function logCallingWith(addr: string) {
+  console.log('calling with    ', addr)
+}

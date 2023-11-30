@@ -12,14 +12,13 @@ import {
   IWorkflow,
   getDefaultFungibleTokens,
   Memoize,
+  baseTokenUrl,
 } from '@freemarket/core'
 
-import { initEnv } from '@freemarket/core/build/tslib/utils/env-utils'
+import '@freemarket/core/tslib/utils/init-env'
 
 import type { EIP1193Provider } from 'eip1193-provider'
 import axios from 'axios'
-
-initEnv()
 
 export class MockWorkflowInstance implements IWorkflow {
   // map symbol to erc20 contract address
@@ -43,7 +42,7 @@ export class MockWorkflowInstance implements IWorkflow {
 
   @Memoize()
   static async getDefaultFungibleTokens(): Promise<Record<string, FungibleToken>> {
-    const response = await axios.get('https://metadata.fmprotocol.com/tokens.json')
+    const response = await axios.get(`${baseTokenUrl}/tokens.json`)
     return response.data
   }
 
@@ -67,6 +66,7 @@ export class MockWorkflowInstance implements IWorkflow {
     if (address) {
       const chains: FungibleToken['chains'] = {}
       chains[chain] = {
+        type: 'erc20',
         address,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         decimals: this.decimals.get(assetRef.symbol)!,

@@ -29,19 +29,21 @@ export const nativeAssetSchema = createAssetSchema('native').extend({
 
 export interface NativeAsset extends z.infer<typeof nativeAssetSchema> {}
 
-export const assetChainInfoSchema = z.object({
+export const fungibleTokenChainInfoSchema = z.object({
   /** The address of the asset.  */
+  type: z.literal('erc20'),
   address: addressSchema,
   usd: z.number().optional(),
   decimals: z.number(),
+  name: z.string().optional(),
 })
 
 /** Chain specific asset information. */
-export interface FungibleTokenChainInfo extends z.infer<typeof assetChainInfoSchema> {}
+export interface FungibleTokenChainInfo extends z.infer<typeof fungibleTokenChainInfoSchema> {}
 
 export const fungibleTokenSchema = createAssetSchema('fungible-token').extend({
   /** Info about the asset on each supported chain */
-  chains: z.record(chainSchema, assetChainInfoSchema),
+  chains: z.record(chainSchema, fungibleTokenChainInfoSchema),
 })
 
 /** Asset represents anything holding value on the blockchain for a user.  */
@@ -50,3 +52,7 @@ export interface FungibleToken extends z.infer<typeof fungibleTokenSchema> {}
 export const assetSchema = z.discriminatedUnion('type', [nativeAssetSchema, fungibleTokenSchema])
 
 export type Asset = z.infer<typeof assetSchema>
+
+export const fungibleTokenMetadataSchema = z.record(nonEmptyStringSchema, fungibleTokenSchema)
+
+export type FungibleTokenMetadata = z.infer<typeof fungibleTokenMetadataSchema>

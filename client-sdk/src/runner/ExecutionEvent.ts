@@ -70,8 +70,15 @@ export interface WorkflowComplete {
   code: 'WorkflowComplete'
   chain: Chain
   transactionHash: string
-  events: ExecutionLog[]
+  logs: ExecutionLog[]
   success: boolean
+}
+
+export interface WorkflowFailed {
+  code: 'WorkflowFailed'
+  chain: Chain
+  type: 'unknown' | 'revert'
+  error: unknown
 }
 
 export type CreateExecutionEventArg =
@@ -85,6 +92,7 @@ export type CreateExecutionEventArg =
   | WorkflowConfirmed
   | WorkflowWaitingForContinuation
   | WorkflowComplete
+  | WorkflowFailed
 
 export type ExecutionEvent = CreateExecutionEventArg & { message: string }
 
@@ -109,13 +117,15 @@ export function createExecutionEvent(event: CreateExecutionEventArg): ExecutionE
     case 'WorkflowWaitingForBridge':
       return { ...event, message: `Waiting for ${event.stepType} to bridge funds from ${event.sourceChain} to ${event.targetChain}` }
     case 'WorkflowComplete': {
-      const failureLog = event.events.find(log => log.type === 'continuation-failure')
+      const failureLog = event.logs.find(log => log.type === 'continuation-failure')
       if (failureLog) {
         assert(failureLog.type === 'continuation-failure')
         return { ...event, message: `Workflow has failed: ${failureLog.reason}` }
       }
       return { ...event, message: `Workflow has completed successfully` }
     }
+    case 'WorkflowFailed':
+      return { ...event, message: `Workflow has failed: ${event.error}` }
   }
 }
 

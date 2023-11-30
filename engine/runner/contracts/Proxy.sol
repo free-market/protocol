@@ -21,7 +21,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
 
   function resolveUpstream() internal view returns (address addr) {
     address upstreamFromArgs = getAddressFromCalldata();
-    // console.log('upstreamFromArgs', upstreamFromArgs);
+    console.log('upstreamFromArgs', upstreamFromArgs);
     if (upstreamFromArgs != address(0)) {
       // console.log('upstreamFromArgs != address(0)');
       EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
@@ -42,9 +42,9 @@ contract Proxy is FreeMarketBase, IHasUpstream {
 
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
-    console.log('fallback', resolveUpstream());
+    // console.log('fallback', resolveUpstream());
     address upstream = resolveUpstream();
-    console.log('upstream', upstream);
+    // console.log('upstream', upstream);
     _delegate(upstream);
   }
 
