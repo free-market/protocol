@@ -74,13 +74,13 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     return LibConfigReader.getStepAddressInternal(eternalStorageAddress, stepTypeId);
   }
 
-  function executeWorkflow(Workflow calldata workflow) external payable nonReentrant {
+  function executeWorkflow(Workflow calldata workflow) external payable {
     AssetAmount[] memory startingAssets = new AssetAmount[](1);
     startingAssets[0] = AssetAmount(Asset(AssetType.Native, address(0)), 0);
     executeWorkflow(msg.sender, workflow, startingAssets);
   }
 
-  function executeWorkflow(address userAddress, Workflow memory workflow, AssetAmount[] memory startingAssets) internal {
+  function executeWorkflow(address userAddress, Workflow memory workflow, AssetAmount[] memory startingAssets) internal nonReentrant {
     emit WorkflowExecution(userAddress, workflow);
     // workflow starts on the step with index 0
     uint16 currentStepIndex = 0;
