@@ -311,10 +311,10 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       // assetBalances should have been initialized with the correct amount
     } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
       IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
-      uint256 allowance = token.allowance(userAddress, address(this));
-      require(allowance >= inputAssetAmount.amount, 'insuf allow for erc20');
+      uint256 balanceBefore = token.balanceOf(address(this));
       SafeERC20.safeTransferFrom(token, userAddress, address(this), inputAssetAmount.amount);
-      assetBalances.credit(inputAssetAmount.asset, inputAssetAmount.amount);
+      uint256 balanceIncrease = token.balanceOf(address(this)) - balanceBefore;
+      assetBalances.credit(inputAssetAmount.asset, balanceIncrease);
     } else {
       revert('unk asset type in inputAssetAmounts');
     }
