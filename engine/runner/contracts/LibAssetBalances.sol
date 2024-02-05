@@ -43,7 +43,7 @@ library LibAssetBalances {
         return entries[i];
       }
     }
-    return AssetEntry(0, 0, 0, 0);
+    return AssetEntry(assetAsInt, 0, 0, 0);
   }
 
   function credit(AssetBalances memory entrySet, uint256 assetAsInt, uint256 amount) internal pure {
