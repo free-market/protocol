@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 
 // abicoder v2 is enabled by default: https://docs.soliditylang.org/en/v0.8.0/080-breaking-changes.html
 // pragma abicoder v2;
@@ -14,11 +14,7 @@ interface IStargateRouter {
     bytes dstNativeAddr;
   }
 
-  function addLiquidity(
-    uint256 _poolId,
-    uint256 _amountLD,
-    address _to
-  ) external;
+  function addLiquidity(uint256 _poolId, uint256 _amountLD, address _to) external;
 
   function swap(
     uint16 _dstChainId,
@@ -43,11 +39,7 @@ interface IStargateRouter {
     lzTxObj memory _lzTxParams
   ) external payable;
 
-  function instantRedeemLocal(
-    uint16 _srcPoolId,
-    uint256 _amountLP,
-    address _to
-  ) external returns (uint256);
+  function instantRedeemLocal(uint16 _srcPoolId, uint256 _amountLP, address _to) external returns (uint256);
 
   function redeemLocal(
     uint16 _dstChainId,
@@ -59,12 +51,7 @@ interface IStargateRouter {
     lzTxObj memory _lzTxParams
   ) external payable;
 
-  function sendCredits(
-    uint16 _dstChainId,
-    uint256 _srcPoolId,
-    uint256 _dstPoolId,
-    address payable _refundAddress
-  ) external payable;
+  function sendCredits(uint16 _dstChainId, uint256 _srcPoolId, uint256 _dstPoolId, address payable _refundAddress) external payable;
 
   function quoteLayerZeroFee(
     uint16 _dstChainId,

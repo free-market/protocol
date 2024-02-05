@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 
 import '@freemarket/core/contracts/IWorkflowStep.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';

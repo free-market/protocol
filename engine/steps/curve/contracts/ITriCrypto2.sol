@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 
 interface ITriCrypto2 {
-    function coins(uint256 i) external view returns (address);
+  function coins(uint256 i) external view returns (address);
 
-    function get_dy(uint256 i, uint256 j, uint256 dx) external view returns (uint256);
+  function get_dy(uint256 i, uint256 j, uint256 dx) external view returns (uint256);
 
-    function exchange(uint256 i, uint256 j, uint256 dx, uint256 min_dy, bool use_eth) external payable;
+  function exchange(uint256 i, uint256 j, uint256 dx, uint256 min_dy, bool use_eth) external payable;
 }

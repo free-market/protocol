@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 import './Workflow.sol';
 
 // The payload passed form the source chain to the destination chains to continue a multi-chain workflow

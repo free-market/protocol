@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 
 /// @title The interface between WorkflowRunner and each Step implementation when the step needs
 /// to do something before the steps in the workflow execute.

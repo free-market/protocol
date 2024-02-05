@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
     compilers: [
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       {
-        version: '0.8.13',
+        version: '0.8.18',
       },
       {
         version: '0.7.6',

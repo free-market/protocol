@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.18;
 
 import '@freemarket/core/contracts/model/WorkflowStep.sol';
 import './LibAssetBalances.sol';
@@ -7,7 +7,6 @@ import 'hardhat/console.sol';
 import './Comparison.sol';
 
 using LibAssetBalances for LibAssetBalances.AssetBalances;
-
 
 struct AssetComparisonParams {
   Asset asset;
@@ -35,7 +34,7 @@ library AssetComparison {
     uint256 amount;
     if (assetComparisonType == AssetComparisonType.Balance) {
       amount = assetEntry.balance;
-    } else  if (assetComparisonType == AssetComparisonType.Credit) {
+    } else if (assetComparisonType == AssetComparisonType.Credit) {
       amount = assetEntry.previousCredit;
     } else {
       amount = assetEntry.previousDebit;
