@@ -17,7 +17,6 @@ struct AaveWithdrawParameters {
   Asset assetToWithdraw;
   uint256 amountToWithdraw;
   bool amountIsPercent;
-  bool sourceIsCaller;
 }
 
 contract AaveWithdrawAction is IWorkflowStep {
@@ -37,8 +36,6 @@ contract AaveWithdrawAction is IWorkflowStep {
     IERC20 aToken;
     AaveWithdrawParameters args;
   }
-
-  function dummy(AaveWithdrawParameters memory foo) public {}
 
   function execute(
     AssetAmount[] calldata assetAmounts,

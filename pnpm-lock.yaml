@@ -47,9 +47,6 @@ importers:
       '@freemarket/core':
         specifier: workspace:*
         version: link:../engine/core
-      '@freemarket/curve':
-        specifier: workspace:*
-        version: link:../engine/steps/curve
       '@freemarket/roadmap':
         specifier: workspace:*
         version: link:../engine/steps/roadmap
@@ -662,8 +659,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -767,9 +764,6 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.4.7
         version: 5.7.2
-      '@freemarket/curve':
-        specifier: workspace:*
-        version: link:../curve
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^1.0.6
         version: 1.0.6(chai@4.3.10)(ethers@5.7.2)(hardhat-deploy-ethers@0.3.0-beta.13)(hardhat@2.18.3)
@@ -804,8 +798,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -842,6 +836,9 @@ importers:
       mocha:
         specifier: ^10.2.0
         version: 10.2.0
+      mocha-suppress-logs:
+        specifier: ^0.5.1
+        version: 0.5.1
       prettier:
         specifier: ^2.8.5
         version: 2.8.8
@@ -928,8 +925,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -1046,8 +1043,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -1078,133 +1075,6 @@ importers:
       lodash.merge:
         specifier: ^4.6.2
         version: 4.6.2
-      prettier:
-        specifier: ^2.8.5
-        version: 2.8.8
-      rimraf:
-        specifier: ^4.4.0
-        version: 4.4.1
-      solidity-coverage:
-        specifier: ^0.8.0
-        version: 0.8.5(hardhat@2.18.3)
-      ts-node:
-        specifier: '>=8.0.0'
-        version: 10.9.1(@types/node@18.18.7)(typescript@4.9.5)
-      typechain:
-        specifier: ^8.1.0
-        version: 8.3.2(typescript@4.9.5)
-      typescript:
-        specifier: '>=4.5.0'
-        version: 4.9.5
-
-  engine/steps/curve:
-    dependencies:
-      '@ethersproject/bytes':
-        specifier: ^5.0.0
-        version: 5.7.0
-      '@freemarket/core':
-        specifier: workspace:*
-        version: link:../../core
-      '@freemarket/runner':
-        specifier: workspace:*
-        version: link:../../runner
-      '@freemarket/step-sdk':
-        specifier: workspace:*
-        version: link:../../step-sdk
-      '@openzeppelin/contracts':
-        specifier: ^4.8.0
-        version: 4.9.3
-      big.js:
-        specifier: ^6.2.1
-        version: 6.2.1
-      loglevel:
-        specifier: ^1.8.1
-        version: 1.8.1
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      zod:
-        specifier: ^3.21.4
-        version: 3.22.4
-    devDependencies:
-      '@ethersproject/abi':
-        specifier: ^5.4.7
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.4.7
-        version: 5.7.2
-      '@nomicfoundation/hardhat-chai-matchers':
-        specifier: ^1.0.6
-        version: 1.0.6(chai@4.3.10)(ethers@5.7.2)(hardhat-deploy-ethers@0.3.0-beta.13)(hardhat@2.18.3)
-      '@nomicfoundation/hardhat-network-helpers':
-        specifier: ^1.0.0
-        version: 1.0.9(hardhat@2.18.3)
-      '@nomicfoundation/hardhat-toolbox':
-        specifier: ^2.0.0
-        version: 2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.9)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.1)(@typechain/hardhat@6.1.6)(@types/chai@4.3.9)(@types/mocha@10.0.3)(@types/node@18.18.7)(chai@4.3.10)(ethers@5.7.2)(hardhat-deploy-ethers@0.3.0-beta.13)(hardhat-gas-reporter@1.0.9)(hardhat@2.18.3)(solidity-coverage@0.8.5)(ts-node@10.9.1)(typechain@8.3.2)(typescript@4.9.5)
-      '@nomiclabs/hardhat-ethers':
-        specifier: npm:hardhat-deploy-ethers@0.3.0-beta.13
-        version: /hardhat-deploy-ethers@0.3.0-beta.13(ethers@5.7.2)(hardhat@2.18.3)
-      '@nomiclabs/hardhat-etherscan':
-        specifier: ^3.0.0
-        version: 3.1.7(hardhat@2.18.3)
-      '@typechain/ethers-v5':
-        specifier: ^10.2.0
-        version: 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.3.2)(typescript@4.9.5)
-      '@typechain/hardhat':
-        specifier: ^6.1.2
-        version: 6.1.6(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(ethers@5.7.2)(hardhat@2.18.3)(typechain@8.3.2)
-      '@types/big.js':
-        specifier: ^6.1.6
-        version: 6.2.1
-      '@types/chai':
-        specifier: ^4.2.0
-        version: 4.3.9
-      '@types/mocha':
-        specifier: '>=9.1.0'
-        version: 10.0.3
-      '@types/node':
-        specifier: '>=12.0.0'
-        version: 18.18.7
-      '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^5.55.0
-        version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
-      '@typescript-eslint/parser':
-        specifier: ^5.55.0
-        version: 5.62.0(eslint@8.52.0)(typescript@4.9.5)
-      chai:
-        specifier: ^4.2.0
-        version: 4.3.10
-      eslint:
-        specifier: ^8.36.0
-        version: 8.52.0
-      eslint-config-prettier:
-        specifier: ^8.7.0
-        version: 8.10.0(eslint@8.52.0)
-      eslint-plugin-prettier:
-        specifier: ^4.2.1
-        version: 4.2.1(eslint-config-prettier@8.10.0)(eslint@8.52.0)(prettier@2.8.8)
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
-      hardhat:
-        specifier: ^2.13.0
-        version: 2.18.3(ts-node@10.9.1)(typescript@4.9.5)
-      hardhat-deploy:
-        specifier: ^0.11.25
-        version: 0.11.43
-      hardhat-gas-reporter:
-        specifier: ^1.0.8
-        version: 1.0.9(hardhat@2.18.3)
-      lodash.merge:
-        specifier: ^4.6.2
-        version: 4.6.2
-      mocha:
-        specifier: ^10.2.0
-        version: 10.2.0
       prettier:
         specifier: ^2.8.5
         version: 2.8.8
@@ -1288,8 +1158,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -1403,8 +1273,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -1557,8 +1427,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -1681,8 +1551,8 @@ importers:
         specifier: '>=12.0.0'
         version: 18.18.7
       '@types/react':
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 18.2.38
+        version: 18.2.38
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.55.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.52.0)(typescript@4.9.5)
@@ -3107,8 +2977,8 @@ packages:
     resolution: {integrity: sha512-wYLxw35euwqGvTDx6zfY1vokBFnsK0HNrzc6xNHchxfO2hpuRg74GbkEW7e3sSmPvj0TjCDT1VCa6OtHXnubsg==}
     dev: true
 
-  /@types/react@18.2.0:
-    resolution: {integrity: sha512-0FLj93y5USLHdnhIhABk83rm8XEGA7kH3cr+YUlvxoUGp1xNt/DINUMvqPxLyOQMzLmZe8i4RTHbvb8MC7NmrA==}
+  /@types/react@18.2.38:
+    resolution: {integrity: sha512-cBBXHzuPtQK6wNthuVMV6IjHAFkdl/FOPFIlkd81/Cd1+IqkHu/A+w4g43kaQQoYHik/ruaQBDL72HyCy1vuMw==}
     dependencies:
       '@types/prop-types': 15.7.9
       '@types/scheduler': 0.16.5
@@ -4439,7 +4309,6 @@ packages:
   /clone@2.1.2:
     resolution: {integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==}
     engines: {node: '>=0.8'}
-    dev: false
 
   /code-excerpt@4.0.0:
     resolution: {integrity: sha512-xxodCmBen3iy2i0WtAK8FlFNrRzjUqjRsMfho58xT/wvZU1YTM3fCnRjcy1gJPMepaRlgm/0e6w8SpWHpn3/cA==}
@@ -7810,6 +7679,12 @@ packages:
     resolution: {integrity: sha512-bZTFT5rrPKtPJxj8KSV0WkPyNxl72vQepqqVUAW2ARUpUSF2qXMB6jZj7hW5/k7C1rtpzqbD/IIbJwLXUjCHeg==}
     dependencies:
       obliterator: 2.0.4
+
+  /mocha-suppress-logs@0.5.1:
+    resolution: {integrity: sha512-f4BhMiCABgCt3tlXiOcRydWreNCkfvgXgNL2ZclfXPdLNcY7jfyNy3Oi5wwPuxx++UyuNiIx3F7orvckAfrKzw==}
+    dependencies:
+      clone: 2.1.2
+    dev: true
 
   /mocha@10.2.0:
     resolution: {integrity: sha512-IDY7fl/BecMwFHzoqF2sg/SHHANeBoMMXFlS9r0OXKDssYE1M5O43wUY/9BVPeIvfH2zmEbBfseqN9gBQZzXkg==}

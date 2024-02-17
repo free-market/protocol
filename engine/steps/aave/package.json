@@ -45,7 +45,6 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
     "@ethersproject/providers": "^5.4.7",
-    "@freemarket/curve": "workspace:*",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
@@ -70,6 +69,7 @@
     "hardhat-gas-reporter": "^1.0.8",
     "lodash.merge": "^4.6.2",
     "mocha": "^10.2.0",
+    "mocha-suppress-logs": "^0.5.1",
     "prettier": "^2.8.5",
     "rimraf": "^4.4.0",
     "solidity-coverage": "^0.8.0",

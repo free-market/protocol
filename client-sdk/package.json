@@ -32,7 +32,6 @@
     "@freemarket/add-asset": "workspace:*",
     "@freemarket/base-branches": "workspace:*",
     "@freemarket/core": "workspace:*",
-    "@freemarket/curve": "workspace:*",
     "@freemarket/runner": "workspace:*",
     "@freemarket/stargate-bridge": "workspace:*",
     "@freemarket/step-sdk": "workspace:*",

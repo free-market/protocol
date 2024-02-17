@@ -7,7 +7,6 @@ import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
 import { WrapNativeHelper, UnwrapNativeHelper } from '@freemarket/wrapped-native'
 import { UniswapExactInHelper } from '@freemarket/uniswap'
-import { CurveTriCrypto2SwapHelper } from '@freemarket/curve'
 import { AssetBalanceBranchHelper, ChainBranchHelper, PreviousOutputBranchHelper } from '@freemarket/base-branches'
 import { StubHelper } from '@freemarket/roadmap'
 
@@ -27,7 +26,6 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'wrap-native': WrapNativeHelper,
   'unwrap-native': UnwrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
-  'curve-tricrypto2-swap': CurveTriCrypto2SwapHelper,
   'previous-output-branch': PreviousOutputBranchHelper,
   '1inch': StubHelper,
 }

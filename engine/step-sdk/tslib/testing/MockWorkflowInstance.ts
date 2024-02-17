@@ -15,7 +15,7 @@ import {
   baseTokenUrl,
 } from '@freemarket/core'
 
-import '@freemarket/core/tslib/utils/init-env'
+import '@freemarket/core/tslib/nodejs-utils/init-env'
 
 import type { EIP1193Provider } from 'eip1193-provider'
 import axios from 'axios'

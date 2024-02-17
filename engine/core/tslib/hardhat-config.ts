@@ -8,6 +8,7 @@ import { removeConsoleLog } from 'hardhat-preprocessor'
 import fs from 'fs'
 import Crypto from 'crypto'
 import { tmpdir } from 'os'
+import { HardhatRuntimeEnvironment } from 'hardhat/types'
 const execSync = require('child_process').execSync
 
 function tmpFile(ext: string) {
@@ -132,6 +133,17 @@ export const coreHardhatConfig: HardhatUserConfig = {
     otherUser: 1,
   },
   preprocess: {
-    eachLine: removeConsoleLog(hre => !['hardhat', 'localhost', 'local'].includes(hre.network.name)),
+    eachLine: removeConsoleLog(logEnabledNetworks),
+    // eachLine: removeConsoleLog(hre => !logEnabledNetworks().includes(hre.network.name)),
   },
+}
+
+function logEnabledNetworks(hre: HardhatRuntimeEnvironment): boolean {
+  if (['local', 'localhost'].includes(hre.network.name)) {
+    return false
+  }
+  if (hre.network.name === 'hardhat' && process.env.FM_VERBOSE) {
+    return false
+  }
+  return true
 }
