@@ -11,7 +11,6 @@
     "build:ts": "tsc",
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
-    "test": "hardhat test --deploy-fixture",
     "deploy-contracts_": "hardhat deploy --tags CurveTriCrypto2SwapAction",
     "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"

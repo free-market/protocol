@@ -1,18 +1,6 @@
 import { assert, type Chain } from '@freemarket/core'
 import { ExecutionLog } from './ExecutionLog'
 
-export enum ExecutionEventCode {
-  Erc20ApprovalsSubmitting = 'Erc20ApprovalsSubmitting',
-  Erc20ApprovalsSubmittingAll = 'Erc20ApprovalsSubmittingAll',
-  Erc20ApprovalsConfirmed = 'Erc20ApprovalsConfirmed',
-  Erc20ApprovalsConfirmedAll = 'Erc20ApprovalsConfirmedAll',
-  WorkflowSubmitting = 'WorkflowSubmitting',
-  WorkflowSubmitted = 'WorkflowSubmitted',
-  WorkflowConfirmed = 'WorkflowConfirmed',
-  WaitingForBridge = 'WaitingForBridge',
-  Completed = 'Completed',
-}
-
 export interface ExecutionEventBase {
   code: string
   // message: string

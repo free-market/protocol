@@ -181,10 +181,18 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
           feesTaken
         );
 
-        if (currentStep.nextStepIndex == -1) {
+        int16 nextStepIndex = stepResult.nextStepIndex;
+        if (nextStepIndex == -2) {
+          if (currentStepIndex == workflow.steps.length - 1) {
+            // if this is the last step, then the workflow is complete
+            break;
+          }
+          // the next step is the next step in the workflow
+          nextStepIndex = int16(currentStepIndex) + 1;
+        } else if (nextStepIndex == -1) {
           break;
         }
-        currentStepIndex = uint16(currentStep.nextStepIndex);
+        currentStepIndex = uint16(nextStepIndex);
       }
     }
 
