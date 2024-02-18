@@ -23,10 +23,6 @@ library LibConfigReader {
     return keccak256(abi.encodePacked('stepWhiteList', stepTypeId));
   }
 
-  function getStepBlacklistKey(uint16 stepTypeId) internal pure returns (bytes32) {
-    return keccak256(abi.encodePacked('stepBlackList', stepTypeId));
-  }
-
   function isStepAddressWhitelisted(address eternalStorageAddress, uint16 stepTypeId, address stepAddress) internal view returns (bool) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.containsEnumerableMapAddressToUint(getStepWhitelistKey(stepTypeId), stepAddress);

@@ -7,5 +7,4 @@ struct StepInfo {
   uint256 fee;
   address latest;
   address[] whitelist;
-  address[] blacklist;
 }

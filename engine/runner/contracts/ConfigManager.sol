@@ -54,7 +54,7 @@ contract ConfigManager is FreeMarketBase {
     }
 
     (uint256 fee, bool feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, uint16(stepTypeId));
-    return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
+    return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist);
   }
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
@@ -67,8 +67,6 @@ contract ConfigManager is FreeMarketBase {
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress, 0);
     // this adds it to the list of all valid steps
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress, 0);
-    // remove it from the black list just in case it was there
-    eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress);
     emit StepAddressSetEvent(stepTypeId, stepAddress);
   }
 
@@ -76,7 +74,6 @@ contract ConfigManager is FreeMarketBase {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     address latest = eternalStorage.getEnumerableMapUintToAddress(LibConfigReader.latestStepAddresses, stepTypeId);
     require(stepAddress != latest, 'cannot remove latest step address');
-    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress, 0);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress);
     emit StepAddressSetEvent(stepTypeId, stepAddress);
