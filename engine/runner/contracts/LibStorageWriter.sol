@@ -37,37 +37,6 @@ library StorageWriter {
     require(success, string(returnData));
   }
 
-  // *** Delete Methods ***
-  function deleteUint(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('deleteUint(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
-  function deleteString(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('setString(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
-  function deleteAddress(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('setString(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
-  function deleteBytes(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('setString(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
-  function deleteBool(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('setString(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
-  function deleteInt(address storageAddr, bytes32 key) internal {
-    (bool success, bytes memory returnData) = storageAddr.delegatecall(abi.encodeWithSignature('setString(bytes32,string memory)', key));
-    require(success, string(returnData));
-  }
-
   function setStepAddress(address storageAddr, uint16 stepTypeId, address stepAddress) internal {
     (bool success, bytes memory returnData) = storageAddr.delegatecall(
       abi.encodeWithSignature('setStepAddress(uint16,address)', stepTypeId, stepAddress)
