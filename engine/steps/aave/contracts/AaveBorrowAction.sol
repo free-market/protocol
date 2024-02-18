@@ -8,7 +8,6 @@ import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/core/contracts/LibPercent.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';

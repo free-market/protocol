@@ -96,6 +96,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     for (uint256 i = 0; i < startingAssets.length; i++) {
       AssetAmount memory startingAsset = startingAssets[i];
       if (startingAsset.amount > 0) {
+        LibAssetBalances.AssetEntry memory existing = assetBalances.getAssetEntry(startingAsset.asset);
+        require(existing.balance == 0, 'starting asset already exists');
         assetBalances.credit(startingAsset.asset, startingAsset.amount);
       }
     }

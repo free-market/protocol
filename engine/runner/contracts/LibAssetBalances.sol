@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import './LibAsset.sol';
@@ -49,10 +48,7 @@ library LibAssetBalances {
   function credit(AssetBalances memory entrySet, uint256 assetAsInt, uint256 amount) internal pure {
     if (amount > 0) {
       uint256 index = getAssetIndex(entrySet, assetAsInt);
-      (bool success, uint256 newBalance) = SafeMath.tryAdd(entrySet.entries[index].balance, amount);
-      if (!success) {
-        revertArithmetic('credit', assetAsInt, entrySet.entries[index].balance, amount);
-      }
+      uint256 newBalance = entrySet.entries[index].balance + amount;
       // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
       entrySet.entries[index].previousCredit = amount;
@@ -62,10 +58,7 @@ library LibAssetBalances {
   function debit(AssetBalances memory entrySet, uint256 assetAsInt, uint256 amount) internal pure {
     if (amount > 0) {
       uint256 index = getAssetIndex(entrySet, assetAsInt);
-      (bool success, uint256 newBalance) = SafeMath.trySub(entrySet.entries[index].balance, amount);
-      if (!success) {
-        revertArithmetic('debit', assetAsInt, entrySet.entries[index].balance, amount);
-      }
+      uint256 newBalance = entrySet.entries[index].balance - amount;
       // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
       entrySet.entries[index].previousDebit = amount;
