@@ -53,14 +53,6 @@ contract ConfigManager is FreeMarketBase {
       whitelist[i] = whitelistedAddress;
     }
 
-    bytes32 blacklistKey = LibConfigReader.getStepBlacklistKey(uint16(stepTypeId));
-    uint256 blacklistCount = eternalStorage.lengthEnumerableMapAddressToUint(blacklistKey);
-    address[] memory blacklist = new address[](blacklistCount);
-    for (uint256 i = 0; i < blacklistCount; ++i) {
-      (address blacklistedAddress, ) = eternalStorage.atEnumerableMapAddressToUint(blacklistKey, i);
-      blacklist[i] = blacklistedAddress;
-    }
-
     (uint256 fee, bool feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, uint16(stepTypeId));
     return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
   }
