@@ -8,7 +8,7 @@ import './LibAsset.sol';
 using Strings for uint256;
 
 library LibAssetBalances {
-  uint8 constant MAX_ENTRIES = 10;
+  uint8 constant MAX_ENTRIES = 25;
 
   struct AssetEntry {
     uint256 asset;
@@ -88,20 +88,6 @@ library LibAssetBalances {
         b.toString()
       )
     );
-  }
-
-  function updateBalance(AssetBalances memory entrySet, uint256 index, uint256 newBalance) internal pure returns (uint256) {
-    if (newBalance == 0) {
-      removeAt(entrySet, index);
-    } else {
-      entrySet.entries[index].balance = newBalance;
-    }
-    return newBalance;
-  }
-
-  function removeAt(AssetBalances memory entrySet, uint256 index) internal pure {
-    entrySet.entries[index] = entrySet.entries[entrySet.end - 1];
-    --entrySet.end;
   }
 
   function getAssetIndex(AssetBalances memory entrySet, Asset memory asset) internal pure returns (uint256) {
