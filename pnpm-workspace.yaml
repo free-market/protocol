@@ -1,4 +1,3 @@
 packages:
   - 'engine/**'
-  - '!engine/steps/curve'
   - 'client-sdk'
