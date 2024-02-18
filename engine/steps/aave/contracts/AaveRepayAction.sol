@@ -9,7 +9,7 @@ import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
-import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import 'abdk-libraries-solidity/ABDKMathQuad.sol';
 import '@freemarket/step-sdk/contracts/IWeth.sol';
 import 'hardhat/console.sol';
 import '@freemarket/core/contracts/model/WorkflowStepInputAsset.sol';

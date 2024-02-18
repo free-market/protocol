@@ -13,7 +13,7 @@ import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './AbstractUniswapAction.sol';
-import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import 'abdk-libraries-solidity/ABDKMathQuad.sol';
 using ABDKMathQuad for bytes16;
 
 using LibStepResultBuilder for StepResultBuilder;

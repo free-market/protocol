@@ -32,6 +32,7 @@
     "@uniswap/v3-core": "^1.0.1",
     "@uniswap/v3-periphery": "^1.4.3",
     "@uniswap/v3-sdk": "^3.9.0",
+    "abdk-libraries-solidity": "^3.2.0",
     "big.js": "^6.2.1",
     "ethers": "^5.7.2",
     "loglevel": "^1.8.1",

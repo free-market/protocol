@@ -739,6 +739,9 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^4.8.0
         version: 4.9.3
+      abdk-libraries-solidity:
+        specifier: ^3.2.0
+        version: 3.2.0
       big.js:
         specifier: ^6.2.1
         version: 6.2.1
@@ -1371,6 +1374,9 @@ importers:
       '@uniswap/v3-sdk':
         specifier: ^3.9.0
         version: 3.10.0(hardhat@2.18.3)
+      abdk-libraries-solidity:
+        specifier: ^3.2.0
+        version: 3.2.0
       big.js:
         specifier: ^6.2.1
         version: 6.2.1
@@ -3475,6 +3481,10 @@ packages:
   /abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
     dev: true
+
+  /abdk-libraries-solidity@3.2.0:
+    resolution: {integrity: sha512-JyedKxyqsszb9qCTX+YCOQHA4m0YAq9p77Qvumiy8LJLLrm1FfA9D3pdSAZN5wrmi3PSv0y3Svy8c/C+8S9K8g==}
+    dev: false
 
   /abstract-level@1.0.3:
     resolution: {integrity: sha512-t6jv+xHy+VYwc4xqZMn2Pa9DjcdzvzZmQGRjTFc8spIbRGHgBrEKbPq+rYXc7CCo0lxgYvSgKVg9qZAhpVQSjA==}
