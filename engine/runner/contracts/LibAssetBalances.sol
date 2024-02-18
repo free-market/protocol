@@ -47,7 +47,7 @@ library LibAssetBalances {
 
   function credit(AssetBalances memory entrySet, uint256 assetAsInt, uint256 amount) internal pure {
     if (amount > 0) {
-      uint256 index = getAssetIndex(entrySet, assetAsInt);
+      uint256 index = _getAssetIndex(entrySet, assetAsInt);
       uint256 newBalance = entrySet.entries[index].balance + amount;
       // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
@@ -57,7 +57,7 @@ library LibAssetBalances {
 
   function debit(AssetBalances memory entrySet, uint256 assetAsInt, uint256 amount) internal pure {
     if (amount > 0) {
-      uint256 index = getAssetIndex(entrySet, assetAsInt);
+      uint256 index = _getAssetIndex(entrySet, assetAsInt);
       uint256 newBalance = entrySet.entries[index].balance - amount;
       // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
@@ -90,12 +90,12 @@ library LibAssetBalances {
     );
   }
 
-  function getAssetIndex(AssetBalances memory entrySet, Asset memory asset) internal pure returns (uint256) {
+  function _getAssetIndex(AssetBalances memory entrySet, Asset memory asset) private pure returns (uint256) {
     uint256 assetAsInt = LibAsset.encodeAsset(asset);
-    return getAssetIndex(entrySet, assetAsInt);
+    return _getAssetIndex(entrySet, assetAsInt);
   }
 
-  function getAssetIndex(AssetBalances memory entrySet, uint256 assetAsInt) internal pure returns (uint256) {
+  function _getAssetIndex(AssetBalances memory entrySet, uint256 assetAsInt) private pure returns (uint256) {
     for (uint256 i = 0; i < entrySet.end; ++i) {
       if (entrySet.entries[i].asset == assetAsInt) {
         return i;
