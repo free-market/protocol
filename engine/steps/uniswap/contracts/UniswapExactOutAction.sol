@@ -134,6 +134,9 @@ contract UniswapExactOutAction is AbstractUniswapAction, IWorkflowStep {
       IWeth(wethAddress).deposit{value: locals.args.amountOut}();
     }
 
+    // revoke allowance for unused input asset
+    locals.inputAsset.safeApprove(routerAddress, 0);
+
     return
       LibStepResultBuilder
         .create(1, 1)
