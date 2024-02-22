@@ -2,9 +2,6 @@
 
 pragma solidity 0.8.18;
 
-// abicoder v2 is enabled by default: https://docs.soliditylang.org/en/v0.8.0/080-breaking-changes.html
-// pragma abicoder v2;
-
 interface IStargateRouter {
   function factory() external view returns (address);
 

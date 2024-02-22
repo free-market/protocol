@@ -23,12 +23,9 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     address upstreamFromArgs = getAddressFromCalldata();
     console.log('upstreamFromArgs', upstreamFromArgs);
     if (upstreamFromArgs != address(0)) {
-      // console.log('upstreamFromArgs != address(0)');
       EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
       require(eternalStorage.containsEnumerableMapAddressToUint(runnerAddresses, upstreamFromArgs), 'provided upstream not whitelisted');
       return upstreamFromArgs;
-    } else {
-      // console.log('upstreamFromArgs == address(0)');
     }
     return upstreamAddress;
   }
@@ -42,9 +39,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
 
   /// @dev this forwards all calls generically to upstream, only the owner can invoke this
   fallback() external payable {
-    // console.log('fallback', resolveUpstream());
     address upstream = resolveUpstream();
-    // console.log('upstream', upstream);
     _delegate(upstream);
   }
 
@@ -77,18 +72,6 @@ contract Proxy is FreeMarketBase, IHasUpstream {
       default {
         return(0, returndatasize())
       }
-      // let ptr := mload(0x40)
-      // calldatacopy(ptr, 0, calldatasize())
-      // let result := delegatecall(gas(), implementation, ptr, calldatasize(), 0, 0)
-      // let size := returndatasize()
-      // returndatacopy(ptr, 0, size)
-      // switch result
-      // case 0 {
-      //   revert(ptr, size)
-      // }
-      // default {
-      //   return(ptr, size)
-      // }
     }
   }
 }

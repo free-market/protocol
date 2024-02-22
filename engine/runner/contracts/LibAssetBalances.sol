@@ -49,7 +49,6 @@ library LibAssetBalances {
     if (amount > 0) {
       uint256 index = _getAssetIndex(entrySet, assetAsInt);
       uint256 newBalance = entrySet.entries[index].balance + amount;
-      // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
       entrySet.entries[index].previousCredit = amount;
     }
@@ -59,7 +58,6 @@ library LibAssetBalances {
     if (amount > 0) {
       uint256 index = _getAssetIndex(entrySet, assetAsInt);
       uint256 newBalance = entrySet.entries[index].balance - amount;
-      // updateBalance(entrySet, index, newBalance);
       entrySet.entries[index].balance = newBalance;
       entrySet.entries[index].previousDebit = amount;
     }

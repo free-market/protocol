@@ -88,7 +88,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     LibAssetBalances.AssetBalances memory assetBalances;
     // credit ETH if sent with this call
     if (msg.value != 0) {
-      // TODO add event
       assetBalances.credit(0, msg.value);
     }
 
@@ -224,7 +223,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
   function refundUser(address userAddress, LibAssetBalances.AssetBalances memory assetBalances, bool feeAlreadyTaken) internal {
     uint256 fee;
     bool feeIsPercent;
-    // console.log('fat', feeAlreadyTaken);
     if (feeAlreadyTaken) {
       // fees taken during one or more steps
       fee = 0;
@@ -235,18 +233,14 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       feeIsPercent = feeIsPercent && fee > 0;
     }
 
-    // console.log('abcnt', assetBalances.getAssetCount());
     for (uint8 i = 0; i < assetBalances.getAssetCount(); ++i) {
-      // console.log('loop', i);
       AssetAmount memory ab = assetBalances.getAssetAt(i);
       Asset memory asset = ab.asset;
       uint256 feeAmount;
       if (feeIsPercent) {
         feeAmount = LibPercent.percentageOf(ab.amount, fee);
-        // console.log('ru pct a', ab.amount, fee, feeAmount);
       } else {
         feeAmount = fee;
-        // console.log('ru abs', feeAmount);
       }
       uint256 userAmount = ab.amount < feeAmount ? ab.amount : ab.amount - feeAmount;
       emit RemainingAsset(asset, ab.amount, feeAmount, userAmount);
@@ -301,7 +295,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
       uint256 currentWorkflowAssetBalance = assetBalances.getAssetBalance(stepInputAsset.asset);
       if (stepInputAsset.amountIsPercent) {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
-        // rv[i].amount = 1;
       } else {
         require(currentWorkflowAssetBalance >= stepInputAsset.amount, 'absolute amt > wf balance');
         rv[i].amount = stepInputAsset.amount;

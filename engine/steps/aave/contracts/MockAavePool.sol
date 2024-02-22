@@ -3,7 +3,6 @@ pragma solidity 0.8.18;
 
 import './aave-interfaces/IAaveV3Pool.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-// import '../../mocks/MockToken.sol';
 import '@freemarket/step-sdk/contracts/TestErc20.sol';
 
 contract MockAavePool is IAaveV3Pool {

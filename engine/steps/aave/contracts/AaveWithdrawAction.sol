@@ -31,8 +31,6 @@ contract AaveWithdrawAction is IWorkflowStep {
   struct Locals {
     IAaveV3Pool pool;
     ReserveData reserveData;
-    // IERC20 inputToken;
-    // address inputTokenAddress;
     IERC20 aToken;
     AaveWithdrawParameters args;
   }

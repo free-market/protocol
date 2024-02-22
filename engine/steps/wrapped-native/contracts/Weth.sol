@@ -24,8 +24,6 @@ interface Weth {
 
   function allowance(address, address) external view returns (uint256);
 
-  // fallback() external payable;
-
   event Approval(address indexed src, address indexed guy, uint256 wad);
   event Transfer(address indexed src, address indexed dst, uint256 wad);
   event Deposit(address indexed dst, uint256 wad);

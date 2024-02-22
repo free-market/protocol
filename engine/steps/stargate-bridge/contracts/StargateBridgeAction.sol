@@ -178,7 +178,6 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     startingAssets[0] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
     IWorkflowRunner runner = IWorkflowRunner(frontDoorAddress);
     bool continuationSuccessful = false;
-    // TODO set value when the bridged asset is native
     try runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAssets) {
       // if the workflow succeeds, we're done
       emit ContinuationSuccess();

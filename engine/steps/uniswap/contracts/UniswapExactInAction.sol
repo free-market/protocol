@@ -84,8 +84,6 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
     locals.inputAsset.safeApprove(routerAddress, inputAssetAmounts[0].amount);
     console.log('approved input asset');
 
-    // logArgs(args);
-
     locals.outputTokenAddress = locals.args.toAsset.assetAddress;
     if (locals.args.toAsset.assetType == AssetType.Native) {
       locals.outputTokenAddress = wethAddress;
@@ -98,29 +96,6 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
     locals.amountInFloat = ABDKMathQuad.fromUInt(inputAssetAmounts[0].amount);
 
     runRoute(locals.amountIn, locals.args.routes, locals.inputTokenAddress, locals.outputTokenAddress);
-
-    // for (uint256 i = 0; i < locals.args.routes.length; i++) {
-    //   console.log('route', i);
-    //   console.log('  input balance  ', locals.inputAsset.balanceOf(address(this)));
-    //   console.log('  output balance ', outputAsset.balanceOf(address(this)));
-
-    //   UniswapRoute memory route = locals.args.routes[i];
-    //   bytes16 portion = ABDKMathQuad.from128x128(route.portion);
-    //   uint256 amount;
-    //   // if this is the last route, use the remaining amount to avoid rounding errors
-    //   if (i < locals.args.routes.length - 1) {
-    //     amount = portion.mul(locals.amountInFloat).toUInt();
-    //     console.log('  amount computed from portion', amount);
-    //   } else {
-    //     amount = locals.amountRemaining;
-    //     console.log('  amount computed from remaining', amount);
-    //   }
-    //   // minAmoutOut is zero because we're doing it ourself after all routes have been executed
-    //   console.log('calling uniswap for amount', amount);
-    //   IV3SwapRouter.ExactInputParams memory routerArgs = IV3SwapRouter.ExactInputParams(route.encodedPath, address(this), amount, 0);
-    //   IV3SwapRouter(routerAddress).exactInput(routerArgs);
-    //   locals.amountRemaining -= amount;
-    // }
 
     // check the amount received vs minExchangeRate
     locals.outputAssetBalanceAfter = outputAsset.balanceOf(address(this));
@@ -141,7 +116,6 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
       );
       revert(message);
     }
-    // require(locals.amountReceived >= locals.worstTolerableAmountReceived, 'amount received is worse than worst tolerable amount received');
 
     // unwrap native if necessary
     if (locals.args.toAsset.assetType == AssetType.Native) {
@@ -154,16 +128,6 @@ contract UniswapExactInAction is AbstractUniswapAction, IWorkflowStep {
         .addInputAssetAmount(inputAssetAmounts[0])
         .addOutputAssetAmount(AssetAmount(locals.args.toAsset, locals.amountReceived))
         .result;
-  }
-
-  function logArgs(UniswapExactInActionParams memory args) internal pure {
-    console.log('toAsset address', args.toAsset.assetAddress);
-    // console.log('minExchangeRate', args.worstExchangeRate);
-    for (uint256 i = 0; i < args.routes.length; i++) {
-      console.log('  route', i);
-      // console.log("  encodedPath", args.routes[i].encodedPath);
-      console.log('  portion', uint256(args.routes[i].portion));
-    }
   }
 
   function callUniswap(bytes memory encodedPath, uint256 amount) internal override {

@@ -8,8 +8,6 @@ import '@freemarket/core/contracts/model/Asset.sol';
 import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 
-// import 'hardhat/console.sol';
-
 using LibStepResultBuilder for StepResultBuilder;
 using SafeERC20 for IERC20;
 
@@ -26,8 +24,6 @@ contract AddAssetAction is IWorkflowStep {
     // validate
     require(assetAmounts.length == 1, 'AddTokenAction must have 1 AssetAmount');
 
-    // console.log('addAsset', assetAmounts[0].amount);
-
     emit AssetAdded(assetAmounts[0]);
 
     if (assetAmounts[0].asset.assetType == AssetType.Native) {
@@ -43,16 +39,6 @@ contract AddAssetAction is IWorkflowStep {
     IERC20 erc20 = IERC20(assetAmounts[0].asset.assetAddress);
     erc20.safeTransferFrom(userAddress, address(this), assetAmounts[0].amount);
 
-    // WorkflowStepResult memory asdf = LibStepResultBuilder.create(0, 1).addOutputToken(
-    //     assetAmounts[0].asset.assetAddress, assetAmounts[0].amount
-    // ).result;
-
-    // console.log('result', asdf.outputAssetAmounts.length);
-    // console.log('result1', assetAmounts[0].asset.assetAddress);
-    // console.log('result11', assetAmounts[0].amount);
-    // console.log('result2', asdf.outputAssetAmounts[0].amount);
-
-    // return amount transferred
     return LibStepResultBuilder.create(0, 1).addOutputToken(assetAmounts[0].asset.assetAddress, assetAmounts[0].amount).result;
   }
 }
