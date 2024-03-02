@@ -1,4 +1,5 @@
-import log, { LogLevelNames } from 'loglevel'
+import type { LogLevelNames } from 'loglevel';
+import log from 'loglevel'
 import prefix from 'loglevel-plugin-prefix'
 
 const timestampFormatter = (date: Date) => {

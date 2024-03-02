@@ -1,6 +1,7 @@
 import axios from 'axios'
 import z from 'zod'
-import { AssetReference, Chain, Asset, FungibleToken, fungibleTokenSchema } from '../model'
+import type { AssetReference, Chain, Asset, FungibleToken} from '../model';
+import { fungibleTokenSchema } from '../model'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner'
 import { NATIVE_ASSETS } from './NativeAssets'
 import { translateChain } from './evm-utils'

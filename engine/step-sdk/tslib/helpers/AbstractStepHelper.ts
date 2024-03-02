@@ -1,6 +1,4 @@
-import {
-  assert,
-  WORKFLOW_END_STEP_ID,
+import type {
   BridgeTarget,
   EncodingContext,
   IStepHelper,
@@ -10,15 +8,18 @@ import {
   StepBase,
   IWorkflow,
   EncodedWorkflowStep,
-  getEthersProvider,
   RemittanceInfo,
-  ADDRESS_ZERO,
   ContinuationInfo,
   EncodeContinuationResult,
-  Memoize,
   MultiStepEncodingContext,
-  translateChain,
-  BeforeAfterResult,
+  BeforeAfterResult} from '@freemarket/core';
+import {
+  assert,
+  WORKFLOW_END_STEP_ID,
+  getEthersProvider,
+  ADDRESS_ZERO,
+  Memoize,
+  translateChain
 } from '@freemarket/core'
 import type { Provider } from '@ethersproject/providers'
 

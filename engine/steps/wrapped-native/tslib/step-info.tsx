@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { PlatformInfo, StepInfo, formatNumber } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo, formatNumber } from '@freemarket/step-sdk'
 import WethIcon from './WethIcon'
 import { STEP_TYPE_ID_WRAP_NATIVE } from './wrap-native-helper'
 import { STEP_TYPE_ID_UNWRAP_NATIVE } from './unwrap-native-helper'

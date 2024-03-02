@@ -1,15 +1,16 @@
 import { VoidSigner } from '@ethersproject/abstract-signer'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import { StaticJsonRpcProvider } from '@ethersproject/providers'
-import {
-  ADDRESS_ZERO,
+import type {
   Asset,
   AssetReference,
   Chain,
   ChainOrStart,
   EncodedWorkflow,
   FungibleToken,
-  IWorkflow,
+  IWorkflow} from '@freemarket/core';
+import {
+  ADDRESS_ZERO,
   getDefaultFungibleTokens,
   Memoize,
   baseTokenUrl,

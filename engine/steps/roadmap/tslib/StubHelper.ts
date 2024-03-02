@@ -1,4 +1,4 @@
-import { EncodingContext, EncodedWorkflowStep } from '@freemarket/core'
+import type { EncodingContext, EncodedWorkflowStep } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 
 export class StubHelper extends AbstractStepHelper<any> {

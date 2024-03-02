@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo } from '@freemarket/step-sdk'
 import StargateIcon from './StargateIcon'
 
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { SummaryPropsBase } from '@freemarket/step-sdk'
-import { StargateBridge } from './model'
+import type { SummaryPropsBase } from '@freemarket/step-sdk'
+import type { StargateBridge } from './model'
 import { capitalize } from '@freemarket/core'
 import { STEP_TYPE_ID_STARGATE_BRIDGE } from './helper'
 

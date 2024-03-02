@@ -1,5 +1,6 @@
 import test from 'ava'
-import { AssetAmount, assetAmountSchema } from '../AssetAmount'
+import type { AssetAmount} from '../AssetAmount';
+import { assetAmountSchema } from '../AssetAmount'
 
 test('validates fungible tokens', t => {
   // valid

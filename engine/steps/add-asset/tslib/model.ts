@@ -1,4 +1,4 @@
-import z from 'zod'
+import type z from 'zod'
 import { amountSchema, assetReferenceSchema, createStepSchema, stepProperties } from '@freemarket/core'
 
 export const addAssetSchema = createStepSchema('add-asset')

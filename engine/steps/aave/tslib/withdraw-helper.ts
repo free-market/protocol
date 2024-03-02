@@ -1,15 +1,7 @@
-import {
-  EncodingContext,
-  EncodedWorkflowStep,
-  assert,
-  ADDRESS_ZERO,
-  sdkAssetToEvmAsset,
-  AssetReference,
-  sdkAssetAndAmountToEvmInputAmount,
-  AssetAmount,
-} from '@freemarket/core'
+import type { EncodingContext, EncodedWorkflowStep, AssetReference, AssetAmount } from '@freemarket/core'
+import { assert, ADDRESS_ZERO, sdkAssetToEvmAsset, sdkAssetAndAmountToEvmInputAmount } from '@freemarket/core'
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
-import type { AaveSupply, AaveWithdraw } from './model'
+import type { AaveWithdraw } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
 
 export const STEP_TYPE_ID_AAVE_WITHDRAW = 112

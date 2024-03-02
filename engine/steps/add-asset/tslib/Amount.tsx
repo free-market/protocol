@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Amount } from '@freemarket/core'
+import type { Amount } from '@freemarket/core'
 
 interface Props {
   amount: Amount

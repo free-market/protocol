@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { IconProps } from '@freemarket/step-sdk'
-import { SVGProps } from 'react'
+import type { IconProps } from '@freemarket/step-sdk'
+import type { SVGProps } from 'react'
 const SvgTelegramLogo = (props: SVGProps<SVGSVGElement> & IconProps) => {
   const p: any = { ...props }
   delete p.dark

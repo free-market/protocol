@@ -1,4 +1,5 @@
-import z, { ZodType, ZodTypeAny } from 'zod'
+import type { ZodType, ZodTypeAny } from 'zod';
+import z from 'zod'
 import { assert } from '../utils/assert'
 import { nonEmptyStringSchema } from './NonEmptyString'
 

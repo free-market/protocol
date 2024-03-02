@@ -1,6 +1,6 @@
-import { IconProps } from '@freemarket/step-sdk'
+import type { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
-import { SVGProps } from 'react'
+import type { SVGProps } from 'react'
 const ZeroExIcon = (props: SVGProps<SVGSVGElement> & IconProps) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="25 25.1 89.8 90.7" {...props}>

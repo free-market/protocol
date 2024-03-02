@@ -1,5 +1,6 @@
 import { commify, formatUnits } from '@ethersproject/units'
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
+import type { BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber } from '@ethersproject/bignumber'
 
 export function formatNumber(bn: BigNumberish, decimals: number, fractionalDigits = 4, commas = true) {
   const s = formatUnits(BigNumber.from(bn), decimals)

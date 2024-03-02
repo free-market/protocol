@@ -1,5 +1,6 @@
 import type { AssetBalanceBranch, PreviousOutputBranch } from './model'
-import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, sdkAssetAndAmountToEvmInputAmount } from '@freemarket/core'
+import type { EncodedWorkflowStep, EncodingContext} from '@freemarket/core';
+import { ADDRESS_ZERO, sdkAssetAndAmountToEvmInputAmount } from '@freemarket/core'
 import { AbstractBranchHelper, AssetSchema } from '@freemarket/step-sdk'
 
 import * as ethers from 'ethers'

@@ -1,6 +1,6 @@
-import { IconProps } from '@freemarket/step-sdk'
+import type { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
-import { SVGProps } from 'react'
+import type { SVGProps } from 'react'
 const ChainBranchIcon = (props: SVGProps<SVGSVGElement> & IconProps) => {
   const { fill, stroke, color } = props
   const { dark, ...rest } = props

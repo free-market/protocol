@@ -1,5 +1,5 @@
 import { baseTokenUrl } from '../getDefaultFungibleTokens'
-import { Chain, NativeAsset } from '../model'
+import type { Chain, NativeAsset } from '../model'
 
 const ETH_ICON_URL = `${baseTokenUrl}/icons/native/eth.png`
 

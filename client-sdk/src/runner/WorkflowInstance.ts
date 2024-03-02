@@ -47,7 +47,10 @@ import {
   AssetInfoService,
   Asset,
   FungibleToken,
+  getLogger,
 } from '@freemarket/core'
+
+const logger = getLogger('WorkflowInstance')
 
 import frontDoorAddressesJson from '@freemarket/runner/deployments/front-doors.json'
 import { EvmTransactionExecutor } from './EvmTransactionExecutor'
@@ -390,7 +393,7 @@ export class WorkflowInstance implements IWorkflowInstance {
       delete rv.workflow.parameters
       return rv
     } catch (e) {
-      console.log('applyArguments', e)
+      logger.debug('applyArguments', e)
       throw e
     }
   }

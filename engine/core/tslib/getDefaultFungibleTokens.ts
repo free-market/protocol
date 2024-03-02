@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-import { FungibleToken, fungibleTokenMetadataSchema } from './model'
+import type { FungibleToken} from './model';
+import { fungibleTokenMetadataSchema } from './model'
 
 export const baseTokenUrl = 'https://metadata.fmprotocol.com/test'
 

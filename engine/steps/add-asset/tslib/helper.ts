@@ -1,16 +1,17 @@
 import { AbstractStepHelper } from '@freemarket/step-sdk'
+import type {
+  EncodedWorkflowStep,
+  EncodingContext,
+  EvmInputAsset} from '@freemarket/core';
 import {
   ADDRESS_ZERO,
   assert,
-  EncodedWorkflowStep,
-  EncodingContext,
   sdkAssetToEvmAsset,
-  EvmInputAsset,
   TEN_BIG,
   decimalStringSchema,
 } from '@freemarket/core'
 import Big from 'big.js'
-import { AddAsset } from './model'
+import type { AddAsset } from './model'
 
 export const STEP_TYPE_ID_ADD_ASSET = 100
 

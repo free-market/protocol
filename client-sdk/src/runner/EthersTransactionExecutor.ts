@@ -2,8 +2,8 @@ import { TransactionReceipt } from '@ethersproject/providers'
 import { EvmTransactionExecutor, TransactionParams } from './EvmTransactionExecutor'
 import { Signer } from '@ethersproject/abstract-signer'
 
-import rootLogger from 'loglevel'
-const logger = rootLogger.getLogger('WorkflowRunner')
+import { getLogger } from '@freemarket/core'
+const logger = getLogger('WorkflowRunner')
 
 export class EthersTransactionExecutor implements EvmTransactionExecutor {
   signer: Signer

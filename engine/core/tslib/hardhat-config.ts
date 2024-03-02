@@ -1,15 +1,15 @@
+/* eslint-disable no-console */
 import './nodejs-utils/init-env'
-import { HardhatUserConfig, task } from 'hardhat/config'
-import os from 'os'
+import type { HardhatUserConfig} from 'hardhat/config';
+import { task } from 'hardhat/config'
 import path from 'path'
-import dotenv from 'dotenv'
 import 'hardhat-preprocessor'
 import { removeConsoleLog } from 'hardhat-preprocessor'
 import fs from 'fs'
 import Crypto from 'crypto'
 import { tmpdir } from 'os'
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-const execSync = require('child_process').execSync
+import type { HardhatRuntimeEnvironment } from 'hardhat/types'
+import { execSync } from 'child_process'
 
 function tmpFile(ext: string) {
   return path.join(tmpdir(), `temp.${Crypto.randomBytes(6).readUIntLE(0, 6).toString(36)}.${ext}`)

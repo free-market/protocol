@@ -1,5 +1,5 @@
 import type { PreviousOutputBranch } from './model'
-import { EncodedWorkflowStep, EncodingContext } from '@freemarket/core'
+import type { EncodedWorkflowStep, EncodingContext } from '@freemarket/core'
 
 import { AssetComparisonHelperBase } from './AssetComparisonHelperBase'
 

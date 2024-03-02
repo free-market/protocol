@@ -1,5 +1,6 @@
 import type { ChainBranch } from './model'
-import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain } from '@freemarket/core'
+import type { EncodedWorkflowStep, EncodingContext} from '@freemarket/core';
+import { ADDRESS_ZERO, getChainIdFromChain } from '@freemarket/core'
 import { AbstractBranchHelper } from '@freemarket/step-sdk'
 
 import * as ethers from 'ethers'

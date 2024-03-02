@@ -1,8 +1,8 @@
 import type { EIP1193Provider } from 'eip1193-provider'
 import type { EncodedBeforeAfter, EncodedWorkflowStep } from '../runner/EncodedWorkflow'
 import type { Amount, AssetAmount, AssetReference, Chain, StepBase } from '../model'
-import { ZodType } from 'zod'
-import { ContinuationInfo } from './ContinuationInfo'
+import type { ZodType } from 'zod'
+import type { ContinuationInfo } from './ContinuationInfo'
 
 export interface BridgeTarget {
   chain: Chain

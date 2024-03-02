@@ -1,6 +1,8 @@
 import z from 'zod'
-import { Amount, amountSchema } from './Amount'
-import { AssetReference, assetReferenceSchema } from './AssetReference'
+import type { Amount} from './Amount';
+import { amountSchema } from './Amount'
+import type { AssetReference} from './AssetReference';
+import { assetReferenceSchema } from './AssetReference'
 import { registerParameterType } from './Parameter'
 
 export interface AssetAmount {

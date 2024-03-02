@@ -1,4 +1,4 @@
-import { HardhatUserConfig, task } from 'hardhat/config'
+import type { HardhatUserConfig } from 'hardhat/config'
 import { coreHardhatConfig } from '@freemarket/core/tslib/hardhat-config'
 
 export const stepHardhatConfig: HardhatUserConfig = {

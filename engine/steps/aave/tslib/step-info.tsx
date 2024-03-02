@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo } from '@freemarket/step-sdk'
 import AaveIcon from './AaveIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import { STEP_TYPE_ID_AAVE_SUPPLY } from './supply-helper'

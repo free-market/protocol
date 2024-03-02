@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { SummaryPropsBase } from '@freemarket/step-sdk'
-import { AssetBalanceBranch, ComparisonOperator } from './model'
+import type { SummaryPropsBase } from '@freemarket/step-sdk'
+import type { AssetBalanceBranch, ComparisonOperator } from './model'
 import { capitalize } from '@freemarket/core'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 

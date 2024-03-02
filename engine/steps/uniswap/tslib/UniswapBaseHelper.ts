@@ -1,39 +1,36 @@
-import rootLogger from 'loglevel'
-const logger = rootLogger.getLogger('UniswapExactInHelper')
+import type { Asset, Chain, StepBase, FungibleToken, Percent as FmPercent } from '@freemarket/core'
+import {
+  assert,
+  ADDRESS_ZERO,
+  AssetReference,
+  getEthersProvider,
+  TEN_BIG,
+  ONE_BIG,
+  Memoize,
+  TWO_BIG,
+  translateChain,
+  getLogger,
+} from '@freemarket/core'
+import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
+import type { SwapOptionsSwapRouter02, SwapRoute } from '@uniswap/smart-order-router'
+import { AlphaRouter, SwapType } from '@uniswap/smart-order-router'
+import type { Currency } from '@uniswap/sdk-core'
+import { TradeType, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core'
+import { Protocol } from '@uniswap/router-sdk'
+import type { BaseProvider } from '@ethersproject/providers'
+export const QUOTER_CONTRACT_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
+import Big from 'big.js'
+import { BigNumber, utils } from 'ethers'
+
+import { IERC20__factory, IV3SwapRouter__factory } from '../typechain-types'
+import type { Signer } from '@ethersproject/abstract-signer'
+
+const logger = getLogger('UniswapExactInHelper')
 
 const SWAP_ROUTER_02_ADDRESS = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
 //                             1         2         3         4         5         6
 //                    1234567890123456789012345678901234567890123456789012345678901234
 const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-
-import {
-  assert,
-  ADDRESS_ZERO,
-  Asset,
-  AssetReference,
-  Chain,
-  getEthersProvider,
-  StepBase,
-  TEN_BIG,
-  ONE_BIG,
-  FungibleToken,
-  Memoize,
-  Percent as FmPercent,
-  TWO_BIG,
-  translateChain,
-} from '@freemarket/core'
-import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
-// import { IQuoter__factory } from '../typechain-types'
-import { AlphaRouter, SwapOptionsSwapRouter02, SwapRoute, SwapType } from '@uniswap/smart-order-router'
-import { BaseProvider } from '@ethersproject/providers'
-export const QUOTER_CONTRACT_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
-import { TradeType, CurrencyAmount, Percent, Token, Currency } from '@uniswap/sdk-core'
-import Big from 'big.js'
-import { BigNumber, utils } from 'ethers'
-import { Protocol } from '@uniswap/router-sdk'
-
-import { IERC20__factory, IV3SwapRouter__factory } from '../typechain-types'
-import { Signer } from '@ethersproject/abstract-signer'
 
 const gasLimit = 30_000_000
 

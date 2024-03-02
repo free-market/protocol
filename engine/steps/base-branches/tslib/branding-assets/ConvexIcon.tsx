@@ -1,6 +1,6 @@
-import { IconProps } from '@freemarket/step-sdk'
+import type { IconProps } from '@freemarket/step-sdk'
 import * as React from 'react'
-import { SVGProps } from 'react'
+import type { SVGProps } from 'react'
 const SvgConvexLogoWhitebackground = (props: SVGProps<SVGSVGElement> & IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198 198" width="24px" height="24px" {...props}>
     <defs>

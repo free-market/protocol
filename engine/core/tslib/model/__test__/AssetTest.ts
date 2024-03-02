@@ -1,5 +1,6 @@
 import test from 'ava'
-import { Asset, assetSchema } from '../Asset'
+import type { Asset} from '../Asset';
+import { assetSchema } from '../Asset'
 
 test('validates an asset', async t => {
   const asset: Asset = {

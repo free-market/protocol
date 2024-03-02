@@ -13,9 +13,9 @@ import { Wallet } from '@ethersproject/wallet'
 import { JsonRpcProvider, Provider, WebSocketProvider } from '@ethersproject/providers'
 import assert from '../utils/assert'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { createStandardProvider, initLogger } from '@freemarket/core'
+import { createStandardProvider, getLogger, initLogger } from '@freemarket/core'
 
-const log = rootLogger.getLogger('execute-workflow')
+const log = getLogger('execute-workflow')
 
 if (process.argv.length != 5) {
   console.log('usage: node execute-workflow.js <workflow-filename> <arguments.filename> <source-chain> ')

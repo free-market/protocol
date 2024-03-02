@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo } from '@freemarket/step-sdk'
 import AddAssetIcon from './AddAssetIcon'
 import StepSummary from './StepSummary'
 import { STEP_TYPE_ID_ADD_ASSET } from './helper'

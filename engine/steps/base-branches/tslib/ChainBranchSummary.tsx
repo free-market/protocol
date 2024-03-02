@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { SummaryPropsBase } from '@freemarket/step-sdk'
-import { ChainBranch } from './model'
+import type { SummaryPropsBase } from '@freemarket/step-sdk'
+import type { ChainBranch } from './model'
 import { capitalize } from '@freemarket/core'
 
 type Props = SummaryPropsBase<ChainBranch>

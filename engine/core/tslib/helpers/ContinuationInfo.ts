@@ -1,5 +1,5 @@
-import { AssetAmount } from '../model/AssetAmount'
-import { Chain } from '../model/Chain'
+import type { AssetAmount } from '../model/AssetAmount'
+import type { Chain } from '../model/Chain'
 
 export interface ContinuationInfo {
   stepType: string

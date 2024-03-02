@@ -1,22 +1,14 @@
-import rootLogger from 'loglevel'
-rootLogger.setLevel('debug')
-const logger = rootLogger.getLogger('UniswapExactInHelper')
-import {
-  EncodingContext,
-  EncodedWorkflowStep,
-  sdkAssetAndAmountToEvmInputAmount,
-  assert,
-  ADDRESS_ZERO,
-  AssetAmount,
-  sdkAssetToEvmAsset,
-} from '@freemarket/core'
+import type { EncodingContext, EncodedWorkflowStep, AssetAmount } from '@freemarket/core'
+import { sdkAssetAndAmountToEvmInputAmount, assert, ADDRESS_ZERO, sdkAssetToEvmAsset, getLogger } from '@freemarket/core'
 import { AssetSchema } from '@freemarket/step-sdk'
 import type { UniswapExactIn } from './model'
 export const STEP_TYPE_ID_UNISWAP_EXACT_IN = 104
-import { CurrencyAmount, Currency } from '@uniswap/sdk-core'
 import Big from 'big.js'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { UniswapBaseHelper, UniswapRouteSchema } from './UniswapBaseHelper'
+import type { CurrencyAmount, Currency } from '@uniswap/sdk-core'
+
+const logger = getLogger('UniswapExactInHelper')
 
 const UniswapExactInActionParamsSchema = `
   tuple(

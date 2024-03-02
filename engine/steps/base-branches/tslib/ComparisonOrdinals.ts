@@ -1,4 +1,4 @@
-import { ComparisonOperator } from './model'
+import type { ComparisonOperator } from './model'
 
 export const ComparisonOrdinals: Record<ComparisonOperator, number> = {
   equal: 0,

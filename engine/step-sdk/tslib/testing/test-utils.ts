@@ -1,12 +1,13 @@
-import { ConfigManager, FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '@freemarket/runner'
+import type { ConfigManager, FrontDoor, WorkflowRunner} from '@freemarket/runner';
+import { WorkflowRunner__factory } from '@freemarket/runner'
 import merge from 'lodash.merge'
 import { expect } from 'chai'
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { type BigNumberish, type Signer } from 'ethers'
 import { getCurve3PoolAddress, getCurveTriCrypto2Address } from './curve'
 import { I3Pool__factory, IERC20__factory, ITriCrypto2__factory, Weth__factory } from '../../typechain-types'
-import { TransactionReceipt } from '@ethersproject/providers'
-import { ContractTransaction } from '@ethersproject/contracts'
+import type { TransactionReceipt } from '@ethersproject/providers'
+import type { ContractTransaction } from '@ethersproject/contracts'
 export const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 import { assert, getLogger } from '@freemarket/core'
 

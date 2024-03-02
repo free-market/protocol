@@ -1,4 +1,5 @@
-import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo } from '@freemarket/step-sdk'
 import ChainBranchIcon from './ChainBranchIcon'
 import AssetBalanceBranchIcon from './AssetBalanceBranchIcon'
 import ConvexStakeIcon from './branding-assets/ConvexIcon'

@@ -1,4 +1,5 @@
-import { NextSteps, BranchStep, assert, WORKFLOW_END_STEP_ID } from '@freemarket/core'
+import type { NextSteps, BranchStep} from '@freemarket/core';
+import { assert, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { AbstractStepHelper } from './AbstractStepHelper'
 
 export abstract class AbstractBranchHelper<T extends BranchStep> extends AbstractStepHelper<T> {

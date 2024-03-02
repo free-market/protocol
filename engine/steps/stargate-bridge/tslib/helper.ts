@@ -1,29 +1,30 @@
 import { AbstractStepHelper, getBridgePayload } from '@freemarket/step-sdk'
 import { defaultAbiCoder } from '@ethersproject/abi'
-import {
-  ADDRESS_ZERO,
-  assert,
+import type {
   EncodedWorkflowStep,
   EncodingContext,
   AssetAmount,
+  NextSteps,
+  AssetReference,
+  RemittanceInfo,
+  ContinuationInfo,
+  EncodeContinuationResult,
+  FungibleToken} from '@freemarket/core';
+import {
+  ADDRESS_ZERO,
+  assert,
   absoluteAmountToString,
   Chain,
   getEthersProvider,
-  NextSteps,
   WORKFLOW_END_STEP_ID,
-  AssetReference,
   EvmAssetType,
   sdkAssetAndAmountToEvmInputAmount,
-  RemittanceInfo,
   TEN_BIG,
-  ContinuationInfo,
-  EncodeContinuationResult,
   Memoize,
-  FungibleToken,
   getChainId,
   getLogger,
 } from '@freemarket/core'
-import type { StargateBridge } from './model'
+import { StargateBridge } from './model'
 import { StargateChainIds } from './StargateChainIds'
 import { WorkflowRunner__factory } from '@freemarket/runner'
 import {

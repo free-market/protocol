@@ -1,5 +1,5 @@
-import { Log } from '@ethersproject/providers'
-import { Interface } from '@ethersproject/abi'
+import type { Log } from '@ethersproject/providers'
+import type { Interface } from '@ethersproject/abi'
 import { getLogger } from '@freemarket/core'
 
 const logger = getLogger('testing')

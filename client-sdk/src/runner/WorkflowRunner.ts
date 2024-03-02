@@ -9,7 +9,6 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { getFreeMarketConfig } from '../config'
 import { Wallet } from '@ethersproject/wallet'
 
-import rootLogger from 'loglevel'
 import {
   ADDRESS_ZERO,
   Asset,
@@ -22,10 +21,10 @@ import {
   FungibleToken,
   getEthersProvider,
   getEthersSigner,
+  getLogger,
   IERC20__factory,
   IWorkflowRunner__factory,
   Memoize,
-  MemoizeArgs,
   translateChain,
 } from '@freemarket/core'
 import { WorkflowRunner__factory } from '@freemarket/runner'
@@ -45,7 +44,7 @@ import { getPlatformInfos, StepInfo } from '../platform-infos'
 import { AaveBorrowAction__factory, IERC20Detailed__factory } from '@freemarket/aave'
 import { EthersTransactionExecutor } from './EthersTransactionExecutor'
 import { TransactionParams } from './EvmTransactionExecutor'
-const log = rootLogger.getLogger('WorkflowRunner')
+const log = getLogger('WorkflowRunner')
 
 export interface WaitForContinuationResult {
   transactionHash: string
@@ -155,14 +154,16 @@ export class WorkflowRunner implements IWorkflowRunner {
         sourceChainTransactionHash: workflowTxReceipt.transactionHash,
         targetChain: continuationInfo.targetChain,
       })
+      let continuationEvents: ExecutionLog[]
       if (this.isDebug) {
-        const continuationEvents = await this.continueDebugWorkflow(continuationInfo)
-        events.push(...continuationEvents)
+        continuationEvents = await this.continueDebugWorkflow(continuationInfo)
       } else {
         const continuationResult = await this.waitForContinuation(continuationInfo)
-        const logs = await this.toExecutionLogs(continuationInfo.targetChain, continuationResult.transactionReceipt.logs)
-        events.push(...logs)
+        continuationEvents = await this.toExecutionLogs(continuationInfo.targetChain, continuationResult.transactionReceipt.logs)
       }
+      events.push(...continuationEvents)
+      void this.sendEvent({ code: 'WorkflowConfirmed', chain: continuationInfo.targetChain, transactionHash: '', logs: continuationEvents })
+
       // TODO get next txReceipt https://freemarket.atlassian.net/browse/CORE-24
       //  provider.getTransaction(transactionHash)
 

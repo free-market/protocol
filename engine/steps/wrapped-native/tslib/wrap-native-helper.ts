@@ -1,4 +1,5 @@
-import { EncodingContext, EncodedWorkflowStep, sdkAssetAmountToEvmInputAmount, AssetAmount } from '@freemarket/core'
+import type { EncodingContext, EncodedWorkflowStep, AssetAmount } from '@freemarket/core';
+import { sdkAssetAmountToEvmInputAmount } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { WrapNative } from './model'
 

@@ -1,12 +1,14 @@
 import type { Amount, Asset, AssetAmount, AssetReference, Chain } from '../model'
-import { EvmAsset, EvmAssetType, EvmInputAsset } from '../evm'
+import type { EvmAsset, EvmInputAsset } from '../evm';
+import { EvmAssetType } from '../evm'
 import { ADDRESS_ZERO, assert, capitalize } from '../utils'
 import { AssetNotFoundError, AssetNotFoundProblem } from '../runner/AssetNotFoundError'
 import type { IWorkflow } from '../runner/IWorkflow'
 import type { EIP1193Provider } from 'eip1193-provider'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
-import { Provider, Web3Provider } from '@ethersproject/providers'
+import type { Provider} from '@ethersproject/providers';
+import { Web3Provider } from '@ethersproject/providers'
 import Big from 'big.js'
 
 export const HARDHAT_FORK_CHAIN = 'ethereum'

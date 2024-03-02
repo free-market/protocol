@@ -1,29 +1,25 @@
+import type { EncodingContext, EncodedWorkflowStep, EvmAsset, MultiStepEncodingContext, BeforeAfterResult } from '@freemarket/core'
 import {
-  EncodingContext,
-  EncodedWorkflowStep,
   assert,
   ADDRESS_ZERO,
   sdkAssetAndAmountToEvmInputAmount,
-  EvmAsset,
   getEthersSigner,
   getEthersProvider,
   Chain,
   Memoize,
   MAX_UINT256,
-  MultiStepEncodingContext,
-  BeforeAfterResult,
+  getLogger,
 } from '@freemarket/core'
 
 import { AbstractStepHelper, AssetSchema, getWrappedNativeAddress } from '@freemarket/step-sdk'
 import type { AaveBorrow, AaveInterestRateMode } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
-import { TypedDataSigner } from '@ethersproject/abstract-signer'
+import type { TypedDataSigner } from '@ethersproject/abstract-signer'
 import { IPoolAddressesProvider__factory, IPool__factory, StableDebtToken__factory, VariableDebtToken__factory } from '../typechain-types'
 import { getPoolAddressProviderAddress } from './getPoolAddressProviderAddress'
 import { splitSignature } from '@ethersproject/bytes'
-import rootLogger from 'loglevel'
 
-const log = rootLogger.getLogger('borrow-helper')
+const log = getLogger('borrow-helper')
 
 export const STEP_TYPE_ID_AAVE_BORROW = 110
 

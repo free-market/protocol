@@ -1,10 +1,11 @@
-import {
+import type {
   EncodingContext,
   EncodedWorkflowStep,
+  AssetAmount} from '@freemarket/core';
+import {
   assert,
   ADDRESS_ZERO,
-  sdkAssetAndAmountToEvmInputAmount,
-  AssetAmount,
+  sdkAssetAndAmountToEvmInputAmount
 } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveSupply } from './model'

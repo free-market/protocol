@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { AddAsset } from './model'
+import type { AddAsset } from './model'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import Amount from './Amount'
-import { SummaryPropsBase } from '@freemarket/step-sdk'
+import type { SummaryPropsBase } from '@freemarket/step-sdk'
 
 type Props = SummaryPropsBase<AddAsset>
 

@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
+import type { PlatformInfo} from '@freemarket/step-sdk';
+import { StepInfo } from '@freemarket/step-sdk'
 import OneInchIcon from './branding-assets/OneInchIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
 import TelegramIcon from './branding-assets/TelegramIcon'

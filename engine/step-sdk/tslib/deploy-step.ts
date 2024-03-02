@@ -1,17 +1,8 @@
+/* eslint-disable no-console */
 import type { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { ConfigManager, ConfigManager__factory, EternalStorage } from '@freemarket/runner'
+import type { ConfigManager } from '@freemarket/runner'
 import fs from 'fs'
 import path from 'path'
-
-function copyRunnerDeployments(networkName: string, contractNames: string[]) {
-  const runnerDeploymentsPath = `node_modules/@freemarket/runner/deployments/${networkName}`
-  const localDeploymentsPath = `deployments/${networkName}`
-  // fs.mkdirSync(localDeploymentsPath, { recursive: true })
-  for (const contractName of contractNames) {
-    const fileName = `${contractName}.json`
-    fs.copyFileSync(`${runnerDeploymentsPath}/${fileName}`, `${localDeploymentsPath}/${fileName}`)
-  }
-}
 
 export function getFrontDoorAddress(hre: HardhatRuntimeEnvironment) {
   return getDeployedContractAddress(hre, 'FrontDoor')

@@ -1,4 +1,5 @@
-import { Chain, getChainIdFromChain } from '@freemarket/core'
+import type { Chain} from '@freemarket/core';
+import { getChainIdFromChain } from '@freemarket/core'
 
 export function getRouterAddress(chainId: string) {
   switch (chainId) {

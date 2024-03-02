@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export const NODE_TYPES = ['stepNode', 'branchNode', 'triggerNode'] as const
 export type NodeType = (typeof NODE_TYPES)[number]

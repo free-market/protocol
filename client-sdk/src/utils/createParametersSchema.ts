@@ -1,10 +1,9 @@
 import z, { ZodTypeAny } from 'zod'
 import type { Workflow } from '../model'
 import type { ReadonlyDeep } from 'type-fest'
-import rootLogger from 'loglevel'
-import { getParameterSchema } from '@freemarket/core'
+import { getLogger, getParameterSchema } from '@freemarket/core'
 
-const log = rootLogger.getLogger('createParametersSchema')
+const log = getLogger('createParametersSchema')
 
 export function createParametersSchema(workflow: ReadonlyDeep<Workflow>, excludeRemittances = true) {
   const params = excludeRemittances ? workflow.parameters?.filter(it => !it.name.startsWith('remittances.')) : workflow.parameters
