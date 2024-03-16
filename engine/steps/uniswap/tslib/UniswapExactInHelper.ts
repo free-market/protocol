@@ -52,7 +52,7 @@ export class UniswapExactInHelper extends UniswapBaseHelper<UniswapExactIn> {
     // logQuote('top level quote', route.quote)
     // logQuote('top level quoteGasAdjusted', route.quoteGasAdjusted)
     logger.debug('uniswap num routes', route.route.length)
-    const routes = UniswapBaseHelper.encodeRoute(route)
+    const routes = await UniswapBaseHelper.encodeRoute(route)
 
     // encode slippage tolerance
     let slippageTolerancePct = stepConfig.slippageTolerance?.toString() || '100'
@@ -61,6 +61,7 @@ export class UniswapExactInHelper extends UniswapBaseHelper<UniswapExactIn> {
     }
     // compute minExchangeRate, which is a percentage of the input amount minus the slippage tolerance
     const worstExchangeRate = UniswapExactInHelper.getWorstExchangeRate(amountUsedForRoute, route.quote, parseFloat(slippageTolerancePct))
+
     return {
       stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_IN,
       stepAddress: ADDRESS_ZERO,

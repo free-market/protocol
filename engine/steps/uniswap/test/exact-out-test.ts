@@ -102,7 +102,7 @@ describe('Uniswap Exact Out', async () => {
     // wrap eth and give it to the Action
     const oneHundredEthInWei = ethers.utils.parseEther('100')
     await (await weth.deposit({ value: oneHundredEthInWei })).wait()
-    weth.transfer(uniswapExactOutAction.address, oneHundredEthInWei)
+    await weth.transfer(uniswapExactOutAction.address, oneHundredEthInWei)
 
     const stepConfig: UniswapExactOut = {
       type: 'uniswap-exact-out',

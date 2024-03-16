@@ -114,7 +114,7 @@ describe('Uniswap Exact In', async () => {
 
     // wrap eth and give it to the Action
     await (await weth.deposit({ value: testAmountWei })).wait()
-    weth.transfer(uniswapExactInAction.address, testAmountWei)
+    await weth.transfer(uniswapExactInAction.address, testAmountWei)
 
     const stepConfig: UniswapExactIn = {
       type: 'uniswap-exact-in',

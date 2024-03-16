@@ -45,7 +45,7 @@ export class UniswapExactOutHelper extends UniswapBaseHelper<UniswapExactOut> {
     logger.debug('amountUsedForRoute', amountUsedForRoute.toString())
     assert(route, "uniswap auto-router couldn't find a route")
     logger.debug('uniswap num routes', route.route.length)
-    const routes = UniswapBaseHelper.encodeRoute(route)
+    const routes = await UniswapBaseHelper.encodeRoute(route)
 
     // compute minExchangeRate, which is a percentage of the input amount minus the slippage tolerance
     const slippageTolerancePct = UniswapExactOutHelper.getSlippageTolerancePercent(stepConfig.slippageTolerance)
