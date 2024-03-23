@@ -26,6 +26,9 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'wrap-native': WrapNativeHelper,
   'unwrap-native': UnwrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
+  'uniswap-mint-position': StubHelper,
+  'uniswap-add-liquidity': StubHelper,
+  'uniswap-position-exists': StubHelper,
   'previous-output-branch': PreviousOutputBranchHelper,
   '1inch': StubHelper,
 }

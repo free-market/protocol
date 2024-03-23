@@ -13,13 +13,20 @@ import {
 } from '@freemarket/core'
 import { AbstractStepHelper, Weth__factory } from '@freemarket/step-sdk'
 import type { SwapOptionsSwapRouter02, SwapRoute } from '@uniswap/smart-order-router'
-import type { BaseProvider } from '@ethersproject/providers'
+
+import { Protocol } from '@uniswap/router-sdk'
+import { OnChainQuoteProvider, SwapType, UniswapMulticallProvider } from '@uniswap/smart-order-router'
+import { Token, TradeType, CurrencyAmount, Percent } from '@uniswap/sdk-core'
+import { AlphaRouter } from '@uniswap/smart-order-router'
+
+import type { BaseProvider, Provider } from '@ethersproject/providers'
 export const QUOTER_CONTRACT_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 import Big from 'big.js'
 import { BigNumber, utils } from 'ethers'
 
 import { IERC20__factory, IV3SwapRouter__factory } from '../typechain-types'
 import type { Signer } from '@ethersproject/abstract-signer'
+import { ChainId } from '@uniswap/sdk-core'
 
 const logger = getLogger('UniswapExactInHelper')
 
@@ -47,9 +54,9 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     return `${JSON.stringify(fromAssetRef)}-${JSON.stringify(toAssetRef)}-${type}`
   })
   async getRoute(fromAssetRef: AssetReference, toAssetRef: AssetReference, type: 'exactIn' | 'exactOut', amount?: string) {
-    const { SwapType } = await import('@uniswap/smart-order-router')
-    const { TradeType, CurrencyAmount, Percent } = await import('@uniswap/sdk-core')
-    const { Protocol } = await import('@uniswap/router-sdk')
+    // const { SwapType } = await import('@uniswap/smart-order-router')
+    // const { TradeType, CurrencyAmount, Percent } = await import('@uniswap/sdk-core')
+    // const { Protocol } = await import('@uniswap/router-sdk')
     assert(typeof fromAssetRef === 'object' && typeof toAssetRef === 'object')
     // assert(fromAssetRef.type === 'fungible-token')
     // assert(toAssetRef.type === 'fungible-token')
@@ -143,14 +150,14 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     const c = translateChain(chain)
     const assetChainInfo = asset.chains[c]
     assert(assetChainInfo)
-    const { Token } = await import('@uniswap/sdk-core')
+    // const { Token } = await import('@uniswap/sdk-core')
 
     return new Token(chainId, assetChainInfo.address, assetChainInfo.decimals)
   }
 
   @Memoize()
   protected async getRouter(chainId: number) {
-    const { AlphaRouter } = await import('@uniswap/smart-order-router')
+    // const { AlphaRouter } = await import('@uniswap/smart-order-router')
     logger.debug('getting router for chain', chainId)
     const chainIdForUniswap = chainId === 31337 ? 1 : chainId
     const chain = chainId === 31337 ? 'local' : await this.getChain()
@@ -163,12 +170,13 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     const router = new AlphaRouter({
       chainId: chainIdForUniswap,
       provider: provider as BaseProvider,
+      onChainQuoteProvider: this.uniswapOnChainQuoteProviderOverrides(chainId, provider as BaseProvider),
     })
     return router
   }
 
   static async encodeRoute(route: SwapRoute): Promise<UniswapRoute[]> {
-    const { Protocol } = await import('@uniswap/router-sdk')
+    // const { Protocol } = await import('@uniswap/router-sdk')
     const encodedPaths: UniswapRoute[] = []
     for (const route2 of route.route) {
       const tokenPath = route2.tokenPath.map(it => it.address)
@@ -229,9 +237,9 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     type: 'exactIn' | 'exactOut',
     amount: string
   ) {
-    const { SwapType } = await import('@uniswap/smart-order-router')
-    const { TradeType, CurrencyAmount, Percent } = await import('@uniswap/sdk-core')
-    const { Protocol } = await import('@uniswap/router-sdk')
+    // const { SwapType } = await import('@uniswap/smart-order-router')
+    // const { TradeType, CurrencyAmount, Percent } = await import('@uniswap/sdk-core')
+    // const { Protocol } = await import('@uniswap/router-sdk')
     assert(typeof fromAssetRef === 'object' && typeof toAssetRef === 'object')
     const chainId = await this.getChainId()
     const chain = await this.getChain()
@@ -326,5 +334,43 @@ export abstract class UniswapBaseHelper<T extends StepBase> extends AbstractStep
     const targetAsset = IERC20__factory.connect(toAssetChainInfo.address, signer)
     const targetAssetBalance = await targetAsset.balanceOf(recipientAddress)
     logger.debug('targetAssetBalance', targetAssetBalance.toString())
+  }
+
+  uniswapOnChainQuoteProviderOverrides(chainId: number, provider: BaseProvider) {
+    switch (chainId) {
+      case ChainId.OPTIMISM_GOERLI:
+      case ChainId.OPTIMISM:
+        return new OnChainQuoteProvider(
+          chainId,
+          provider,
+          new UniswapMulticallProvider(chainId, provider, 375_000),
+          {
+            retries: 3,
+            minTimeout: 1000,
+            maxTimeout: 1100,
+          },
+          {
+            multicallChunk: 2,
+            gasLimitPerCall: 1_000_000,
+            quoteMinSuccessRate: 0.1,
+          },
+          {
+            gasLimitOverride: 1_000_000,
+            multicallChunk: 2,
+          },
+          {
+            gasLimitOverride: 1_000_000,
+            multicallChunk: 2,
+          },
+          {
+            baseBlockOffset: -10,
+            rollback: {
+              enabled: true,
+              attemptsBeforeRollback: 1,
+              rollbackBlockOffset: -10,
+            },
+          }
+        )
+    }
   }
 }

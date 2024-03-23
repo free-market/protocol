@@ -1,4 +1,5 @@
 import { PlatformInfo } from '@freemarket/step-sdk'
+import { platformInfo as addAssetPlatformInfo } from '@freemarket/add-asset/build/tslib/step-info'
 import { platformInfo as aavePlatformInfo } from '@freemarket/aave/build/tslib/step-info'
 import {
   chainBranchPlatformInfo,
@@ -21,7 +22,7 @@ export { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 export function getPlatformInfos(): PlatformInfo[] {
   return [
     aavePlatformInfo,
-    // addAssetPlatformInfo,
+    addAssetPlatformInfo,
     assetBalanceBranchPlatformInfo,
     chainBranchPlatformInfo,
     previousOutputBranchPlatformInfo,

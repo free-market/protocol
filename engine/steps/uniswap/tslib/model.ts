@@ -8,6 +8,7 @@ import {
   percentSchema,
   stepProperties,
   assetSourceSchema,
+  createBranchStepSchema,
 } from '@freemarket/core'
 import { assetSourceDescription } from '@freemarket/step-sdk'
 
@@ -47,3 +48,37 @@ export const uniswapExactOutSchema = createStepSchema('uniswap-exact-out').exten
 })
 
 export interface UniswapExactOut extends z.infer<typeof uniswapExactOutSchema> {}
+
+const tokenASchema = assetReferenceSchema.describe(stepProperties('Token A', 'One of the two input assets'))
+const tokenBSchema = assetReferenceSchema.describe(stepProperties('Token B', 'One of the two input assets'))
+const liquidityRangeLower = amountSchema
+  .describe(stepProperties('Liquidity Range Lower', 'The lower bound of the liquidity range'))
+  .optional()
+const liquidityRangeUpper = amountSchema
+  .describe(stepProperties('Liquidity Range Upper', 'The upper bound of the liquidity range'))
+  .optional()
+
+const addCreateCommon = {
+  tokenA: tokenASchema,
+  tokenASource: assetSourceSchema.describe(stepProperties('Token A Source', 'The source of Token A.' + assetSourceDescription)),
+  tokenAAmount: amountSchema.describe(stepProperties('Token A Amount', 'The amount of Token A to provide')),
+  tokenB: tokenBSchema,
+  tokenBSource: assetSourceSchema.describe(stepProperties('Token B Source', 'The source of Token B.' + assetSourceDescription)),
+  tokenBAmount: amountSchema.describe(stepProperties('Token B Amount', 'The amount of Token B to provide')),
+  liquidityRangeLower,
+  liquidityRangeUpper,
+}
+
+export const uniswapMintPositionSchema = createStepSchema('uniswap-mint-position').extend(addCreateCommon)
+
+export const uniswapAddLiquiditySchema = createStepSchema('uniswap-add-liquidity').extend({
+  ...addCreateCommon,
+  positionId: z.string().describe(stepProperties('Position ID', 'The ID of the position to mint')).optional(),
+})
+
+export const uniswapPositionExists = createBranchStepSchema('uniswap-position-exists').extend({
+  tokenA: tokenASchema,
+  tokenB: tokenBSchema,
+  liquidityRangeLower,
+  liquidityRangeUpper,
+})
