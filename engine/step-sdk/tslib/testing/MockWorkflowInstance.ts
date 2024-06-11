@@ -14,7 +14,7 @@ import {
   Memoize,
 } from '@freemarket/core'
 
-import { initEnv } from '@freemarket/core/build/tslib/utils/env-utils'
+import { initEnv } from '@freemarket/core/build/tslib/nodejs-utils/init-env'
 
 import type { EIP1193Provider } from 'eip1193-provider'
 import axios from 'axios'
