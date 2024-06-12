@@ -18,3 +18,5 @@ function initEnv() {
 }
 
 initEnv()
+
+export { initEnv }
