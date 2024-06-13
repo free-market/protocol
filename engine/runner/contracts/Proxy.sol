@@ -18,6 +18,13 @@ contract Proxy is FreeMarketBase, IHasUpstream {
   function getUpstream() external view virtual returns (address) {
     return upstreamAddress();
   }
+  function upstreamAddress() public view returns (address) {
+      return  _upstreamAddress();
+  }
+
+  function isUserProxy() public view returns (bool) {
+      return _isUserProxy();
+  }
 
 
   function resolveUpstream() internal view returns (address addr) {

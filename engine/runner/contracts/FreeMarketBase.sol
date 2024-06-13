@@ -10,11 +10,11 @@ import './LibConfigReader.sol';
 contract FreeMarketBase {
   address public immutable eternalStorageAddress;
 
-  function upstreamAddress() public view returns (address) {
+  function _upstreamAddress() internal view returns (address) {
       return  LibConfigReader.getProxyUpstream(eternalStorageAddress);
   }
 
-  function isUserProxy() public view returns (bool) {
+  function _isUserProxy() internal view returns (bool) {
       return  LibConfigReader.getIsUserProxy(eternalStorageAddress);
   }
 
