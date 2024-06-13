@@ -14,18 +14,11 @@ library LibConfigReader {
   bytes32 constant allStepAddresses = 0x18fa4b105101c66136345367eab77cd274c0766ec0596b7e8aadd79e99139555; // keccak256('allStepAddresses')
   bytes32 public constant subscribers = keccak256('subscribers');
   bytes32 public constant key_proxyUpstream = keccak256('proxyUpstream');
-  bytes32 public constant key_isUserProxy = keccak256('isUserProxy');
 
   function getProxyUpstream(address eternalStorageAddress) internal view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getAddress(key_proxyUpstream);
   }
-
-  function getIsUserProxy(address eternalStorageAddress) internal view returns (bool) {
-    EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
-    return eternalStorage.getBool(key_isUserProxy);
-  }
-
 
   function getStepAddressInternal(address eternalStorageAddress, uint16 stepTypeId) internal view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);

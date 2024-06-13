@@ -72,11 +72,6 @@ contract ConfigManager is FreeMarketBase, Ownable {
     EternalStorage(eternalStorageAddress).setAddress(LibConfigReader.key_proxyUpstream, upstream);
     emit UpstreamChanged(old, upstream);    
   }
-  
-  function setIsUserProxy(bool isUserProxy) external onlyOwner {
-    EternalStorage(eternalStorageAddress).setBool(LibConfigReader.key_isUserProxy, isUserProxy);
-  }
-
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
 

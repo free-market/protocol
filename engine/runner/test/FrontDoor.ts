@@ -25,7 +25,7 @@ describe('FrontDoor', async () => {
     const storageAddress = await frontDoor.eternalStorageAddress()
 
     // ensure that the upstream of frontdoor is the deployed workflowRunner
-    const frontDoorUpstreamAddress = await frontDoor.upstreamAddress()
+    const frontDoorUpstreamAddress = await frontDoor.getUpstream()
     expect(frontDoorUpstreamAddress).equals(workflowRunner.address)
   })
 

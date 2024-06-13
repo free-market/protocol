@@ -12,16 +12,8 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     address storageAddress
   ) FreeMarketBase(storageAddress) {}
 
-  // TODO can we safely rename getUpstream() or upstreamAddress() so we have only 1?
-  function getUpstream() external view virtual returns (address) {
-    return upstreamAddress();
-  }
-  function upstreamAddress() public view returns (address) {
+  function getUpstream() public view virtual returns (address) {
       return  LibConfigReader.getProxyUpstream(eternalStorageAddress);
-  }
-
-  function isUserProxy() public view returns (bool) {
-      return  LibConfigReader.getIsUserProxy(eternalStorageAddress);
   }
 
   function resolveUpstream() internal view returns (address addr) {
@@ -35,7 +27,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     } else {
       // console.log('upstreamFromArgs == address(0)');
     }
-    return upstreamAddress();
+    return getUpstream();
   }
 
   function getAddressFromCalldata() internal pure returns (address addr) {
