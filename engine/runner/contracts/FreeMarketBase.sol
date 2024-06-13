@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-//import './Ownable.sol';
 import './LibConfigReader.sol';
 
 /*
@@ -9,7 +8,6 @@ import './LibConfigReader.sol';
 */
 
 contract FreeMarketBase {
-  // TODO create getters
   address public immutable eternalStorageAddress;
 
   function upstreamAddress() public view returns (address) {
