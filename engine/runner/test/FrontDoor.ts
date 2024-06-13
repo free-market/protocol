@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import hardhat from 'hardhat'
-import { EternalStorage__factory, FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '../typechain-types'
+import { ConfigManager, EternalStorage__factory, FrontDoor, WorkflowRunner, WorkflowRunner__factory } from '../typechain-types'
 const { ethers, deployments, getNamedAccounts } = hardhat
 
 const setup = deployments.createFixture(async () => {
@@ -9,6 +9,7 @@ const setup = deployments.createFixture(async () => {
   const contracts = {
     frontDoor: <FrontDoor>await ethers.getContract('FrontDoor'),
     workflowRunner: <WorkflowRunner>await ethers.getContract('WorkflowRunner'),
+    configManager: <ConfigManager> await ethers.getContract('ConfigManager')
   }
   return {
     ...contracts,
@@ -49,18 +50,18 @@ describe('FrontDoor', async () => {
   })
 
   it('upgrades the WorkflowRunner', async () => {
-    const { frontDoor, deployer, otherUser } = await setup()
+    const { frontDoor, deployer, configManager, otherUser } = await setup()
 
     const deployerSigner = await ethers.getSigner(deployer)
     const factory = new WorkflowRunner__factory(deployerSigner)
     const newWorkflowRunner = await factory.deploy(frontDoor.address)
 
     // non owner cannot change the upstream
-    const frontDoorOtherUser = frontDoor.connect(await ethers.getSigner(otherUser))
-    await expect(frontDoorOtherUser.setUpstream(newWorkflowRunner.address)).to.be.reverted
+    const configManagerOtherUser = configManager.connect(await ethers.getSigner(otherUser))
+    await expect(configManagerOtherUser.setUpstream(newWorkflowRunner.address)).to.be.reverted
 
     // change the upstream (as owner)
-    await frontDoor.setUpstream(newWorkflowRunner.address)
+    await configManager.setUpstream(newWorkflowRunner.address)
     expect(await frontDoor.getUpstream()).to.equal(newWorkflowRunner.address)
   })
 

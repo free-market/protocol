@@ -13,11 +13,16 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     address storageAddress,
     address upstream,
     bool userProxy
-  ) FreeMarketBase(owner, storageAddress, upstream, userProxy) {}
+  ) FreeMarketBase(owner, storageAddress) {}
 
-  function getUpstream() external view virtual returns (address) {
-    return upstreamAddress;
+  // duplicate interfaces. remove 1:  
+  function upstreamAddress() external view virtual returns (address) {
+    return getProxyUpstream();
   }
+  function getUpstream() external view virtual returns (address) {
+    return getProxyUpstream();
+  }
+
 
   function resolveUpstream() internal view returns (address addr) {
     address upstreamFromArgs = getAddressFromCalldata();
@@ -30,7 +35,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     } else {
       // console.log('upstreamFromArgs == address(0)');
     }
-    return upstreamAddress;
+    return getProxyUpstream();
   }
 
   function getAddressFromCalldata() internal pure returns (address addr) {

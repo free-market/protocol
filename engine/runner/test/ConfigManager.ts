@@ -28,7 +28,7 @@ const setup = deployments.createFixture(async () => {
   }
 })
 
-describe('WorkflowRunner', async () => {
+describe('ConfigManager', async () => {
   const someAddress = '0x9ef1dcd8af14ed2bdd16fef0ae2775e2ee8ff604'
 
   it('deploys', async () => {

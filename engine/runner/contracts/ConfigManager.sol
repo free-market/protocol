@@ -24,9 +24,7 @@ contract ConfigManager is FreeMarketBase {
   )
     FreeMarketBase(
       msg.sender, // owner
-      FrontDoor(_frontDoorAddress).eternalStorageAddress(), // eternal storage address
-      address(0), // upstream (this doesn't have one)
-      false // isUserProxy
+      FrontDoor(_frontDoorAddress).eternalStorageAddress()
     )
   {
     frontDoorAddress = _frontDoorAddress;
@@ -64,6 +62,19 @@ contract ConfigManager is FreeMarketBase {
     (uint256 fee, bool feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, uint16(stepTypeId));
     return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
   }
+
+  event UpstreamChanged(address indexed oldUpstream, address indexed newUpstream);
+  
+  function setUpstream(address upstream) external onlyOwner {
+    address old = EternalStorage(eternalStorageAddress).getAddress(LibConfigReader.key_proxyUpstream);
+    EternalStorage(eternalStorageAddress).setAddress(LibConfigReader.key_proxyUpstream, upstream);
+    emit UpstreamChanged(old, upstream);    
+  }
+  
+  function setIsUserProxy(bool isUserProxy) external onlyOwner {
+    EternalStorage(eternalStorageAddress).setBool(LibConfigReader.key_isUserProxy, isUserProxy);
+  }
+
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
 

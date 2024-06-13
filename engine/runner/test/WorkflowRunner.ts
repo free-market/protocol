@@ -81,7 +81,7 @@ describe('WorkflowRunner', async () => {
     const factory = new WorkflowRunner__factory(signer)
     const newRunner = await factory.deploy(frontDoor.address)
     await newRunner.deployed()
-    await (await frontDoor.setUpstream(newRunner.address)).wait()
+    await (await configManager.setUpstream(newRunner.address)).wait()
     await (await configManager.addRunnerAddress(newRunner.address)).wait()
 
     // sanity check the deployment

@@ -1,21 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 import './Ownable.sol';
+import './LibConfigReader.sol';
 
 contract FreeMarketBase is Ownable {
   // TODO create getters
-  address public eternalStorageAddress;
-  address public upstreamAddress;
-  bool public isUserProxy;
+  address public immutable eternalStorageAddress;
+
+  function getProxyUpstream() public view returns (address) {
+      return  LibConfigReader.getProxyUpstream(eternalStorageAddress);
+  }
+
+  function isUserProxy() public view returns (bool) {
+      return  LibConfigReader.getIsUserProxy(eternalStorageAddress);
+  }
+
 
   constructor(
     address owner,
-    address eternalStorage,
-    address upstream,
-    bool userProxy
+    address eternalStorage
   ) Ownable(owner) {
     eternalStorageAddress = eternalStorage;
-    upstreamAddress = upstream;
-    isUserProxy = userProxy;
   }
 }
