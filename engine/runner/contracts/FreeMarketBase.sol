@@ -7,7 +7,7 @@ contract FreeMarketBase is Ownable {
   // TODO create getters
   address public immutable eternalStorageAddress;
 
-  function getProxyUpstream() public view returns (address) {
+  function upstreamAddress() public view returns (address) {
       return  LibConfigReader.getProxyUpstream(eternalStorageAddress);
   }
 

@@ -9,14 +9,4 @@ contract FrontDoor is Proxy {
     bytes32 key = keccak256(abi.encodePacked('frontDoor'));
     StorageWriter.setAddress(eternalStorageAddress, key, address(this));
   }
-  /*
-  event UpstreamChanged(address oldUpstream, address newUpstream);
-  event UpstreamRemoved(address oldUpstream);
-
-  function setUpstream(address newUpstream) public onlyOwner {
-    address oldUpstream = getUpstream();
-    upstreamAddress = newUpstream;
-    emit UpstreamChanged(oldUpstream, newUpstream);
-  }
-  */
 }

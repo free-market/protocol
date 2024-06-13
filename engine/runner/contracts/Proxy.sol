@@ -15,12 +15,9 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     bool userProxy
   ) FreeMarketBase(owner, storageAddress) {}
 
-  // duplicate interfaces. remove 1:  
-  function upstreamAddress() external view virtual returns (address) {
-    return getProxyUpstream();
-  }
+  // TODO can we safely rename getUpstream() or upstreamAddress() so we have only 1?
   function getUpstream() external view virtual returns (address) {
-    return getProxyUpstream();
+    return upstreamAddress();
   }
 
 
@@ -35,7 +32,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     } else {
       // console.log('upstreamFromArgs == address(0)');
     }
-    return getProxyUpstream();
+    return upstreamAddress();
   }
 
   function getAddressFromCalldata() internal pure returns (address addr) {
