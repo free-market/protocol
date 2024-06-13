@@ -27,7 +27,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     address payable frontDoorAddress
   )
     FreeMarketBase(
-      msg.sender, // owner
       FrontDoor(frontDoorAddress).eternalStorageAddress()
     )
   {}

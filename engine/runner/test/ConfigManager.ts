@@ -40,6 +40,31 @@ describe('ConfigManager', async () => {
     expect(configManagerStorageAddress).is.eq(frontDoorStorageAddress)
   })
 
+    
+  it('changes owners', async () => {
+    const {
+      contracts: { frontDoor, configManager },
+      users: { deployer, otherUser }
+    } = await setup()
+    let currentOwner = await configManager.owner()
+    expect(currentOwner).to.equal(deployer)
+
+    const configManagerOtherUser = configManager.connect(await ethers.getSigner(otherUser))
+    // non owner cannot change the owner
+    await expect(configManagerOtherUser.setOwner(otherUser)).to.be.reverted
+    // change the owner to NOT_OWNER
+    await configManager.setOwner(otherUser)
+    currentOwner = await configManager.owner()
+    expect(currentOwner).to.equal(otherUser)
+    // now original owner cannot change owner
+    await expect(configManager.setOwner(deployer)).to.be.reverted
+    // change owner back to the original owner
+    await configManagerOtherUser.setOwner(deployer)
+    currentOwner = await configManager.owner()
+    expect(currentOwner).to.equal(deployer)
+  })
+  
+
   it('manages step addresses', async () => {
     const {
       contracts: { frontDoor, configManager },

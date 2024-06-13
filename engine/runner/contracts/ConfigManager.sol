@@ -6,6 +6,7 @@ import './StepInfo.sol';
 import './LibConfigReader.sol';
 import './FreeMarketBase.sol';
 import './FrontDoor.sol';
+import './Ownable.sol';
 
 struct StepFee {
   uint16 stepTypeId;
@@ -13,7 +14,7 @@ struct StepFee {
   uint256 fee;
 }
 
-contract ConfigManager is FreeMarketBase {
+contract ConfigManager is FreeMarketBase, Ownable {
   address public immutable frontDoorAddress;
 
   event StepFeeUpdated(uint16 stepTypeId, uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
@@ -22,8 +23,9 @@ contract ConfigManager is FreeMarketBase {
   constructor(
     address payable _frontDoorAddress
   )
+    Ownable(msg.sender)
+    
     FreeMarketBase(
-      msg.sender, // owner
       FrontDoor(_frontDoorAddress).eternalStorageAddress()
     )
   {

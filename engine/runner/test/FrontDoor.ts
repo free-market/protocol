@@ -29,26 +29,6 @@ describe('FrontDoor', async () => {
     expect(frontDoorUpstreamAddress).equals(workflowRunner.address)
   })
 
-  it('changes owners', async () => {
-    const { frontDoor, deployer, otherUser } = await setup()
-    let currentOwner = await frontDoor.owner()
-    expect(currentOwner).to.equal(deployer)
-
-    const frontDoorOtherUser = frontDoor.connect(await ethers.getSigner(otherUser))
-    // non owner cannot change the owner
-    await expect(frontDoorOtherUser.setOwner(otherUser)).to.be.reverted
-    // change the owner to NOT_OWNER
-    await frontDoor.setOwner(otherUser)
-    currentOwner = await frontDoor.owner()
-    expect(currentOwner).to.equal(otherUser)
-    // now original owner cannot change owner
-    await expect(frontDoor.setOwner(deployer)).to.be.reverted
-    // change owner back to the original owner
-    await frontDoorOtherUser.setOwner(deployer)
-    currentOwner = await frontDoor.owner()
-    expect(currentOwner).to.equal(deployer)
-  })
-
   it('upgrades the WorkflowRunner', async () => {
     const { frontDoor, deployer, configManager, otherUser } = await setup()
 

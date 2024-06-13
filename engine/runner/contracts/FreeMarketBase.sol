@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import './Ownable.sol';
+//import './Ownable.sol';
 import './LibConfigReader.sol';
 
-contract FreeMarketBase is Ownable {
+/*
+  inheriting FreeMarketBase doesn't add state, 
+  only an immutable (in bytecode) address to eternalStorageAddress
+*/
+
+contract FreeMarketBase {
   // TODO create getters
   address public immutable eternalStorageAddress;
 
@@ -17,9 +22,8 @@ contract FreeMarketBase is Ownable {
 
 
   constructor(
-    address owner,
     address eternalStorage
-  ) Ownable(owner) {
+  ) {
     eternalStorageAddress = eternalStorage;
   }
 }

@@ -9,11 +9,10 @@ contract Proxy is FreeMarketBase, IHasUpstream {
   bytes32 constant runnerAddresses = 0x32b7d36eef9191cec628a9b46ddda74b702cf693ad48a065f3f9e5fcc4ea08f5; // keccak256('runnerAddresses')
 
   constructor(
-    address owner,
     address storageAddress,
     address upstream,
     bool userProxy
-  ) FreeMarketBase(owner, storageAddress) {}
+  ) FreeMarketBase(storageAddress) {}
 
   // TODO can we safely rename getUpstream() or upstreamAddress() so we have only 1?
   function getUpstream() external view virtual returns (address) {
