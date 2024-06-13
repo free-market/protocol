@@ -8,6 +8,7 @@ import {
   FrontDoor__factory,
   WorkflowRunner,
   WorkflowRunner__factory,
+  BadStep__factory
 } from '../typechain-types'
 import { WorkflowStruct } from '../typechain-types/contracts/WorkflowRunner'
 import { ADDRESS_ZERO, IERC20__factory } from '@freemarket/core'
@@ -58,6 +59,33 @@ describe('WorkflowRunner', async () => {
       afterAll: [],
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
+  })
+  it('Bad step doesnt overwrite proxy storage', async () => {
+    const {
+      contracts: { frontDoor, workflowRunner, configManager },
+      signer
+    } = await setup()
+    const stepTypeId = 1111
+    const factory = new BadStep__factory(signer)
+    const badStep = await factory.deploy()
+    const result = await configManager.setStepAddress(stepTypeId, badStep.address)
+    const upstreamBefore = await frontDoor.getUpstream()
+    const step = {
+      stepTypeId,
+      stepAddress: ADDRESS_ZERO,
+      inputAssets: [],
+      argData: '0x',
+      nextStepIndex: -1
+    }
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [step],
+      beforeAll: [],
+      afterAll: [],
+    }
+    await (await workflowRunner.executeWorkflow(workflow)).wait()
+    expect( await frontDoor.getUpstream()).to.eq(upstreamBefore)
+
   })
   it('executes when a frozen runner address is provided', async () => {
     const {
