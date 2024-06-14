@@ -9,14 +9,11 @@ contract Proxy is FreeMarketBase, IHasUpstream {
   bytes32 constant runnerAddresses = 0x32b7d36eef9191cec628a9b46ddda74b702cf693ad48a065f3f9e5fcc4ea08f5; // keccak256('runnerAddresses')
 
   constructor(
-    address owner,
-    address storageAddress,
-    address upstream,
-    bool userProxy
-  ) FreeMarketBase(owner, storageAddress, upstream, userProxy) {}
+    address storageAddress
+  ) FreeMarketBase(storageAddress) {}
 
-  function getUpstream() external view virtual returns (address) {
-    return upstreamAddress;
+  function getUpstream() public view virtual returns (address) {
+      return  LibConfigReader.getProxyUpstream(eternalStorageAddress);
   }
 
   function resolveUpstream() internal view returns (address addr) {
@@ -30,7 +27,7 @@ contract Proxy is FreeMarketBase, IHasUpstream {
     } else {
       // console.log('upstreamFromArgs == address(0)');
     }
-    return upstreamAddress;
+    return getUpstream();
   }
 
   function getAddressFromCalldata() internal pure returns (address addr) {

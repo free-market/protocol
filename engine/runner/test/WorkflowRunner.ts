@@ -8,9 +8,11 @@ import {
   FrontDoor__factory,
   WorkflowRunner,
   WorkflowRunner__factory,
+  BadStep__factory
 } from '../typechain-types'
 import { WorkflowStruct } from '../typechain-types/contracts/WorkflowRunner'
 import { ADDRESS_ZERO, IERC20__factory } from '@freemarket/core'
+
 const { ethers, deployments, getNamedAccounts } = hardhat
 
 const setup = deployments.createFixture(async () => {
@@ -22,8 +24,8 @@ const setup = deployments.createFixture(async () => {
   const workflowRunner = WorkflowRunner__factory.connect(deploymentResult.FrontDoor.address, signer)
   const contracts = {
     frontDoor,
-    configManager,
     workflowRunner,
+    configManager,
   }
   return {
     contracts,
@@ -59,6 +61,33 @@ describe('WorkflowRunner', async () => {
     }
     await (await workflowRunner.executeWorkflow(workflow)).wait()
   })
+  it('Bad step doesnt overwrite proxy storage', async () => {
+    const {
+      contracts: { frontDoor, workflowRunner, configManager },
+      signer
+    } = await setup()
+    const stepTypeId = 1111
+    const factory = new BadStep__factory(signer)
+    const badStep = await factory.deploy()
+    const result = await configManager.setStepAddress(stepTypeId, badStep.address)
+    const upstreamBefore = await frontDoor.getUpstream()
+    const step = {
+      stepTypeId,
+      stepAddress: ADDRESS_ZERO,
+      inputAssets: [],
+      argData: '0x',
+      nextStepIndex: -1
+    }
+    const workflow: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [step],
+      beforeAll: [],
+      afterAll: [],
+    }
+    await (await workflowRunner.executeWorkflow(workflow)).wait()
+    expect( await frontDoor.getUpstream()).to.eq(upstreamBefore)
+
+  })
   it('executes when a frozen runner address is provided', async () => {
     const {
       contracts: { frontDoor, workflowRunner, configManager },
@@ -81,7 +110,7 @@ describe('WorkflowRunner', async () => {
     const factory = new WorkflowRunner__factory(signer)
     const newRunner = await factory.deploy(frontDoor.address)
     await newRunner.deployed()
-    await (await frontDoor.setUpstream(newRunner.address)).wait()
+    await (await configManager.setUpstream(newRunner.address)).wait()
     await (await configManager.addRunnerAddress(newRunner.address)).wait()
 
     // sanity check the deployment

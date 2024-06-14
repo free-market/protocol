@@ -1,21 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import './Ownable.sol';
+import './LibConfigReader.sol';
 
-contract FreeMarketBase is Ownable {
-  // TODO create getters
-  address public eternalStorageAddress;
-  address public upstreamAddress;
-  bool public isUserProxy;
+/*
+  inheriting FreeMarketBase doesn't add state, 
+  only an immutable (in bytecode) address to eternalStorageAddress
+*/
+
+contract FreeMarketBase {
+  address public immutable eternalStorageAddress;
 
   constructor(
-    address owner,
-    address eternalStorage,
-    address upstream,
-    bool userProxy
-  ) Ownable(owner) {
+    address eternalStorage
+  ) {
     eternalStorageAddress = eternalStorage;
-    upstreamAddress = upstream;
-    isUserProxy = userProxy;
   }
 }

@@ -6,6 +6,7 @@ import './StepInfo.sol';
 import './LibConfigReader.sol';
 import './FreeMarketBase.sol';
 import './FrontDoor.sol';
+import './Ownable.sol';
 
 struct StepFee {
   uint16 stepTypeId;
@@ -13,7 +14,7 @@ struct StepFee {
   uint256 fee;
 }
 
-contract ConfigManager is FreeMarketBase {
+contract ConfigManager is FreeMarketBase, Ownable {
   address public immutable frontDoorAddress;
 
   event StepFeeUpdated(uint16 stepTypeId, uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
@@ -22,11 +23,10 @@ contract ConfigManager is FreeMarketBase {
   constructor(
     address payable _frontDoorAddress
   )
+    Ownable(msg.sender)
+    
     FreeMarketBase(
-      msg.sender, // owner
-      FrontDoor(_frontDoorAddress).eternalStorageAddress(), // eternal storage address
-      address(0), // upstream (this doesn't have one)
-      false // isUserProxy
+      FrontDoor(_frontDoorAddress).eternalStorageAddress()
     )
   {
     frontDoorAddress = _frontDoorAddress;
@@ -63,6 +63,14 @@ contract ConfigManager is FreeMarketBase {
 
     (uint256 fee, bool feeIsPercent) = LibConfigReader.getStepFee(eternalStorageAddress, uint16(stepTypeId));
     return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
+  }
+
+  event UpstreamChanged(address indexed oldUpstream, address indexed newUpstream);
+  
+  function setUpstream(address upstream) external onlyOwner {
+    address old = EternalStorage(eternalStorageAddress).getAddress(LibConfigReader.key_proxyUpstream);
+    EternalStorage(eternalStorageAddress).setAddress(LibConfigReader.key_proxyUpstream, upstream);
+    emit UpstreamChanged(old, upstream);    
   }
 
   event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);

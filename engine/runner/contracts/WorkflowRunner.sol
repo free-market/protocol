@@ -27,10 +27,7 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     address payable frontDoorAddress
   )
     FreeMarketBase(
-      msg.sender, // owner
-      FrontDoor(frontDoorAddress).eternalStorageAddress(), // eternal storage address
-      address(0), // upstream (this doesn't have one)
-      false // isUserProxy
+      FrontDoor(frontDoorAddress).eternalStorageAddress()
     )
   {}
 
