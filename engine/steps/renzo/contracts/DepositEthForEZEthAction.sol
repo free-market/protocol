@@ -7,15 +7,21 @@ import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
-import 'hardhat/console.sol';
+// import 'hardhat/console.sol';
 
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './IRestakeManager.sol';
 
+
+
 contract DepositEthForEZEthAction is IWorkflowStep {
   using LibStepResultBuilder for StepResultBuilder;
+
+  struct DepositEthForEZEthActionParams {
+    uint256 minEzEthReceived;
+  }
 
   IRestakeManager public immutable restakeManager;
   IERC20 public immutable ezEth;
@@ -29,21 +35,26 @@ contract DepositEthForEZEthAction is IWorkflowStep {
   */
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
-    bytes calldata,
+    bytes calldata argData,
     address
   ) public payable returns (WorkflowStepResult memory) {
-    console.log('entering DepositEthForEZEthAction');
+    //console.log('entering DepositEthForEZEthAction');
 
     // validate
     require(inputAssetAmounts.length == 1, 'there must be exactly 1 input asset');
     require(inputAssetAmounts[0].asset.assetType == AssetType.Native, "onlyEthInput");
     require(inputAssetAmounts[0].asset.assetAddress == address(0), "onlyEthInput");
     uint ezEthBalanceBefore = ezEth.balanceOf(address(this));
+    DepositEthForEZEthActionParams memory params = abi.decode(argData, (DepositEthForEZEthActionParams));
+    //console.log('depositETH', inputAssetAmounts[0].amount);
+    //uint beforeGasLeft = gasleft();
     restakeManager.depositETH{value: inputAssetAmounts[0].amount}();
+    //console.log('gas used Renzo', beforeGasLeft - gasleft());
     // uint ezEthBalanceAfter = ezEth.balanceOf(address(this));
     uint ezEthReceived = ezEth.balanceOf(address(this)) - ezEthBalanceBefore;
-    require(ezEthReceived >= inputAssetAmounts[0].amount, "insufficientEzEthReceived");
-    console.log('finishing DepositEthForEZEthAction. received ezEth = ', ezEthReceived);
+    //console.log('ezEthReceived', ezEthReceived);
+    require(ezEthReceived >= params.minEzEthReceived, "insufficientEzEthReceived");
+    //console.log('finishing DepositEthForEZEthAction. received ezEth = ', ezEthReceived);
     return
       LibStepResultBuilder
         .create(1, 1)
