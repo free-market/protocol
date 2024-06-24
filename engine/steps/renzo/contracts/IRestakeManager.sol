@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 // from https://raw.githubusercontent.com/Renzo-Protocol/contracts-public/master/contracts/IRestakeManager.sol
+// removed unused methods for import simplicity
 
 //import "./Delegation/IOperatorDelegator.sol";
 //import "./Deposits/IDepositQueue.sol";
