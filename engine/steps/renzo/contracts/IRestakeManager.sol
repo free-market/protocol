@@ -23,4 +23,7 @@ interface IRestakeManager {
     function calculateTVLs() external view returns (uint256[][] memory, uint256[] memory, uint256);
 
     function depositETH() external payable;
+
+    function renzoOracle() external view returns (address);
+
 }

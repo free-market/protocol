@@ -14,6 +14,7 @@ import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './IRestakeManager.sol';
 
+import "./IRenzoOracle.sol";
 
 
 contract DepositEthForEZEthAction is IWorkflowStep {
@@ -61,6 +62,12 @@ contract DepositEthForEZEthAction is IWorkflowStep {
         .addInputAssetAmount(inputAssetAmounts[0])
         .addOutputAssetAmount(AssetAmount({asset: Asset({assetType: AssetType.ERC20, assetAddress: address(ezEth)}), amount: ezEthReceived}))
         .result;
+  }
+
+  function calculateEzEthMintAmount(uint inputEth) public view returns (uint) {
+    (, , uint256 totalTVL) = restakeManager.calculateTVLs();
+    IRenzoOracle oracle = IRenzoOracle(restakeManager.renzoOracle()); 
+    return oracle.calculateMintAmount(totalTVL, inputEth, ezEth.totalSupply());
   }
   
 }

@@ -12,6 +12,7 @@ import { DepositEthForEZEthAction } from '../typechain-types'
 
 import Big from 'big.js'
 import { Signer } from '@ethersproject/abstract-signer'
+import exp from 'constants'
 
 
 const setup = getTestFixture(hre, async baseFixture => {
@@ -79,6 +80,8 @@ describe('Renzo', async () => {
       beforeAll: [],
       afterAll: [],
     }
+    const expectedEzEth = await depositEthForEZEthAction.calculateEzEthMintAmount(testAmount) 
+    expect(expectedEzEth).gt(minEzEthToReceive).lte(testAmount)
     // assuming ETH->ezETH exchange rate < 1:
     // should fail requesting testAmount since ezEth amount will be less
     expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})).to.reverted
