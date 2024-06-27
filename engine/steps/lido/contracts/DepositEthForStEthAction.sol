@@ -21,12 +21,17 @@ for ex:
 input ETH    1000000000000000
 output stEth: 999999999999998
 */
-uint constant WEI_LOSS_TOLERANCE = 100;
 
 contract DepositEthForStEthAction is IWorkflowStep {
   using LibStepResultBuilder for StepResultBuilder;
+  
+  struct DepositEthForStEthActionParams {
+    uint256 minStEthReceived;
+    address referral;
+  }
+
   IStEth public immutable stEth;
-  address public immutable referral = address(0); 
+
   constructor(address _stEth) {
     stEth = IStEth(_stEth);
   }
@@ -35,10 +40,11 @@ contract DepositEthForStEthAction is IWorkflowStep {
   */
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
-    bytes calldata,
+    bytes calldata argData,
     address
-  ) public payable returns (WorkflowStepResult memory) {
+  ) public payable override returns (WorkflowStepResult memory) {
     //console.log('entering DepositEthForStEthAction');
+    DepositEthForStEthActionParams memory params = abi.decode(argData, (DepositEthForStEthActionParams));
 
     // validate
     require(inputAssetAmounts.length == 1, 'there must be exactly 1 input asset');
@@ -47,13 +53,13 @@ contract DepositEthForStEthAction is IWorkflowStep {
     uint stEthBalanceBefore = stEth.balanceOf(address(this));
     console.log('depositETH', inputAssetAmounts[0].amount);
     //uint beforeGasLeft = gasleft();
-    stEth.submit{value: inputAssetAmounts[0].amount}(referral);
+    stEth.submit{value: inputAssetAmounts[0].amount}(params.referral);
     //console.log('gas used Renzo', beforeGasLeft - gasleft());
     // uint stEthBalanceAfter = stEth.balanceOf(address(this));
     uint stEthReceived = stEth.balanceOf(address(this)) - stEthBalanceBefore;
     console.log('stEthReceived', stEthReceived);
     // stEth issuance should be 1:1
-    require(stEthReceived >= inputAssetAmounts[0].amount - WEI_LOSS_TOLERANCE, "insufficientStEthReceived");
+    require(stEthReceived >= params.minStEthReceived, "insufficientStEthReceived");
     //console.log('finishing DepositEthForStEthAction. received stEth = ', stEthReceived);
     return
       LibStepResultBuilder

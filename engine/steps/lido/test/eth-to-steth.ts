@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
-import { MAINNET_STETH_ADDRESS, STEP_TYPE_ID_LIDO_ETH_TO_STETH } from '../tslib'
+import { MAINNET_STETH_ADDRESS, STEP_TYPE_ID_LIDO_ETH_TO_STETH, encodeDepositEthForStEthParams } from '../tslib'
 import { ADDRESS_ZERO, ASSET_TYPE_NATIVE, AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory, formatNumber } from '@freemarket/step-sdk'
@@ -52,8 +52,7 @@ describe('Lido', async () => {
     console.log(`otherUser ${otherUser}`)
     const testAmount = ethers.utils.parseEther("0.001")
     const stEthBefore = await stEth.balanceOf(otherUser)
-    // should be 1:1
-    const minStEthToReceive = testAmount
+    const minStEthToReceive = testAmount.sub(100)
     
     const workflow: WorkflowStruct = {
       workflowRunnerAddress: ADDRESS_ZERO,
@@ -72,16 +71,20 @@ describe('Lido', async () => {
               amount: testAmount,
             },
           ],
-          argData: '0x',
+          argData: encodeDepositEthForStEthParams(testAmount.add(1)),
           nextStepIndex: -1,
         },
       ],
       beforeAll: [],
       afterAll: [],
     }
-    console.log(`submitting workflow tx`)
+    expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})).to.reverted
+    // reduce output to minEzEthToReceive. should work now
+    workflow.steps[0].argData = encodeDepositEthForStEthParams(minStEthToReceive)
+
+    //console.log(`submitting workflow tx`)
     const tx = await userWorkflowRunner.executeWorkflow(workflow, {value : testAmount, gasLimit: 3000000})
-    console.log(`submited workflow submit tx: ${JSON.stringify(tx)}`)
+    //console.log(`submited workflow submit tx: ${JSON.stringify(tx)}`)
     const txr = await tx.wait()
     console.log(`workflow used gas: ${txr.gasUsed}`)
     const stEthAfter = await stEth.balanceOf(otherUser)
