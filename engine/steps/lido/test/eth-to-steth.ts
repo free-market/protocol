@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
-import { MAINNET_STETH_ADDRESS, STEP_TYPE_ID_LIDO_ETH_TO_STETH, encodeDepositEthForStEthParams } from '../tslib'
-import { ADDRESS_ZERO, ASSET_TYPE_NATIVE, AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
+import { MAINNET_STETH_ADDRESS, MAINNET_WSTETH_ADDRESS, STEP_TYPE_ID_LIDO_ETH_TO_STETH, STEP_TYPE_ID_LIDO_STETH_TO_WSTETH, STEP_TYPE_ID_LIDO_WSTETH_TO_STETH, encodeDepositEthForStEthParams, encodeWrapParams } from '../tslib'
+import { ADDRESS_ZERO, ASSET_TYPE_ERC20, ASSET_TYPE_NATIVE, AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory, formatNumber } from '@freemarket/step-sdk'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
@@ -26,9 +26,10 @@ const setup = getTestFixture(hre, async baseFixture => {
   // get a reference to the deployed contract with otherUser as the signer
   const depositEthForStEthAction = <DepositEthForStEthAction>await ethers.getContract('DepositEthForStEthAction', otherUserSigner)
   const stEth = IERC20__factory.connect(MAINNET_STETH_ADDRESS, otherUserSigner)
+  const wstEth = IERC20__factory.connect(MAINNET_WSTETH_ADDRESS, otherUserSigner)
 
   return {
-    contracts: { stEth, depositEthForStEthAction, userWorkflowRunner, frontDoor },
+    contracts: { stEth, wstEth, depositEthForStEthAction, userWorkflowRunner, frontDoor },
     hre,
     otherUser,
     otherUserSigner,
@@ -45,14 +46,14 @@ describe('Lido', async () => {
   })
   it('Deposit ETH into stEth via runner', async () => {
     const {
-      contracts: { stEth, configManager, depositEthForStEthAction, userWorkflowRunner },
+      contracts: { stEth, wstEth, userWorkflowRunner },
       otherUser,
       otherUserSigner
     } = await setup()
     console.log(`otherUser ${otherUser}`)
     const testAmount = ethers.utils.parseEther("0.001")
-    const stEthBefore = await stEth.balanceOf(otherUser)
-    const minStEthToReceive = testAmount.sub(100)
+    let stEthBefore = await stEth.balanceOf(otherUser)
+    const minStEth = testAmount.sub(100)
     
     const workflow: WorkflowStruct = {
       workflowRunnerAddress: ADDRESS_ZERO,
@@ -78,18 +79,103 @@ describe('Lido', async () => {
       beforeAll: [],
       afterAll: [],
     }
-    expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})).to.reverted
+
+    expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount, gasLimit: 6000000})).to.be.reverted
     // reduce output to minEzEthToReceive. should work now
-    workflow.steps[0].argData = encodeDepositEthForStEthParams(minStEthToReceive)
+    workflow.steps[0].argData = encodeDepositEthForStEthParams(minStEth)
 
     //console.log(`submitting workflow tx`)
-    const tx = await userWorkflowRunner.executeWorkflow(workflow, {value : testAmount, gasLimit: 3000000})
+    let tx = await userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})
     //console.log(`submited workflow submit tx: ${JSON.stringify(tx)}`)
-    const txr = await tx.wait()
+    let txr = await tx.wait()
     console.log(`workflow used gas: ${txr.gasUsed}`)
-    const stEthAfter = await stEth.balanceOf(otherUser)
+    let stEthAfter = await stEth.balanceOf(otherUser)
     console.log(`stEthBefore ${stEthBefore} stEthAfter ${stEthAfter}`)
-    expect(stEthAfter.sub(stEthBefore).gte(minStEthToReceive))
+    expect(stEthAfter.sub(stEthBefore).gte(minStEth))
+
+    // convert the stEth to wstEth
+
+    const workflowStWst: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          stepTypeId: STEP_TYPE_ID_LIDO_STETH_TO_WSTETH,
+          stepAddress: ADDRESS_ZERO,
+          inputAssets: [
+            {
+              sourceIsCaller: true,
+              amountIsPercent: false,
+              asset: {
+                assetType: ASSET_TYPE_ERC20,
+                assetAddress: MAINNET_STETH_ADDRESS,
+              },
+              amount: stEthAfter,
+            },
+          ],
+          argData: encodeWrapParams(stEthAfter.add(1)),
+          nextStepIndex: -1,
+        },
+      ],
+      beforeAll: [],
+      afterAll: [],
+    }
+    const wstEthBefore = await wstEth.balanceOf(otherUser)
+    tx = await stEth.approve(userWorkflowRunner.address, stEthAfter)
+    await tx.wait()
+    expect(userWorkflowRunner.executeWorkflow(workflowStWst)).to.be.reverted
+    const minWstEth = stEthAfter.mul(80).div(100)
+    console.log(`minWstEth ${minWstEth}`)
+    workflowStWst.steps[0].argData = encodeWrapParams(minWstEth)
+    tx = await userWorkflowRunner.executeWorkflow(workflowStWst)
+    await tx.wait()
+    const wstEthAfter = await wstEth.balanceOf(otherUser)
+    console.log(`wstEthBefore ${wstEthBefore} wstEthAfter ${wstEthAfter}`)
+    expect(wstEthAfter.sub(wstEthBefore)).gte(minWstEth)
+
+    // convert the wstEth back to stEth
+
+    const workflowWstSt: WorkflowStruct = {
+      workflowRunnerAddress: ADDRESS_ZERO,
+      steps: [
+        {
+          stepTypeId: STEP_TYPE_ID_LIDO_WSTETH_TO_STETH,
+          stepAddress: ADDRESS_ZERO,
+          inputAssets: [
+            {
+              sourceIsCaller: true,
+              amountIsPercent: false,
+              asset: {
+                assetType: ASSET_TYPE_ERC20,
+                assetAddress: MAINNET_WSTETH_ADDRESS,
+              },
+              amount: wstEthAfter,
+            },
+          ],
+          argData: encodeWrapParams(testAmount),
+          nextStepIndex: -1,
+        },
+      ],
+      beforeAll: [],
+      afterAll: [],
+    }
+    stEthBefore = await stEth.balanceOf(otherUser)
+    // sometimes a few wei is left over
+    expect(stEthBefore).lt(100)
+    let wstAllowance = await wstEth.allowance(otherUser, userWorkflowRunner.address)
+    tx = await wstEth.approve(userWorkflowRunner.address, wstEthAfter)
+    await tx.wait()
+    console.log(`wstAllowance ${wstAllowance}`)
+    // requires too much output stEth
+    expect(userWorkflowRunner.executeWorkflow(workflowWstSt)).to.reverted
+    workflowWstSt.steps[0].argData = encodeWrapParams(minStEth)
+    wstAllowance = await wstEth.allowance(otherUser, userWorkflowRunner.address)
+    console.log(`wstAllowance ${wstAllowance}`)
+    tx = await userWorkflowRunner.executeWorkflow(workflowWstSt)
+    await tx.wait()
+    stEthAfter = await stEth.balanceOf(otherUser)
+    console.log(`stEthBefore ${stEthBefore} stEthAfter ${stEthAfter}`)
+    expect(stEthAfter.sub(stEthBefore)).gte(minStEth)
+
   })
  
 

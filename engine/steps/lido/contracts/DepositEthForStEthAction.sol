@@ -13,7 +13,7 @@ import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
 import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './IStEth.sol';
-
+import './AbstractLidoAction.sol';
 /*
 docs say stEth issuance should be 1:1, but I've noticed stEth can be a few wei short
 
@@ -22,7 +22,7 @@ input ETH    1000000000000000
 output stEth: 999999999999998
 */
 
-contract DepositEthForStEthAction is IWorkflowStep {
+contract DepositEthForStEthAction is IWorkflowStep, AbstractLidoAction {
   using LibStepResultBuilder for StepResultBuilder;
   
   struct DepositEthForStEthActionParams {
@@ -30,11 +30,9 @@ contract DepositEthForStEthAction is IWorkflowStep {
     address referral;
   }
 
-  IStEth public immutable stEth;
 
-  constructor(address _stEth) {
-    stEth = IStEth(_stEth);
-  }
+  constructor(address _stEth) AbstractLidoAction(_stEth) {}
+  
   /*
     swap ETH for ezETH
   */
