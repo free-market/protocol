@@ -5,12 +5,8 @@ import hre, { ethers, deployments } from 'hardhat'
 import { MAINNET_STETH_ADDRESS, MAINNET_WSTETH_ADDRESS, STEP_TYPE_ID_LIDO_ETH_TO_STETH, STEP_TYPE_ID_LIDO_STETH_TO_WSTETH, STEP_TYPE_ID_LIDO_WSTETH_TO_STETH, encodeDepositEthForStEthParams, encodeWrapParams } from '../tslib'
 import { ADDRESS_ZERO, ASSET_TYPE_ERC20, ASSET_TYPE_NATIVE, AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
-import { Weth__factory, formatNumber } from '@freemarket/step-sdk'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { DepositEthForStEthAction } from '../typechain-types'
-import { LidoSDK } from '@lidofinance/lido-ethereum-sdk'
-import Big from 'big.js'
-import { Signer } from '@ethersproject/abstract-signer'
 
 
 const setup = getTestFixture(hre, async baseFixture => {
