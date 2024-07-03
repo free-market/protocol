@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import './AbstractLidoWrapAction.sol';
 import '@freemarket/core/contracts/IWorkflowStep.sol';
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
-import 'hardhat/console.sol';
+//import 'hardhat/console.sol';
 
 contract LidoWrapAction is AbstractLidoWrapAction, IWorkflowStep {
   using LibStepResultBuilder for StepResultBuilder;
@@ -31,7 +31,7 @@ contract LidoWrapAction is AbstractLidoWrapAction, IWorkflowStep {
     //console.log('gas used Renzo', beforeGasLeft - gasleft());
     // uint stEthBalanceAfter = stEth.balanceOf(address(this));
     uint wstEthReceived = wstEth.balanceOf(address(this)) - wstEthBalanceBefore;
-    console.log('wstEthReceived', wstEthReceived);
+    //console.log('wstEthReceived', wstEthReceived);
     // stEth issuance should be 1:1
     require(wstEthReceived >= params.minOutputAmount, "insufficientWstEthReceived");
     //console.log('finishing DepositEthForStEthAction. received stEth = ', stEthReceived);

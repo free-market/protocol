@@ -7,7 +7,7 @@ import '@freemarket/core/contracts/model/AssetAmount.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
-import 'hardhat/console.sol';
+// import 'hardhat/console.sol';
 
 import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@freemarket/step-sdk/contracts/LibErc20.sol';
@@ -49,13 +49,13 @@ contract DepositEthForStEthAction is IWorkflowStep, AbstractLidoAction {
     require(inputAssetAmounts[0].asset.assetType == AssetType.Native, "onlyEthInput");
     require(inputAssetAmounts[0].asset.assetAddress == address(0), "onlyEthInput");
     uint stEthBalanceBefore = stEth.balanceOf(address(this));
-    console.log('depositETH', inputAssetAmounts[0].amount);
+    //console.log('depositETH', inputAssetAmounts[0].amount);
     //uint beforeGasLeft = gasleft();
     stEth.submit{value: inputAssetAmounts[0].amount}(params.referral);
     //console.log('gas used Renzo', beforeGasLeft - gasleft());
     // uint stEthBalanceAfter = stEth.balanceOf(address(this));
     uint stEthReceived = stEth.balanceOf(address(this)) - stEthBalanceBefore;
-    console.log('stEthReceived', stEthReceived);
+    //console.log('stEthReceived', stEthReceived);
     // stEth issuance should be 1:1
     require(stEthReceived >= params.minStEthReceived, "insufficientStEthReceived");
     //console.log('finishing DepositEthForStEthAction. received stEth = ', stEthReceived);
