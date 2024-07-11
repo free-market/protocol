@@ -7,11 +7,9 @@ import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@pendle/core-v2/contracts/interfaces/IPMarket.sol';
 
 abstract contract AbstractPendleAction {
-  using LibStepResultBuilder for StepResultBuilder;
-
+  
   struct PendleSwapTokenParams {
     address market;
-    address baseToken;
     uint minTokenOutput;
   }
 
@@ -47,14 +45,14 @@ abstract contract AbstractPendleAction {
 
   /// @notice create a simple TokenInput struct without using any aggregators. For more info please refer to
   /// IPAllActionTypeV3.sol
-  function createTokenInputStruct(address tokenIn, uint256 netTokenIn) internal view returns (TokenInput memory) {
+  function createTokenInputStruct(address tokenIn, uint256 netTokenIn) internal pure returns (TokenInput memory) {
     SwapData memory emptySwap;
     return TokenInput({tokenIn: tokenIn, netTokenIn: netTokenIn, tokenMintSy: tokenIn, pendleSwap: address(0), swapData: emptySwap});
   }
 
-  /// @notice create a simple TokenOutput struct without using any aggregators. For more info please refer to
+  /// @notice create a simple TokenOutput struct without usiminStEthToReceiveng any aggregators. For more info please refer to
   /// IPAllActionTypeV3.sol
-  function createTokenOutputStruct(address tokenOut, uint256 minTokenOut) internal view returns (TokenOutput memory) {
+  function createTokenOutputStruct(address tokenOut, uint256 minTokenOut) internal pure returns (TokenOutput memory) {
     SwapData memory emptySwap;
     return
       TokenOutput({tokenOut: tokenOut, minTokenOut: minTokenOut, tokenRedeemSy: tokenOut, pendleSwap: address(0), swapData: emptySwap});
