@@ -38,7 +38,7 @@ import Big from 'big.js'
 import type { StargateBridgeActionArgs } from './StargateBridgeActionArgs'
 import { BigNumber } from 'ethers'
 import { getStargateComposerAddress } from './stargateContractAddresses'
-export const STEP_TYPE_ID_STARGATE_BRIDGE = 101
+import { STEP_TYPE_ID_STARGATE_BRIDGE } from '../../step-ids'
 
 const logger = getLogger('StargateBridgeHelper')
 
