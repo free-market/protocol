@@ -2,9 +2,9 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import AaveIcon from './AaveIcon'
 import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetReferenceView'
-import { STEP_TYPE_ID_AAVE_SUPPLY } from './supply-helper'
-import { STEP_TYPE_ID_AAVE_BORROW } from './borrow-helper'
-import { STEP_TYPE_ID_AAVE_REPAY } from './repay-helper'
+import { STEP_TYPE_ID_AAVE_SUPPLY } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_BORROW } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_REPAY } from '../../step-ids'
 
 function AaveSummary(props: any) {
   return (

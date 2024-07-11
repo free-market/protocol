@@ -1,8 +1,7 @@
 import { EncodingContext, EncodedWorkflowStep, sdkAssetAmountToEvmInputAmount, AssetAmount } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { WrapNative } from './model'
-
-export const STEP_TYPE_ID_WRAP_NATIVE = 105
+import { STEP_TYPE_ID_WRAP_NATIVE } from '../../step-ids'
 
 export class WrapNativeHelper extends AbstractStepHelper<WrapNative> {
   async encodeWorkflowStep(context: EncodingContext<WrapNative>): Promise<EncodedWorkflowStep> {

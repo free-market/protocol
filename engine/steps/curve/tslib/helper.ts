@@ -11,8 +11,7 @@ import {
 import { AbstractStepHelper, AssetSchema } from '@freemarket/step-sdk'
 import type { CurveTriCrypto2Swap } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
-
-export const STEP_TYPE_ID_CURVE = 103
+import { STEP_TYPE_ID_CURVE } from '../../step-ids'
 
 // on ethereum:
 // index 0 = USDT  = 0xdAC17F958D2ee523a2206206994597C13D831ec7

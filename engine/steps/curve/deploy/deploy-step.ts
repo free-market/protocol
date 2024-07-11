@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_TYPE_ID_CURVE } from '../tslib/helper'
+import { STEP_TYPE_ID_CURVE } from '../../step-ids'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getCurveTriCrypto2Address } from '@freemarket/step-sdk/tslib/testing'
 

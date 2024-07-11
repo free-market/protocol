@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
-import { CurveTriCrypto2SwapHelper, STEP_TYPE_ID_CURVE } from '../tslib/helper'
+import { CurveTriCrypto2SwapHelper } from '../tslib/helper'
+import { STEP_TYPE_ID_CURVE } from '../../step-ids'
 import { EncodingContext, IERC20__factory } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { CurveTriCrypto2SwapAction } from '../typechain-types'

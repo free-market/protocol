@@ -22,10 +22,9 @@ import { IPoolAddressesProvider__factory, IPool__factory, StableDebtToken__facto
 import { getPoolAddressProviderAddress } from './getPoolAddressProviderAddress'
 import { splitSignature } from '@ethersproject/bytes'
 import rootLogger from 'loglevel'
+import { STEP_TYPE_ID_AAVE_BORROW } from '../../step-ids'
 
 const log = rootLogger.getLogger('borrow-helper')
-
-export const STEP_TYPE_ID_AAVE_BORROW = 110
 
 const EIP712_REVISION = '1'
 

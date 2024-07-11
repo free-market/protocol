@@ -9,8 +9,6 @@ import { getLogger } from '@freemarket/core'
 const logger = getLogger('AssetBalanceBranchHelper')
 const abiCoder = ethers.utils.defaultAbiCoder
 
-export const STEP_TYPE_ID_ASSET_BALANCE_BRANCH = 2
-
 const AssetBalanceBranchParamsSchema = `
   tuple AssetAmountBranchParams (
     ${AssetSchema} asset,

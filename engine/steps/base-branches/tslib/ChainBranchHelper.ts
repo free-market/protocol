@@ -3,10 +3,9 @@ import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain
 import { AbstractBranchHelper } from '@freemarket/step-sdk'
 
 import * as ethers from 'ethers'
+import { STEP_TYPE_ID_CHAIN_BRANCH } from '../../step-ids'
 
 const abiCoder = ethers.utils.defaultAbiCoder
-
-export const STEP_TYPE_ID_CHAIN_BRANCH = 1
 
 const ChainBranchParamsSchema = `
   tuple(
