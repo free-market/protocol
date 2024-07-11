@@ -12,11 +12,11 @@ import {
 } from '@freemarket/core'
 import { AssetSchema } from '@freemarket/step-sdk'
 import type { UniswapExactIn } from './model'
-export const STEP_TYPE_ID_UNISWAP_EXACT_IN = 104
 import { CurrencyAmount, Currency } from '@uniswap/sdk-core'
 import Big from 'big.js'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { UniswapBaseHelper, UniswapRouteSchema } from './UniswapBaseHelper'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '../../step-ids'
 
 const UniswapExactInActionParamsSchema = `
   tuple(
