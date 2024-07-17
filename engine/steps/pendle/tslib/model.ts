@@ -11,8 +11,8 @@ const defaultAbiCoder: AbiCoder = new AbiCoder();
     uint minTokenOutput;
   }
 */
-function encodePendleSwapTokenParams(market: string, minToReceive: BigNumberish): string {
-  return defaultAbiCoder.encode(["address", "uint256"], [market, minToReceive])
+function encodePendleSwapTokenParams(market: string, pendleFunction: number, minToReceive: BigNumberish): string {
+  return defaultAbiCoder.encode(["address", "uint256", "uint256"], [market, pendleFunction, minToReceive])
 }
 
 /*

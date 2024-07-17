@@ -7,9 +7,15 @@ import '@freemarket/step-sdk/contracts/LibStepResultBuilder.sol';
 import '@pendle/core-v2/contracts/interfaces/IPMarket.sol';
 
 abstract contract AbstractPendleAction {
-  
+ 
+  enum PendleFunction {
+    SwapTokenForPt,
+    SwapTokenForYt
+  }
+
   struct PendleSwapTokenParams {
     address market;
+    PendleFunction pendleFunction;
     uint minTokenOutput;
   }
 
