@@ -33,6 +33,4 @@ function getOldestNonexpiredMarket(symbol: string) : string {
   return candidates.filter((res) => {return res.expiry == earliestDate})[0].address
 }
 
-console.log(getOldestNonexpiredMarket("stETH"))
-
 export { encodePendleSwapTokenParams, getOldestNonexpiredMarket }

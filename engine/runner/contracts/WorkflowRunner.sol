@@ -16,7 +16,7 @@ import './LibAssetBalances.sol';
 import './ChainBranch.sol';
 import './AssetComparisons.sol';
 import './LibConfigReader.sol';
-import 'hardhat/console.sol';
+//import 'hardhat/console.sol';
 
 uint16 constant STEP_TYPE_ID_CHAIN_BRANCH = 1;
 uint16 constant STEP_TYPE_ID_ASSET_AMOUNT_BRANCH = 2;
