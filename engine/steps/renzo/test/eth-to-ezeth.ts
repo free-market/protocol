@@ -85,7 +85,7 @@ describe('Renzo', async () => {
     expect(expectedEzEth).gt(minEzEthToReceive).lte(testAmount)
     // assuming ETH->ezETH exchange rate < 1:
     // should fail requesting testAmount since ezEth amount will be less
-    expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})).to.reverted
+    await expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount})).to.throw
     // reduce output to minEzEthToReceive. should work now
     workflow.steps[0].argData = encodeDepositEthForEzEthParams(minEzEthToReceive)
     console.log(`submitting workflow tx`)
