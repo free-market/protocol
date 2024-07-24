@@ -12,7 +12,7 @@
     "publish-packages": "pnpm publish --no-git-checks --access public",
     "dev": "tsc --watch",
     "test": "hardhat test --deploy-fixture",
-    "deploy-contracts": "hardhat deploy --tags DepositEthForEZEthAction",
+    "deploy-contracts": "hardhat deploy --tags PendleSwapToken",
     "format": " prettier tslib --write",
     "lint": "eslint tslib/**/*.ts"
   },
@@ -24,7 +24,6 @@
     "@freemarket/core": "workspace:*",
     "@freemarket/runner": "workspace:*",
     "@freemarket/step-sdk": "workspace:*",
-    "@lidofinance/lido-ethereum-sdk": "^3.2.2",
     "@openzeppelin/contracts": "^4.8.0",
     "@pendle/core-v2": "^4.7.2",
     "big.js": "^6.2.1",
