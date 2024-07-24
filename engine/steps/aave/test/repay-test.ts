@@ -11,7 +11,8 @@ import { EncodingContext } from '@freemarket/core'
 import { getTestFixture, MockWorkflowInstance, validateAction, confirmTx, getUsdc } from '@freemarket/step-sdk/tslib/testing'
 import { AaveRepay } from '../tslib/model'
 import { Eip1193Bridge } from '@ethersproject/experimental'
-import { AaveRepayHelper, STEP_TYPE_ID_AAVE_REPAY } from '../tslib/repay-helper'
+import { AaveRepayHelper } from '../tslib/repay-helper'
+import { STEP_TYPE_ID_AAVE_REPAY } from '../../step-ids'
 import { getPoolAddressProviderAddress } from '../tslib/getPoolAddressProviderAddress'
 const testAmountUsdc = 5000
 const testAmountUsdcFull = testAmountUsdc * 10 ** 6

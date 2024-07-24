@@ -8,8 +8,7 @@ import {
 } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveSupply } from './model'
-
-export const STEP_TYPE_ID_AAVE_SUPPLY = 102
+import { STEP_TYPE_ID_AAVE_SUPPLY } from '../../step-ids'
 
 export class AaveSupplyHelper extends AbstractStepHelper<AaveSupply> {
   async encodeWorkflowStep(context: EncodingContext<AaveSupply>): Promise<EncodedWorkflowStep> {
