@@ -77,7 +77,7 @@ describe('Lido', async () => {
       afterAll: [],
     }
 
-    expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount, gasLimit: 6000000})).to.be.reverted
+    await expect(userWorkflowRunner.executeWorkflow(workflow, {value : testAmount, gasLimit: 6000000})).to.throw
     // reduce output to minEzEthToReceive. should work now
     workflow.steps[0].argData = encodeDepositEthForStEthParams(minStEth)
 
@@ -119,7 +119,7 @@ describe('Lido', async () => {
     const wstEthBefore = await wstEth.balanceOf(otherUser)
     tx = await stEth.approve(userWorkflowRunner.address, stEthAfter)
     await tx.wait()
-    expect(userWorkflowRunner.executeWorkflow(workflowStWst)).to.be.reverted
+    await expect(userWorkflowRunner.executeWorkflow(workflowStWst)).to.throw
     const minWstEth = stEthAfter.mul(80).div(100)
     console.log(`minWstEth ${minWstEth}`)
     workflowStWst.steps[0].argData = encodeWrapParams(minWstEth)
@@ -163,7 +163,7 @@ describe('Lido', async () => {
     await tx.wait()
     console.log(`wstAllowance ${wstAllowance}`)
     // requires too much output stEth
-    expect(userWorkflowRunner.executeWorkflow(workflowWstSt)).to.reverted
+    await expect(userWorkflowRunner.executeWorkflow(workflowWstSt)).to.throw
     workflowWstSt.steps[0].argData = encodeWrapParams(minStEth)
     wstAllowance = await wstEth.allowance(otherUser, userWorkflowRunner.address)
     console.log(`wstAllowance ${wstAllowance}`)

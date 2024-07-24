@@ -34,7 +34,7 @@ contract DepositEthForStEthAction is IWorkflowStep, AbstractLidoAction {
   constructor(address _stEth) AbstractLidoAction(_stEth) {}
   
   /*
-    swap ETH for ezETH
+    swap ETH for stETH
   */
   function execute(
     AssetAmount[] calldata inputAssetAmounts,
