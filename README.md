@@ -31,6 +31,6 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Marty Saxton - marty@fmprotocol.com
+contact@fmprotocol.com
 
 Project Link: [https://github.com/free-market/protocol/](https://github.com/free-market/protocol/)
