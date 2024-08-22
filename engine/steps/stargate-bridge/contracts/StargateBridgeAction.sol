@@ -163,23 +163,29 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
 
   function sgReceive(
     uint16, // the remote chainId sending the tokens
-    bytes memory, // the remote Bridge address
-    uint256, // stargate nonce, use unknown
+    bytes memory msgSenderOnSourceChain, // The address of the msg.sender who initiated the swap
+    uint256, // The message ordering nonce
     address tokenAddress, // the token contract on the local chain
     uint256 amount, // the qty of local token contract tokens
     bytes memory payload
   ) external {
     require(msg.sender == stargateComposerAddress, 'only Stargate is permitted to call sgReceive');
+    // NOTE below fix requires frontDoor to be same address on every chain
+    require(address(uint160(bytes20(msgSenderOnSourceChain))) == frontDoorAddress, 'sender != frontDoor');
     BridgePayload memory bridgePayload = abi.decode(payload, (BridgePayload));
     emit SgReceiveCalled(tokenAddress, amount, bridgePayload);
-    IERC20 startingToken = IERC20(tokenAddress);
-    SafeERC20.safeIncreaseAllowance(startingToken, frontDoorAddress, amount);
     AssetAmount[] memory startingAssets = new AssetAmount[](1);
-    startingAssets[0] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
+    uint wfValue = 0;
+    if(tokenAddress == address(0)) {
+      startingAssets[0] = AssetAmount(Asset(AssetType.Native, tokenAddress), amount);
+      wfValue = amount;
+    } else {
+      SafeERC20.safeIncreaseAllowance(IERC20(tokenAddress), frontDoorAddress, amount);
+      startingAssets[0] = AssetAmount(Asset(AssetType.ERC20, tokenAddress), amount);
+    }
     IWorkflowRunner runner = IWorkflowRunner(frontDoorAddress);
     bool continuationSuccessful = false;
-    // TODO set value when the bridged asset is native
-    try runner.continueWorkflow(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAssets) {
+    try runner.continueWorkflow{value:wfValue}(bridgePayload.userAddress, bridgePayload.nonce, bridgePayload.workflow, startingAssets) {
       // if the workflow succeeds, we're done
       emit ContinuationSuccess();
       continuationSuccessful = true;
@@ -192,7 +198,12 @@ contract StargateBridgeAction is WorkflowContinuingStep, IStargateReceiver {
     }
     // if the workflow fails, we need to return the tokens to the user
     if (!continuationSuccessful) {
-      SafeERC20.safeTransfer(startingToken, bridgePayload.userAddress, amount);
+      if(tokenAddress == address(0)) {
+         (bool sent, ) = payable(bridgePayload.userAddress).call{value: wfValue}("");
+         require(sent, "couldnt refund");
+      } else {
+        SafeERC20.safeTransfer(IERC20(tokenAddress), bridgePayload.userAddress, amount);
+      }
     }
   }
 }

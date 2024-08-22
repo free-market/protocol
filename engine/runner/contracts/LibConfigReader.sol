@@ -15,6 +15,11 @@ library LibConfigReader {
   bytes32 public constant subscribers = keccak256('subscribers');
   bytes32 public constant key_proxyUpstream = keccak256('proxyUpstream');
 
+  // bitset of stepconfig flags
+  uint256 public constant STEPCONFIG_CAN_CONTINUE_WORKFLOW = 1 << 1;
+
+//  uint public constant 
+
   function getProxyUpstream(address eternalStorageAddress) internal view returns (address) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.getAddress(key_proxyUpstream);
@@ -38,9 +43,22 @@ library LibConfigReader {
     return eternalStorage.containsEnumerableMapAddressToUint(getStepWhitelistKey(stepTypeId), stepAddress);
   }
 
+  function isStepAddressWhitelistedWithFlags(address eternalStorageAddress, uint16 stepTypeId, address stepAddress, uint required_step_flags) internal view returns (bool) {
+      (bool success, uint flags) = EternalStorage(eternalStorageAddress).tryGetEnumerableMapAddressToUint(getStepWhitelistKey(stepTypeId), stepAddress);
+      if(!success) return false;
+      return flags & required_step_flags == required_step_flags;
+  }
+
+
   function isStepAddressWhitelisted(address eternalStorageAddress, address stepAddress) internal view returns (bool) {
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     return eternalStorage.containsEnumerableMapAddressToUint(allStepAddresses, stepAddress);
+  }
+
+  function isStepAddressWhitelistedWithFlags(address eternalStorageAddress, address stepAddress, uint required_step_flags) internal view returns (bool) {
+      (bool success, uint flags) = EternalStorage(eternalStorageAddress).tryGetEnumerableMapAddressToUint(allStepAddresses, stepAddress);
+      if(!success) return false;
+      return flags & required_step_flags == required_step_flags;
   }
 
   function getStepFeeKey(uint16 stepTypeId) internal pure returns (bytes32) {

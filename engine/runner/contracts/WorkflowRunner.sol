@@ -323,8 +323,8 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     Workflow memory workflow,
     AssetAmount[] memory startingAssets
   ) external payable {
-    // only step contracts are allowed to call this
-    require(LibConfigReader.isStepAddressWhitelisted(eternalStorageAddress, msg.sender), 'caller not valid');
+    // only step contracts permitted to contintue are allowed to call this
+    require(LibConfigReader.isStepAddressWhitelistedWithFlags(eternalStorageAddress, msg.sender, LibConfigReader.STEPCONFIG_CAN_CONTINUE_WORKFLOW), 'caller not valid');
     emit WorkflowContinuation(nonce, userAddress, startingAssets);
     for (uint256 i = 0; i < startingAssets.length; ++i) {
       if (startingAssets[i].asset.assetType == AssetType.Native) {
