@@ -2,6 +2,7 @@ import type { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { ConfigManager, ConfigManager__factory, EternalStorage } from '@freemarket/runner'
 import fs from 'fs'
 import path from 'path'
+import { BigNumber, BigNumberish } from 'ethers'
 
 function copyRunnerDeployments(networkName: string, contractNames: string[]) {
   const runnerDeploymentsPath = `node_modules/@freemarket/runner/deployments/${networkName}`
@@ -32,7 +33,7 @@ export async function getDeployedContractAddress(hre: HardhatRuntimeEnvironment,
   return contract.address
 }
 
-export async function deployStep(stepName: string, stepTypeId: number, hre: HardhatRuntimeEnvironment, ctorArgs?: any[]) {
+export async function deployStep(stepName: string, stepTypeId: number, hre: HardhatRuntimeEnvironment, ctorArgs?: any[], step_flags : BigNumberish = BigNumber.from(0)) {
   const { deployments, getNamedAccounts, ethers } = hre
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
@@ -48,7 +49,7 @@ export async function deployStep(stepName: string, stepTypeId: number, hre: Hard
     const configManagerAddress = await getDeployedContractAddress(hre, 'ConfigManager')
     console.log(`configManagerAddress=${configManagerAddress}`)
     const configManager = <ConfigManager>await ethers.getContractAt('ConfigManager', configManagerAddress)
-    const result = await configManager.setStepAddress(stepTypeId, deployResult.address)
+    const result = await configManager.setStepAddress(stepTypeId, deployResult.address, step_flags)
     console.log(`configManager.setStepAddress called, waiting for confirmation`)
     await result.wait()
     console.log(`configManager.setStepAddress confirmed`)
