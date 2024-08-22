@@ -78,10 +78,6 @@ contract ConfigManager is FreeMarketBase, Ownable {
   function setStepAddress(uint16 stepTypeId, address stepAddress, uint step_config_flags) external onlyOwner {
     _setStepAddress(stepTypeId, stepAddress, step_config_flags);
   }
-  
-  function setStepAddress(uint16 stepTypeId, address stepAddress) external onlyOwner {
-    _setStepAddress(stepTypeId, stepAddress, 0);
-  }
 
   function _setStepAddress(uint16 stepTypeId, address stepAddress, uint step_config_flags) internal {
   
