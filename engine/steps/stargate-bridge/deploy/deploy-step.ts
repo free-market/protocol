@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_FLAG_CAN_CONTINUE, STEP_TYPE_ID_STARGATE_BRIDGE } from '../../step-ids'
+import { STEP_FLAG_CAN_CONTINUE, STEP_TYPE_ID_STARGATE_BRIDGE } from '@freemarket/core/tslib/step-ids'
 import { deployStep, getFrontDoorAddress } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getStargateComposerAddress } from '../tslib/stargateContractAddresses'
 
