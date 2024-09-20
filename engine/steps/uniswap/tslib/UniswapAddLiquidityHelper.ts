@@ -12,23 +12,20 @@ import {
   EvmAsset,
   Chain,
 } from '@freemarket/core'
-import { AssetSchema } from '@freemarket/step-sdk'
-import type { UniswapAddLiquidity, UniswapExactIn } from './model'
-import { CurrencyAmount, Currency } from '@uniswap/sdk-core'
-import Big from 'big.js'
+import type { UniswapAddLiquidity } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
-import { UniswapBaseHelper, UniswapRouteSchema } from './UniswapBaseHelper'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '@freemarket/core/tslib/step-ids'
+import { UniswapBaseHelper } from './UniswapBaseHelper'
+import { STEP_TYPE_ID_UNISWAP_ADD_LIQUIDITY } from '@freemarket/core/tslib/step-ids'
 
 
 const UniswapAddLiquidityParams = `
   tuple(
-        uint24 fee;
-        int24 tickLower;
-        int24 tickUpper;
-        uint256 amount0Min;
-        uint256 amount1Min;
-        uint256 deadline;
+        uint24 fee,
+        int24 tickLower,
+        int24 tickUpper,
+        uint256 amount0Min,
+        uint256 amount1Min,
+        uint256 deadline
   )`
 
 // function logQuote(message: string, quote: CurrencyAmount<Currency>) {
@@ -60,10 +57,10 @@ export class UniswapAddLiquidityHelper extends UniswapBaseHelper<UniswapAddLiqui
       this.instance,
       context.stepConfig.inputAssetSource === 'caller'
     )
-    const fee = await this.getUniswapFee(context.chain, evmInputAmount0.asset, evmInputAmount1.asset)
+    const [fee, tickSpacing] = await this.getUniswapFeeAndTickSpacing(context.chain, evmInputAmount0.asset, evmInputAmount1.asset)
 
     return {
-      stepTypeId: STEP_TYPE_ID_UNISWAP_EXACT_IN,
+      stepTypeId: STEP_TYPE_ID_UNISWAP_ADD_LIQUIDITY,
       stepAddress: ADDRESS_ZERO,
       inputAssets: [evmInputAmount0, evmInputAmount1],
       argData: defaultAbiCoder.encode([UniswapAddLiquidityParams], [{
@@ -72,7 +69,7 @@ export class UniswapAddLiquidityHelper extends UniswapBaseHelper<UniswapAddLiqui
         tickLower: stepConfig.tickLower,
         amount0Min: stepConfig.amount0Min,
         amount1Min: stepConfig.amount1Min,
-        deadline: stepConfig.deadline.getTime()/1000
+        deadline: Math.floor(stepConfig.deadline.getTime()/1000)
        }]),
     }
   }
@@ -81,9 +78,19 @@ export class UniswapAddLiquidityHelper extends UniswapBaseHelper<UniswapAddLiqui
   Uniswap v3 allows for multiple pools of (token0, token1) with different fees
   
   TODO update with actual uniswap fees deployed
+
+  see https://blog.uniswap.org/uniswap-v3-math-primer
+  
+
+  tick spacing dependant on fee:
+  fee ts
+  1000  1
+  5000  10
+  30000 60
+  100000  200
   */
-  async getUniswapFee(chain: Chain, token0 : EvmAsset, token1 : EvmAsset) : Promise<number> {
-    return 30000
+  async getUniswapFeeAndTickSpacing(chain: Chain, token0 : EvmAsset, token1 : EvmAsset) : Promise<[number, number]> {
+    return [30000, 60]
   }
 
 }

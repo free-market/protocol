@@ -8,6 +8,7 @@ import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './AbstractUniswapAction.sol';
 import './IV3SwapRouter.sol';
 import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import 'hardhat/console.sol';
 using ABDKMathQuad for bytes16;
 
 using LibStepResultBuilder for StepResultBuilder;
@@ -58,6 +59,18 @@ contract UniswapAddLiquidityAction is IWorkflowStep {
       recipient: address(this),
       deadline: params.deadline
     });
+    console.log('asset0', assetAmounts[0].asset.assetAddress, IERC20(assetAmounts[0].asset.assetAddress).balanceOf(address(this)));
+    console.log('asset1', assetAmounts[1].asset.assetAddress, IERC20(assetAmounts[1].asset.assetAddress).balanceOf(address(this)));
+    
+
+    if(assetAmounts[0].asset.assetType == AssetType.ERC20) {
+          console.log('assetAmounts[0].amount', assetAmounts[0].amount, IERC20(assetAmounts[0].asset.assetAddress).allowance(address(this), address(positionManager)));
+         IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), 0);
+         //IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), assetAmounts[0].amount/2);
+    }
+    if(assetAmounts[1].asset.assetType == AssetType.ERC20) {
+         IERC20(assetAmounts[1].asset.assetAddress).approve(address(positionManager), assetAmounts[1].amount);
+    }
 
     //    (uint256 tokenId, uint128 liquidity, uint256 amount0, uint256 amount1) = positionManager.mint(mintParams);
     AssetAmount memory inputAsset0;
@@ -65,15 +78,15 @@ contract UniswapAddLiquidityAction is IWorkflowStep {
     inputAsset0.asset = assetAmounts[0].asset;
     inputAsset1.asset = assetAmounts[1].asset;
 
+    console.log('about2Mint');
     // TODO add support for ERC721 with tokenId
-    (, , inputAsset0.amount, inputAsset1.amount) = positionManager.mint(mintParams);
+    //(, , inputAsset0.amount, inputAsset1.amount) = positionManager.mint(mintParams);
 
     return
       LibStepResultBuilder
-        .create(2, 1)
+        .create(2, 0)
         .addInputAssetAmount(inputAsset0)
         .addInputAssetAmount(inputAsset1)
-        .addOutputAssetAmount(AssetAmount(Asset(AssetType.ERC721, address(positionManager)), 1))
         .result;
   }
 }
