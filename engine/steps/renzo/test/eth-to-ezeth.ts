@@ -3,7 +3,7 @@
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
 import { MAINNET_EZETH_ADDRESS } from '../tslib'
-import { STEP_TYPE_ID_RENZO_ETH_TO_EZETH } from '../../step-ids'
+import { STEP_TYPE_ID_RENZO_ETH_TO_EZETH } from '@freemarket/core/tslib/step-ids'
 import { ADDRESS_ZERO, ASSET_TYPE_NATIVE, AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory, formatNumber } from '@freemarket/step-sdk'

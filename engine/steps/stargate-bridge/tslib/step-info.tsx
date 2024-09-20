@@ -6,7 +6,7 @@ import AssetReferenceView from '@freemarket/step-sdk/build/tslib/helpers/AssetRe
 import { SummaryPropsBase } from '@freemarket/step-sdk'
 import { StargateBridge } from './model'
 import { capitalize } from '@freemarket/core'
-import { STEP_TYPE_ID_STARGATE_BRIDGE } from '../../step-ids'
+import { STEP_TYPE_ID_STARGATE_BRIDGE } from '@freemarket/core/tslib/step-ids'
 
 type Props = SummaryPropsBase<StargateBridge>
 

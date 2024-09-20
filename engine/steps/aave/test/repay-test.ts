@@ -12,7 +12,7 @@ import { getTestFixture, MockWorkflowInstance, validateAction, confirmTx, getUsd
 import { AaveRepay } from '../tslib/model'
 import { Eip1193Bridge } from '@ethersproject/experimental'
 import { AaveRepayHelper } from '../tslib/repay-helper'
-import { STEP_TYPE_ID_AAVE_REPAY } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_REPAY } from '@freemarket/core/tslib/step-ids'
 import { getPoolAddressProviderAddress } from '../tslib/getPoolAddressProviderAddress'
 const testAmountUsdc = 5000
 const testAmountUsdcFull = testAmountUsdc * 10 ** 6

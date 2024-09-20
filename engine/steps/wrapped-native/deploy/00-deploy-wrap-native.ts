@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_TYPE_ID_WRAP_NATIVE } from '../../step-ids'
+import { STEP_TYPE_ID_WRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getWrappedNativeAddress } from '@freemarket/step-sdk/tslib/getWrappedNativeAddress'
 

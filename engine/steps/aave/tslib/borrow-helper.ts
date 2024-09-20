@@ -22,7 +22,7 @@ import { IPoolAddressesProvider__factory, IPool__factory, StableDebtToken__facto
 import { getPoolAddressProviderAddress } from './getPoolAddressProviderAddress'
 import { splitSignature } from '@ethersproject/bytes'
 import rootLogger from 'loglevel'
-import { STEP_TYPE_ID_AAVE_BORROW } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_BORROW } from '@freemarket/core/tslib/step-ids'
 
 const log = rootLogger.getLogger('borrow-helper')
 

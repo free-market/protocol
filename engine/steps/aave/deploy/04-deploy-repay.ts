@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types'
-import { STEP_TYPE_ID_AAVE_REPAY } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_REPAY } from '@freemarket/core/tslib/step-ids'
 import { getWrappedNativeAddress } from '@freemarket/step-sdk'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { ADDRESS_ZERO, assert } from '@freemarket/core'

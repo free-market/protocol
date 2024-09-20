@@ -3,7 +3,7 @@ import { ADDRESS_ZERO, EncodedWorkflowStep, EncodingContext, getChainIdFromChain
 import { AbstractBranchHelper } from '@freemarket/step-sdk'
 
 import * as ethers from 'ethers'
-import { STEP_TYPE_ID_CHAIN_BRANCH } from '../../step-ids'
+import { STEP_TYPE_ID_CHAIN_BRANCH } from '@freemarket/core/tslib/step-ids'
 
 const abiCoder = ethers.utils.defaultAbiCoder
 

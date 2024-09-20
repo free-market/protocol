@@ -3,7 +3,7 @@ import { getWrappedNativeAddress } from '@freemarket/step-sdk'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { ADDRESS_ZERO } from '@freemarket/core'
 import { MAINNET_PENDLE_ROUTER, MAINNET_PENDLE_ROUTER_STATIC } from '../tslib'
-import { STEP_TYPE_ID_PENDLE_TOKEN_TO_PTYT } from '../../step-ids'
+import { STEP_TYPE_ID_PENDLE_TOKEN_TO_PTYT } from '@freemarket/core/tslib/step-ids'
 
 const func: DeployFunction = async function (hardhatRuntimeEnv) {
   const chainId = await hardhatRuntimeEnv.getChainId()

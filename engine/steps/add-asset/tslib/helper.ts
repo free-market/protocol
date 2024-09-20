@@ -11,7 +11,7 @@ import {
 } from '@freemarket/core'
 import Big from 'big.js'
 import { AddAsset } from './model'
-import { STEP_TYPE_ID_ADD_ASSET } from '../../step-ids'
+import { STEP_TYPE_ID_ADD_ASSET } from '@freemarket/core/tslib/step-ids'
 
 export class AddAssetHelper extends AbstractStepHelper<AddAsset> {
   async encodeWorkflowStep(context: EncodingContext<AddAsset>): Promise<EncodedWorkflowStep> {
