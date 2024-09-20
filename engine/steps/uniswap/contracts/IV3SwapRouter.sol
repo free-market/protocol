@@ -2,6 +2,9 @@
 pragma solidity ^0.8.13;
 
 interface IV3SwapRouter {
+    function factory() external view returns (address);
+    function positionManager() external view returns (address);
+
     struct ExactInputParams {
         bytes path;
         address recipient;
