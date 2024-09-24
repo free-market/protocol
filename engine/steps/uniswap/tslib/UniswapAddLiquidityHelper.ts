@@ -90,7 +90,7 @@ export class UniswapAddLiquidityHelper extends UniswapBaseHelper<UniswapAddLiqui
   100000  200
   */
   async getUniswapFeeAndTickSpacing(chain: Chain, token0 : EvmAsset, token1 : EvmAsset) : Promise<[number, number]> {
-    return [30000, 60]
+    return [3000, 60]
   }
 
 }

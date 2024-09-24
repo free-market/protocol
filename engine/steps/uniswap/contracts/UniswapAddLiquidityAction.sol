@@ -8,7 +8,7 @@ import '@freemarket/step-sdk/contracts/LibWethUtils.sol';
 import './AbstractUniswapAction.sol';
 import './IV3SwapRouter.sol';
 import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
-import 'hardhat/console.sol';
+//import 'hardhat/console.sol';
 using ABDKMathQuad for bytes16;
 
 using LibStepResultBuilder for StepResultBuilder;
@@ -57,16 +57,13 @@ contract UniswapAddLiquidityAction is IWorkflowStep {
       amount0Min: params.amount0Min,
       amount1Min: params.amount1Min,
       recipient: address(this),
-      deadline: params.deadline
+      deadline: block.timestamp
     });
-    console.log('asset0', assetAmounts[0].asset.assetAddress, IERC20(assetAmounts[0].asset.assetAddress).balanceOf(address(this)));
-    console.log('asset1', assetAmounts[1].asset.assetAddress, IERC20(assetAmounts[1].asset.assetAddress).balanceOf(address(this)));
-    
 
     if(assetAmounts[0].asset.assetType == AssetType.ERC20) {
           console.log('assetAmounts[0].amount', assetAmounts[0].amount, IERC20(assetAmounts[0].asset.assetAddress).allowance(address(this), address(positionManager)));
-         IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), 0);
-         //IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), assetAmounts[0].amount/2);
+         //IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), 0);
+         IERC20(assetAmounts[0].asset.assetAddress).approve(address(positionManager), assetAmounts[0].amount);
     }
     if(assetAmounts[1].asset.assetType == AssetType.ERC20) {
          IERC20(assetAmounts[1].asset.assetAddress).approve(address(positionManager), assetAmounts[1].amount);
@@ -78,9 +75,10 @@ contract UniswapAddLiquidityAction is IWorkflowStep {
     inputAsset0.asset = assetAmounts[0].asset;
     inputAsset1.asset = assetAmounts[1].asset;
 
-    console.log('about2Mint');
     // TODO add support for ERC721 with tokenId
-    //(, , inputAsset0.amount, inputAsset1.amount) = positionManager.mint(mintParams);
+    uint128 liquidity;
+    (, liquidity, inputAsset0.amount, inputAsset1.amount) = positionManager.mint(mintParams);
+    //console.log('minted', liquidity);
 
     return
       LibStepResultBuilder

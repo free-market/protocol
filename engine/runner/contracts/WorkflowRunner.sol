@@ -16,7 +16,7 @@ import './LibAssetBalances.sol';
 import './ChainBranch.sol';
 import './AssetComparisons.sol';
 import './LibConfigReader.sol';
-import 'hardhat/console.sol';
+//import 'hardhat/console.sol';
 
 uint16 constant STEP_TYPE_ID_CHAIN_BRANCH = 1;
 uint16 constant STEP_TYPE_ID_ASSET_AMOUNT_BRANCH = 2;
@@ -309,7 +309,6 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
     } else if (inputAssetAmount.asset.assetType == AssetType.ERC20) {
       IERC20 token = IERC20(inputAssetAmount.asset.assetAddress);
       uint256 allowance = token.allowance(userAddress, address(this));
-      console.log('insuf', inputAssetAmount.asset.assetAddress, allowance, inputAssetAmount.amount);
       require(allowance >= inputAssetAmount.amount, 'insuf allow for erc20');
       SafeERC20.safeTransferFrom(token, userAddress, address(this), inputAssetAmount.amount);
       assetBalances.credit(inputAssetAmount.asset, inputAssetAmount.amount);
