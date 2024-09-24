@@ -84,10 +84,10 @@ export class UniswapAddLiquidityHelper extends UniswapBaseHelper<UniswapAddLiqui
 
   tick spacing dependant on fee:
   fee ts
-  1000  1
-  5000  10
-  30000 60
-  100000  200
+  100  1
+  500  10
+  3000 60
+  10000  200
   */
   async getUniswapFeeAndTickSpacing(chain: Chain, token0 : EvmAsset, token1 : EvmAsset) : Promise<[number, number]> {
     return [3000, 60]
