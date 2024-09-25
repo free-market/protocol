@@ -38,7 +38,7 @@ import Big from 'big.js'
 import type { StargateBridgeActionArgs } from './StargateBridgeActionArgs'
 import { BigNumber } from 'ethers'
 import { getStargateComposerAddress } from './stargateContractAddresses'
-import { STEP_TYPE_ID_STARGATE_BRIDGE } from '../../step-ids'
+import { STEP_TYPE_ID_STARGATE_BRIDGE } from '@freemarket/core/tslib/step-ids'
 
 const logger = getLogger('StargateBridgeHelper')
 

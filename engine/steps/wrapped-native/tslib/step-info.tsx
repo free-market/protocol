@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { PlatformInfo, StepInfo, formatNumber } from '@freemarket/step-sdk'
 import WethIcon from './WethIcon'
-import { STEP_TYPE_ID_WRAP_NATIVE } from '../../step-ids'
-import { STEP_TYPE_ID_UNWRAP_NATIVE } from '../../step-ids'
+import { STEP_TYPE_ID_WRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
+import { STEP_TYPE_ID_UNWRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
 
 export const platformInfo: PlatformInfo = {
   name: 'Wrapped Native',

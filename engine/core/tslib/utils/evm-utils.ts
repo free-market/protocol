@@ -8,6 +8,7 @@ import { Eip1193Bridge } from '@ethersproject/experimental'
 import type { Signer } from '@ethersproject/abstract-signer'
 import { Provider, Web3Provider } from '@ethersproject/providers'
 import Big from 'big.js'
+import { parseEther } from 'ethers/lib/utils'
 
 export const HARDHAT_FORK_CHAIN = 'ethereum'
 
@@ -60,6 +61,40 @@ export function decibipsToPercentString(decibips: number) {
   return `${decibips / 1000}%`
 }
 
+/*
+coin amount to uint256 representation, ie amount*ONE
+where ONE is the represenation of 1 for that asset (usually 10^18)
+*/
+export function coinAmountToBigint(coins: number, asset: Asset, chain: Chain): string {
+  if (asset.type === 'native') {
+    // TODO this is ETH specific. need to lookup to handle other natives
+    return new Big(coins).mul(TEN_BIG.pow(18)).toFixed()
+  } else {
+    const c = translateChain(chain)
+    const tokenInfo = asset.chains[c]
+    assert(tokenInfo)
+    const decimals = tokenInfo.decimals
+    return new Big(coins).mul(TEN_BIG.pow(decimals)).toFixed()
+  }
+}
+
+export function amountToBigint(amount: Amount, asset: Asset, chain: Chain): [string, boolean] {
+  if (typeof amount === 'string' ) {
+    if(amount.endsWith('%')) {
+      const s = amount.slice(0, amount.length - 1)
+      const n = parseFloat(s) * 1000 // to decibips
+      return [new Big(n).toFixed(), true  ]
+    } else {
+      return [coinAmountToBigint(parseFloat(amount), asset, chain), false]
+    }
+  } else if (typeof amount === 'bigint') {
+    // bignum not transformed
+    return [amount.toString(), false]
+  } else {
+    return [coinAmountToBigint(amount, asset, chain), false]
+  }
+}
+
 export async function sdkAssetAndAmountToEvmInputAmount(
   assetRef: AssetReference,
   amount: Amount,
@@ -67,35 +102,11 @@ export async function sdkAssetAndAmountToEvmInputAmount(
   instance: IWorkflow,
   sourceIsCaller: boolean
 ): Promise<EvmInputAsset> {
-  let amountBn: Big
-  let amountIsPercent = false
-  if (typeof amount === 'string' && amount.endsWith('%')) {
-    const s = amount.slice(0, amount.length - 1)
-    const n = parseFloat(s) * 1000 // to decibips
-    amountBn = new Big(n)
-    amountIsPercent = true
-  } else {
-    if (typeof amount === 'bigint') {
-      amountBn = new Big(amount.toString())
-    } else {
-      amountBn = new Big(amount)
-    }
-    const asset = await instance.dereferenceAsset(assetRef, chain)
-    if (asset.type === 'native') {
-      amountBn = amountBn.mul(TEN_BIG.pow(18))
-    } else {
-      const c = translateChain(chain)
-      const tokenInfo = asset.chains[c]
-      assert(tokenInfo)
-      const decimals = tokenInfo.decimals
-      amountBn = amountBn.mul(TEN_BIG.pow(decimals))
-    }
-  }
-
   const asset = await instance.dereferenceAsset(assetRef, chain)
+  const [amountBn, amountIsPercent] = amountToBigint(amount, asset, chain)
   return {
     asset: sdkAssetToEvmAsset(asset, chain),
-    amount: amountBn.toFixed(),
+    amount: amountBn,
     amountIsPercent,
     sourceIsCaller,
   }

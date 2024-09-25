@@ -1,7 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { getWrappedNativeAddress } from '@freemarket/step-sdk/tslib/getWrappedNativeAddress'
-import { STEP_TYPE_ID_UNWRAP_NATIVE } from '../../step-ids'
+import { STEP_TYPE_ID_UNWRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
 
 const func: DeployFunction = async function (hardhatRuntimeEnv) {
   const chainId = await hardhatRuntimeEnv.getChainId()

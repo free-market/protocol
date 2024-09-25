@@ -1,7 +1,7 @@
 import { EncodingContext, EncodedWorkflowStep, sdkAssetAmountToEvmInputAmount, AssetAmount } from '@freemarket/core'
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { UnwrapNative } from './model'
-import { STEP_TYPE_ID_UNWRAP_NATIVE } from '../../step-ids'
+import { STEP_TYPE_ID_UNWRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
 
 export class UnwrapNativeHelper extends AbstractStepHelper<UnwrapNative> {
   async encodeWorkflowStep(context: EncodingContext<UnwrapNative>): Promise<EncodedWorkflowStep> {

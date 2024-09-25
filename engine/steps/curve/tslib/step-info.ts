@@ -1,6 +1,6 @@
 import { PlatformInfo } from '@freemarket/step-sdk'
 import CurveIcon from './CurveIcon'
-import { STEP_TYPE_ID_CURVE } from '../../step-ids'
+import { STEP_TYPE_ID_CURVE } from '@freemarket/core/tslib/step-ids'
 
 export const platformInfo: PlatformInfo = {
   name: 'Curve',

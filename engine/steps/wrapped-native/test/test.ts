@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import hardhat, { ethers, deployments } from 'hardhat'
 import { WrapNativeHelper } from '../tslib/wrap-native-helper'
-import { STEP_TYPE_ID_UNWRAP_NATIVE, STEP_TYPE_ID_WRAP_NATIVE } from '../../step-ids'
+import { STEP_TYPE_ID_UNWRAP_NATIVE, STEP_TYPE_ID_WRAP_NATIVE } from '@freemarket/core/tslib/step-ids'
 import { ADDRESS_ZERO, createStandardProvider, EncodingContext, IERC20__factory, WORKFLOW_END_STEP_ID } from '@freemarket/core'
 import { confirmTx, getTestFixture, MockWorkflowInstance, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { TestErc20__factory } from '@freemarket/step-sdk'

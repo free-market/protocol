@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
-import './IV3SwapRouter.sol';
 import '@freemarket/step-sdk/contracts/ABDKMathQuad.sol';
+import './IV3SwapRouter.sol';
+
 using ABDKMathQuad for bytes16;
 
 struct UniswapRoute {

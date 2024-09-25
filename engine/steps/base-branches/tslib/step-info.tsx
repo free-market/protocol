@@ -5,9 +5,9 @@ import ConvexStakeIcon from './branding-assets/ConvexIcon'
 import GelatoIcon from './branding-assets/GelatoIcon'
 import ChainBranchSummary from './ChainBranchSummary'
 import AssetBalanceBranchSummary from './AssetBalanceBranchSummary'
-import { STEP_TYPE_ID_CHAIN_BRANCH } from '../../step-ids'
-import { STEP_TYPE_ID_ASSET_BALANCE_BRANCH } from '../../step-ids'
-import { STEP_TYPE_ID_PREV_OUTPUT_BRANCH } from '../../step-ids'
+import { STEP_TYPE_ID_CHAIN_BRANCH } from '@freemarket/core/tslib/step-ids'
+import { STEP_TYPE_ID_ASSET_BALANCE_BRANCH } from '@freemarket/core/tslib/step-ids'
+import { STEP_TYPE_ID_PREV_OUTPUT_BRANCH } from '@freemarket/core/tslib/step-ids'
 import PreviousOutputBranchSummary from './PreviousOutputBranchSummary'
 
 export const chainBranchPlatformInfo: PlatformInfo = {

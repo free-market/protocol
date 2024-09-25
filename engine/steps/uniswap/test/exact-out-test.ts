@@ -18,7 +18,7 @@ import { IERC20, UniswapExactOutAction } from '../typechain-types'
 
 import Big from 'big.js'
 import { UniswapExactOutHelper } from '../tslib/UniswapExactOutHelper'
-import { STEP_TYPE_ID_UNISWAP_EXACT_OUT } from '../../step-ids'
+import { STEP_TYPE_ID_UNISWAP_EXACT_OUT } from '@freemarket/core/tslib/step-ids'
 import { WorkflowStruct } from '@freemarket/core/typechain-types/contracts/IWorkflowRunner'
 import { Signer } from '@ethersproject/abstract-signer'
 import { IWorkflowRunner } from '@freemarket/runner'

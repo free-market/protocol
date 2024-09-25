@@ -7,7 +7,7 @@ import { ADDRESS_ZERO, ASSET_TYPE_ERC20, ASSET_TYPE_NATIVE, IERC20__factory } fr
 import { getTestFixture, validateAction } from '@freemarket/step-sdk/tslib/testing'
 import { DepositEthForStEthAction, IPMarket, IPMarket__factory, IPRouterStatic__factory, PendleSwapToken } from '../typechain-types'
 import { getOldestNonexpiredMarket, encodePendleSwapTokenParams, PENDLE_FUNCTION_SWAP_TOKEN_FOR_PT, PENDLE_FUNCTION_SWAP_TOKEN_FOR_YT, MAINNET_PENDLE_ROUTER_STATIC } from '../tslib'
-import { STEP_TYPE_ID_LIDO_ETH_TO_STETH, STEP_TYPE_ID_LIDO_STETH_TO_WSTETH, STEP_TYPE_ID_PENDLE_TOKEN_TO_PTYT } from '../../step-ids'
+import { STEP_TYPE_ID_LIDO_ETH_TO_STETH, STEP_TYPE_ID_LIDO_STETH_TO_WSTETH, STEP_TYPE_ID_PENDLE_TOKEN_TO_PTYT } from '@freemarket/core/tslib/step-ids'
 import { WorkflowStepStruct, WorkflowStruct } from '@freemarket/core/build/typechain-types/contracts/IWorkflowRunner'
 import { BigNumber, BigNumberish, utils } from 'ethers'
 

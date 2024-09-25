@@ -3,7 +3,7 @@
 import { expect } from 'chai'
 import hre, { ethers, deployments } from 'hardhat'
 import { UniswapExactInHelper } from '../tslib/UniswapExactInHelper'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '../../step-ids'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '@freemarket/core/tslib/step-ids'
 import { AssetReference, createStandardProvider, EncodingContext, IERC20__factory, TEN_BIG } from '@freemarket/core'
 import { confirmTx, getTestFixture, getUsdt, MockWorkflowInstance, validateAction, WETH_ADDRESS } from '@freemarket/step-sdk/tslib/testing'
 import { Weth__factory, formatNumber } from '@freemarket/step-sdk'

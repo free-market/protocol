@@ -2,7 +2,7 @@ import { EncodingContext, EncodedWorkflowStep, ADDRESS_ZERO, sdkAssetAndAmountTo
 import { AbstractStepHelper } from '@freemarket/step-sdk'
 import type { AaveRepay } from './model'
 import { defaultAbiCoder } from '@ethersproject/abi'
-import { STEP_TYPE_ID_AAVE_REPAY } from '../../step-ids'
+import { STEP_TYPE_ID_AAVE_REPAY } from '@freemarket/core/tslib/step-ids'
 
 interface AaveRepayActionArgs {
   interestRateMode: string

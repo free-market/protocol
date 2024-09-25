@@ -19,6 +19,9 @@ contract ConfigManager is FreeMarketBase, Ownable {
 
   event StepFeeUpdated(uint16 stepTypeId, uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
   event DefaultFeeUpdated(uint256 oldFee, bool oldFeeIsPercent, uint256 newFee, bool newFeeIsPercent);
+  event UpstreamChanged(address indexed oldUpstream, address indexed newUpstream);
+  event StepAddressSetEvent(uint16 indexed stepTypeId, address indexed stepAddress, uint step_config_flags);
+  event StepAddressRemoved(uint16 indexed stepTypeId, address indexed stepAddress);
 
   constructor(
     address payable _frontDoorAddress
@@ -65,7 +68,6 @@ contract ConfigManager is FreeMarketBase, Ownable {
     return StepInfo(uint16(stepTypeId), feeIsPercent, fee, stepAddress, whitelist, blacklist);
   }
 
-  event UpstreamChanged(address indexed oldUpstream, address indexed newUpstream);
   
   function setUpstream(address upstream) external onlyOwner {
     address old = EternalStorage(eternalStorageAddress).getAddress(LibConfigReader.key_proxyUpstream);
@@ -73,19 +75,22 @@ contract ConfigManager is FreeMarketBase, Ownable {
     emit UpstreamChanged(old, upstream);    
   }
 
-  event StepAddressSetEvent(uint16 stepTypeId, address stepAddress);
+  function setStepAddress(uint16 stepTypeId, address stepAddress, uint step_config_flags) external onlyOwner {
+    _setStepAddress(stepTypeId, stepAddress, step_config_flags);
+  }
 
-  function setStepAddress(uint16 stepTypeId, address stepAddress) external onlyOwner {
+  function _setStepAddress(uint16 stepTypeId, address stepAddress, uint step_config_flags) internal {
+  
     EternalStorage eternalStorage = EternalStorage(eternalStorageAddress);
     eternalStorage.setEnumerableMapUintToAddress(LibConfigReader.latestStepAddresses, stepTypeId, stepAddress);
     // using the white list map like a set, we only care about the keys
     // this sets it as the current step for the stepTypeId
-    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress, 0);
+    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress, step_config_flags);
     // this adds it to the list of all valid steps
-    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress, 0);
+    eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress, step_config_flags);
     // remove it from the black list just in case it was there
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress);
-    emit StepAddressSetEvent(stepTypeId, stepAddress);
+    emit StepAddressSetEvent(stepTypeId, stepAddress, step_config_flags);
   }
 
   function removeStepAddress(uint16 stepTypeId, address stepAddress) external onlyOwner {
@@ -95,7 +100,7 @@ contract ConfigManager is FreeMarketBase, Ownable {
     eternalStorage.setEnumerableMapAddressToUint(LibConfigReader.getStepBlacklistKey(stepTypeId), stepAddress, 0);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.getStepWhitelistKey(stepTypeId), stepAddress);
     eternalStorage.removeEnumerableMapAddressToUint(LibConfigReader.allStepAddresses, stepAddress);
-    emit StepAddressSetEvent(stepTypeId, stepAddress);
+    emit StepAddressRemoved(stepTypeId, stepAddress);
   }
 
   function addRunnerAddress(address runnerAddress) external onlyOwner {

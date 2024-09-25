@@ -16,7 +16,7 @@ import { CurrencyAmount, Currency } from '@uniswap/sdk-core'
 import Big from 'big.js'
 import { defaultAbiCoder } from '@ethersproject/abi'
 import { UniswapBaseHelper, UniswapRouteSchema } from './UniswapBaseHelper'
-import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '../../step-ids'
+import { STEP_TYPE_ID_UNISWAP_EXACT_IN } from '@freemarket/core/tslib/step-ids'
 
 const UniswapExactInActionParamsSchema = `
   tuple(

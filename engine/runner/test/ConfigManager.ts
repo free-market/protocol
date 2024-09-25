@@ -71,7 +71,7 @@ describe('ConfigManager', async () => {
     } = await setup()
     let count = await configManager.getStepCount()
     expect(count).to.eq(0)
-    const response = await configManager.setStepAddress(1000, someAddress)
+    const response = await configManager.setStepAddress(1000, someAddress, 0)
     await response.wait()
     count = await configManager.getStepCount()
     expect(count).to.eq(1)

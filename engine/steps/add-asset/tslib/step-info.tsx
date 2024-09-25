@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PlatformInfo, StepInfo } from '@freemarket/step-sdk'
 import AddAssetIcon from './AddAssetIcon'
 import StepSummary from './StepSummary'
-import { STEP_TYPE_ID_ADD_ASSET } from '../../step-ids'
+import { STEP_TYPE_ID_ADD_ASSET } from '@freemarket/core/tslib/step-ids'
 
 export const platformInfo: PlatformInfo = {
   name: 'Add Asset',

@@ -69,7 +69,7 @@ describe('WorkflowRunner', async () => {
     const stepTypeId = 1111
     const factory = new BadStep__factory(signer)
     const badStep = await factory.deploy()
-    const result = await configManager.setStepAddress(stepTypeId, badStep.address)
+    const result = await configManager.setStepAddress(stepTypeId, badStep.address, 0)
     const upstreamBefore = await frontDoor.getUpstream()
     const step = {
       stepTypeId,

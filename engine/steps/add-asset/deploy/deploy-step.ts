@@ -1,6 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types'
 import { FrontDoor, WorkflowRunner__factory } from '@freemarket/runner'
-import { STEP_TYPE_ID_ADD_ASSET } from '../../step-ids'
+import { STEP_TYPE_ID_ADD_ASSET } from '@freemarket/core/tslib/step-ids'
 import { deployStep } from '@freemarket/step-sdk/tslib/deploy-step'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 

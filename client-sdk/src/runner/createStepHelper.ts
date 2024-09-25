@@ -3,10 +3,11 @@ import type { IStepHelper } from '@freemarket/core'
 
 import type { IWorkflowInstance } from './IWorkflowInstance'
 import { AaveSupplyHelper, AaveBorrowHelper, AaveRepayHelper } from '@freemarket/aave'
+import { STEP_TYPE_AAVE_SUPPLY } from '@freemarket/core/tslib/step-ids'
 import { AddAssetHelper } from '@freemarket/add-asset'
 import { StargateBridgeHelper } from '@freemarket/stargate-bridge'
 import { WrapNativeHelper, UnwrapNativeHelper } from '@freemarket/wrapped-native'
-import { UniswapExactInHelper } from '@freemarket/uniswap'
+import { UniswapExactInHelper, UniswapExactOutHelper } from '@freemarket/uniswap'
 import { CurveTriCrypto2SwapHelper } from '@freemarket/curve'
 import { AssetBalanceBranchHelper, ChainBranchHelper, PreviousOutputBranchHelper } from '@freemarket/base-branches'
 import { StubHelper } from '@freemarket/roadmap'
@@ -26,6 +27,7 @@ const stepHelpersConstructors: Record<string, StepHelperConstructor> = {
   'wrap-native': WrapNativeHelper,
   'unwrap-native': UnwrapNativeHelper,
   'uniswap-exact-in': UniswapExactInHelper,
+  'uniswap-exact-out': UniswapExactOutHelper,
   'curve-tricrypto2-swap': CurveTriCrypto2SwapHelper,
   'previous-output-branch': PreviousOutputBranchHelper,
   '1inch': StubHelper,

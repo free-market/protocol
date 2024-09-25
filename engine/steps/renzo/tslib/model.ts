@@ -1,11 +1,12 @@
 
-import { BigNumberish } from 'ethers';
-import { AbiCoder } from 'ethers/lib/utils';
+import { absoluteAmountSchema, assetSourceSchema, createStepSchema, EncodedWorkflowStep, EncodingContext, StepBase, stepProperties } from '@freemarket/core';
+import { z } from 'zod';
 
-const defaultAbiCoder: AbiCoder = new AbiCoder();
+export const renzoDepositEthForEzEthSchema = createStepSchema('renzo-deposit-eth').extend({
+  ethToTrade: absoluteAmountSchema.describe(stepProperties('ethToTrade', 'ethToTrade')),
+  minEzEthToReceive: absoluteAmountSchema.describe(stepProperties('minEzEthToReceive', 'minEzEthToReceive')),
+  source: assetSourceSchema.describe(stepProperties('Source', 'sourceDescription')),
+})
 
-function encodeDepositEthForEzEthParams(minEzEthToReceive: BigNumberish): string {
-  return defaultAbiCoder.encode(["uint256"], [minEzEthToReceive])
-}
+export interface RenzoDepositEthForEzEth extends z.infer<typeof renzoDepositEthForEzEthSchema> {}
 
-export { encodeDepositEthForEzEthParams }
