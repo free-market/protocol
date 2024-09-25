@@ -290,6 +290,9 @@ contract WorkflowRunner is FreeMarketBase, ReentrancyGuard, IWorkflowRunner {
         rv[i].amount = LibPercent.percentageOf(currentWorkflowAssetBalance, stepInputAsset.amount);
         // rv[i].amount = 1;
       } else {
+        console.log('currentWorkflowAssetBalance', currentWorkflowAssetBalance);
+        console.log('stepInputAsset.amount', stepInputAsset.amount);
+        
         require(currentWorkflowAssetBalance >= stepInputAsset.amount, 'absolute amt > wf balance');
         rv[i].amount = stepInputAsset.amount;
       }
